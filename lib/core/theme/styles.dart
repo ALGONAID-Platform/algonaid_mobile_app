@@ -4,33 +4,33 @@ import 'package:flutter/material.dart';
 abstract class Styles {
   // ================= Constants (الثوابت) =================
   static const textStyle40 = TextStyle(
-    fontSize: 40,
+    fontSize: 49,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle30 = TextStyle(
-    fontSize: 30,
+    fontSize: 39,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle24 = TextStyle(
-    fontSize: 24,
+    fontSize: 31,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle20 = TextStyle(
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle18 = TextStyle(
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: FontWeight.w600,
   );
 
   static const textStyle16 = TextStyle(
     fontSize: 16,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w400,
   );
 
   static const textStyle14 = TextStyle(
@@ -40,17 +40,17 @@ abstract class Styles {
 
   static const textStyle13 = TextStyle(
     fontSize: 13,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w400,
   );
 
   static const textStyle12 = TextStyle(
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: FontWeight.normal,
   );
 
-  // ================= Helper Methods (الدوال الناقصة) =================
+  // ================= Helper Methods =================
 
-  // ✅ تم إضافة style24
+  
   static TextStyle style24(BuildContext context) {
     return textStyle24.copyWith(
       color:
@@ -78,7 +78,7 @@ abstract class Styles {
     );
   }
 
-  // ✅ تم إضافة style16
+  
   static TextStyle style16(BuildContext context) {
     return textStyle16.copyWith(
       color:
@@ -102,7 +102,7 @@ abstract class Styles {
       color:
           Theme.of(context).brightness == Brightness.dark
               ? AppColors.textSecondaryDark
-              : const Color.fromARGB(255, 174, 199, 234),
+              : AppColors.textSecondaryLight,
     );
   }
 }
