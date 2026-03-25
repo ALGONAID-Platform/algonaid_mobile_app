@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,11 +13,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 107, 224, 219),
-        ),
-      ),
+      theme: ThemeApp.lightTheme,
+      darkTheme: ThemeApp.darkTheme,
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: "منصة الجنيد"),
     );
   }
