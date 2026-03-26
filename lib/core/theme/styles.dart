@@ -4,27 +4,27 @@ import 'package:flutter/material.dart';
 abstract class Styles {
   // ================= Constants (الثوابت) =================
   static const textStyle40 = TextStyle(
-    fontSize: 49,
+    fontSize: 40,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle30 = TextStyle(
-    fontSize: 39,
+    fontSize: 30,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle24 = TextStyle(
-    fontSize: 31,
+    fontSize: 24,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle20 = TextStyle(
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: FontWeight.bold,
   );
 
   static const textStyle18 = TextStyle(
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: FontWeight.w600,
   );
 
