@@ -1,8 +1,42 @@
+import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobail_app/core/di/service_locator.dart';
+import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
+import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/theme.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/init_hive.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
+import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  // Ensures that widget binding is initialized before any asynchronous operations
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive for Flutter to support local data storage
+  await Hive.initFlutter();
+
+  // Custom initialization logic for Hive (e.g., registering adapters)
+  await initHive();
+
+  // Initialize the TokenStorage box to manage user authentication tokens
+  await TokenStorage.init();
+
+  // Initialize SharedPreferences or custom caching helper for general app data
+  await CacheHelper.init();
+
+  // Initialize the Hive service instance for database operations
+  HiveService();
+
+  // Set up the Service Locator (GetIt) to handle Dependency Injection across the app
+  setupServiceLocator();
+
+  // Launch the root widget of the application wrapped with global providers
+  runApp(AppProviders(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -10,12 +44,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Change notification Status Bar Color to green
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: AppColors.primaryLight,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeApp.lightTheme,
       darkTheme: ThemeApp.darkTheme,
       themeMode: ThemeMode.system,
+      navigatorKey: navigatorKey,
       home: const MyHomePage(title: "منصة الجنيد"),
     );
   }
@@ -31,15 +73,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
-    );
+    return SigninAndSignupPage();
   }
 }

@@ -18,12 +18,12 @@ class Validator {
   }
 
   /// 2. Email Validator
-  static String? email(String? value) {
+  static String? email(String value) {
     // Check if empty first
     String? requiredCheck = required(value, fieldName: 'البريد الإلكتروني');
     if (requiredCheck != null) return requiredCheck;
 
-    if (!ValidationPatterns.email.hasMatch(value!)) {
+    if (!ValidationPatterns.email.hasMatch(value)) {
       return AppString.invalidEmail;
     }
     return null;

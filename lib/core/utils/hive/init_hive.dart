@@ -5,7 +5,7 @@ import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:hive/hive.dart';
 
 Future<void> initHive() async {
-  // await Hive.openBox<BookEntity>(AppConstants.boxFeaturedBooks);
+   await Hive.openBox(AppConstants.boxAuthTokenName);
   // await Hive.openBox<BookEntity>(AppConstants.boxFeaturedNewsBox);
   // await Hive.openBox<BookEntity>(AppConstants.boxFeaturedTrendinBooks);
   // await Hive.openBox<BookEntity>(AppConstants.boxFeaturedTopRatedBooks);
