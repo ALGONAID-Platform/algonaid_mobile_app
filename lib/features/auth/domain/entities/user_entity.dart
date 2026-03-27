@@ -6,10 +6,14 @@ class UserEntity {
   String username;
   String email;
   UserRole role;
+  String message;
+  final String? token;
   UserEntity({
     required this.id,
     required this.username,
     required this.email,
     required this.role,
+    required this.message,
+    this.token,
   });
 }

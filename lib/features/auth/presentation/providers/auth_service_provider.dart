@@ -1,6 +1,7 @@
 import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
@@ -18,11 +19,18 @@ class AuthServiceProvider extends ChangeNotifier {
   UserEntity? _user;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _isLogin = true; // الحالة الافتراضية
+  UserRole? _selectedRole;
+  bool _isPasswordVisible = true;
 
   // Getters
   UserEntity? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isLogin => _isLogin;
   String? get errorMessage => _errorMessage;
+  UserRole? get selectedRole => _selectedRole;
+
+  bool? get isPasswordVisible => _isPasswordVisible;
 
   Future<void> login({required String email, required String password}) async {
     _prepareForRequest();
@@ -35,23 +43,14 @@ class AuthServiceProvider extends ChangeNotifier {
       (failure) {
         _errorMessage = failure.message;
         _isLoading = false;
-        AppDialog.showDynamicDialog(
-          title: "Error",
-          isError: true,
-          message: failure.message,
-        );
+
         notifyListeners();
       },
       (userEntity) {
-        print("===========");
         _user = userEntity;
+        cashUserData(userEntity);
         _errorMessage = null; // التأكد من مسح أي خطأ قديم
         _isLoading = false;
-        AppDialog.showDynamicDialog(
-          title: "Hello",
-          isError: false,
-          message: "successfulu sign in",
-        );
         notifyListeners();
         // ملاحظة: التعامل مع رسالة "تم تسجيل الدخول" يفضل أن يكون في الـ UI
       },
@@ -79,11 +78,13 @@ class AuthServiceProvider extends ChangeNotifier {
     result.fold(
       (failure) {
         _errorMessage = failure.message;
+
         _isLoading = false;
         notifyListeners();
       },
       (userEntity) {
         _user = userEntity;
+        cashUserData(userEntity);
         _errorMessage = null;
         _isLoading = false;
         notifyListeners();
@@ -91,7 +92,16 @@ class AuthServiceProvider extends ChangeNotifier {
     );
   }
 
-  // دالة لتجهيز الحالة قبل أي طلب (Clear error and set loading)
+  toggleAuthMode() {
+    _isLogin = !_isLogin;
+    notifyListeners();
+  }
+
+  setRole(UserRole? role) {
+    _selectedRole = role;
+    notifyListeners();
+  }
+
   void _prepareForRequest() {
     _errorMessage = null;
     _isLoading = true;
@@ -101,5 +111,21 @@ class AuthServiceProvider extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  void changePasswordVisiblity() {
+    _isPasswordVisible = !_isPasswordVisible;
+    notifyListeners();
+  }
+
+  void cashUserData(UserEntity userEntity) {
+    CacheHelper.saveData(
+      key: AppConstants.userName,
+      value: userEntity.username,
+    );
+    CacheHelper.saveData(key: AppConstants.userEmail, value: userEntity.email);
+    CacheHelper.saveData(key: AppConstants.userRole, value: userEntity.role);
+
+    TokenStorage.saveToken(userEntity.token ?? "");
   }
 }

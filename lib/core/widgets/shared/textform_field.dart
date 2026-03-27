@@ -1,77 +1,93 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
   final String? hintText;
   final TextEditingController? controller;
   final TextInputType keyboardType;
-  final bool isPassword;
+  final VoidCallback? onSuffixPressed;
+  final bool isPasswordVisible; // أزلنا الـ ? وجعلناها مطلوبة أو بقيمة افتراضية
+  final bool isPassword; // أزلنا الـ ?
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final String? Function(String?)? validator;
-  // إضافة متغير للتحكم في اللون أو الحواف إذا أردت تغييرها مستقبلاً
+  final Function()? onTap; // تعديل المسمى من onTap لـ onChanged
   final Color? borderColor;
   final double borderRadius;
 
   const CustomTextFormField({
-    super.key,
-    required this.labelText, // هذا الحقل الوحيد الإجباري
+    // إضافة const هنا مهمة جداً للأداء
+    Key? key,
+    required this.labelText,
     this.hintText,
     this.controller,
     this.keyboardType = TextInputType.text,
-    this.isPassword = false,
+    this.onSuffixPressed,
+    this.isPasswordVisible = false, // قيمة افتراضية
+    this.isPassword = false, // قيمة افتراضية
     this.suffixIcon,
     this.prefixIcon,
     this.validator,
-    this.borderColor, // قيمة اختيارية
-    this.borderRadius = 60.0, // القيمة الافتراضية كما طلبت
-  });
+    this.onTap,
+    this.borderColor,
+    this.borderRadius = 60.0,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // تحديد اللون الافتراضي (يمكنك استبدال Colors.blue بلون تطبيقك الأساسي)
-    final effectiveBorderColor = borderColor ?? Colors.blue;
+    // قراءة الألوان من الثيم مباشرة ليدعم الوضع الليلي
+    final effectiveBorderColor =
+        borderColor ?? Theme.of(context).colorScheme.primary;
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: TextFormField(
-        onTap: () {
-          SystemChrome.setSystemUIOverlayStyle(
-            SystemUiOverlayStyle(
-              statusBarColor: AppColors
-                  .primary, // اختر اللون الذي تريده (مثلاً اللون الأساسي)
-              statusBarIconBrightness: Brightness
-                  .light, // لجعل الأيقونات (الساعة، البطارية) باللون الأبيض
-            ),
-          );
-        },
         controller: controller,
         keyboardType: keyboardType,
-        obscureText: isPassword,
+        onTap: onTap,
+        obscureText:
+            isPassword &&
+            !isPasswordVisible, // منطق أكثر دقة لإظهار/إخفاء الباسورد
         validator: validator,
+        // أزلنا Directionality لأن فلاتر يتعرف على لغة النظام تلقائياً أو من MaterialApp
         decoration: InputDecoration(
           floatingLabelBehavior: FloatingLabelBehavior.never,
           labelText: labelText,
+          labelStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.45),
+          ),
           hintText: hintText,
           prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
-          // تطبيق التصميم الافتراضي الذي أرسلته
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary, // لون الأيقونة من الثيم
+                  ),
+                  onPressed: onSuffixPressed,
+                )
+              : suffixIcon,
           border: _buildBorder(effectiveBorderColor, borderRadius),
-          enabledBorder: _buildBorder(effectiveBorderColor, borderRadius),
-          disabledBorder: _buildBorder(effectiveBorderColor, borderRadius),
+          enabledBorder: _buildBorder(
+            effectiveBorderColor.withOpacity(0.5),
+            borderRadius,
+          ), // حواف أخف عند عدم التفاعل
           focusedBorder: _buildBorder(
             effectiveBorderColor,
             borderRadius,
-            width: 3,
+            width: 2,
+          ),
+          errorBorder: _buildBorder(
+            Theme.of(context).colorScheme.error,
+            borderRadius,
           ),
         ),
       ),
     );
   }
 
-  // دالة خاصة بالبناء لتقليل تكرار الكود
   OutlineInputBorder _buildBorder(
     Color color,
     double radius, {

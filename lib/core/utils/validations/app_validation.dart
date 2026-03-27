@@ -99,7 +99,7 @@ class Validator {
   static String? confirmPassword(String? value, String originalPassword) {
     String? requiredCheck = required(value, fieldName: 'تأكيد كلمة المرور');
     if (requiredCheck != null) return requiredCheck;
-
+  
     if (value != originalPassword) {
       return AppString.passwordsNotMatch;
     }

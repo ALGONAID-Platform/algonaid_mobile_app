@@ -6,10 +6,7 @@ import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/auth/data/models/auth_models.dart';
 
 abstract class AuthRemoteDatasourse {
-  Future<AuthResponse> signin({
-    required String email,
-    required String password,
-  });
+  Future<AuthResponse> signin({required String email, required String password});
   Future<AuthResponse> signup({
     required String username,
     required String email,
@@ -31,7 +28,6 @@ class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
       endpoint: EndPoint.signin,
       data: {'email': email, 'password': password},
     );
-
     return AuthResponse.fromJson(user);
   }
 

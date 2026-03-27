@@ -1,12 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_state_provider.dart';
 
+// ignore: must_be_immutable
 class SwapAuthButtonCostum extends StatelessWidget {
-  AuthStateProvider auth;
+  AuthServiceProvider auth;
   SwapAuthButtonCostum({super.key, required this.auth});
   @override
   Widget build(BuildContext context) {
@@ -24,8 +25,9 @@ class SwapAuthButtonCostum extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class StackButtons extends StatelessWidget {
-  AuthStateProvider auth;
+  AuthServiceProvider auth;
 
   StackButtons({super.key, required this.auth});
 
@@ -68,7 +70,7 @@ class StackButtons extends StatelessWidget {
                 Spacer(),
                 TextButton(
                   onPressed: () {
-                    FocusScope.of(context).unfocus();   // to unFocus fields
+                    FocusScope.of(context).unfocus(); // to unFocus fields
                     if (auth.isLogin) auth.toggleAuthMode();
                   },
                   child: Text(

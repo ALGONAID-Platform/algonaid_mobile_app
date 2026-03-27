@@ -1,10 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_state_provider.dart';
 
 class AnimatedSwitcherCostum extends StatelessWidget {
-    AuthStateProvider auth;
+    AuthServiceProvider auth;
     Widget child ;
   AnimatedSwitcherCostum({
     Key? key,

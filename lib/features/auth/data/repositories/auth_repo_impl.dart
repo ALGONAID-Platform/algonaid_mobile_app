@@ -24,10 +24,12 @@ class AuthRepoImpl extends AuthRepo {
 
       return Right(
         UserEntity(
-          id: authResponse.data.user.id,
-          username: authResponse.data.user.name,
-          email: authResponse.data.user.email,
-          role: authResponse.data.user.role,
+          id: authResponse.user.id,
+          username: authResponse.user.name,
+          email: authResponse.user.email,
+          role: authResponse.user.role,
+          message: authResponse.message,
+          token: authResponse.accessToken,
         ),
       );
     } catch (e) {
@@ -44,21 +46,23 @@ class AuthRepoImpl extends AuthRepo {
     required String username,
     required String password,
     required UserRole role,
-  })async {
- try {
+  }) async {
+    try {
       final authResponse = await authRemotDataSource.signup(
         username: username,
         email: email,
         password: password,
-        role: role
+        role: role,
       );
 
       return Right(
         UserEntity(
-          id: authResponse.data.user.id,
-          username: authResponse.data.user.name,
-          email: authResponse.data.user.email,
-          role: authResponse.data.user.role,
+          id: authResponse.user.id,
+          username: authResponse.user.name,
+          email: authResponse.user.email,
+          role: authResponse.user.role,
+          message: authResponse.message,
+          token: authResponse.accessToken,
         ),
       );
     } catch (e) {
