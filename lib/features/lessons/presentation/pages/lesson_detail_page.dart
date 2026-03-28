@@ -1,7 +1,7 @@
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/cubits/lesson_detail_cubit.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_pdf_viewer_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_info_card.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_pdf_card.dart';
@@ -9,7 +9,7 @@ import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_tabs.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class LessonDetailPage extends StatelessWidget {
   final int lessonId;
@@ -18,13 +18,13 @@ class LessonDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
+    return ChangeNotifierProvider(
       create: (context) {
-        final cubit = LessonDetailCubit(
+        final provider = LessonDetailProvider(
           context.read<GetLessonDetail>(),
         );
-        cubit.loadLesson(lessonId);
-        return cubit;
+        provider.loadLesson(lessonId);
+        return provider;
       },
       child: const _LessonDetailView(),
     );
@@ -58,8 +58,9 @@ class _LessonDetailView extends StatelessWidget {
             icon: const Icon(Icons.list_alt),
           ),
         ),
-        body: BlocBuilder<LessonDetailCubit, LessonDetailState>(
-          builder: (context, state) {
+        body: Consumer<LessonDetailProvider>(
+          builder: (context, provider, _) {
+            final state = provider.state;
             if (state.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }

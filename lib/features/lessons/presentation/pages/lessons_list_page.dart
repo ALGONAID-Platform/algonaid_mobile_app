@@ -1,11 +1,11 @@
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/cubits/lessons_list_cubit.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_card.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lessons_error_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class LessonsListPage extends StatelessWidget {
   final int moduleId;
@@ -19,13 +19,13 @@ class LessonsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
+    return ChangeNotifierProvider(
       create: (context) {
-        final cubit = LessonsListCubit(
+        final provider = LessonsListProvider(
           context.read<GetModuleLessons>(),
         );
-        cubit.loadLessons(moduleId);
-        return cubit;
+        provider.loadLessons(moduleId);
+        return provider;
       },
       child: _LessonsListView(
         moduleId: moduleId,
@@ -55,8 +55,9 @@ class _LessonsListView extends StatelessWidget {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
         ),
-        body: BlocBuilder<LessonsListCubit, LessonsListState>(
-          builder: (context, state) {
+        body: Consumer<LessonsListProvider>(
+          builder: (context, provider, _) {
+            final state = provider.state;
             if (state.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -64,7 +65,7 @@ class _LessonsListView extends StatelessWidget {
             if (state.errorMessage != null) {
               return LessonsErrorState(
                 message: state.errorMessage!,
-                onRetry: () => context.read<LessonsListCubit>().loadLessons(
+                onRetry: () => context.read<LessonsListProvider>().loadLessons(
                       moduleId,
                     ),
               );

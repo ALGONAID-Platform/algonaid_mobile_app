@@ -1,6 +1,6 @@
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 
 class LessonDetailState {
   final bool isLoading;
@@ -34,26 +34,33 @@ class LessonDetailState {
   }
 }
 
-class LessonDetailCubit extends Cubit<LessonDetailState> {
+class LessonDetailProvider extends ChangeNotifier {
   final GetLessonDetail _getLessonDetail;
+  LessonDetailState _state = LessonDetailState.initial();
 
-  LessonDetailCubit(this._getLessonDetail)
-      : super(LessonDetailState.initial());
+  LessonDetailProvider(this._getLessonDetail);
+
+  LessonDetailState get state => _state;
 
   Future<void> loadLesson(int lessonId) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    _state = _state.copyWith(isLoading: true, errorMessage: null);
+    notifyListeners();
 
     try {
       final lesson = await _getLessonDetail(lessonId);
-      emit(state.copyWith(isLoading: false, lesson: lesson));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          errorMessage: e.toString(),
-          lesson: null,
-        ),
+      _state = _state.copyWith(
+        isLoading: false,
+        lesson: lesson,
+        errorMessage: null,
       );
+      notifyListeners();
+    } catch (e) {
+      _state = _state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+        lesson: null,
+      );
+      notifyListeners();
     }
   }
 }
