@@ -15,6 +15,7 @@ class DropDownButton extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: DropdownButtonFormField<UserRole>(
+        value: auth.selectedRole,
         borderRadius: BorderRadius.circular(5),
         items: [
           for (var role in UserRole.values)

@@ -1,7 +1,9 @@
+import 'package:algonaid_mobail_app/core/common/enums/password_strength.dart';
 import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobail_app/core/utils/validations/app_validation.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
@@ -20,8 +22,9 @@ class AuthServiceProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   bool _isLogin = true; // الحالة الافتراضية
-  UserRole? _selectedRole;
-  bool _isPasswordVisible = true;
+  UserRole? _selectedRole = UserRole.STUDENT;
+  bool _isPasswordVisible = false;
+  double? _showPasswordStrength;
 
   // Getters
   UserEntity? get user => _user;
@@ -29,6 +32,7 @@ class AuthServiceProvider extends ChangeNotifier {
   bool get isLogin => _isLogin;
   String? get errorMessage => _errorMessage;
   UserRole? get selectedRole => _selectedRole;
+  double? get showPasswordStrength => _showPasswordStrength;
 
   bool? get isPasswordVisible => _isPasswordVisible;
 
@@ -99,6 +103,11 @@ class AuthServiceProvider extends ChangeNotifier {
 
   setRole(UserRole? role) {
     _selectedRole = role;
+    notifyListeners();
+  }
+
+  checkPassStrength(String? pass) {
+    _showPasswordStrength = Validator.getPasswordStrength(pass!);
     notifyListeners();
   }
 

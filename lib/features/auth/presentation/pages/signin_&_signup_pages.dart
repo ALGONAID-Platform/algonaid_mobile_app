@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/enums/password_strength.dart';
 import 'package:algonaid_mobail_app/core/utils/validations/app_validation.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
@@ -99,12 +100,20 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                     labelText: "ادخل كلمة المرور",
                     borderColor: AppColors.primary,
                     isPasswordVisible: authService.isPasswordVisible!,
-                    isPassword: !authService.isPasswordVisible!,
+                    isPassword: true,
+                    fillPercentage: authService.showPasswordStrength?? 0,
+                    onChanged: (p0) {
+                      authService.checkPassStrength(p0);
+                    },
                     onSuffixPressed: () {
                       authService.changePasswordVisiblity();
                     },
+
                     suffixIcon: const Icon(Icons.remove_red_eye_outlined),
-                    validator: (password) => Validator.password(password),
+                    validator: (password) => Validator.password(
+                      password,
+                      strength: PasswordStrength.strong,
+                    ),
                   ),
                   const SizedBox(height: 16),
 
