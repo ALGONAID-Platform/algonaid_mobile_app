@@ -52,7 +52,7 @@ class ThemeApp {
         fontWeight: FontWeight.w400,
         color: primaryText,
       ),
-      bodyMedium: body.bodyMedium?.copyWith(
+      bodyMedium: body.bodyMedium?.copyWith(  //default theme
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: secondaryText,

@@ -30,6 +30,7 @@ abstract class AppConstants {
   static const String userId = 'k_user_id';
   static const String userName = 'k_user_name';
   static const String userEmail = 'k_user_email';
+  static const String userRole = 'k_user_role';
   static const String isFirstTime = 'k_is_first_time';
   static const String isDark = "isDark";
 

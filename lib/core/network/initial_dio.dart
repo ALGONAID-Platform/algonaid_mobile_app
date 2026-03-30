@@ -46,7 +46,7 @@ void initialiseDio(Dio dio) {
         if (e.response?.statusCode == 401) {
           final context = navigatorKey.currentContext;
           if (context != null) {
-            GoRouter.of(context).go(Routes.loginPage);
+            // GoRouter.of(context).go(Routes.loginPage);
           }
         }
 
