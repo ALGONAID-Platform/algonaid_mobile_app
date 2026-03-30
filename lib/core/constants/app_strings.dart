@@ -1,5 +1,5 @@
 class AppString{
-   static const String requiredField = 'هذا الحقل مطلوب';
+  static const String requiredField = 'هذا الحقل مطلوب';
   static const String invalidEmail = 'البريد الإلكتروني غير صحيح';
   static const String invalidSaudiPhone = 'رقم الهاتف السعودي غير صحيح';
   

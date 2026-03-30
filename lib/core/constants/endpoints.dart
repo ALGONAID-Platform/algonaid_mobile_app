@@ -1,10 +1,10 @@
 const PORT = '3000';
- const IP = '127.0.0.1';
+const IP = '127.0.0.1';
 
 class EndPoint {
-  //base url for app API
+  // Base url for app API
   static const String baseUrl = 'http://$IP:$PORT/api/v1';
-  // base url for uploaded files 
+  // Base url for uploaded files 
   static const String uploadsBaseUrl = 'http://$IP:$PORT/uploads/';
   // API endpoints
   static const String bookurl = '$uploadsBaseUrl/books/smart.pdf';
@@ -22,7 +22,7 @@ class EndPoint {
   static const String lessonsByModuleEndpoint = '/lessons/module';
   static const String lessonDetailsEndpoint = '/lessons';
 
-// for dynamic endpoints with parameters 
+// For dynamic endpoints with parameters 
   static String bookDetails(int id) => '/books/$id';
   static String lessonsByModule(int moduleId) =>
       '$lessonsByModuleEndpoint/$moduleId';
