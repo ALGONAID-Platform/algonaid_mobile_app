@@ -8,7 +8,7 @@ class DioErrorHandler {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return ServerFailure('Connection timeout with ApiServer');
+        return ServerFailure('Connection Timeout with ApiServer');
 
       case DioExceptionType.badResponse:
         return _handleBadResponse(e.response);

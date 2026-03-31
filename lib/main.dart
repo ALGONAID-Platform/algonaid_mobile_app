@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         home: const LessonsListPage(
           moduleId: 4,
-          moduleTitle: 'دروس الوحدة الرابعة',
+          moduleTitle: 'الوحدة الرابعة',
         ),
       ),
     );

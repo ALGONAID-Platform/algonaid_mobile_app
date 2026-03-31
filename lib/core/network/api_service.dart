@@ -8,7 +8,7 @@ class ApiService {
   // 1. استخدام static const للروابط يجعل تعديلها أسهل ويفضل نقلها لملف constants
 
   ApiService(this._dio) {
-    initialiseDio(this._dio);
+    initializeDio(this._dio);
   }
 
   Future<dynamic> get({

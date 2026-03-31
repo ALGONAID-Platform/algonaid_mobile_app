@@ -9,7 +9,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart'; 
 
-void initialiseDio(Dio dio) {
+void initializeDio(Dio dio) {
   dio.options
     ..baseUrl = EndPoint.baseUrl
     ..connectTimeout = AppConstants.apiConnectTimeout // خليها 5 ثواني أفضل من 1
