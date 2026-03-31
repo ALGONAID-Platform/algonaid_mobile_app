@@ -50,59 +50,51 @@ abstract class Styles {
 
   // ================= Helper Methods =================
 
-  
   static TextStyle style24(BuildContext context) {
     return textStyle24.copyWith(
-      color:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.textPrimaryDark
-              : AppColors.textPrimaryLight,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.textPrimaryDark
+          : AppColors.textPrimaryLight,
     );
   }
 
   static TextStyle style30(BuildContext context) {
     return textStyle30.copyWith(
-      color:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.textPrimaryDark
-              : AppColors.textPrimaryLight,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.textPrimaryDark
+          : AppColors.textPrimaryLight,
     );
   }
 
   static TextStyle style18(BuildContext context) {
     return textStyle18.copyWith(
-      color:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.textPrimaryDark
-              : AppColors.textPrimaryLight,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.textPrimaryDark
+          : AppColors.textPrimaryLight,
     );
   }
 
-  
   static TextStyle style16(BuildContext context) {
     return textStyle16.copyWith(
-      color:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.textPrimaryDark
-              : AppColors.textPrimaryLight,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.textPrimaryDark
+          : AppColors.textPrimaryLight,
     );
   }
 
   static TextStyle style14(BuildContext context) {
     return textStyle14.copyWith(
-      color:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.textPrimaryDark
-              : AppColors.textPrimaryLight,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.textPrimaryDark
+          : AppColors.textPrimaryLight,
     );
   }
 
   static TextStyle style12(BuildContext context) {
     return textStyle12.copyWith(
-      color:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.textSecondaryDark
-              : AppColors.textSecondaryLight,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.textSecondaryDark
+          : AppColors.textSecondaryLight,
     );
   }
 }

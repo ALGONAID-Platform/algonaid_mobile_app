@@ -8,6 +8,7 @@ import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/init_hive.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
+import 'package:algonaid_mobail_app/features/onboard/presentaion/pages/onboarding_screen.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeApp.darkTheme,
       themeMode: ThemeMode.system,
       navigatorKey: navigatorKey,
+      
       home: const MyHomePage(title: "منصة الجنيد"),
     );
   }
@@ -75,6 +77,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return SigninAndSignupPage();
+    
+    return OnboardingScreen();
   }
 }
