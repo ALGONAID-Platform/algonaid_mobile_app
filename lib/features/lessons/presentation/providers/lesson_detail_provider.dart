@@ -46,21 +46,24 @@ class LessonDetailProvider extends ChangeNotifier {
     _state = _state.copyWith(isLoading: true, errorMessage: null);
     notifyListeners();
 
-    try {
-      final lesson = await _getLessonDetail(lessonId);
-      _state = _state.copyWith(
-        isLoading: false,
-        lesson: lesson,
-        errorMessage: null,
-      );
-      notifyListeners();
-    } catch (e) {
-      _state = _state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-        lesson: null,
-      );
-      notifyListeners();
-    }
+    final result = await _getLessonDetail(lessonId);
+    result.fold(
+      (failure) {
+        _state = _state.copyWith(
+          isLoading: false,
+          errorMessage: failure.message,
+          lesson: null,
+        );
+        notifyListeners();
+      },
+      (lesson) {
+        _state = _state.copyWith(
+          isLoading: false,
+          lesson: lesson,
+          errorMessage: null,
+        );
+        notifyListeners();
+      },
+    );
   }
 }

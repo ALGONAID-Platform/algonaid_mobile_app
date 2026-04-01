@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobail_app/core/errors/exception.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_detail_model.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
@@ -54,7 +55,7 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
         }
       }
     }
-    throw Exception('Unexpected lessons response format');
+    throw ServerException(message: 'Unexpected lessons response format');
   }
 
   Map<String, dynamic> _extractLesson(dynamic data) {
@@ -64,6 +65,6 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
     if (data is Map && data['data'] is Map<String, dynamic>) {
       return data['data'] as Map<String, dynamic>;
     }
-    throw Exception('Unexpected lesson response format');
+    throw ServerException(message: 'Unexpected lesson response format');
   }
 }

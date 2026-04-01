@@ -35,7 +35,7 @@ class LessonsListPage extends StatelessWidget {
   }
 }
 
-class _LessonsListView extends StatelessWidget {
+class _LessonsListView extends StatefulWidget {
   final int moduleId;
   final String moduleTitle;
 
@@ -45,13 +45,42 @@ class _LessonsListView extends StatelessWidget {
   });
 
   @override
+  State<_LessonsListView> createState() => _LessonsListViewState();
+}
+
+class _LessonsListViewState extends State<_LessonsListView> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final threshold = _scrollController.position.maxScrollExtent - 200;
+    if (_scrollController.position.pixels >= threshold) {
+      context.read<LessonsListProvider>().loadMore();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: AppColors.grey50,
         appBar: AppBar(
-          title: Text(moduleTitle),
+          title: Text(widget.moduleTitle),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
         ),
@@ -65,9 +94,10 @@ class _LessonsListView extends StatelessWidget {
             if (state.errorMessage != null) {
               return LessonsErrorState(
                 message: state.errorMessage!,
-                onRetry: () => context.read<LessonsListProvider>().loadLessons(
-                      moduleId,
-                    ),
+                onRetry: () =>
+                    context.read<LessonsListProvider>().loadLessons(
+                          widget.moduleId,
+                        ),
               );
             }
 
@@ -77,10 +107,17 @@ class _LessonsListView extends StatelessWidget {
             }
 
             return ListView.separated(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: lessons.length,
+              itemCount: lessons.length + (state.isLoadingMore ? 1 : 0),
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
+                if (index >= lessons.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
                 final lesson = lessons[index];
                 return LessonCard(
                   lesson: lesson,
