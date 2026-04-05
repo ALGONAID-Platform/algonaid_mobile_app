@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/theme/theme.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
@@ -86,55 +87,118 @@ class _LessonsListViewState extends State<_LessonsListView> {
         ),
         body: Consumer<LessonsListProvider>(
           builder: (context, provider, _) {
+            final motion =
+                Theme.of(context).extension<MotionTheme>() ??
+                    MotionTheme.defaults;
             final state = provider.state;
             if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return AnimatedSwitcher(
+                duration: motion.fast,
+                child: const Center(
+                  key: ValueKey('loading'),
+                  child: CircularProgressIndicator(),
+                ),
+              );
             }
 
             if (state.errorMessage != null) {
-              return LessonsErrorState(
-                message: state.errorMessage!,
-                onRetry: () =>
-                    context.read<LessonsListProvider>().loadLessons(
-                          widget.moduleId,
-                        ),
+              return AnimatedSwitcher(
+                duration: motion.fast,
+                child: LessonsErrorState(
+                  key: const ValueKey('error'),
+                  message: state.errorMessage!,
+                  onRetry: () =>
+                      context.read<LessonsListProvider>().loadLessons(
+                            widget.moduleId,
+                          ),
+                ),
               );
             }
 
             final lessons = state.lessons;
             if (lessons.isEmpty) {
-              return const Center(child: Text('لا توجد دروس حالياً'));
+              return AnimatedSwitcher(
+                duration: motion.fast,
+                child: const Center(
+                  key: ValueKey('empty'),
+                  child: Text('لا توجد دروس حالياً'),
+                ),
+              );
             }
 
-            return ListView.separated(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: lessons.length + (state.isLoadingMore ? 1 : 0),
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                if (index >= lessons.length) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                final lesson = lessons[index];
-                return LessonCard(
-                  lesson: lesson,
-                  displayOrder: lesson.order > 0 ? lesson.order : index + 1,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => LessonDetailPage(lessonId: lesson.id),
-                      ),
+            return AnimatedSwitcher(
+              duration: motion.fast,
+              child: ListView.separated(
+                key: const ValueKey('list'),
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: lessons.length + (state.isLoadingMore ? 1 : 0),
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  if (index >= lessons.length) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(child: CircularProgressIndicator()),
                     );
-                  },
-                );
-              },
+                  }
+                  final lesson = lessons[index];
+                  return _AnimatedLessonItem(
+                    index: index,
+                    child: LessonCard(
+                      lesson: lesson,
+                      displayOrder: lesson.order > 0 ? lesson.order : index + 1,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                LessonDetailPage(lessonId: lesson.id),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             );
           },
         ),
       ),
+    );
+  }
+}
+
+class _AnimatedLessonItem extends StatelessWidget {
+  final int index;
+  final Widget child;
+
+  const _AnimatedLessonItem({
+    required this.index,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final motion =
+        Theme.of(context).extension<MotionTheme>() ?? MotionTheme.defaults;
+    final base = motion.medium;
+    final extra = Duration(milliseconds: (index % 6) * 40);
+    final duration = base + extra;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: duration,
+      curve: motion.standard,
+      builder: (context, value, child) {
+        final translate = 12 * (1 - value);
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, translate),
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }

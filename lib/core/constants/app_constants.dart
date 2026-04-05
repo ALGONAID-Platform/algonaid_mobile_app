@@ -21,6 +21,11 @@ abstract class AppConstants {
   static const String boxFeaturedTopRatedBooks = "featured_top_rated_books";
   static const String boxFeaturedQuickReadBooks = "featured_quick_read_books";
   static const String boxReadingProgress = "reading_progress_box";
+  static const String boxLessonsCache = 'lessons_cache_box';
+  static const String boxLessonDetailsCache = 'lesson_details_cache_box';
+  static const String boxLessonDownloads = 'lesson_downloads_box';
+
+  static const String platformDownloadsFolderName = 'الجنيد';
 
   // shared preferences keys
   static const String token = 'TOKEN';
@@ -46,9 +51,10 @@ abstract class AppConstants {
   static const int maxPageSize = 100;
 
   // api timeouts
-  static const Duration apiConnectTimeout = Duration(seconds: 5);
-  static const Duration apiReceiveTimeout = Duration(seconds: 5);
-  static const Duration apiSendTimeout = Duration(seconds: 5);
+  // 5s is too aggressive for real devices on Wi‑Fi/LTE; use safer defaults.
+  static const Duration apiConnectTimeout = Duration(seconds: 15);
+  static const Duration apiReceiveTimeout = Duration(seconds: 20);
+  static const Duration apiSendTimeout = Duration(seconds: 15);
 
   //responsive screens
   static const double mobileBreakpoint = 700;

@@ -6,6 +6,9 @@ import 'package:hive/hive.dart';
 
 Future<void> initHive() async {
    await Hive.openBox(AppConstants.boxAuthTokenName);
+   await Hive.openBox(AppConstants.boxLessonsCache);
+   await Hive.openBox(AppConstants.boxLessonDetailsCache);
+   await Hive.openBox(AppConstants.boxLessonDownloads);
   // await Hive.openBox<BookEntity>(AppConstants.boxFeaturedNewsBox);
   // await Hive.openBox<BookEntity>(AppConstants.boxFeaturedTrendinBooks);
   // await Hive.openBox<BookEntity>(AppConstants.boxFeaturedTopRatedBooks);

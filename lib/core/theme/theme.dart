@@ -3,6 +3,101 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class MotionTheme extends ThemeExtension<MotionTheme> {
+  final Duration fast;
+  final Duration medium;
+  final Duration slow;
+  final Curve standard;
+  final Curve emphasized;
+
+  const MotionTheme({
+    required this.fast,
+    required this.medium,
+    required this.slow,
+    required this.standard,
+    required this.emphasized,
+  });
+
+  static const MotionTheme defaults = MotionTheme(
+    fast: Duration(milliseconds: 180),
+    medium: Duration(milliseconds: 320),
+    slow: Duration(milliseconds: 520),
+    standard: Curves.easeOutCubic,
+    emphasized: Curves.easeInOutCubic,
+  );
+
+  @override
+  MotionTheme copyWith({
+    Duration? fast,
+    Duration? medium,
+    Duration? slow,
+    Curve? standard,
+    Curve? emphasized,
+  }) {
+    return MotionTheme(
+      fast: fast ?? this.fast,
+      medium: medium ?? this.medium,
+      slow: slow ?? this.slow,
+      standard: standard ?? this.standard,
+      emphasized: emphasized ?? this.emphasized,
+    );
+  }
+
+  @override
+  MotionTheme lerp(ThemeExtension<MotionTheme>? other, double t) {
+    if (other is! MotionTheme) return this;
+    return MotionTheme(
+      fast: lerpDuration(fast, other.fast, t),
+      medium: lerpDuration(medium, other.medium, t),
+      slow: lerpDuration(slow, other.slow, t),
+      standard: t < 0.5 ? standard : other.standard,
+      emphasized: t < 0.5 ? emphasized : other.emphasized,
+    );
+  }
+
+  Duration lerpDuration(Duration a, Duration b, double t) {
+    return Duration(
+      milliseconds:
+          (a.inMilliseconds + (b.inMilliseconds - a.inMilliseconds) * t)
+              .round(),
+    );
+  }
+}
+
+class FadeSlidePageTransitionsBuilder extends PageTransitionsBuilder {
+  const FadeSlidePageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (route.settings.name == '/') {
+      return child;
+    }
+
+    final motion = Theme.of(context).extension<MotionTheme>() ??
+        MotionTheme.defaults;
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: motion.standard,
+      reverseCurve: motion.emphasized,
+    );
+
+    final fade = FadeTransition(opacity: curved, child: child);
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(0.08, 0),
+        end: Offset.zero,
+      ).animate(curved),
+      child: fade,
+    );
+  }
+}
+
 class ThemeApp {
   static const String headingFontFamily = 'Inter';
   static const String bodyFontFamily = 'Roboto';
@@ -147,6 +242,15 @@ class ThemeApp {
 
         // 5. Text Theme
         textTheme: _buildTextTheme(isDark: false),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: <TargetPlatform, PageTransitionsBuilder>{
+            TargetPlatform.android: FadeSlidePageTransitionsBuilder(),
+            TargetPlatform.iOS: FadeSlidePageTransitionsBuilder(),
+          },
+        ),
+        extensions: const <ThemeExtension<dynamic>>[
+          MotionTheme.defaults,
+        ],
       );
 
   // ===========================================================================
@@ -218,5 +322,14 @@ class ThemeApp {
         ),
 
         textTheme: _buildTextTheme(isDark: true),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: <TargetPlatform, PageTransitionsBuilder>{
+            TargetPlatform.android: FadeSlidePageTransitionsBuilder(),
+            TargetPlatform.iOS: FadeSlidePageTransitionsBuilder(),
+          },
+        ),
+        extensions: const <ThemeExtension<dynamic>>[
+          MotionTheme.defaults,
+        ],
       );
 }

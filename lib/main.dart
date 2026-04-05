@@ -8,7 +8,7 @@ import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/init_hive.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -58,23 +58,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeApp.darkTheme,
       themeMode: ThemeMode.system,
       navigatorKey: navigatorKey,
-      home: const MyHomePage(title: "منصة الجنيد"),
+      home: const LessonsListPage(moduleId: 4, moduleTitle: 'الدروس'),
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return SigninAndSignupPage();
   }
 }
