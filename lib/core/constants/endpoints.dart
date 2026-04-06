@@ -9,6 +9,10 @@ class EndPoint {
   // API endpoints
   static const String signin = '$baseUrl/auth/signin';
   static const String signup = '$baseUrl/auth/signup';
+  
+  static get lessonsByModuleEndpoint => null;
+  
+  static get lessonDetailsEndpoint => null;
 
   // for dynamic endpoints with parameters
   static String bookDetails(int id) => '/books/$id';
