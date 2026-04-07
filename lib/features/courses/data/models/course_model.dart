@@ -1,45 +1,55 @@
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course.dart';
 
-class CourseModel {
-  const CourseModel({
-    required this.id,
-    required this.title,
-    required this.imageUrl,
-    required this.imageOverlayTitle,
-    required this.availabilityLine,
-    required this.tags,
+import 'package:algonaid_mobail_app/features/courses/data/models/teacher_model.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
+
+class CourseModel extends CourseEntity {
+  CourseModel({
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.thumbnail,
+    required super.createdAt,
+    required super.updatedAt,
+    required super.instructorId,
+    required super.teacher,
   });
 
-  final String id;
-  final String title;
-  final String imageUrl;
-  final String imageOverlayTitle;
-  final String availabilityLine;
-  final List<String> tags;
-
   factory CourseModel.fromJson(Map<String, dynamic> json) {
-    final tagsJson = json['tags'];
     return CourseModel(
-      id: '${json['id'] ?? ''}',
-      title: json['title'] as String? ?? '',
-      imageUrl: json['image_url'] as String? ?? json['imageUrl'] as String? ?? '',
-      imageOverlayTitle: json['image_overlay_title'] as String? ??
-          json['imageOverlayTitle'] as String? ??
-          '',
-      availabilityLine:
-          json['availability_line'] as String? ?? json['availabilityLine'] as String? ?? '',
-      tags: tagsJson is List
-          ? tagsJson.map((e) => '$e').toList()
-          : const <String>[],
+      id: json['id'] as int,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      thumbnail: json['thumbnail'] as String,
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      instructorId: json['instructorId'] as int,
+      teacher: TeacherModel.fromJson(json['teacher']),
     );
   }
 
-  Course toEntity() => Course(
-        id: id,
-        title: title,
-        imageUrl: imageUrl,
-        imageOverlayTitle: imageOverlayTitle,
-        availabilityLine: availabilityLine,
-        tags: tags,
-      );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'thumbnail': thumbnail,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      'instructorId': instructorId,
+      'teacher': (teacher as TeacherModel).toJson(),
+    };
+  }
+
+  CourseEntity toEntity() {
+    return CourseEntity(
+      id: id,
+      title: title,
+      description: description,
+      thumbnail: thumbnail,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      instructorId: instructorId,
+      teacher: (teacher as TeacherModel).toEntity(),
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 
 class ContinueLearningModel {
   const ContinueLearningModel({
@@ -47,14 +47,14 @@ class ContinueLearningModel {
     );
   }
 
-  ContinueLearningCourse toEntity() => ContinueLearningCourse(
-        title: title,
-        description: description,
-        progress: progress,
-        imageUrl: imageUrl,
-        subjectTag: subjectTag,
-        timeRemaining: timeRemaining,
-        lessonPosition: lessonPosition,
-        progressCaption: progressCaption,
-      );
+  // ContinueLearningCourse toEntity() => ContinueLearningCourse(
+  //       title: title,
+  //       description: description,
+  //       progress: progress,
+  //       imageUrl: imageUrl,
+  //       subjectTag: subjectTag,
+  //       timeRemaining: timeRemaining,
+  //       lessonPosition: lessonPosition,
+  //       progressCaption: progressCaption,
+  //     );
 }

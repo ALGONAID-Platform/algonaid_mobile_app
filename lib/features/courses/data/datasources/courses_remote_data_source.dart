@@ -1,25 +1,25 @@
-import 'package:algonaid_mobail_app/features/courses/data/models/continue_learning_model.dart';
-import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
+import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobail_app/core/network/api_service.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart'; 
 
-/// مصدر بعيد لبيانات الدورات. عند جاهزية الـ API، مرّر [ApiService] واربط الطرق بالمسارات.
 abstract class CoursesRemoteDataSource {
-  Future<List<CourseModel>> fetchCatalog();
-
-  Future<ContinueLearningModel?> fetchContinueLearning();
+  Future<List<CourseEntity>> fetchCourses();
 }
 
-class CoursesRemoteDataSourceImpl implements CoursesRemoteDataSource {
-  const CoursesRemoteDataSourceImpl();
+class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
+  final ApiService apiService;
+
+  CoursesRemoteDataSourceImp({required this.apiService});
 
   @override
-  Future<List<CourseModel>> fetchCatalog() async {
-    // TODO: استبدل بـ _api.get(endpoint: EndPoint.coursesCatalog) عند الجاهزية.
-    return const [];
-  }
+  Future<List<CourseEntity>> fetchCourses() async {
+    var data = await apiService.get(endpoint: EndPoint.courses);
+    
+    List<CourseModel> courses = (data as List).map((json) {
+      return CourseModel.fromJson(json as Map<String, dynamic>);
+    }).toList();
 
-  @override
-  Future<ContinueLearningModel?> fetchContinueLearning() async {
-    // TODO: ربط بنقطة نهاية «متابعة التعلم».
-    return null;
+    return courses;
   }
 }
