@@ -12,8 +12,8 @@ class EndPoint {
 
   // for dynamic endpoints with parameters
   static String bookDetails(int id) => '/books/$id';
-  static String lessonsByModule(int moduleId) =>
-      '$lessonsByModuleEndpoint/$moduleId';
-  static String lessonDetails(int lessonId) =>
-      '$lessonDetailsEndpoint/$lessonId';
+  static String lessonsByModule(int moduleId) => '';
+  // '$lessonsByModuleEndpoint/$moduleId';
+  static String lessonDetails(int lessonId) => '';
+  // '$lessonDetailsEndpoint/$lessonId';
 }
