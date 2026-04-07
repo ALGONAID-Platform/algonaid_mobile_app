@@ -21,20 +21,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<OnboardingProvider>(
-        builder: (context, onboardinValue, child) {
-          double targetProgress =
-              (onboardinValue.current_bage + 1) / items.length;
+      body: SafeArea(
+        child: Consumer<OnboardingProvider>(
+          builder: (context, onboardinValue, child) {
+            double targetProgress =
+                (onboardinValue.current_bage + 1) / items.length;
 
-          return Stack(
-            // استخدمنا Stack هنا
-            children: [
-              // الطبقة الأولى: الرموز المتحركة
-              MathBackground(),
+            return Stack(
+              children: [
+                MathBackground(),
 
-              // الطبقة الثانية: المحتوى الأصلي
-              SafeArea(
-                child: PageView.builder(
+                PageView.builder(
                   onPageChanged: (value) => onboardinValue.onPagechange(value),
                   controller: onboardinValue.pageController,
                   itemCount: items.length,
@@ -67,10 +64,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     );
                   },
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
