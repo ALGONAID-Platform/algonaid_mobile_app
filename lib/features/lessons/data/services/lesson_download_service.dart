@@ -4,6 +4,7 @@ import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -102,7 +103,29 @@ class LessonDownloadService {
 
     if (videoUrl != null) {
       if (_isYoutubeUrl(videoUrl)) {
-        errors.add('لا يمكن تنزيل فيديو يوتيوب.');
+        final videoFileName = '${_sanitizeTitle(lesson.title)}.mp4';
+        final videoFile = File('${lessonDir.path}/$videoFileName');
+        YoutubeExplode? yt;
+        try {
+          yt = YoutubeExplode();
+          final manifest = await yt.videos.streamsClient.getManifest(videoUrl);
+          final streamInfo = manifest.muxed.withHighestBitrate();
+
+          if (streamInfo != null) {
+            final stream = yt.videos.streamsClient.get(streamInfo);
+            final fileStream = videoFile.openWrite();
+            await stream.pipe(fileStream);
+            await fileStream.flush();
+            await fileStream.close();
+            videoPath = videoFile.path;
+          } else {
+            errors.add('فشل تحميل الفيديو: لا يوجد دفق متاح');
+          }
+        } catch (e) {
+          errors.add('فشل تحميل الفيديو: $e');
+        } finally {
+          yt?.close();
+        }
       } else {
         final extension = _extractExtension(videoUrl) ?? 'mp4';
         final videoFileName = '${_sanitizeTitle(lesson.title)}.$extension';
@@ -245,7 +268,9 @@ class LessonDownloadService {
     final sanitized = title
         .trim()
         .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
-        .replaceAll(RegExp(r'\s+'), ' ');
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .replaceAll(RegExp(r'\.+$'), '')
+        .trim();
     if (sanitized.isEmpty) {
       return 'lesson';
     }
@@ -264,6 +289,13 @@ class LessonDownloadService {
     final dot = path.lastIndexOf('.');
     if (dot == -1 || dot == path.length - 1) return null;
     return path.substring(dot + 1);
+  }
+
+  String? _resolveDownloadedPath(dynamic result) {
+    if (result is String && result.isNotEmpty) {
+      return result;
+    }
+    return null;
   }
 
   Future<void> _saveDownloadRecord({

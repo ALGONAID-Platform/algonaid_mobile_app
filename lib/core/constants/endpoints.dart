@@ -7,7 +7,7 @@ const bool API_HTTPS = bool.fromEnvironment('API_HTTPS', defaultValue: false);
 const bool USE_ANDROID_EMULATOR_HOST =
     bool.fromEnvironment('USE_ANDROID_EMULATOR_HOST', defaultValue: false);
 
-const String LAN_IP = '172.24.96.1';
+const String LAN_IP = '172.18.0.1';
 const String ANDROID_EMULATOR_HOST = '10.0.2.2';
 const String IOS_SIMULATOR_HOST = '127.0.0.1';
 const String DESKTOP_HOST = '127.0.0.1';

@@ -52,7 +52,7 @@ abstract class AppConstants {
 
   // api timeouts
   // 5s is too aggressive for real devices on Wi‑Fi/LTE; use safer defaults.
-  static const Duration apiConnectTimeout = Duration(seconds: 15);
+  static const Duration apiConnectTimeout = Duration(seconds: 30);
   static const Duration apiReceiveTimeout = Duration(seconds: 20);
   static const Duration apiSendTimeout = Duration(seconds: 15);
 
