@@ -5,6 +5,12 @@ import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobail_app/features/courses/data/datasources/courses_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/courses/data/repositories/courses_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -17,10 +23,16 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<AuthRemoteDatasourse>(
     () => AuthRemoteDatasourseImp(apiService: getIt()),
   );
+  getIt.registerLazySingleton<CoursesRemoteDataSource>(
+    () => CoursesRemoteDataSourceImp(apiService: getIt()),
+  );
 
   // 3. Repositories (تعتمد على Data Sources)
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(authRemotDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<CoursesRepository>(
+    () => CoursesRepositoryImpl(remote: getIt()),
   );
 
   // 4. Use Cases (تعتمد على Repositories)
@@ -30,12 +42,19 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<SignupUsecase>(
     () => SignupUsecase(authRepo: getIt()),
   );
+  getIt.registerLazySingleton<GetCoursesUsecase>(
+    () => GetCoursesUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetMycoureseUsecase>(
+    () => GetMycoureseUsecase(repository: getIt()),
+  );
 
-  // 5. Providers (تعتمد على Use Cases) 
+  // 5. Providers (تعتمد على Use Cases)
   getIt.registerFactory<AuthServiceProvider>(
-    () => AuthServiceProvider(
-      signInUseCase: getIt<SigninUsecase>(), 
-      signUpUseCase: getIt<SignupUsecase>(),
-    ),
+    () => AuthServiceProvider(signInUseCase: getIt(), signUpUseCase: getIt()),
+  );
+  getIt.registerFactory<GetCoursesProvider>(
+    () =>
+        GetCoursesProvider(coursesUsecase: getIt(), myCoursesUsecase: getIt()),
   );
 }

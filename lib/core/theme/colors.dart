@@ -18,17 +18,18 @@ class AppColors {
 
   // Background Colors
   static const Color bgLight = Color(0xFFF0F5FA);
-  static const Color bgDark = Color(0xFF252641);
+  static const Color bgDark = Color(0xFF161726);
   static const Color surfaceLight = white;
   static const Color surfaceDark = Color(0xFF1F2138);
 
   // Text Colors
+  static const Color textPrimaryBlack = Color(0xFF525252);
   static const Color textPrimaryLight = Color(0xFF4B5563);
   static const Color textSecondaryLight = Color(0xFF6B7280);
   static const Color textPrimaryDark = white;
   static const Color textSecondaryDark = Color(0xFFC7D2E5);
 
-  static const Color grey50 = Color(0xFFF7FAFC); 
+  static const Color grey50 = Color(0xFFF7FAFC);
   static const Color grey100 = Color(0xFFF0F5FA);
   static const Color grey200 = Color(0xFFE5EDF4);
   static const Color grey300 = Color(0xFFCBD5E1);
@@ -39,13 +40,10 @@ class AppColors {
 
   static const Color divider = Color(0xFFE5EDF4);
 
-  
   static const Color border = Color(0xFF92D6D6);
 
-  
   static const Color shadow = Color(0x1F000000);
 
-  
   static const Color overlay = Color(0x66000000);
 
   static const Color shimmerBase = Color(0xFFE0E0E0);
