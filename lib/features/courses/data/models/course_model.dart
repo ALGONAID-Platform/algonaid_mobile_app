@@ -1,4 +1,3 @@
-
 import 'package:algonaid_mobail_app/features/courses/data/models/teacher_model.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 
@@ -12,6 +11,9 @@ class CourseModel extends CourseEntity {
     required super.updatedAt,
     required super.instructorId,
     required super.teacher,
+    required super.moduleTitles,
+    required super.modulesCount,
+    required super.isEnrolled,
   });
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,9 @@ class CourseModel extends CourseEntity {
       updatedAt: DateTime.parse(json['updatedAt']),
       instructorId: json['instructorId'] as int,
       teacher: TeacherModel.fromJson(json['teacher']),
+      moduleTitles: (List<String>.from(json['moduleTitles'] ?? [])),
+      modulesCount: json['modulesCount'] ?? 0,
+      isEnrolled: json['isEnrolled'] ?? false,
     );
   }
 
@@ -37,6 +42,9 @@ class CourseModel extends CourseEntity {
       'updatedAt': updatedAt.toIso8601String(),
       'instructorId': instructorId,
       'teacher': (teacher as TeacherModel).toJson(),
+      'moduleTitles': moduleTitles,
+      'modulesCount': modulesCount,
+      'isEnrolled': isEnrolled,
     };
   }
 
@@ -50,6 +58,9 @@ class CourseModel extends CourseEntity {
       updatedAt: updatedAt,
       instructorId: instructorId,
       teacher: (teacher as TeacherModel).toEntity(),
+      moduleTitles: moduleTitles,
+      modulesCount: modulesCount,
+      isEnrolled: isEnrolled,
     );
   }
 }

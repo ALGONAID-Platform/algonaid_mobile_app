@@ -7,14 +7,27 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 class CoursesRepositoryImpl implements CoursesRepository {
-  const CoursesRepositoryImpl(this._remote);
+  const CoursesRepositoryImpl({this.remote});
 
-  final CoursesRemoteDataSource _remote;
+  final CoursesRemoteDataSource? remote;
 
   @override
   Future<Either<Failure, List<CourseEntity>>> getCourses() async {
     try {
-      final courses = await _remote.fetchCourses();
+      final courses = await remote!.fetchCourses();
+
+      return Right(courses);
+    } catch (e) {
+      if (e is DioException) {
+        return left(DioErrorHandler.handle(e));
+      }
+      return left(ServerFailure(e.toString()));
+    }
+  }
+  @override
+  Future<Either<Failure, List<CourseEntity>>> getMyCourses() async {
+    try {
+      final courses = await remote!.fetchMyCourses();
 
       return Right(courses);
     } catch (e) {

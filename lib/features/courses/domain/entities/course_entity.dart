@@ -9,6 +9,9 @@ class CourseEntity {
   final DateTime updatedAt;
   final int instructorId;
   final TeacherEntity teacher;
+  final List<String> moduleTitles;
+  final int modulesCount;
+  final bool isEnrolled;
 
   CourseEntity({
     required this.id,
@@ -19,5 +22,7 @@ class CourseEntity {
     required this.updatedAt,
     required this.instructorId,
     required this.teacher,
+    required this.moduleTitles, required this.modulesCount,
+    required this.isEnrolled,
   });
 }

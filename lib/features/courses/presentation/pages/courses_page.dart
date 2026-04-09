@@ -1,109 +1,130 @@
+import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobail_app/core/widgets/loading/continueLearningShimmer.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/all_courses_section.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildShimmerSection.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/my_courses_section.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/sliver_appbar.dart';
 import 'package:flutter/material.dart';
-import '../widgets/continue_learning_card.dart';
-import '../widgets/explore_course_card.dart';
-class CoursesPage extends StatelessWidget {
-  CoursesPage({super.key});
+import 'package:provider/provider.dart';
+import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/continue_learning_card.dart';
 
-  final List courses = [
-    {
-      'image': 'images/math.jpg',
-      'title': 'الاشتقاق - تفاضل وتكامل',
-      'description': 'تعلم أساسيات التفاضل والتكامل مع تطبيقات عملية...',
-      'subjectTag': 'الرياضيات',
-      'timeRemaining': '10 دقائق متبقية',
-      'coursesCount':12,
-    },
-    {
-      'image': 'images/physics.jpg',
-      'title': 'فيزياء الكم',
-      'description': 'مقدمة في عالم الذرة والجزيئات...',
-      'subjectTag': 'الفيزياء',
-      'timeRemaining': '25 دقيقة متبقية',
-      'coursesCount':12,
-    },
-    {
-      'image': 'images/physics.jpg',
-      'title': 'الدورة الرابعة',
-      'description': 'الدورة الرابعة',
-      'subjectTag': 'الدورة الرابعة',
-      'timeRemaining': 'الدورة الرابعة',
-      'coursesCount':12,
-    },
+class CoursesPage extends StatefulWidget {
+  const CoursesPage({Key? key}) : super(key: key);
+
+  @override
+  State<CoursesPage> createState() => _CoursesPageState();
+}
+
+class _CoursesPageState extends State<CoursesPage> {
+  @override
+  void initState() {
+    super.initState();
+    // جلب البيانات عند تشغيل الصفحة
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<GetCoursesProvider>().refreshAll();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: RefreshIndicator(
+        onRefresh: () => context.read<GetCoursesProvider>().refreshAll(),
+        color: AppColors.primary,
+        child: Consumer<GetCoursesProvider>(
+          builder: (context, provider, child) {
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                if (provider.isLoading)
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const ContinueLearningShimmer(),
+                        const SizedBox(height: 20),
+                        CoursesSectionShimmer(),
+                        const SizedBox(height: 20),
+                        CoursesSectionShimmer(),
+                      ],
+                    ),
+                  )
+                else ...[
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+
+                        if (provider.myCourses.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: ContinueLearningCard(),
+                          ),
+
+                        MyCoursesListSection(myCourses: provider.myCourses),
+
+                        AllCoursesListSection(allCourses: provider.allCourses),
+
+                        const SizedBox(height: 50), // مسافة في النهاية
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class CoursesHomePage extends StatefulWidget {
+  const CoursesHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<CoursesHomePage> createState() => _CoursesHomePageState();
+}
+
+class _CoursesHomePageState extends State<CoursesHomePage> {
+  int _currentIndex = 0;
+
+  final _pages = [
+    CoursesPage(), // الصفحة الرئيسية
+    Placeholder(), // الدورات
+    Placeholder(), // المحفوظات
+    Placeholder(), // الحساب
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(
-          title: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: CircleAvatar(
-              backgroundColor: Colors.grey[200],
-              backgroundImage: AssetImage("assets/images/user_profile.png"),
-            ),
-            title: const Text(
-              "أحمد الجنيد",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            subtitle: const Text("طالب", style: TextStyle(fontSize: 12)),
-            trailing: IconButton(
-              icon: const Icon(Icons.notifications_none_outlined),
-              onPressed: () {},
-            ),
-          ),
-          actions: [
-            PopupMenuButton(
-              icon: Icon(Icons.menu_open, color: Colors.green[700]),
-              position: PopupMenuPosition.under,
-              itemBuilder: (context) => [
-                const PopupMenuItem(child: Text("الإعدادات")),
-                const PopupMenuItem(child: Text("عن التطبيق")),
-              ],
-            ),
-          ],
-        ),
-      
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ListView(
-            children: [
-              const SizedBox(height: 20),
-              const Text(
-                "أهلا بك في صفحة الدورات 👋",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                "تابع دروسك من حيث توقفت",
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              const SizedBox(height: 20),
-      
-              ContinueLearningCard(courseData: courses[0]),
-      
-              const SizedBox(height: 30),
-      
-              const Text(
-                "اكتشف جميع الدورات",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-      
-              ListView.builder(
-                itemCount: courses.length - 1,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  var currentCourse = courses[index + 1];
-      
-                  return ExploreCourseCard(item: currentCourse);
-                },
-              ),
-            ],
-          ),
-        ),
+    return Scaffold(
+      appBar: CustomWhiteAppBar(
+        userName: CacheHelper.getString(key: AppConstants.userName) ?? "مستخدم",
+        userImageUrl: null,
+        notificationCount: 4,
+        onProfilePressed: () {},
+        onNotificationPressed: () {
+         
+        },
+        onSearchPressed: () {},
+      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 350),
+        child: _pages[_currentIndex],
+        transitionBuilder: (child, animation) =>
+            FadeTransition(opacity: animation, child: child),
+      ),
+      extendBody: true, // مهم لكي يظهر البار عائم!
+      bottomNavigationBar: FancyFloatingNavBar(
+        selectedIndex: _currentIndex,
+        onItemSelected: (i) => setState(() => _currentIndex = i),
       ),
     );
   }

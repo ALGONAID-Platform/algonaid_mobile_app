@@ -4,13 +4,13 @@ import 'package:algonaid_mobail_app/features/courses/domain/entities/course_enti
 import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
 import 'package:dartz/dartz.dart';
 
-class GetCoursesCatalog extends UseCase<List<CourseEntity>> {
-  GetCoursesCatalog(this._repository);
+class GetCoursesUsecase extends UseCase<List<CourseEntity>> {
+  GetCoursesUsecase({required this.repository});
 
-  final CoursesRepository _repository;
+  final CoursesRepository repository;
 
   @override
   Future<Either<Failure, List<CourseEntity>>> call() {
-    return _repository.getCourses();
+    return repository.getCourses();
   }
 }

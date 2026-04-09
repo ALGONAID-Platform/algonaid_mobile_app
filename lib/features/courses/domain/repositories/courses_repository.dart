@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 abstract class CoursesRepository {
 
   Future<Either<Failure , List<CourseEntity>>> getCourses();
+  Future<Either<Failure , List<CourseEntity>>> getMyCourses();
 
   /// يُرجع `null` إذا لا توجد دورة للمتابعة.
   // Future<ContinueLearningCourse?> getContinueLearning();
