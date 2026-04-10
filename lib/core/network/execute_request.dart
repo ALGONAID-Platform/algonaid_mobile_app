@@ -1,7 +1,6 @@
 import 'package:algonaid_mobail_app/core/errors/exception.dart';
 import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
 import 'package:dio/dio.dart';
-import 'package:go_router/go_router.dart';
 
 Future<dynamic> performRequest(Future<Response> requestFunc) async {
   try {
