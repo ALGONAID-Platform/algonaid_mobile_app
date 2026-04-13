@@ -15,8 +15,8 @@ abstract class AppConstants {
   //Hive box names
   static const String boxAuthTokenName = 'auth_token_box';
   static const String tokenKey = 'auth_token';
-  static const String boxFeaturedBooks = "featured_box";
-  static const String boxFeaturedNewsBox = "featured_news_box";
+  static const String boxCourses = "courses_box";
+  static const String boxMyCourses = "my_courses_box";
   static const String boxFeaturedTrendinBooks = "featured_trending_books";
   static const String boxFeaturedTopRatedBooks = "featured_top_rated_books";
   static const String boxFeaturedQuickReadBooks = "featured_quick_read_books";

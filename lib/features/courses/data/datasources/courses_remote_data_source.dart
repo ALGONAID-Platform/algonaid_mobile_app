@@ -29,8 +29,7 @@ class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
     List<CourseModel> courses = (data as List).map((json) {
       return CourseModel.fromJson(json as Map<String, dynamic>);
     }).toList();
-    print(courses);
-    print("===================");
+   
     return courses;
   }
 }

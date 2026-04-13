@@ -109,10 +109,10 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
         userImageUrl: null,
         notificationCount: 4,
         onProfilePressed: () {},
-        onNotificationPressed: () {
-         
+        onNotificationPressed: () {},
+        onSearchPressed: () {
+          print(TokenStorage.getToken());
         },
-        onSearchPressed: () {},
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AnimatedSwitcher(

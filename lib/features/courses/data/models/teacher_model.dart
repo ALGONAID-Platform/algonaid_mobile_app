@@ -1,16 +1,39 @@
-
+import 'package:hive/hive.dart'; // 🌟
 import 'package:algonaid_mobail_app/features/courses/data/models/user_model.dart' show UserModel;
 import 'package:algonaid_mobail_app/features/courses/domain/entities/teacher_entity.dart';
 
+part 'teacher_model.g.dart'; // 🌟
+
+@HiveType(typeId: 2) // 🌟 اختر رقم فريد (مثلاً 2)
 class TeacherModel extends TeacherEntity {
+  @HiveField(0)
+  final int id;
+  @HiveField(1)
+  final String specialization;
+  @HiveField(2)
+  final String? bio;
+  @HiveField(3)
+  final int experience;
+  @HiveField(4)
+  final int userId;
+  @HiveField(5)
+  final UserModel user; // 🌟 تأكد أنه UserModel وليس Entity ليقبله Hive
+
   TeacherModel({
-    required super.id,
-    required super.specialization,
-    super.bio,
-    required super.experience,
-    required super.userId,
-    required super.user,
-  });
+    required this.id,
+    required this.specialization,
+    this.bio,
+    required this.experience,
+    required this.userId,
+    required this.user,
+  }) : super(
+          id: id,
+          specialization: specialization,
+          bio: bio,
+          experience: experience,
+          userId: userId,
+          user: user,
+        );
 
   factory TeacherModel.fromJson(Map<String, dynamic> json) {
     return TeacherModel(
@@ -23,6 +46,18 @@ class TeacherModel extends TeacherEntity {
     );
   }
 
+  // دالة مساعدة للتحويل من Entity لموديل عند الكاش
+  factory TeacherModel.fromEntity(TeacherEntity entity) {
+    return TeacherModel(
+      id: entity.id,
+      specialization: entity.specialization,
+      bio: entity.bio,
+      experience: entity.experience,
+      userId: entity.userId,
+      user: UserModel.fromEntity(entity.user),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -30,7 +65,7 @@ class TeacherModel extends TeacherEntity {
       'bio': bio,
       'experience': experience,
       'userId': userId,
-      'user': (user as UserModel).toJson(),
+      'user': user.toJson(),
     };
   }
 
@@ -41,7 +76,7 @@ class TeacherModel extends TeacherEntity {
       bio: bio,
       experience: experience,
       userId: userId,
-      user: (user as UserModel).toEntity(),
+      user: user.toEntity(),
     );
   }
 }

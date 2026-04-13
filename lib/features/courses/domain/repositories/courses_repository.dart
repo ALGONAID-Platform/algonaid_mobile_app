@@ -5,9 +5,7 @@ import 'package:dartz/dartz.dart';
 /// عقد جلب بيانات الدورات (كتالوج، متابعة التعلم، …).
 abstract class CoursesRepository {
 
-  Future<Either<Failure , List<CourseEntity>>> getCourses();
+  Future<Either<Failure , List<CourseEntity>>> getAllCourses();
   Future<Either<Failure , List<CourseEntity>>> getMyCourses();
 
-  /// يُرجع `null` إذا لا توجد دورة للمتابعة.
-  // Future<ContinueLearningCourse?> getContinueLearning();
 }

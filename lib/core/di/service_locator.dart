@@ -5,6 +5,7 @@ import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobail_app/features/courses/data/datasources/course_local_stroage.dart';
 import 'package:algonaid_mobail_app/features/courses/data/datasources/courses_remote_data_source.dart';
 import 'package:algonaid_mobail_app/features/courses/data/repositories/courses_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
@@ -26,13 +27,16 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<CoursesRemoteDataSource>(
     () => CoursesRemoteDataSourceImp(apiService: getIt()),
   );
+  getIt.registerLazySingleton<CourseLocalDataSourse>(
+    () => CourseLocalDataSourseImp(),
+  );
 
   // 3. Repositories (تعتمد على Data Sources)
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(authRemotDataSource: getIt()),
   );
   getIt.registerLazySingleton<CoursesRepository>(
-    () => CoursesRepositoryImpl(remote: getIt()),
+    () => CoursesRepositoryImpl(remote: getIt(), local: getIt()),
   );
 
   // 4. Use Cases (تعتمد على Repositories)

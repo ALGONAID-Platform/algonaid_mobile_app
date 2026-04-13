@@ -1,5 +1,5 @@
 const PORT = '3000';
-const IP = '10.228.81.22';
+const IP = '10.111.33.22';
 
 class EndPoint {
   //base url for app API

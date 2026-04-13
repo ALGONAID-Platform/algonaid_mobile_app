@@ -1,20 +1,70 @@
+import 'package:hive/hive.dart'; // 🌟 إضافة هايف
 import 'package:algonaid_mobail_app/features/courses/data/models/teacher_model.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 
+part 'course_model.g.dart'; // 🌟 ضروري لتوليد ملف الـ Adapter
+
+@HiveType(typeId: 1)
 class CourseModel extends CourseEntity {
+  
+  @HiveField(0)
+  final int id;
+  
+  @HiveField(1)
+  final String title;
+  
+  @HiveField(2)
+  final String description;
+  
+  @HiveField(3)
+  final String thumbnail;
+  
+  @HiveField(4)
+  final DateTime createdAt;
+  
+  @HiveField(5)
+  final DateTime updatedAt;
+  
+  @HiveField(6)
+  final int instructorId;
+  
+  @HiveField(7)
+  final TeacherModel teacher; // تأكد أن TeacherModel أيضاً مسجل في Hive
+  
+  @HiveField(8)
+  final List<String> moduleTitles;
+  
+  @HiveField(9)
+  final int modulesCount;
+  
+  @HiveField(10)
+  final bool isEnrolled;
+
   CourseModel({
-    required super.id,
-    required super.title,
-    required super.description,
-    required super.thumbnail,
-    required super.createdAt,
-    required super.updatedAt,
-    required super.instructorId,
-    required super.teacher,
-    required super.moduleTitles,
-    required super.modulesCount,
-    required super.isEnrolled,
-  });
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.thumbnail,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.instructorId,
+    required this.teacher,
+    required this.moduleTitles,
+    required this.modulesCount,
+    required this.isEnrolled,
+  }) : super(
+          id: id,
+          title: title,
+          description: description,
+          thumbnail: thumbnail,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          instructorId: instructorId,
+          teacher: teacher,
+          moduleTitles: moduleTitles,
+          modulesCount: modulesCount,
+          isEnrolled: isEnrolled,
+        );
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
     return CourseModel(
@@ -32,6 +82,23 @@ class CourseModel extends CourseEntity {
     );
   }
 
+  // دالة مفيدة عند الحفظ في الكاش (تحول الـ Entity القادم من الريبو إلى Model)
+  factory CourseModel.fromEntity(CourseEntity entity) {
+    return CourseModel(
+      id: entity.id,
+      title: entity.title,
+      description: entity.description,
+      thumbnail: entity.thumbnail,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+      instructorId: entity.instructorId,
+      teacher: TeacherModel.fromEntity(entity.teacher), // تأكد من وجودها في TeacherModel
+      moduleTitles: entity.moduleTitles,
+      modulesCount: entity.modulesCount,
+      isEnrolled: entity.isEnrolled,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -41,26 +108,12 @@ class CourseModel extends CourseEntity {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'instructorId': instructorId,
-      'teacher': (teacher as TeacherModel).toJson(),
+      'teacher': teacher.toJson(),
       'moduleTitles': moduleTitles,
       'modulesCount': modulesCount,
       'isEnrolled': isEnrolled,
     };
   }
 
-  CourseEntity toEntity() {
-    return CourseEntity(
-      id: id,
-      title: title,
-      description: description,
-      thumbnail: thumbnail,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      instructorId: instructorId,
-      teacher: (teacher as TeacherModel).toEntity(),
-      moduleTitles: moduleTitles,
-      modulesCount: modulesCount,
-      isEnrolled: isEnrolled,
-    );
-  }
+  CourseEntity toEntity() => this; // بما أنه يرث منها، يمكنك إرجاع الكائن نفسه أو استخدامه مباشرة
 }
