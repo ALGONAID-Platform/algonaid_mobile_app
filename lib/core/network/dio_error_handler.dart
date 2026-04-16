@@ -35,7 +35,6 @@ static Failure _handleBadResponse(Response? response) {
   if (data is Map && data['message'] != null) {
     var msg = data['message'];
     
-    // NestJS أحياناً يرسل قائمة أخطاء (List) وأحياناً نص (String)
     if (msg is List) {
       return ServerFailure(msg.join('\n')); // نجمع الأخطاء في أسطر تحت بعضها
     }

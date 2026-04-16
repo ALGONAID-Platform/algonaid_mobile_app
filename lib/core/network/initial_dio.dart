@@ -43,15 +43,9 @@ void initializeDio(Dio dio) {
       },
       
       onError: (DioException e, handler) async {
-        if (e.response?.statusCode == 401) {
-          final context = navigatorKey.currentContext;
-          if (context != null) {
-            // GoRouter.of(context).go(Routes.loginPage);
-          }
-        }
+      
 
-        // 2. مهم جداً: تمرير الخطأ لباقي التطبيق (الريبو) مهما كان نوعه!
-        // بدون هذا السطر، أي خطأ غير 401 سيجعل التطبيق يعلق للأبد
+       
         return handler.next(e); 
       },
     ),

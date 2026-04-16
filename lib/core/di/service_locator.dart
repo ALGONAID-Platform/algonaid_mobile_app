@@ -11,6 +11,7 @@ import 'package:algonaid_mobail_app/features/courses/data/datasources/course_loc
 import 'package:algonaid_mobail_app/features/courses/data/datasources/courses_remote_data_source.dart';
 import 'package:algonaid_mobail_app/features/courses/data/repositories/courses_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/usecases/enroll_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
@@ -93,6 +94,9 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<GetMycoureseUsecase>(
     () => GetMycoureseUsecase(repository: getIt()),
   );
+  getIt.registerLazySingleton<EnrollUsecase>(
+    () => EnrollUsecase(repository: getIt()),
+  );
 
   getIt.registerLazySingleton<GetModulesByCourse>(
     () => GetModulesByCourse(getIt<ModuleRepository>()),
@@ -116,6 +120,7 @@ void setupServiceLocator() {
 
   getIt.registerFactory<GetCoursesProvider>(
     () => GetCoursesProvider(
+      enrollmentUseCase: getIt(),
       coursesUsecase: getIt(),
       myCoursesUsecase: getIt(),
     ),

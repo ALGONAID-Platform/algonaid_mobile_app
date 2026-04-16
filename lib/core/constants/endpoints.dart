@@ -1,5 +1,5 @@
 const PORT = '3000';
-const IP = '127.0.0.1';
+const IP = '10.111.33.22';
 
 class EndPoint {
   //base url for app API
@@ -11,6 +11,7 @@ class EndPoint {
   static const String signup = '$baseUrl/auth/signup';
   static const String courses = '$baseUrl/courses';
   static const String myCourses = '$baseUrl/courses/my-courses';
+  static const String enrollment = '$baseUrl/enrollment';
 
   static String lessonsByModule(int moduleId) =>
       '$baseUrl/lessons/module/$moduleId';

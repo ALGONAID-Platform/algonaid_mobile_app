@@ -7,5 +7,6 @@ abstract class CoursesRepository {
 
   Future<Either<Failure , List<CourseEntity>>> getAllCourses();
   Future<Either<Failure , List<CourseEntity>>> getMyCourses();
+  Future<Either<Failure , bool>> enrollInCourse(int courseId);
 
 }

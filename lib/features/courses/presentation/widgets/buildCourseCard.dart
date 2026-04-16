@@ -9,18 +9,15 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // جلب الثيم الحالي بدلاً من التحقق اليدوي من isDark
     final theme = Theme.of(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
-        // ✅ استخدام لون السطح من الثيم مباشرة (surface)
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            // جعل الظل يتفاعل مع الثيم (يكون أخف في الدارك مود)
             color: theme.brightness == Brightness.dark
                 ? Colors.black.withOpacity(0.2)
                 : Colors.black.withOpacity(0.05),
@@ -29,7 +26,6 @@ class CourseCard extends StatelessWidget {
           ),
         ],
       ),
-      // استخدام ClipRRect لضمان أن الودجات الداخلية (مثل الصورة) لا تخرج عن الحواف
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Column(
@@ -43,6 +39,8 @@ class CourseCard extends StatelessWidget {
                 tags: course.moduleTitles,
                 modulesCount: course.modulesCount,
                 isEnrolled: course.isEnrolled,
+                courseId: course.id,
+                courseTitle: course.title,
               ),
             ),
           ],

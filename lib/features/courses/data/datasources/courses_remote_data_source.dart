@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobail_app/core/errors/exception.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
@@ -6,6 +7,7 @@ import 'package:algonaid_mobail_app/features/courses/data/models/course_model.da
 abstract class CoursesRemoteDataSource {
   Future<List<CourseEntity>> fetchCourses();
   Future<List<CourseEntity>> fetchMyCourses();
+  Future<bool> enrollInCourse(int courseId);
 }
 
 class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
@@ -32,4 +34,15 @@ class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
    
     return courses;
   }
+  
+ @override
+Future<bool> enrollInCourse(int courseId) async {
+  final response = await apiService.post(
+    endpoint: EndPoint.enrollment, 
+    data: {'courseId': courseId},
+  );
+
+    return true; 
+ 
+}
 }

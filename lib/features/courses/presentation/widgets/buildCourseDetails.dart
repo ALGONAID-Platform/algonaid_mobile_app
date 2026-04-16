@@ -1,6 +1,12 @@
+import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class BuildCourseDetails extends StatelessWidget {
   const BuildCourseDetails({
@@ -10,6 +16,8 @@ class BuildCourseDetails extends StatelessWidget {
     this.isEnrolled = false,
     this.progress = 0.1,
     this.completedModules = 1,
+    this.courseId = 1,
+    this.courseTitle = 'الوحدات',
   });
 
   final List<String> tags;
@@ -17,7 +25,8 @@ class BuildCourseDetails extends StatelessWidget {
   final bool isEnrolled;
   final double progress;
   final int completedModules;
-
+  final int courseId;
+  final String courseTitle;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -120,7 +129,14 @@ class BuildCourseDetails extends StatelessWidget {
       height: 45,
       child: isEnrolled
           ? TextButton(
-              onPressed: () {},
+              onPressed: () {
+                final context = navigatorKey.currentContext;
+                if (context != null) {
+                  GoRouter.of(
+                    context,
+                  ).push('/modulesList/$courseId', extra: courseTitle);
+                }
+              },
               style: TextButton.styleFrom(
                 backgroundColor: AppColors.green.withOpacity(0.1),
                 elevation: 0,
@@ -135,7 +151,42 @@ class BuildCourseDetails extends StatelessWidget {
               ),
             )
           : ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                if (!isEnrolled) {
+                  AppDialog.showDynamicDialog(
+                    title: "ملاحظة",
+                    message: "هل تريد التسجيل في الدورة؟",
+                    onConfirm: () async {
+                      final context = navigatorKey.currentContext;
+                      if (context != null) {
+                        final authService = context.read<GetCoursesProvider>();
+                        await authService.enrollInCourse(courseId: courseId);
+                        if(authService.isSuccessEnroll){
+                          AppDialog.showDynamicDialog(
+                            showCancelButton : false,
+                            confirmText: "استكشف الدورة",
+                            isError: false,
+                            title: "تم التسجيل",
+                            message: "تم تسجيلك في الدورة بنجاح!",
+                            onConfirm: () {
+                              GoRouter.of(
+                                context,
+                              ).push('/modulesList/$courseId', extra: courseTitle);
+                            },
+                          );
+                        } else {
+                          AppDialog.showDynamicDialog(
+                            title: "خطأ",
+                            message: authService.errorMessage ?? "حدث خطأ أثناء التسجيل. حاول مرة أخرى.",
+                            isError: true,
+                          );
+                        }
+                       
+                      }
+                    },
+                  );
+                }
+              },
               child: const Text("استكشف الدورة الآن"),
             ),
     );
@@ -154,8 +205,7 @@ class _CourseTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color:
-            theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
       ),

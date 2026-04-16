@@ -22,7 +22,36 @@ class CourseEntity {
     required this.updatedAt,
     required this.instructorId,
     required this.teacher,
-    required this.moduleTitles, required this.modulesCount,
+    required this.moduleTitles,
+    required this.modulesCount,
     required this.isEnrolled,
   });
+
+  CourseEntity copyWith({
+    int? id,
+    String? title,
+    String? description,
+    String? thumbnail,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? instructorId,
+    TeacherEntity? teacher,
+    List<String>? moduleTitles,
+    int? modulesCount,
+    bool? isEnrolled,
+  }) {
+    return CourseEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      thumbnail: thumbnail ?? this.thumbnail,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      instructorId: instructorId ?? this.instructorId,
+      teacher: teacher ?? this.teacher,
+      moduleTitles: moduleTitles ?? this.moduleTitles,
+      modulesCount: modulesCount ?? this.modulesCount,
+      isEnrolled: isEnrolled ?? this.isEnrolled,
+    );
+  }
 }

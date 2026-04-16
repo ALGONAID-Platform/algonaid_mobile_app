@@ -4,6 +4,7 @@ import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/circular_reveal.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_page.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
@@ -15,13 +16,11 @@ abstract class AppRouters {
   static final routers = GoRouter(
     navigatorKey: navigatorKey,
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => AuthGate(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => AuthGate()),
       GoRoute(
         path: Routes.homePage,
-        builder: (context, state) => const ModulesListPage(courseId: 3, courseTitle: 'الوحدات'),
+        // builder: (context, state) => const ModulesListPage(courseId: 3, courseTitle: 'الوحدات'),
+        builder: (context, state) => CoursesHomePage(),
       ),
       GoRoute(
         path: Routes.auth,
@@ -40,7 +39,10 @@ abstract class AppRouters {
         builder: (context, state) {
           final courseId = int.parse(state.pathParameters['courseId']!);
           final courseTitle = state.extra as String?;
-          return ModulesListPage(courseId: courseId, courseTitle: courseTitle ?? 'الوحدات');
+          return ModulesListPage(
+            courseId: courseId,
+            courseTitle: courseTitle ?? 'الوحدات',
+          );
         },
       ),
       GoRoute(
@@ -48,7 +50,10 @@ abstract class AppRouters {
         builder: (context, state) {
           final moduleId = int.parse(state.pathParameters['moduleId']!);
           final moduleTitle = state.extra as String?;
-          return LessonsListPage(moduleId: moduleId, moduleTitle: moduleTitle ?? 'الدروس');
+          return LessonsListPage(
+            moduleId: moduleId,
+            moduleTitle: moduleTitle ?? 'الدروس',
+          );
         },
       ),
       GoRoute(

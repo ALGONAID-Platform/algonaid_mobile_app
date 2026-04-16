@@ -23,6 +23,7 @@ class AppProviders extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(
           create: (_) => GetCoursesProvider(
+            enrollmentUseCase: getIt(),
             coursesUsecase: getIt(),
             myCoursesUsecase: getIt(),
           ),

@@ -32,39 +32,50 @@ class CoursesRepositoryImpl implements CoursesRepository {
     );
   }
 
-  /// 🌟 الدالة المركزية لإدارة جلب البيانات (Logic Engine)
   Future<Either<Failure, List<CourseEntity>>> _fetchData({
     required Future<List<CourseEntity>> Function() fetchRemote,
     required List<CourseEntity> Function() fetchLocal,
     required Future<void> Function(List<CourseEntity>) cacheData,
   }) async {
     try {
-      // 1. محاولة جلب البيانات من السيرفر (الخيار الأول دائماً لضمان التحديث)
       final remoteCourses = await fetchRemote();
 
-      // 2. إذا نجح الاتصال، نقوم بتحديث الكاش فوراً (مسح القديم ووضع الجديد)
       await cacheData(remoteCourses);
       print("=====================================================");
       print(remoteCourses);
       print("=====================================================");
       return Right(remoteCourses);
     } catch (e) {
-      // 3. في حالة الفشل (انقطاع نت، خطأ سيرفر، إلخ...) نلجأ للكاش
       try {
         final localCourses = fetchLocal();
 
         if (localCourses.isNotEmpty) {
-          // ✅ تم العثور على بيانات قديمة، نعرضها للمستخدم بدلاً من رسالة الخطأ
           return Right(localCourses);
         }
-      } catch (cacheError) {
-        // إذا حدث خطأ حتى في قراءة الكاش، نتجاهله وننتقل لإرسال خطأ السيرفر الأساسي
-      }
+      } catch (cacheError) {}
 
-      // 4. إذا فشل السيرفر ولم نجد أي بيانات في الكاش (التطبيق يفتح لأول مرة مثلاً)
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+
+      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> enrollInCourse(int courseId) async {
+    try {
+      final result = await remote.enrollInCourse(courseId);
+      return Right(result);
+    } catch (e) {
+      if (e is DioException) {
+      
+        return Left(DioErrorHandler.handle(e));
+      }
+
+      if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
 
