@@ -11,7 +11,7 @@ class EndPoint {
   static const String signup = '$baseUrl/auth/signup';
   static const String courses = '$baseUrl/courses';
   static const String myCourses = '$baseUrl/courses/my-courses';
-  
+
   static String lessonsByModule(int moduleId) =>
       '$baseUrl/lessons/module/$moduleId';
   static String lessonDetails(int lessonId) => '$baseUrl/lessons/$lessonId';

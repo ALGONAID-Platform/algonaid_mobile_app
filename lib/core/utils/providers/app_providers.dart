@@ -13,13 +13,18 @@ class AppProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final getIt = GetIt.instance; //Service Locator
+    final getIt = GetIt.instance;
 
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<AuthServiceProvider>()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
-        ChangeNotifierProvider(create: (_) => GetCoursesProvider(coursesUsecase: getIt(), myCoursesUsecase: getIt())),
+        ChangeNotifierProvider(
+          create: (_) => GetCoursesProvider(
+            coursesUsecase: getIt(),
+            myCoursesUsecase: getIt(),
+          ),
+        ),
       ],
       child: child,
     );

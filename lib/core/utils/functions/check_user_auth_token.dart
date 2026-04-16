@@ -31,6 +31,6 @@ Future<void> checkUserAuth() async {
       GoRouter.of(context).go(Routes.auth);
     }
   } else {
-    GoRouter.of(context).go('${Routes.modulesList}/1', extra: 'الوحدات');
+    GoRouter.of(context).go(Routes.homePage);
   }
 }

@@ -17,11 +17,13 @@ abstract class AppRouters {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => AuthGate(),
+        builder: (context, state) =>
+            const ModulesListPage(courseId: 4, courseTitle: 'الوحدات'),
       ),
       GoRoute(
-        path: Routes.homePage, // This will be the main entry after auth, let's make it go to modules list.
-        builder: (context, state) => ModulesListPage(courseId: 1, courseTitle: 'الوحدات'), // Temporary hardcode for testing, will be dynamic
+        path: Routes.homePage,
+        builder: (context, state) =>
+            const ModulesListPage(courseId: 4, courseTitle: 'الوحدات'),
       ),
       GoRoute(
         path: Routes.auth,
@@ -40,7 +42,10 @@ abstract class AppRouters {
         builder: (context, state) {
           final courseId = int.parse(state.pathParameters['courseId']!);
           final courseTitle = state.extra as String?;
-          return ModulesListPage(courseId: courseId, courseTitle: courseTitle ?? 'الوحدات');
+          return ModulesListPage(
+            courseId: courseId,
+            courseTitle: courseTitle ?? 'الوحدات',
+          );
         },
       ),
       GoRoute(
@@ -48,7 +53,10 @@ abstract class AppRouters {
         builder: (context, state) {
           final moduleId = int.parse(state.pathParameters['moduleId']!);
           final moduleTitle = state.extra as String?;
-          return LessonsListPage(moduleId: moduleId, moduleTitle: moduleTitle ?? 'الدروس');
+          return LessonsListPage(
+            moduleId: moduleId,
+            moduleTitle: moduleTitle ?? 'الدروس',
+          );
         },
       ),
       GoRoute(

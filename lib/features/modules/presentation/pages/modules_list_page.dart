@@ -1,8 +1,8 @@
 // algonaid_mobail_app/lib/features/modules/presentation/pages/modules_list_page.dart
 
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart'; // Import LessonsListPage
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules_by_course.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_card.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/modules_error_state.dart';
@@ -26,10 +26,8 @@ class ModulesListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) {
-        final provider = ModulesListProvider(
-          context.read<GetModulesByCourse>(),
-        );
+      create: (_) {
+        final provider = ModulesListProvider(getIt());
         provider.loadModules(courseId);
         return provider;
       },
@@ -108,7 +106,7 @@ class _ModulesListViewState extends State<_ModulesListView> {
                 key: const ValueKey('list'),
                 padding: const EdgeInsets.all(16),
                 itemCount: modules.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, index) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final module = modules[index];
                   return _AnimatedModuleItem(

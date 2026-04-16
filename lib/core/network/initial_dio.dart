@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 void initializeDio(Dio dio) {
   dio.options
     ..baseUrl = EndPoint.baseUrl
-    ..connectTimeout = AppConstants.apiConnectTimeout // خليها 5 ثواني أفضل من 1
+    ..connectTimeout = AppConstants.apiConnectTimeout 
     ..receiveTimeout = AppConstants.apiReceiveTimeout
     ..sendTimeout =kIsWeb ? null :  AppConstants.apiSendTimeout
     ..headers = {
