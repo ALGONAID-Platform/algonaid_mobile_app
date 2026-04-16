@@ -18,12 +18,12 @@ abstract class AppRouters {
       GoRoute(
         path: '/',
         builder: (context, state) =>
-            const ModulesListPage(courseId: 4, courseTitle: 'الوحدات'),
+            const ModulesListPage(courseId: 3, courseTitle: 'الوحدات'),
       ),
       GoRoute(
         path: Routes.homePage,
         builder: (context, state) =>
-            const ModulesListPage(courseId: 4, courseTitle: 'الوحدات'),
+            const ModulesListPage(courseId: 3, courseTitle: 'الوحدات'),
       ),
       GoRoute(
         path: Routes.auth,

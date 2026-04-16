@@ -74,7 +74,7 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<LessonRepository>(
-    () => LessonRepositoryImpl(remoteDataSource: getIt()),
+    () => LessonRepositoryImpl(remoteDataSource: getIt<LessonRemoteDataSource>()),
   );
 
   // ================= USE CASES =================

@@ -1,29 +1,53 @@
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 
-class LessonDetailModel extends LessonDetail {
-  const LessonDetailModel({
-    required super.id,
-    required super.moduleId,
-    required super.title,
-    required super.order,
-    super.description,
-    super.content,
-    super.videoUrl,
-    super.pdfUrl,
-    super.exam,
+class LessonDetailModel {
+  final int id;
+  final int moduleId;
+  final String title;
+  final String? description;
+  final String? content;
+  final String? videoUrl;
+  final String? pdfUrl;
+  final String? exam;
+  final int order;
+
+  LessonDetailModel({
+    required this.id,
+    required this.moduleId,
+    required this.title,
+    required this.order,
+    this.description,
+    this.content,
+    this.videoUrl,
+    this.pdfUrl,
+    this.exam,
   });
 
   factory LessonDetailModel.fromJson(Map<String, dynamic> json) {
     return LessonDetailModel(
-      id: json['id'] ?? 0,
-      moduleId: json['moduleId'] ?? 0,
-      title: (json['title'] ?? '').toString(),
-      description: json['description']?.toString(),
-      content: json['content']?.toString(),
-      videoUrl: json['videoUrl']?.toString(),
-      pdfUrl: json['pdfUrl']?.toString(),
-      exam: json['exam']?.toString(),
-      order: json['order'] ?? 0,
+      id: json['id'],
+      moduleId: json['moduleId'],
+      title: json['title'],
+      description: json['description'],
+      content: json['content'],
+      videoUrl: json['videoUrl'],
+      pdfUrl: json['pdfUrl'],
+      exam: json['exam'],
+      order: json['order'],
+    );
+  }
+
+  LessonDetail toEntity() {
+    return LessonDetail(
+      id: id,
+      moduleId: moduleId,
+      title: title,
+      description: description,
+      content: content,
+      videoUrl: videoUrl,
+      pdfUrl: pdfUrl,
+      exam: exam,
+      order: order,
     );
   }
 }

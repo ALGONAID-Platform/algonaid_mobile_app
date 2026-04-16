@@ -1,3 +1,5 @@
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart'; // Added
+import 'package:go_router/go_router.dart'; // Added
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
@@ -85,10 +87,8 @@ class _LessonsListView extends StatelessWidget {
                   lesson: lesson,
                   displayOrder: lesson.order > 0 ? lesson.order : index + 1,
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => LessonDetailPage(lessonId: lesson.id),
-                      ),
+                    GoRouter.of(context).go(
+                      '${Routes.lessonDetails}/${lesson.id}',
                     );
                   },
                 );

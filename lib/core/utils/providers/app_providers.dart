@@ -2,6 +2,8 @@
 
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart'; // Added
+import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart'; // Added
 import 'package:algonaid_mobail_app/features/onboard/presentaion/providers/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -23,6 +25,14 @@ class AppProviders extends StatelessWidget {
           create: (_) => GetCoursesProvider(
             coursesUsecase: getIt(),
             myCoursesUsecase: getIt(),
+          ),
+        ),
+        Provider<GetLessonDetail>( // Added
+          create: (_) => getIt<GetLessonDetail>(),
+        ),
+        ChangeNotifierProvider<LessonDetailProvider>( // Added
+          create: (context) => LessonDetailProvider(
+            context.read<GetLessonDetail>(),
           ),
         ),
       ],

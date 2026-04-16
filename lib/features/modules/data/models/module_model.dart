@@ -1,5 +1,4 @@
-// algonaid_mobail_app/lib/features/modules/data/models/module_model.dart
-
+import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
 
 class ModuleModel extends Module {
@@ -8,7 +7,7 @@ class ModuleModel extends Module {
     required super.title,
     required super.description,
     required super.courseId,
-    required super.order,
+    required super.lessons,
   });
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {
@@ -17,7 +16,10 @@ class ModuleModel extends Module {
       title: json['title'] as String,
       description: json['description'] as String,
       courseId: json['courseId'] as int,
-      order: json['order'] as int,
+      lessons: (json['lessons'] as List<dynamic>?)
+              ?.map((e) => LessonModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -27,7 +29,7 @@ class ModuleModel extends Module {
       'title': title,
       'description': description,
       'courseId': courseId,
-      'order': order,
+      'lessons': lessons.map((e) => (e as LessonModel).toJson()).toList(),
     };
   }
 }
