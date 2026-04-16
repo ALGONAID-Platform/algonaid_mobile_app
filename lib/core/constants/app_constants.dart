@@ -15,8 +15,8 @@ abstract class AppConstants {
   //Hive box names
   static const String boxAuthTokenName = 'auth_token_box';
   static const String tokenKey = 'auth_token';
-  static const String boxFeaturedBooks = "featured_box";
-  static const String boxFeaturedNewsBox = "featured_news_box";
+  static const String boxCourses = "courses_box";
+  static const String boxMyCourses = "my_courses_box";
   static const String boxFeaturedTrendinBooks = "featured_trending_books";
   static const String boxFeaturedTopRatedBooks = "featured_top_rated_books";
   static const String boxFeaturedQuickReadBooks = "featured_quick_read_books";
@@ -30,6 +30,7 @@ abstract class AppConstants {
   static const String userId = 'k_user_id';
   static const String userName = 'k_user_name';
   static const String userEmail = 'k_user_email';
+  static const String userRole = 'k_user_role';
   static const String isFirstTime = 'k_is_first_time';
   static const String isDark = "isDark";
 

@@ -1,22 +1,40 @@
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
+import 'package:algonaid_mobail_app/core/di/service_locator.dart';
+import 'package:algonaid_mobail_app/core/routes/appRouters.dart';
+import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/theme.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/init_hive.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/repositories/lesson_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/repositories/lesson_repository.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
 
-Future<void> main() async {
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+void main() async {
+  // Ensures that widget binding is initialized before any asynchronous operations
   WidgetsFlutterBinding.ensureInitialized();
-  await HiveService.init();
+
+  // Initialize Hive for Flutter to support local data storage
+  await Hive.initFlutter();
+
+  // Custom initialization logic for Hive (e.g., registering adapters)
+
+  // Initialize the TokenStorage box to manage user authentication tokens
   await TokenStorage.init();
-  runApp(const MyApp());
+
+  // Initialize SharedPreferences or custom caching helper for general app data
+  await CacheHelper.init();
+
+  // Initialize the Hive service instance for database operations
+  await HiveService.init();
+
+  // Set up the Service Locator (GetIt) to handle Dependency Injection across the app
+  setupServiceLocator();
+
+  // Launch the root widget of the application wrapped with global providers
+  runApp(AppProviders(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -24,44 +42,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<Dio>(create: (_) => Dio()),
-        Provider<ApiService>(
-          create: (context) => ApiService(context.read<Dio>()),
-        ),
-        Provider<LessonRemoteDataSource>(
-          create: (context) => LessonRemoteDataSourceImpl(
-            context.read<ApiService>(),
-          ),
-        ),
-        Provider<LessonRepository>(
-          create: (context) => LessonRepositoryImpl(
-            context.read<LessonRemoteDataSource>(),
-          ),
-        ),
-        Provider<GetModuleLessons>(
-          create: (context) => GetModuleLessons(
-            context.read<LessonRepository>(),
-          ),
-        ),
-        Provider<GetLessonDetail>(
-          create: (context) => GetLessonDetail(
-            context.read<LessonRepository>(),
-          ),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Algonaid Lessons',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeApp.lightTheme,
-        darkTheme: ThemeApp.darkTheme,
-        themeMode: ThemeMode.system,
-        home: const LessonsListPage(
-          moduleId: 4,
-          moduleTitle: 'الوحدة الرابعة',
-        ),
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: AppColors.primaryLight,
+        statusBarIconBrightness: Brightness.light,
       ),
+    );
+
+    return MaterialApp.router(
+      title: 'Algonaid Lessons',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeApp.lightTheme,
+      darkTheme: ThemeApp.darkTheme,
+      themeMode: ThemeMode.system,
+      routerConfig: AppRouters.routers,
     );
   }
 }

@@ -3,11 +3,9 @@ import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/network/check_internet.dart';
 import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:go_router/go_router.dart'; 
 
 void initializeDio(Dio dio) {
   dio.options
@@ -17,6 +15,8 @@ void initializeDio(Dio dio) {
     ..sendTimeout =kIsWeb ? null :  AppConstants.apiSendTimeout
     ..headers = {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${TokenStorage.getToken() ?? ''}',
     };
 
   dio.interceptors.add(
@@ -46,7 +46,7 @@ void initializeDio(Dio dio) {
         if (e.response?.statusCode == 401) {
           final context = navigatorKey.currentContext;
           if (context != null) {
-            GoRouter.of(context).go(Routes.loginPage);
+            // GoRouter.of(context).go(Routes.loginPage);
           }
         }
 

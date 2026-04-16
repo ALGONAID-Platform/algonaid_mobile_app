@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio;
 
-  // 1. استخدام static const للروابط يجعل تعديلها أسهل ويفضل نقلها لملف constants
 
   ApiService(this._dio) {
     initializeDio(this._dio);

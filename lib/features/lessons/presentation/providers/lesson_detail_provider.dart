@@ -41,26 +41,29 @@ class LessonDetailProvider extends ChangeNotifier {
   LessonDetailProvider(this._getLessonDetail);
 
   LessonDetailState get state => _state;
-
   Future<void> loadLesson(int lessonId) async {
     _state = _state.copyWith(isLoading: true, errorMessage: null);
     notifyListeners();
 
-    try {
-      final lesson = await _getLessonDetail(lessonId);
-      _state = _state.copyWith(
-        isLoading: false,
-        lesson: lesson,
-        errorMessage: null,
-      );
-      notifyListeners();
-    } catch (e) {
-      _state = _state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-        lesson: null,
-      );
-      notifyListeners();
-    }
+    final result = await _getLessonDetail(lessonId);
+
+    result.fold(
+      (failure) {
+        _state = _state.copyWith(
+          isLoading: false,
+          errorMessage: failure.toString(),
+          lesson: null,
+        );
+        notifyListeners();
+      },
+      (lesson) {
+        _state = _state.copyWith(
+          isLoading: false,
+          lesson: lesson,
+          errorMessage: null,
+        );
+        notifyListeners();
+      },
+    );
   }
 }
