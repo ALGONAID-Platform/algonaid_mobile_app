@@ -7,68 +7,66 @@ class ContinueLearningCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // نستخدم Theme.of(context) لجلب الألوان تلقائياً
     final theme = Theme.of(context);
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
+        constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-          // التبديل التلقائي بين لون السطح في الفاتح والمظلم
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(15)),
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const _CourseMetaTags(),
-                        const SizedBox(height: 10),
-                        Text(
-                          'الاشتقاق - تفاضل وتكامل',
-                          // استخدام ستايل العناوين من الثيم
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'تعلم أساسيات الاشتقاق وقواعده الأساسية بشكل مبسط.',
-                          // استخدام ستايل الجسم الصغير من الثيم
-                          style: theme.textTheme.bodySmall,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 12),
-                        const _ProgressBarSection(),
-                        const SizedBox(height: 16),
-                        const _ActionButtonsRow(),
-                      ],
+          borderRadius: BorderRadius.circular(15),
+          child: Column(
+            mainAxisSize:
+                MainAxisSize.min, // حل مشكلة التمدد الطولي: يأخذ حجم محتواه فقط
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(
+                height: 160, // يمكنك تعديل الارتفاع حسب الرغبة
+                child: _CourseImagePreview(),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _CourseMetaTags(),
+                    const SizedBox(height: 12),
+                    Text(
+                      'الاشتقاق - تفاضل وتكامل',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'تعلم أساسيات الاشتقاق وقواعده الأساسية بشكل مبسط.',
+                      style: theme.textTheme.bodySmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 16),
+                    const _ProgressBarSection(),
+                    const SizedBox(height: 16),
+                    const _ActionButtonsRow(),
+                  ],
                 ),
-                const _CourseImagePreview(),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -98,8 +96,8 @@ class _CourseMetaTags extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Icon(Icons.access_time, size: 12, color: theme.hintColor),
-        const SizedBox(width: 2),
+        Icon(Icons.access_time, size: 14, color: theme.hintColor),
+        const SizedBox(width: 4),
         Text('٤٥ د', style: Styles.style12(context)),
       ],
     );
@@ -116,18 +114,14 @@ class _ProgressBarSection extends StatelessWidget {
       children: [
         LinearProgressIndicator(
           value: 0.46,
-          backgroundColor: theme.colorScheme.surfaceVariant,
+
+          backgroundColor: Colors.grey[300],
           color: theme.colorScheme.primary,
           minHeight: 6,
           borderRadius: BorderRadius.circular(10),
         ),
-        const SizedBox(height: 4),
-        Text(
-          '١٤ درس مكتمل من أصل ٢٠ درساً',
-          style: theme.textTheme.labelSmall!.copyWith(
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
+        const SizedBox(height: 6),
+        Text('١٤ درس مكتمل من أصل ٢٠ درساً', style: theme.textTheme.labelSmall),
       ],
     );
   }
@@ -141,37 +135,49 @@ class _ActionButtonsRow extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-            foregroundColor: theme.colorScheme.onPrimary,
-            elevation: 0,
-            minimumSize: const Size(80, 36),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(7),
+        // زر استمرار - استخدمنا Expanded ليتساوى مع الزر الآخر
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              elevation: 0,
+              // أزلنا العرض الثابت هنا لأن Expanded سيتولى الأمر
+              minimumSize: const Size(0, 40),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'استمرار',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
           ),
-          child: const Text('استمرار', style: TextStyle(fontSize: 12)),
         ),
-        const SizedBox(width: 8),
-        OutlinedButton(
-          onPressed: () {},
-          style: OutlinedButton.styleFrom(
-            // استخدام لون الإطار من الثيم
-            side: BorderSide(color: theme.dividerColor),
-            minimumSize: const Size(80, 36),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(7),
+
+        const SizedBox(width: 12), // مسافة أكبر قليلاً لمظهر أنظف
+        // زر التفاصيل - باهت ومتساوي في الحجم
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () {},
+            style: OutlinedButton.styleFrom(
+              // حدود باهتة جداً
+              side: BorderSide(color: theme.dividerColor.withOpacity(0.5)),
+              minimumSize: const Size(0, 40),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          ),
-          child: Text(
-            'التفاصيل',
-            style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface),
+            child: Text(
+              'التفاصيل',
+              style: TextStyle(
+                // نص باهت باستخدام الشفافية
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                fontSize: 13,
+              ),
+            ),
           ),
         ),
       ],
@@ -183,18 +189,23 @@ class _CourseImagePreview extends StatelessWidget {
   const _CourseImagePreview();
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 3,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(Images.noImageFound, fit: BoxFit.cover),
-          Container(color: Colors.black26),
-          const Center(
-            child: Icon(Icons.play_circle_fill, color: Colors.white, size: 40),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          Images.onboarding1,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.image_not_supported),
           ),
-        ],
-      ),
+        ),
+        // طبقة تظليل خفيفة ليظهر زر التشغيل بوضوح
+        Container(color: Colors.black12),
+        const Center(
+          child: Icon(Icons.play_circle_fill, color: Colors.white, size: 45),
+        ),
+      ],
     );
   }
 }

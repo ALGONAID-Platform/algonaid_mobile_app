@@ -18,6 +18,7 @@ class BuildCourseDetails extends StatelessWidget {
     this.completedModules = 1,
     this.courseId = 1,
     this.courseTitle = 'الوحدات',
+    this.courseImage = '',
   });
 
   final List<String> tags;
@@ -27,6 +28,7 @@ class BuildCourseDetails extends StatelessWidget {
   final int completedModules;
   final int courseId;
   final String courseTitle;
+  final String courseImage;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -132,9 +134,13 @@ class BuildCourseDetails extends StatelessWidget {
               onPressed: () {
                 final context = navigatorKey.currentContext;
                 if (context != null) {
-                  GoRouter.of(
-                    context,
-                  ).push('/modulesList/$courseId', extra: courseTitle);
+                  GoRouter.of(context).push(
+                    '/modulesList/$courseId',
+                    extra: {
+                      "courseTitle": courseTitle,
+                      "courseImage": courseImage,
+                    },
+                  );
                 }
               },
               style: TextButton.styleFrom(
@@ -161,27 +167,32 @@ class BuildCourseDetails extends StatelessWidget {
                       if (context != null) {
                         final authService = context.read<GetCoursesProvider>();
                         await authService.enrollInCourse(courseId: courseId);
-                        if(authService.isSuccessEnroll){
+                        if (authService.isSuccessEnroll) {
                           AppDialog.showDynamicDialog(
-                            showCancelButton : false,
+                            showCancelButton: false,
                             confirmText: "استكشف الدورة",
                             isError: false,
                             title: "تم التسجيل",
                             message: "تم تسجيلك في الدورة بنجاح!",
                             onConfirm: () {
-                              GoRouter.of(
-                                context,
-                              ).push('/modulesList/$courseId', extra: courseTitle);
+                              GoRouter.of(context).push(
+                                '/modulesList/$courseId',
+                                extra: {
+                                  "courseTitle": courseTitle,
+                                  "courseImage": courseImage,
+                                },
+                              );
                             },
                           );
                         } else {
                           AppDialog.showDynamicDialog(
                             title: "خطأ",
-                            message: authService.errorMessage ?? "حدث خطأ أثناء التسجيل. حاول مرة أخرى.",
+                            message:
+                                authService.errorMessage ??
+                                "حدث خطأ أثناء التسجيل. حاول مرة أخرى.",
                             isError: true,
                           );
                         }
-                       
                       }
                     },
                   );

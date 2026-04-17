@@ -41,6 +41,7 @@ class CourseCard extends StatelessWidget {
                 isEnrolled: course.isEnrolled,
                 courseId: course.id,
                 courseTitle: course.title,
+                courseImage : course.thumbnail,
               ),
             ),
           ],
