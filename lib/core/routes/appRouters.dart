@@ -38,10 +38,13 @@ abstract class AppRouters {
         path: '${Routes.modulesList}/:courseId',
         builder: (context, state) {
           final courseId = int.parse(state.pathParameters['courseId']!);
-          final courseTitle = state.extra as String?;
+
+          final data = state.extra as Map<String, dynamic>?;
+        
           return ModulesListPage(
             courseId: courseId,
-            courseTitle: courseTitle ?? 'الوحدات',
+            courseTitle: data?['courseTitle'] ?? 'الوحدات',
+            courseImage: data?['courseImage'] ?? '',
           );
         },
       ),
@@ -49,10 +52,11 @@ abstract class AppRouters {
         path: '${Routes.lessonsList}/:moduleId',
         builder: (context, state) {
           final moduleId = int.parse(state.pathParameters['moduleId']!);
-          final moduleTitle = state.extra as String?;
+          final data = state.extra as Map<String, dynamic>?;
+
           return LessonsListPage(
             moduleId: moduleId,
-            moduleTitle: moduleTitle ?? 'الدروس',
+            moduleTitle: data?['moduleTitle'] ?? 'الدروس',
           );
         },
       ),
