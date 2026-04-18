@@ -1,12 +1,12 @@
-enum UserRole {ADMIN , STUDENT} 
+enum UserRole {admin , student} 
 
 extension UserRoleExtension on UserRole {
   String get code {
     switch(this){
-      case UserRole.ADMIN :{
+      case UserRole.admin :{
         return "ADMIN"; 
       }
-      case UserRole.STUDENT :{
+      case UserRole.student :{
         return "STUDENT";
       }
     }

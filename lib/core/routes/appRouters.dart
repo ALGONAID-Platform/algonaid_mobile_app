@@ -4,6 +4,8 @@ import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/circular_reveal.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
+import 'package:algonaid_mobail_app/features/onboard/presentaion/pages/onboarding_screen.dart'; // New Import
+import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_list_page.dart'; // New Import (Placeholder for now)
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
@@ -20,8 +22,12 @@ abstract class AppRouters {
         builder: (context, state) => AuthGate(),
       ),
       GoRoute(
+        path: Routes.onboarding, // New route
+        builder: (context, state) =>  OnboardingScreen(),
+      ),
+      GoRoute(
         path: Routes.homePage,
-        builder: (context, state) => const ModulesListPage(courseId: 3, courseTitle: 'الوحدات'),
+        builder: (context, state) => const CoursesListPage(), // Changed to CoursesListPage
       ),
       GoRoute(
         path: Routes.auth,

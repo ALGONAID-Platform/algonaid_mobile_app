@@ -7,7 +7,6 @@ import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/init_hive.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -20,6 +19,7 @@ void main() async {
   await Hive.initFlutter();
 
   // Custom initialization logic for Hive (e.g., registering adapters)
+  await initHive();
 
   // Initialize the TokenStorage box to manage user authentication tokens
   await TokenStorage.init();
@@ -28,7 +28,7 @@ void main() async {
   await CacheHelper.init();
 
   // Initialize the Hive service instance for database operations
-  await HiveService.init();
+  HiveService();
 
   // Set up the Service Locator (GetIt) to handle Dependency Injection across the app
   setupServiceLocator();
@@ -42,20 +42,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Change notification Status Bar Color to green
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: AppColors.primaryLight,
         statusBarIconBrightness: Brightness.light,
       ),
     );
-
     return MaterialApp.router(
-      title: 'Algonaid Lessons',
+      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeApp.lightTheme,
       darkTheme: ThemeApp.darkTheme,
       themeMode: ThemeMode.system,
       routerConfig: AppRouters.routers,
+
+      // home: OnboardingScreen(),
     );
   }
 }

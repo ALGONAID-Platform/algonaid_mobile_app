@@ -4,7 +4,6 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_card.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lessons_error_state.dart';
 import 'package:flutter/material.dart';

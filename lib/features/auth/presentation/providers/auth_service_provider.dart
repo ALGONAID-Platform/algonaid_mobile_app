@@ -21,7 +21,7 @@ class AuthServiceProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   bool _isLogin = true; // الحالة الافتراضية
-  UserRole? _selectedRole = UserRole.STUDENT;
+  UserRole? _selectedRole = UserRole.student;
   bool _isPasswordVisible = false;
   double? _showPasswordStrength;
 
@@ -113,11 +113,6 @@ class AuthServiceProvider extends ChangeNotifier {
   void _prepareForRequest() {
     _errorMessage = null;
     _isLoading = true;
-    notifyListeners();
-  }
-
-  void _setLoading(bool value) {
-    _isLoading = value;
     notifyListeners();
   }
 

@@ -1,11 +1,11 @@
-const PORT = '3000';
-const IP = '127.0.0.1';
+const port = '3000';
+const ip = '127.0.0.1';
 
 class EndPoint {
   //base url for app API
-  static const String baseUrl = 'http://$IP:$PORT/api/v1';
+  static const String baseUrl = 'http://$ip:$port/api/v1';
   // base url for uploaded files
-  static const String uploadsBaseUrl = 'http://$IP:$PORT/uploads/';
+  static const String uploadsBaseUrl = 'http://$ip:$port/uploads/';
   // API endpoints
   static const String signin = '$baseUrl/auth/signin';
   static const String signup = '$baseUrl/auth/signup';

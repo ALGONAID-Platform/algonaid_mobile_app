@@ -1,6 +1,5 @@
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_pdf_viewer_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_info_card.dart';

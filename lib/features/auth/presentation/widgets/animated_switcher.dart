@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 
 class AnimatedSwitcherCostum extends StatelessWidget {
-    AuthServiceProvider auth;
-    Widget child ;
+    final AuthServiceProvider auth;
+    final Widget child ;
   AnimatedSwitcherCostum({
     Key? key,
     required this.auth,

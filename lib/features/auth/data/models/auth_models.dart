@@ -41,7 +41,7 @@ class UserModel {
       // تحويل النص القادم من السيرفر (ADMIN) إلى Enum
       role: UserRole.values.firstWhere(
         (e) => e.name.toUpperCase() == (json['role'] ?? "").toString().toUpperCase(),
-        orElse: () => UserRole.STUDENT, 
+        orElse: () => UserRole.student, 
       ),
     );
   }

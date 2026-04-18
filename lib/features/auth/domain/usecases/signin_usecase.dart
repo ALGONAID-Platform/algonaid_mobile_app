@@ -11,7 +11,7 @@ class SigninUsecase extends UseCase<UserEntity , SigninParams> {
 
   @override
   Future<Either<Failure, UserEntity>> call(SigninParams params) {
-    return this.authRepo.signin(
+    return authRepo.signin(
       email: params.email,
       password: params.password,
     );

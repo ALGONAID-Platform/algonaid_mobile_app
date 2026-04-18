@@ -16,17 +16,24 @@ import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycoure
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
 import 'package:algonaid_mobail_app/features/modules/data/repositories/module_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules_by_course.dart';
 
 import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_local_data_source.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/repositories/lesson_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
 
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
+
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_datasources.dart';
+import 'package:algonaid_mobail_app/features/exams/data/repositories/exam_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -56,9 +63,26 @@ void setupServiceLocator() {
     () => ModuleRemoteDataSourceImpl(apiService: getIt()),
   );
 
+  getIt.registerLazySingleton<ModuleLocalDataSource>(
+    () => ModuleLocalDataSourceImpl(),
+  );
+
   getIt.registerLazySingleton<LessonRemoteDataSource>(
     () => LessonRemoteDataSourceImpl(getIt()),
   );
+
+  getIt.registerLazySingleton<LessonLocalDataSource>(
+    () => LessonLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<ExamLocalDataSource>(
+    () => ExamLocalDataSourceImpl(),
+  );
+  
+  getIt.registerLazySingleton<ExamRemoteDataSource>(
+    () => ExamRemoteDataSourceImpl(getIt()),
+  );
+
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepo>(
@@ -70,11 +94,24 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<ModuleRepository>(
-    () => ModuleRepositoryImpl(remoteDataSource: getIt()),
+    () => ModuleRepositoryImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+    ),
   );
 
   getIt.registerLazySingleton<LessonRepository>(
-    () => LessonRepositoryImpl(remoteDataSource: getIt<LessonRemoteDataSource>()),
+    () => LessonRepositoryImpl(
+      remoteDataSource: getIt<LessonRemoteDataSource>(),
+      localDataSource: getIt<LessonLocalDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<ExamRepository>(
+    () => ExamRepositoryImpl(
+      localDataSource: getIt<ExamLocalDataSource>(),
+      remoteDataSource: getIt<ExamRemoteDataSource>(),
+    ),
   );
 
   // ================= USE CASES =================
@@ -104,6 +141,30 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<GetLessonDetail>(
     () => GetLessonDetail(getIt<LessonRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetExamUseCase>(
+    () => GetExamUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<StartExamUseCase>(
+    () => StartExamUseCase(getIt<ExamRepository>()),
+  );
+  
+  getIt.registerLazySingleton<SubmitExamUseCase>(
+    () => SubmitExamUseCase(getIt<ExamRepository>()),
+  );
+  
+  getIt.registerLazySingleton<SaveExamProgressUseCase>(
+    () => SaveExamProgressUseCase(getIt<ExamRepository>()),
+  );
+  
+  getIt.registerLazySingleton<GetExamProgressUseCase>(
+    () => GetExamProgressUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetExamResultUseCase>(
+    () => GetExamResultUseCase(getIt<ExamRepository>()),
   );
 
   // ================= PROVIDERS =================

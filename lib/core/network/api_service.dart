@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:algonaid_mobail_app/core/network/execute_request.dart';
 import 'package:algonaid_mobail_app/core/network/initial_dio.dart';
 import 'package:dio/dio.dart';
@@ -7,7 +8,7 @@ class ApiService {
 
 
   ApiService(this._dio) {
-    initializeDio(this._dio);
+    initializeDio(_dio);
   }
 
   Future<dynamic> get({
@@ -44,7 +45,7 @@ class ApiService {
         path,
         onReceiveProgress: (received, total) {
           if (total != -1) {
-             print("📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%");
+             debugPrint("📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%");
           }
         },
       );

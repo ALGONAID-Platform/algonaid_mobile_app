@@ -65,8 +65,8 @@ class LessonCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    lesson.description?.isNotEmpty == true
-                        ? lesson.description!
+                    lesson.description.isNotEmpty
+                        ? lesson.description
                         : 'اضغط لعرض تفاصيل الدرس',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

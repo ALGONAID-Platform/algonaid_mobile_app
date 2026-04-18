@@ -111,7 +111,7 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
         onProfilePressed: () {},
         onNotificationPressed: () {},
         onSearchPressed: () {
-          print(TokenStorage.getToken());
+          debugPrint(TokenStorage.getToken());
         },
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

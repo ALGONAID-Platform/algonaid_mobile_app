@@ -12,7 +12,7 @@ class SignupUsecase extends UseCase<UserEntity , SignupParams> {
 
   @override
   Future<Either<Failure, UserEntity>> call(SignupParams params) {
-    return this.authRepo.signup(
+    return authRepo.signup(
       email: params.email,
       username: params.username,
       password: params.password,
