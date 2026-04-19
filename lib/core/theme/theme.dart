@@ -166,7 +166,7 @@ class ThemeApp {
     colorScheme: const ColorScheme.dark(
       primary: AppColors.primary,
       secondary: AppColors.indigo,
-      surface: AppColors.surfaceDark,
+      surface: AppColors.cardDark,
       background: AppColors.bgDark,
       error: AppColors.red,
       onPrimary: AppColors.white,

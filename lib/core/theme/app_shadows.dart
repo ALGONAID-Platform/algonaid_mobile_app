@@ -4,6 +4,15 @@ import 'package:flutter/material.dart';
 class AppShadows {
   
   
+  static List<BoxShadow> get cardShadow => [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.05), // شفافية خفيفة جداً
+      blurRadius: 10,                        // تشتت واسع ليعطي نعومة
+      spreadRadius: 0,                       // عدم انتشار الحواف
+      offset: const Offset(0, 2),            // إزاحة بسيطة للأسفل فقط
+    ),
+  ];
+  
   static final BoxShadow soft = BoxShadow(
     color: AppColors.shadow.withOpacity(0.1),
     offset: const Offset(0, 4),
