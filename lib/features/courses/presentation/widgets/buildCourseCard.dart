@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseDetails.dart';
@@ -16,15 +17,7 @@ class CourseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: theme.brightness == Brightness.dark
-                ? Colors.black.withOpacity(0.2)
-                : Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow:AppShadows.cardShadow
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
@@ -41,7 +34,7 @@ class CourseCard extends StatelessWidget {
                 isEnrolled: course.isEnrolled,
                 courseId: course.id,
                 courseTitle: course.title,
-                courseImage : course.thumbnail,
+                courseImage: course.thumbnail,
               ),
             ),
           ],

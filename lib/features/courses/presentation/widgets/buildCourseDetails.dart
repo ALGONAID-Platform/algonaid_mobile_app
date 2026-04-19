@@ -34,7 +34,7 @@ class BuildCourseDetails extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(16.0),
       // استخدمنا LayoutBuilder كخيار إضافي إذا أردت مستقبلاً التحكم في المحتوى بناءً على المساحة
       child: Column(

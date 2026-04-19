@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 
 class FancyFloatingNavBar extends StatefulWidget {
@@ -72,17 +73,10 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
         height: 50,
         margin: const EdgeInsets.symmetric(horizontal: 32),
         decoration: BoxDecoration(
-          color: isDark
-              ? Colors.grey[900]!.withOpacity(0.96)
-              : Colors.white.withOpacity(0.96),
+          color: Theme.of(context).colorScheme.onSurface,
+
           borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 5,
-              offset: const Offset(0, 0),
-            ),
-          ],
+          boxShadow: AppShadows.cardShadow,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

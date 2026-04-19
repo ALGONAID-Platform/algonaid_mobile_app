@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 
@@ -17,13 +18,7 @@ class WelcomeNewUserCard extends StatelessWidget {
             topLeft: Radius.circular(30),
             bottomRight: Radius.circular(30),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.indigo.withOpacity(0.3),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          boxShadow:AppShadows.cardShadow
         ),
         child: Stack(
           children: [

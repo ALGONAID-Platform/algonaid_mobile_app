@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
 import 'package:flutter/material.dart';
@@ -28,19 +29,13 @@ class ModuleCard extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               // استخدام ألوان السطح المعرفة في ملفك
-              color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
                 // استخدام ألوان الحدود والتقسيم المعرفة لديك
-                color: isDark ? AppColors.indigoDark : AppColors.grey200,
+                color: theme.colorScheme.background,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark ? Colors.black26 : AppColors.shadow,
-                  blurRadius: 2,
-                  offset: const Offset(1, 1),
-                ),
-              ],
+              boxShadow: AppShadows.cardShadow,
             ),
             child: Row(
               children: [

@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
 
@@ -16,13 +17,7 @@ class ContinueLearningCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow:AppShadows.cardShadow
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
@@ -121,7 +116,10 @@ class _ProgressBarSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         const SizedBox(height: 6),
-        Text('١٤ درس مكتمل من أصل ٢٠ درساً', style: theme.textTheme.labelSmall),
+        Text(
+          '١٤ درس مكتمل من أصل ٢٠ درساً',
+          style: theme.textTheme.labelSmall?.copyWith(color: theme.hintColor),
+        ),
       ],
     );
   }

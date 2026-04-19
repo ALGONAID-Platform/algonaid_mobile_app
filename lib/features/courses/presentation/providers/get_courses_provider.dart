@@ -69,9 +69,6 @@ class GetCoursesProvider extends ChangeNotifier {
       },
     );
   }
-// داخل GetCoursesProvider
-
-// داخل GetCoursesProvider
 
 Future<void> enrollInCourse({int? courseId}) async {
   if (courseId == null) return;

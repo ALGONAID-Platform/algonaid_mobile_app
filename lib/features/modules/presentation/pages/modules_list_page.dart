@@ -59,7 +59,9 @@ class _ModulesListView extends StatelessWidget {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          backgroundColor: const Color(0xFFF5F7F9), // لون خلفية هادئ
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.background, // لون خلفية هادئ
 
           body: Consumer<ModulesListProvider>(
             builder: (context, provider, _) {
