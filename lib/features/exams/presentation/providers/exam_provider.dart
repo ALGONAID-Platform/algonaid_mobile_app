@@ -9,8 +9,10 @@ enum ExamState { initial, loading, loaded, error }
 /// Provider for managing exam state
 class ExamProvider extends ChangeNotifier {
   final GetExamUseCase _getExamUseCase = getIt<GetExamUseCase>();
-  final SaveExamProgressUseCase _saveProgressUseCase = getIt<SaveExamProgressUseCase>();
-  final GetExamProgressUseCase _getProgressUseCase = getIt<GetExamProgressUseCase>();
+  final SaveExamProgressUseCase _saveProgressUseCase =
+      getIt<SaveExamProgressUseCase>();
+  final GetExamProgressUseCase _getProgressUseCase =
+      getIt<GetExamProgressUseCase>();
   final SubmitExamUseCase _submitExamUseCase = getIt<SubmitExamUseCase>();
 
   // State variables
@@ -56,13 +58,13 @@ class ExamProvider extends ChangeNotifier {
       },
       (exam) async {
         _exam = exam;
-        
+
         // Try to load saved progress
         final savedProgress = await _getProgressUseCase.call(examId);
         if (savedProgress != null) {
           _answers.addAll(savedProgress);
         }
-        
+
         _state = ExamState.loaded;
         _error = null;
       },
@@ -74,12 +76,12 @@ class ExamProvider extends ChangeNotifier {
   Future<void> selectAnswer(String optionId) async {
     if (currentQuestion != null) {
       _answers[currentQuestion!.id] = optionId;
-      
+
       // Auto-save progress
       if (_exam != null) {
         await _saveProgressUseCase.call(_exam!.id, _answers);
       }
-      
+
       notifyListeners();
     }
   }

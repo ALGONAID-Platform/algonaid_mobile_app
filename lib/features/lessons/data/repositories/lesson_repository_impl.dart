@@ -16,13 +16,20 @@ class LessonRepositoryImpl implements LessonRepository {
   final LessonRemoteDataSource remoteDataSource;
   final LessonLocalDataSource localDataSource;
 
-  LessonRepositoryImpl({required this.remoteDataSource, required this.localDataSource});
+  LessonRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
 
   @override
   Future<Either<Failure, List<Lesson>>> getModuleLessons(int moduleId) async {
     try {
-      final remoteModels = await remoteDataSource.fetchLessonsByModule(moduleId);
-      await localDataSource.saveLessons(remoteModels.map((e) => e as LessonModel).toList());
+      final remoteModels = await remoteDataSource.fetchLessonsByModule(
+        moduleId,
+      );
+      await localDataSource.saveLessons(
+        remoteModels.map((e) => e as LessonModel).toList(),
+      );
       return Right(remoteModels);
     } catch (e) {
       if (e is DioException || e is ServerException) {
@@ -38,15 +45,18 @@ class LessonRepositoryImpl implements LessonRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(
+        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+      );
     }
   }
 
   @override
   Future<Either<Failure, LessonDetail>> getLessonDetail(int lessonId) async {
     try {
-      final LessonDetailModel model =
-          await remoteDataSource.fetchLessonDetail(lessonId);
+      final LessonDetailModel model = await remoteDataSource.fetchLessonDetail(
+        lessonId,
+      );
 
       final entity = model.toEntity();
 

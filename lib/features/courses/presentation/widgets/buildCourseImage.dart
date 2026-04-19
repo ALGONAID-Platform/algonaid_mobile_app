@@ -58,9 +58,8 @@ class BuildCourseImage extends StatelessWidget {
         Positioned(
           bottom: 16,
           right: 16,
-          
+
           child: Text(
-           
             course.title,
             // نستخدم ستايل العناوين من الثيم مباشرة
             style: theme.textTheme.titleMedium?.copyWith(

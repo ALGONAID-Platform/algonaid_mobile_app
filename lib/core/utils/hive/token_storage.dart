@@ -2,7 +2,6 @@ import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class TokenStorage {
- 
   static Future<void> init() async {
     await Hive.openBox(AppConstants.boxAuthTokenName);
   }

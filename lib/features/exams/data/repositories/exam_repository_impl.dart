@@ -36,7 +36,9 @@ class ExamRepositoryImpl implements ExamRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(
+        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+      );
     }
   }
 
@@ -52,14 +54,22 @@ class ExamRepositoryImpl implements ExamRepository {
   }
 
   @override
-  Future<void> saveExamProgress(String examId, Map<String, String> answers) async {
+  Future<void> saveExamProgress(
+    String examId,
+    Map<String, String> answers,
+  ) async {
     await localDataSource.saveExamProgress(examId, answers);
   }
 
   @override
-  Future<Either<Failure, ExamResult>> submitExam(String attemptId, Map<String, String> answers) async {
+  Future<Either<Failure, ExamResult>> submitExam(
+    String attemptId,
+    Map<String, String> answers,
+  ) async {
     try {
-      final remoteResult = await remoteDataSource.submitExam(attemptId, answers) as ExamResultModel;
+      final remoteResult =
+          await remoteDataSource.submitExam(attemptId, answers)
+              as ExamResultModel;
       await localDataSource.saveExamResult(remoteResult);
       return Right(remoteResult);
     } catch (e) {
@@ -68,7 +78,9 @@ class ExamRepositoryImpl implements ExamRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(
+        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+      );
     }
   }
 
@@ -76,7 +88,8 @@ class ExamRepositoryImpl implements ExamRepository {
   Future<Either<Failure, ExamResult>> getExamResult(String attemptId) async {
     try {
       // First try to fetch from remote to get the latest result
-      final remoteResult = await remoteDataSource.getResult(attemptId) as ExamResultModel;
+      final remoteResult =
+          await remoteDataSource.getResult(attemptId) as ExamResultModel;
       await localDataSource.saveExamResult(remoteResult);
       return Right(remoteResult);
     } catch (e) {
@@ -91,7 +104,9 @@ class ExamRepositoryImpl implements ExamRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(
+        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+      );
     }
   }
 }

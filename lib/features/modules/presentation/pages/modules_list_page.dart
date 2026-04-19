@@ -31,10 +31,7 @@ class ModulesListPage extends StatelessWidget {
         provider.loadModules(courseId);
         return provider;
       },
-      child: _ModulesListView(
-        courseId: courseId,
-        courseTitle: courseTitle,
-      ),
+      child: _ModulesListView(courseId: courseId, courseTitle: courseTitle),
     );
   }
 }
@@ -43,10 +40,7 @@ class _ModulesListView extends StatefulWidget {
   final int courseId;
   final String courseTitle;
 
-  const _ModulesListView({
-    required this.courseId,
-    required this.courseTitle,
-  });
+  const _ModulesListView({required this.courseId, required this.courseTitle});
 
   @override
   State<_ModulesListView> createState() => _ModulesListViewState();
@@ -140,10 +134,7 @@ class _AnimatedModuleItem extends StatelessWidget {
   final int index;
   final Widget child;
 
-  const _AnimatedModuleItem({
-    required this.index,
-    required this.child,
-  });
+  const _AnimatedModuleItem({required this.index, required this.child});
 
   @override
   Widget build(BuildContext context) {

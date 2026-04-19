@@ -5,11 +5,7 @@ class LessonTabs extends StatelessWidget {
   final String? description;
   final String? content;
 
-  const LessonTabs({
-    super.key,
-    this.description,
-    this.content,
-  });
+  const LessonTabs({super.key, this.description, this.content});
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +44,11 @@ class LessonTabs extends StatelessWidget {
                       description?.isNotEmpty == true
                           ? description!
                           : (content?.isNotEmpty == true
-                              ? content!
-                              : 'لا يوجد وصف متوفر لهذا الدرس حالياً.'),
+                                ? content!
+                                : 'لا يوجد وصف متوفر لهذا الدرس حالياً.'),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondaryLight,
-                          ),
+                        color: AppColors.textSecondaryLight,
+                      ),
                     ),
                   ),
                   Padding(
@@ -60,8 +56,8 @@ class LessonTabs extends StatelessWidget {
                     child: Text(
                       'سيتم إضافة قسم التعليقات قريبًا.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondaryLight,
-                          ),
+                        color: AppColors.textSecondaryLight,
+                      ),
                     ),
                   ),
                 ],

@@ -10,10 +10,11 @@ class EndPoint {
   static const String signin = '$baseUrl/auth/signin';
   static const String signup = '$baseUrl/auth/signup';
   static const String courses = '$baseUrl/courses';
-  static const String myCourses = '$baseUrl/courses/my-courses';
+  static const String myCourses = '$baseUrl/courses';
 
   static String lessonsByModule(int moduleId) =>
       '$baseUrl/lessons/module/$moduleId';
   static String lessonDetails(int lessonId) => '$baseUrl/lessons/$lessonId';
-  static String modulesByCourse(int courseId) => '$baseUrl/modules/course/$courseId';
+  static String modulesByCourse(int courseId) =>
+      '$baseUrl/modules/course/$courseId';
 }

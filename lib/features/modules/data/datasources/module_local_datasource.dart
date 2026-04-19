@@ -11,9 +11,7 @@ class ModuleLocalDataSourceImpl implements ModuleLocalDataSource {
   @override
   List<ModuleModel> getModules(int courseId) {
     final box = Hive.box<ModuleModel>(AppConstants.boxModules);
-    return box.values
-        .where((module) => module.courseId == courseId)
-        .toList();
+    return box.values.where((module) => module.courseId == courseId).toList();
   }
 
   @override

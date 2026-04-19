@@ -25,7 +25,9 @@ class ShimmerLoading extends StatelessWidget {
     required this.width,
     required this.height,
     required BorderRadius borderRadius,
-  }) : shapeBorder =  const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)));
+  }) : shapeBorder = const RoundedRectangleBorder(
+         borderRadius: BorderRadius.all(Radius.circular(12)),
+       );
 
   @override
   Widget build(BuildContext context) {

@@ -13,13 +13,18 @@ class ModuleRepositoryImpl implements ModuleRepository {
   final ModuleRemoteDataSource remoteDataSource;
   final ModuleLocalDataSource localDataSource;
 
-  ModuleRepositoryImpl({required this.remoteDataSource, required this.localDataSource});
+  ModuleRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
 
   @override
   Future<Either<Failure, List<Module>>> getModulesByCourse(int courseId) async {
     try {
       final remoteModules = await remoteDataSource.getModulesByCourse(courseId);
-      await localDataSource.saveModules(remoteModules.map((e) => e as ModuleModel).toList());
+      await localDataSource.saveModules(
+        remoteModules.map((e) => e as ModuleModel).toList(),
+      );
       return Right(remoteModules);
     } catch (e) {
       if (e is DioException || e is ServerException) {
@@ -34,7 +39,9 @@ class ModuleRepositoryImpl implements ModuleRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(
+        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+      );
     }
   }
 }

@@ -1,5 +1,3 @@
-
-
 import 'package:algonaid_mobail_app/core/theme/animation.dart';
 import 'package:algonaid_mobail_app/features/onboard/data/models/onboarding_data.dart';
 import 'package:algonaid_mobail_app/features/onboard/domain/entity/onboarding_entity.dart';

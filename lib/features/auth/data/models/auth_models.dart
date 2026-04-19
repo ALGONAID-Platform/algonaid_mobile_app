@@ -13,9 +13,9 @@ class AuthResponse {
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      message: json['message'] ?? "", 
+      message: json['message'] ?? "",
       user: UserModel.fromJson(json['user']),
-      accessToken: json['access_token'] ?? "", 
+      accessToken: json['access_token'] ?? "",
     );
   }
 }
@@ -40,11 +40,11 @@ class UserModel {
       email: json['email'] ?? "",
       // تحويل النص القادم من السيرفر (ADMIN) إلى Enum
       role: UserRole.values.firstWhere(
-        (e) => e.name.toUpperCase() == (json['role'] ?? "").toString().toUpperCase(),
-        orElse: () => UserRole.student, 
+        (e) =>
+            e.name.toUpperCase() ==
+            (json['role'] ?? "").toString().toUpperCase(),
+        orElse: () => UserRole.student,
       ),
     );
   }
-
-
 }

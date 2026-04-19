@@ -5,10 +5,11 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/circular_reveal.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
 import 'package:algonaid_mobail_app/features/onboard/presentaion/pages/onboarding_screen.dart'; // New Import
-import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_list_page.dart'; // New Import (Placeholder for now)
+import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_page.dart'; // New Import
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart'; // New Import for ExamPage
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
@@ -17,17 +18,19 @@ abstract class AppRouters {
   static final routers = GoRouter(
     navigatorKey: navigatorKey,
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => AuthGate(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => AuthGate()),
       GoRoute(
         path: Routes.onboarding, // New route
-        builder: (context, state) =>  OnboardingScreen(),
+        builder: (context, state) => OnboardingScreen(),
       ),
       GoRoute(
         path: Routes.homePage,
-        builder: (context, state) => const CoursesListPage(), // Changed to CoursesListPage
+        builder: (context, state) =>
+            const CoursesPage(), // Changed to CoursesPage
+      ),
+      GoRoute(
+        path: Routes.coursesPage,
+        builder: (context, state) => const CoursesPage(),
       ),
       GoRoute(
         path: Routes.auth,
@@ -46,7 +49,10 @@ abstract class AppRouters {
         builder: (context, state) {
           final courseId = int.parse(state.pathParameters['courseId']!);
           final courseTitle = state.extra as String?;
-          return ModulesListPage(courseId: courseId, courseTitle: courseTitle ?? 'الوحدات');
+          return ModulesListPage(
+            courseId: courseId,
+            courseTitle: courseTitle ?? 'الوحدات',
+          );
         },
       ),
       GoRoute(
@@ -54,7 +60,10 @@ abstract class AppRouters {
         builder: (context, state) {
           final moduleId = int.parse(state.pathParameters['moduleId']!);
           final moduleTitle = state.extra as String?;
-          return LessonsListPage(moduleId: moduleId, moduleTitle: moduleTitle ?? 'الدروس');
+          return LessonsListPage(
+            moduleId: moduleId,
+            moduleTitle: moduleTitle ?? 'الدروس',
+          );
         },
       ),
       GoRoute(
@@ -62,6 +71,13 @@ abstract class AppRouters {
         builder: (context, state) {
           final lessonId = int.parse(state.pathParameters['lessonId']!);
           return LessonDetailPage(lessonId: lessonId);
+        },
+      ),
+      GoRoute(
+        path: '${Routes.examPage}/:examId', // Changed from :lessonId to :examId
+        builder: (context, state) {
+          final examId = state.pathParameters['examId']!; // Get examId as String
+          return ExamPage(examId: examId); // Pass examId
         },
       ),
     ],

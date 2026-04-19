@@ -6,37 +6,36 @@ part 'course_model.g.dart'; // 🌟 ضروري لتوليد ملف الـ Adapte
 
 @HiveType(typeId: 1)
 class CourseModel extends CourseEntity {
-  
   @HiveField(0)
   final int id;
-  
+
   @HiveField(1)
   final String title;
-  
+
   @HiveField(2)
   final String description;
-  
+
   @HiveField(3)
   final String thumbnail;
-  
+
   @HiveField(4)
   final DateTime createdAt;
-  
+
   @HiveField(5)
   final DateTime updatedAt;
-  
+
   @HiveField(6)
   final int instructorId;
-  
+
   @HiveField(7)
   final TeacherModel teacher; // تأكد أن TeacherModel أيضاً مسجل في Hive
-  
+
   @HiveField(8)
   final List<String> moduleTitles;
-  
+
   @HiveField(9)
   final int modulesCount;
-  
+
   @HiveField(10)
   final bool isEnrolled;
 
@@ -53,18 +52,18 @@ class CourseModel extends CourseEntity {
     required this.modulesCount,
     required this.isEnrolled,
   }) : super(
-          id: id,
-          title: title,
-          description: description,
-          thumbnail: thumbnail,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          instructorId: instructorId,
-          teacher: teacher,
-          moduleTitles: moduleTitles,
-          modulesCount: modulesCount,
-          isEnrolled: isEnrolled,
-        );
+         id: id,
+         title: title,
+         description: description,
+         thumbnail: thumbnail,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+         instructorId: instructorId,
+         teacher: teacher,
+         moduleTitles: moduleTitles,
+         modulesCount: modulesCount,
+         isEnrolled: isEnrolled,
+       );
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
     return CourseModel(
@@ -92,7 +91,9 @@ class CourseModel extends CourseEntity {
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       instructorId: entity.instructorId,
-      teacher: TeacherModel.fromEntity(entity.teacher), // تأكد من وجودها في TeacherModel
+      teacher: TeacherModel.fromEntity(
+        entity.teacher,
+      ), // تأكد من وجودها في TeacherModel
       moduleTitles: entity.moduleTitles,
       modulesCount: entity.modulesCount,
       isEnrolled: entity.isEnrolled,
@@ -115,5 +116,6 @@ class CourseModel extends CourseEntity {
     };
   }
 
-  CourseEntity toEntity() => this; // بما أنه يرث منها، يمكنك إرجاع الكائن نفسه أو استخدامه مباشرة
+  CourseEntity toEntity() =>
+      this; // بما أنه يرث منها، يمكنك إرجاع الكائن نفسه أو استخدامه مباشرة
 }

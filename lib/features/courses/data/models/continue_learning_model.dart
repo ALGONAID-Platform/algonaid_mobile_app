@@ -1,5 +1,3 @@
-
-
 class ContinueLearningModel {
   const ContinueLearningModel({
     required this.title,
@@ -36,14 +34,22 @@ class ContinueLearningModel {
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       progress: progress.clamp(0.0, 1.0),
-      imageUrl: json['image_url'] as String? ?? json['imageUrl'] as String? ?? '',
-      subjectTag: json['subject_tag'] as String? ?? json['subjectTag'] as String? ?? '',
+      imageUrl:
+          json['image_url'] as String? ?? json['imageUrl'] as String? ?? '',
+      subjectTag:
+          json['subject_tag'] as String? ?? json['subjectTag'] as String? ?? '',
       timeRemaining:
-          json['time_remaining'] as String? ?? json['timeRemaining'] as String? ?? '',
+          json['time_remaining'] as String? ??
+          json['timeRemaining'] as String? ??
+          '',
       lessonPosition:
-          json['lesson_position'] as String? ?? json['lessonPosition'] as String? ?? '',
+          json['lesson_position'] as String? ??
+          json['lessonPosition'] as String? ??
+          '',
       progressCaption:
-          json['progress_caption'] as String? ?? json['progressCaption'] as String? ?? '',
+          json['progress_caption'] as String? ??
+          json['progressCaption'] as String? ??
+          '',
     );
   }
 

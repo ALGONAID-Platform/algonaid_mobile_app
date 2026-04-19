@@ -5,25 +5,18 @@ import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.da
 import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 
-class SigninUsecase extends UseCase<UserEntity , SigninParams> {
+class SigninUsecase extends UseCase<UserEntity, SigninParams> {
   AuthRepo authRepo;
-  SigninUsecase( {required this.authRepo});
+  SigninUsecase({required this.authRepo});
 
   @override
   Future<Either<Failure, UserEntity>> call(SigninParams params) {
-    return authRepo.signin(
-      email: params.email,
-      password: params.password,
-    );
+    return authRepo.signin(email: params.email, password: params.password);
   }
 }
 
 class SigninParams {
- 
   String email;
   String password;
-  SigninParams({
-    required this.email,
-    required this.password,
-  });
+  SigninParams({required this.email, required this.password});
 }

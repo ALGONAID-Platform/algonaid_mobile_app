@@ -11,9 +11,7 @@ class LessonLocalDataSourceImpl implements LessonLocalDataSource {
   @override
   List<LessonModel> getLessons(int moduleId) {
     final box = Hive.box<LessonModel>(AppConstants.boxLessons);
-    return box.values
-        .where((lesson) => lesson.moduleId == moduleId)
-        .toList();
+    return box.values.where((lesson) => lesson.moduleId == moduleId).toList();
   }
 
   @override

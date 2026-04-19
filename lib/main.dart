@@ -35,6 +35,8 @@ void main() async {
 
   // Launch the root widget of the application wrapped with global providers
   runApp(AppProviders(child: const MyApp()));
+
+  await Hive.deleteBoxFromDisk('boxModules');
 }
 
 class MyApp extends StatelessWidget {

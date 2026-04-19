@@ -64,10 +64,7 @@ class _LessonDetailView extends StatelessWidget {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Text(
-                    state.errorMessage!,
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text(state.errorMessage!, textAlign: TextAlign.center),
                 ),
               );
             }
@@ -108,7 +105,7 @@ class _LessonDetailView extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  const LessonQuizCard(),
+                  LessonQuizCard(examId: lesson.exam), // Pass lesson.exam
                 ],
               ),
             );

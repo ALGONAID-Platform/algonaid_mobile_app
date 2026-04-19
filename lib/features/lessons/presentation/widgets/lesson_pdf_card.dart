@@ -5,11 +5,7 @@ class LessonPdfCard extends StatelessWidget {
   final String? pdfUrl;
   final VoidCallback onOpen;
 
-  const LessonPdfCard({
-    super.key,
-    required this.pdfUrl,
-    required this.onOpen,
-  });
+  const LessonPdfCard({super.key, required this.pdfUrl, required this.onOpen});
 
   @override
   Widget build(BuildContext context) {
@@ -50,16 +46,16 @@ class LessonPdfCard extends StatelessWidget {
                   Text(
                     'ملخص الدرس',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.indigo,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.indigo,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     hasPdf ? 'عرض ملف PDF' : 'لا يوجد ملف مرفق',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondaryLight,
-                        ),
+                      color: AppColors.textSecondaryLight,
+                    ),
                   ),
                 ],
               ),

@@ -2,8 +2,6 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class AppShadows {
-  
-  
   static final BoxShadow soft = BoxShadow(
     color: AppColors.shadow.withOpacity(0.1),
     offset: const Offset(0, 4),
@@ -11,7 +9,6 @@ class AppShadows {
     spreadRadius: 0,
   );
 
-  
   static final BoxShadow medium = BoxShadow(
     color: AppColors.shadow.withOpacity(0.15),
     offset: const Offset(0, 6),
@@ -19,15 +16,13 @@ class AppShadows {
     spreadRadius: 0,
   );
 
-  
   static final BoxShadow dialog = BoxShadow(
-    color: AppColors.shadow.withOpacity(0.2), 
+    color: AppColors.shadow.withOpacity(0.2),
     offset: const Offset(0, 10),
     blurRadius: 40,
     spreadRadius: -5,
   );
 
- 
   static final BoxShadow primaryGlow = BoxShadow(
     color: AppColors.primary.withOpacity(0.3),
     offset: const Offset(0, 8),
@@ -35,7 +30,6 @@ class AppShadows {
     spreadRadius: 0,
   );
 
-  
   static final BoxShadow reverse = BoxShadow(
     color: AppColors.shadow.withOpacity(0.08),
     offset: const Offset(0, -4),

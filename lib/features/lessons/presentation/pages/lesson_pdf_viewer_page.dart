@@ -15,10 +15,7 @@ class LessonPdfViewerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: AppColors.primary,
-      ),
+      appBar: AppBar(title: Text(title), backgroundColor: AppColors.primary),
       body: SfPdfViewer.network(
         pdfUrl,
         canShowPaginationDialog: true,

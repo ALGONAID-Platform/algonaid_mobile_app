@@ -1,4 +1,3 @@
-
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:flutter/material.dart';
 

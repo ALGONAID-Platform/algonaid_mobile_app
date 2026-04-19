@@ -42,9 +42,7 @@ final getIt = GetIt.instance;
 
 void setupServiceLocator() {
   // ================= CORE =================
-  getIt.registerLazySingleton<ApiService>(
-    () => ApiService(Dio()),
-  );
+  getIt.registerLazySingleton<ApiService>(() => ApiService(Dio()));
 
   // ================= DATA SOURCES =================
   getIt.registerLazySingleton<AuthRemoteDatasourse>(
@@ -78,11 +76,10 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<ExamLocalDataSource>(
     () => ExamLocalDataSourceImpl(),
   );
-  
+
   getIt.registerLazySingleton<ExamRemoteDataSource>(
     () => ExamRemoteDataSourceImpl(getIt()),
   );
-
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepo>(
@@ -150,15 +147,15 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<StartExamUseCase>(
     () => StartExamUseCase(getIt<ExamRepository>()),
   );
-  
+
   getIt.registerLazySingleton<SubmitExamUseCase>(
     () => SubmitExamUseCase(getIt<ExamRepository>()),
   );
-  
+
   getIt.registerLazySingleton<SaveExamProgressUseCase>(
     () => SaveExamProgressUseCase(getIt<ExamRepository>()),
   );
-  
+
   getIt.registerLazySingleton<GetExamProgressUseCase>(
     () => GetExamProgressUseCase(getIt<ExamRepository>()),
   );
@@ -169,22 +166,15 @@ void setupServiceLocator() {
 
   // ================= PROVIDERS =================
   getIt.registerFactory<AuthServiceProvider>(
-    () => AuthServiceProvider(
-      signInUseCase: getIt(),
-      signUpUseCase: getIt(),
-    ),
+    () => AuthServiceProvider(signInUseCase: getIt(), signUpUseCase: getIt()),
   );
 
   getIt.registerFactory<GetCoursesProvider>(
-    () => GetCoursesProvider(
-      coursesUsecase: getIt(),
-      myCoursesUsecase: getIt(),
-    ),
+    () =>
+        GetCoursesProvider(coursesUsecase: getIt(), myCoursesUsecase: getIt()),
   );
 
   getIt.registerFactory<ModulesListProvider>(
-    () => ModulesListProvider(
-      getIt<GetModulesByCourse>(),
-    ),
+    () => ModulesListProvider(getIt<GetModulesByCourse>()),
   );
 }

@@ -1,4 +1,3 @@
-
 import 'package:algonaid_mobail_app/features/courses/domain/entities/user_entity.dart';
 
 class TeacherEntity {

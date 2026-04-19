@@ -6,7 +6,6 @@ import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart'
 import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-
 abstract class ExamLocalDataSource {
   Future<void> saveExamProgress(String examId, Map<String, String> answers);
   Future<Map<String, String>?> getExamProgress(String examId);
@@ -19,7 +18,9 @@ abstract class ExamLocalDataSource {
 class ExamLocalDataSourceImpl implements ExamLocalDataSource {
   @override
   Future<Map<String, String>?> getExamProgress(String examId) async {
-    final box = Hive.box<String>(AppConstants.boxReadingProgress); // Using a string box for JSON encoded map
+    final box = Hive.box<String>(
+      AppConstants.boxReadingProgress,
+    ); // Using a string box for JSON encoded map
     final String? progressJson = box.get(examId);
     if (progressJson != null) {
       return Map<String, String>.from(jsonDecode(progressJson));
@@ -28,7 +29,10 @@ class ExamLocalDataSourceImpl implements ExamLocalDataSource {
   }
 
   @override
-  Future<void> saveExamProgress(String examId, Map<String, String> answers) async {
+  Future<void> saveExamProgress(
+    String examId,
+    Map<String, String> answers,
+  ) async {
     final box = Hive.box<String>(AppConstants.boxReadingProgress);
     await box.put(examId, jsonEncode(answers));
   }
@@ -54,7 +58,10 @@ class ExamLocalDataSourceImpl implements ExamLocalDataSource {
   @override
   Future<void> saveExamResult(ExamResultModel result) async {
     final box = Hive.box<ExamResultModel>(AppConstants.boxExamResults);
-    await box.put(result.examId, result); // Assuming examId is unique for result, or attemptId
+    await box.put(
+      result.examId,
+      result,
+    ); // Assuming examId is unique for result, or attemptId
   }
 }
 
@@ -78,24 +85,40 @@ class ExamRemoteDataSourceImpl implements ExamRemoteDataSource {
 
   @override
   Future<String> startExam(String examId) async {
-    final response = await _apiService.post(endpoint: '/exams/$examId/start', data: {});
+    final response = await _apiService.post(
+      endpoint: '/exams/$examId/start',
+      data: {},
+    );
     return response['attemptId'] as String;
   }
 
   @override
-  Future<ExamResult> submitExam(String attemptId, Map<String, String> answers) async {
+  Future<ExamResult> submitExam(
+    String attemptId,
+    Map<String, String> answers,
+  ) async {
     final submissionData = {
       'answers': answers.entries
-          .map((entry) => {'questionId': entry.key, 'selectedOptionId': entry.value})
+          .map(
+            (entry) => {
+              'questionId': entry.key,
+              'selectedOptionId': entry.value,
+            },
+          )
           .toList(),
     };
-    final response = await _apiService.post(endpoint: '/exams/attempts/$attemptId/submit', data: submissionData);
+    final response = await _apiService.post(
+      endpoint: '/exams/attempts/$attemptId/submit',
+      data: submissionData,
+    );
     return ExamResultModel.fromJson(response);
   }
 
   @override
   Future<ExamResult> getResult(String attemptId) async {
-    final response = await _apiService.get(endpoint: '/exams/attempts/$attemptId/result');
+    final response = await _apiService.get(
+      endpoint: '/exams/attempts/$attemptId/result',
+    );
     return ExamResultModel.fromJson(response);
   }
 }

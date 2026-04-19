@@ -4,8 +4,6 @@ import 'package:dartz/dartz.dart';
 
 /// عقد جلب بيانات الدورات (كتالوج، متابعة التعلم، …).
 abstract class CoursesRepository {
-
-  Future<Either<Failure , List<CourseEntity>>> getAllCourses();
-  Future<Either<Failure , List<CourseEntity>>> getMyCourses();
-
+  Future<Either<Failure, List<CourseEntity>>> getAllCourses();
+  Future<Either<Failure, List<CourseEntity>>> getMyCourses();
 }

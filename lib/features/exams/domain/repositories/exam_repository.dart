@@ -7,6 +7,9 @@ abstract class ExamRepository {
   Future<String> startExam(String examId);
   Future<void> saveExamProgress(String examId, Map<String, String> answers);
   Future<Map<String, String>?> getExamProgress(String examId);
-  Future<Either<Failure, ExamResult>> submitExam(String attemptId, Map<String, String> answers);
+  Future<Either<Failure, ExamResult>> submitExam(
+    String attemptId,
+    Map<String, String> answers,
+  );
   Future<Either<Failure, ExamResult>> getExamResult(String attemptId);
 }

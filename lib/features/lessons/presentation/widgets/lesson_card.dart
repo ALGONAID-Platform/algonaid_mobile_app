@@ -59,9 +59,9 @@ class LessonCard extends StatelessWidget {
                   Text(
                     lesson.title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.indigo,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.indigo,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -71,8 +71,8 @@ class LessonCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondaryLight,
-                        ),
+                      color: AppColors.textSecondaryLight,
+                    ),
                   ),
                 ],
               ),

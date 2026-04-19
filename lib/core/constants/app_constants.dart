@@ -76,12 +76,15 @@ abstract class AppConstants {
   static const drawBarPageFlex = 2;
 
   // user data
-  static int userIdValue =
-      int.tryParse(CacheHelper.getString(key: AppConstants.userId)!)!;
-  static String userNameValue =
-      CacheHelper.getString(key: AppConstants.userName)!;
-  static String userEmailValue =
-      CacheHelper.getString(key: AppConstants.userEmail)!;
+  static int userIdValue = int.tryParse(
+    CacheHelper.getString(key: AppConstants.userId)!,
+  )!;
+  static String userNameValue = CacheHelper.getString(
+    key: AppConstants.userName,
+  )!;
+  static String userEmailValue = CacheHelper.getString(
+    key: AppConstants.userEmail,
+  )!;
 
   //color dark matrix for pdf viewer
   static const colorFilter = ColorFilter.matrix([

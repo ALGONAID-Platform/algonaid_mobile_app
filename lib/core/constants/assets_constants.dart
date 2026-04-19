@@ -1,7 +1,6 @@
 //this class for svg images
 class SVG {
-  static const String googleSvg =
-      "assets/svg/google-icon-logo-svgrepo-com.svg";
+  static const String googleSvg = "assets/svg/google-icon-logo-svgrepo-com.svg";
 
   static const String onboarding1 = "assets/svg/onboarding1.svg";
   static const String onboarding2 = "assets/svg/onboarding2.svg";

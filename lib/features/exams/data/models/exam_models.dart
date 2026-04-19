@@ -6,15 +6,24 @@ part 'exam_models.g.dart';
 /// Model for Exam - extends Exam entity with JSON serialization
 @HiveType(typeId: 6)
 class ExamModel extends Exam {
-  @HiveField(0) final String id;
-  @HiveField(1) final String title;
-  @HiveField(2) final String subject;
-  @HiveField(3) final int duration;
-  @HiveField(4) final int totalQuestions;
-  @HiveField(5) final int currentQuestion;
-  @HiveField(6) final String studentName;
-  @HiveField(7) final String studentImage;
-  @HiveField(8) final List<Question> questions;
+  @HiveField(0)
+  final String id;
+  @HiveField(1)
+  final String title;
+  @HiveField(2)
+  final String subject;
+  @HiveField(3)
+  final int duration;
+  @HiveField(4)
+  final int totalQuestions;
+  @HiveField(5)
+  final int currentQuestion;
+  @HiveField(6)
+  final String studentName;
+  @HiveField(7)
+  final String studentImage;
+  @HiveField(8)
+  final List<Question> questions;
 
   ExamModel({
     required this.id,
@@ -27,16 +36,16 @@ class ExamModel extends Exam {
     required this.studentImage,
     required this.questions,
   }) : super(
-    id: id,
-    title: title,
-    subject: subject,
-    duration: duration,
-    totalQuestions: totalQuestions,
-    currentQuestion: currentQuestion,
-    studentName: studentName,
-    studentImage: studentImage,
-    questions: questions,
-  );
+         id: id,
+         title: title,
+         subject: subject,
+         duration: duration,
+         totalQuestions: totalQuestions,
+         currentQuestion: currentQuestion,
+         studentName: studentName,
+         studentImage: studentImage,
+         questions: questions,
+       );
 
   /// Convert JSON to ExamModel
   factory ExamModel.fromJson(Map<String, dynamic> json) {
@@ -72,7 +81,7 @@ class ExamModel extends Exam {
         'questions': questions
             .map((q) => (q as QuestionModel).toJson())
             .toList(),
-      }
+      },
     };
   }
 }
@@ -80,15 +89,24 @@ class ExamModel extends Exam {
 /// Model for Question - extends Question entity with JSON serialization
 @HiveType(typeId: 7)
 class QuestionModel extends Question {
-  @HiveField(0) final String id;
-  @HiveField(1) final int questionNumber;
-  @HiveField(2) final String type;
-  @HiveField(3) final String text;
-  @HiveField(4) final String description;
-  @HiveField(5) final String? imageUrl;
-  @HiveField(6) final List<QuestionOption> options;
-  @HiveField(7) final String? userAnswer;
-  @HiveField(8) final String explanation;
+  @HiveField(0)
+  final String id;
+  @HiveField(1)
+  final int questionNumber;
+  @HiveField(2)
+  final String type;
+  @HiveField(3)
+  final String text;
+  @HiveField(4)
+  final String description;
+  @HiveField(5)
+  final String? imageUrl;
+  @HiveField(6)
+  final List<QuestionOption> options;
+  @HiveField(7)
+  final String? userAnswer;
+  @HiveField(8)
+  final String explanation;
 
   QuestionModel({
     required this.id,
@@ -101,16 +119,16 @@ class QuestionModel extends Question {
     this.userAnswer,
     required this.explanation,
   }) : super(
-    id: id,
-    questionNumber: questionNumber,
-    type: type,
-    text: text,
-    description: description,
-    imageUrl: imageUrl,
-    options: options,
-    userAnswer: userAnswer,
-    explanation: explanation,
-  );
+         id: id,
+         questionNumber: questionNumber,
+         type: type,
+         text: text,
+         description: description,
+         imageUrl: imageUrl,
+         options: options,
+         userAnswer: userAnswer,
+         explanation: explanation,
+       );
 
   /// Convert JSON to QuestionModel
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
@@ -146,7 +164,6 @@ class QuestionModel extends Question {
     };
   }
 
-
   /// Override copyWith to return QuestionModel
   @override
   QuestionModel copyWith({
@@ -177,19 +194,18 @@ class QuestionModel extends Question {
 /// Model for QuestionOption - extends QuestionOption entity with JSON serialization
 @HiveType(typeId: 8)
 class QuestionOptionModel extends QuestionOption {
-  @HiveField(0) final String id;
-  @HiveField(1) final String text;
-  @HiveField(2) final bool isCorrect;
+  @HiveField(0)
+  final String id;
+  @HiveField(1)
+  final String text;
+  @HiveField(2)
+  final bool isCorrect;
 
   QuestionOptionModel({
     required this.id,
     required this.text,
     required this.isCorrect,
-  }) : super(
-    id: id,
-    text: text,
-    isCorrect: isCorrect,
-  );
+  }) : super(id: id, text: text, isCorrect: isCorrect);
 
   /// Convert JSON to QuestionOptionModel
   factory QuestionOptionModel.fromJson(Map<String, dynamic> json) {
@@ -202,25 +218,29 @@ class QuestionOptionModel extends QuestionOption {
 
   /// Convert QuestionOptionModel to JSON
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'text': text,
-      'isCorrect': isCorrect,
-    };
+    return {'id': id, 'text': text, 'isCorrect': isCorrect};
   }
 }
 
 /// Model for ExamResult
 @HiveType(typeId: 9)
 class ExamResultModel extends ExamResult {
-  @HiveField(0) final String examId;
-  @HiveField(1) final String studentId;
-  @HiveField(2) final int totalQuestions;
-  @HiveField(3) final int correctAnswers;
-  @HiveField(4) final int wrongAnswers;
-  @HiveField(5) final double score;
-  @HiveField(6) final DateTime submittedAt;
-  @HiveField(7) final Map<String, String> answers;
+  @HiveField(0)
+  final String examId;
+  @HiveField(1)
+  final String studentId;
+  @HiveField(2)
+  final int totalQuestions;
+  @HiveField(3)
+  final int correctAnswers;
+  @HiveField(4)
+  final int wrongAnswers;
+  @HiveField(5)
+  final double score;
+  @HiveField(6)
+  final DateTime submittedAt;
+  @HiveField(7)
+  final Map<String, String> answers;
 
   ExamResultModel({
     required this.examId,
@@ -232,15 +252,15 @@ class ExamResultModel extends ExamResult {
     required this.submittedAt,
     required this.answers,
   }) : super(
-    examId: examId,
-    studentId: studentId,
-    totalQuestions: totalQuestions,
-    correctAnswers: correctAnswers,
-    wrongAnswers: wrongAnswers,
-    score: score,
-    submittedAt: submittedAt,
-    answers: answers,
-  );
+         examId: examId,
+         studentId: studentId,
+         totalQuestions: totalQuestions,
+         correctAnswers: correctAnswers,
+         wrongAnswers: wrongAnswers,
+         score: score,
+         submittedAt: submittedAt,
+         answers: answers,
+       );
 
   /// Convert JSON to ExamResultModel
   factory ExamResultModel.fromJson(Map<String, dynamic> json) {

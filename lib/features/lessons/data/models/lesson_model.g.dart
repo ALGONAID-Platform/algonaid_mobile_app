@@ -16,7 +16,14 @@ class LessonModelAdapter extends TypeAdapter<LessonModel> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return LessonModel(id: fields[0] as int, title: fields[1] as String, description: fields[2] as String, videoUrl: fields[3] as String, moduleId: fields[4] as int, order: fields[5] as int);
+    return LessonModel(
+      id: fields[0] as int,
+      title: fields[1] as String,
+      description: fields[2] as String,
+      videoUrl: fields[3] as String,
+      moduleId: fields[4] as int,
+      order: fields[5] as int,
+    );
   }
 
   @override

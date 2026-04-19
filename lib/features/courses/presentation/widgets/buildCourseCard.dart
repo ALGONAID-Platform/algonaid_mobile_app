@@ -40,6 +40,7 @@ class CourseCard extends StatelessWidget {
             Flexible(
               fit: FlexFit.tight,
               child: BuildCourseDetails(
+                course: course, // Pass the course object
                 tags: course.moduleTitles,
                 modulesCount: course.modulesCount,
                 isEnrolled: course.isEnrolled,

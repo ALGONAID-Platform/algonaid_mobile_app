@@ -1,10 +1,14 @@
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // Import GoRouter
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart'; // Import PathsRoutes
+import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart'; // Import CourseEntity
 
 class BuildCourseDetails extends StatelessWidget {
   const BuildCourseDetails({
     super.key,
+    required this.course, // Add CourseEntity
     required this.tags,
     this.modulesCount = 0,
     this.isEnrolled = false,
@@ -12,6 +16,7 @@ class BuildCourseDetails extends StatelessWidget {
     this.completedModules = 1,
   });
 
+  final CourseEntity course; // Declare CourseEntity
   final List<String> tags;
   final int modulesCount;
   final bool isEnrolled;
@@ -38,7 +43,7 @@ class BuildCourseDetails extends StatelessWidget {
           if (isEnrolled) _buildProgressSection(context, colorScheme),
 
           // 3. الجزء السفلي (الزر)
-          _buildActionButton(colorScheme),
+          _buildActionButton(context, colorScheme), // Pass context
         ],
       ),
     );
@@ -64,7 +69,7 @@ class BuildCourseDetails extends StatelessWidget {
             child: ClipRect(
               child: Wrap(
                 spacing: 8,
-                children: tags.map((tag) => _CourseTag(label: tag)).toList(),
+                // children: tags.map((tag) => _CourseTag(label: tag)).toList(),
               ),
             ),
           ),
@@ -114,13 +119,16 @@ class BuildCourseDetails extends StatelessWidget {
   }
 
   // --- ودجت فرعي للزر ---
-  Widget _buildActionButton(ColorScheme colorScheme) {
+  Widget _buildActionButton(BuildContext context, ColorScheme colorScheme) {
     return SizedBox(
       width: double.infinity,
       height: 45,
       child: isEnrolled
           ? TextButton(
-              onPressed: () {},
+              onPressed: () {
+                debugPrint('Navigating to Modules List for course: ${course.id}');
+                GoRouter.of(context).go('${Routes.modulesList}/${course.id}', extra: course.title);
+              },
               style: TextButton.styleFrom(
                 backgroundColor: AppColors.green.withOpacity(0.1),
                 elevation: 0,
@@ -135,38 +143,12 @@ class BuildCourseDetails extends StatelessWidget {
               ),
             )
           : ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                debugPrint('Navigating to Modules List for course: ${course.id}');
+                GoRouter.of(context).go('${Routes.modulesList}/${course.id}', extra: course.title);
+              },
               child: const Text("استكشف الدورة الآن"),
             ),
-    );
-  }
-}
-
-// فصل الـ Tag في Class مستقل واستخدام الـ Theme داخله
-class _CourseTag extends StatelessWidget {
-  final String label;
-  const _CourseTag({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color:
-            theme.colorScheme.surfaceVariant.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
-      ),
-      child: Text(
-        label,
-        style: Styles.style12(context).copyWith(
-          color: theme
-              .colorScheme
-              .onSurface, // لون النص التلقائي المتوافق مع الخلفية
-        ),
-      ),
     );
   }
 }

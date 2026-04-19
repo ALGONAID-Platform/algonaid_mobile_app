@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 class LessonInfoCard extends StatelessWidget {
   final String title;
 
-  const LessonInfoCard({
-    super.key,
-    required this.title,
-  });
+  const LessonInfoCard({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +29,9 @@ class LessonInfoCard extends StatelessWidget {
             title,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.indigo,
-                ),
+              fontWeight: FontWeight.bold,
+              color: AppColors.indigo,
+            ),
           ),
         ],
       ),

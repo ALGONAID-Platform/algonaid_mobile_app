@@ -5,10 +5,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 class LessonVideoPlayer extends StatefulWidget {
   final String? videoUrl;
 
-  const LessonVideoPlayer({
-    super.key,
-    required this.videoUrl,
-  });
+  const LessonVideoPlayer({super.key, required this.videoUrl});
 
   @override
   State<LessonVideoPlayer> createState() => _LessonVideoPlayerState();

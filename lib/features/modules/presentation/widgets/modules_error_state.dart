@@ -24,10 +24,7 @@ class ModulesErrorState extends StatelessWidget {
             style: const TextStyle(fontSize: 16, color: Colors.red),
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onRetry,
-            child: const Text('Try Again'),
-          ),
+          ElevatedButton(onPressed: onRetry, child: const Text('Try Again')),
         ],
       ),
     );

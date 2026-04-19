@@ -166,10 +166,18 @@ class _ResultsPageState extends State<ResultsPage> {
                     if (userAnswerId != null) {
                       userAnswer = question.options.firstWhere(
                         (opt) => opt.id == userAnswerId,
-                        orElse: () => const QuestionOption(id: 'unknown', text: 'No Answer Selected', isCorrect: false),
+                        orElse: () => const QuestionOption(
+                          id: 'unknown',
+                          text: 'No Answer Selected',
+                          isCorrect: false,
+                        ),
                       );
                     } else {
-                      userAnswer = const QuestionOption(id: 'unknown', text: 'No Answer Selected', isCorrect: false);
+                      userAnswer = const QuestionOption(
+                        id: 'unknown',
+                        text: 'No Answer Selected',
+                        isCorrect: false,
+                      );
                     }
                     final correctAnswer = question.options.firstWhere(
                       (opt) => opt.isCorrect,

@@ -20,7 +20,8 @@ class ModuleModel extends Module {
       title: json['title'] as String,
       description: json['description'] as String,
       courseId: json['courseId'] as int,
-      lessons: (json['lessons'] as List<dynamic>?)
+      lessons:
+          (json['lessons'] as List<dynamic>?)
               ?.map((e) => LessonModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],

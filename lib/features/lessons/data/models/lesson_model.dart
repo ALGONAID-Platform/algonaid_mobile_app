@@ -12,7 +12,7 @@ class LessonModel extends Lesson {
     @HiveField(1) required super.title,
     @HiveField(2) required super.description,
     super.videoUrl, // Exclude from Hive storage
-    super.pdfUrl,   // Exclude from Hive storage
+    super.pdfUrl, // Exclude from Hive storage
     @HiveField(3) required super.moduleId,
     @HiveField(4) required super.order,
   });
@@ -41,4 +41,3 @@ class LessonModel extends Lesson {
     };
   }
 }
-

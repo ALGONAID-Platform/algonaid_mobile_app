@@ -22,7 +22,8 @@ class CourseEntity {
     required this.updatedAt,
     required this.instructorId,
     required this.teacher,
-    required this.moduleTitles, required this.modulesCount,
+    required this.moduleTitles,
+    required this.modulesCount,
     required this.isEnrolled,
   });
 }

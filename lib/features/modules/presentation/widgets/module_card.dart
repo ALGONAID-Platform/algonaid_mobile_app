@@ -8,11 +8,7 @@ class ModuleCard extends StatelessWidget {
   final Module module;
   final VoidCallback? onTap;
 
-  const ModuleCard({
-    super.key,
-    required this.module,
-    this.onTap,
-  });
+  const ModuleCard({super.key, required this.module, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +30,6 @@ class ModuleCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -43,9 +38,9 @@ class ModuleCard extends StatelessWidget {
                   Text(
                     module.title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.indigo,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.indigo,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -53,14 +48,18 @@ class ModuleCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondaryLight,
-                        ),
+                      color: AppColors.textSecondaryLight,
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward_ios, color: AppColors.grey400, size: 16),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: AppColors.grey400,
+              size: 16,
+            ),
           ],
         ),
       ),

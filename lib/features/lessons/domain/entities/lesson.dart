@@ -22,5 +22,13 @@ class Lesson extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, title, description, videoUrl, pdfUrl, moduleId, order];
+  List<Object?> get props => [
+    id,
+    title,
+    description,
+    videoUrl,
+    pdfUrl,
+    moduleId,
+    order,
+  ];
 }

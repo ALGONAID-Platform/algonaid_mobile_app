@@ -23,8 +23,6 @@ class _ExamPageState extends State<ExamPage> {
     });
   }
 
-  final exam = ExamProvider().exam!;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +67,10 @@ class _ExamPageState extends State<ExamPage> {
 
           // Show results if exam is submitted
           if (examProvider.isSubmitted && examProvider.result != null) {
-            return ResultsPage(result: examProvider.result!, exam: exam);
+            return ResultsPage(
+              result: examProvider.result!,
+              exam: examProvider.exam!,
+            );
           }
 
           // Show exam content

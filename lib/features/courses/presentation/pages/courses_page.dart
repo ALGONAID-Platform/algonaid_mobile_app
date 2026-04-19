@@ -28,6 +28,7 @@ class _CoursesPageState extends State<CoursesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GetCoursesProvider>().refreshAll();
     });
+    debugPrint('User Token on CoursesPage init: ${TokenStorage.getToken()}');
   }
 
   @override

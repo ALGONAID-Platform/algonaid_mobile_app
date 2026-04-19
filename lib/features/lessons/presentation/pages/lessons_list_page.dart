@@ -27,10 +27,7 @@ class LessonsListPage extends StatelessWidget {
         provider.loadLessons(moduleId);
         return provider;
       },
-      child: _LessonsListView(
-        moduleId: moduleId,
-        moduleTitle: moduleTitle,
-      ),
+      child: _LessonsListView(moduleId: moduleId, moduleTitle: moduleTitle),
     );
   }
 }
@@ -39,10 +36,7 @@ class _LessonsListView extends StatelessWidget {
   final int moduleId;
   final String moduleTitle;
 
-  const _LessonsListView({
-    required this.moduleId,
-    required this.moduleTitle,
-  });
+  const _LessonsListView({required this.moduleId, required this.moduleTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +59,8 @@ class _LessonsListView extends StatelessWidget {
             if (state.errorMessage != null) {
               return LessonsErrorState(
                 message: state.errorMessage!,
-                onRetry: () => context.read<LessonsListProvider>().loadLessons(
-                      moduleId,
-                    ),
+                onRetry: () =>
+                    context.read<LessonsListProvider>().loadLessons(moduleId),
               );
             }
 
@@ -86,9 +79,9 @@ class _LessonsListView extends StatelessWidget {
                   lesson: lesson,
                   displayOrder: lesson.order > 0 ? lesson.order : index + 1,
                   onTap: () {
-                    GoRouter.of(context).go(
-                      '${Routes.lessonDetails}/${lesson.id}',
-                    );
+                    GoRouter.of(
+                      context,
+                    ).go('${Routes.lessonDetails}/${lesson.id}');
                   },
                 );
               },

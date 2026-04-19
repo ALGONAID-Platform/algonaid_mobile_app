@@ -12,33 +12,40 @@ abstract class CourseLocalDataSourse {
 }
 
 class CourseLocalDataSourseImp implements CourseLocalDataSourse {
-  
   @override
   List<CourseEntity> getAllCourses() {
     // 🌟 نجلب البيانات كموديلات ثم نحولها لـ Entities
-    final List<CourseModel> models = getAllData<CourseModel>(AppConstants.boxCourses);
+    final List<CourseModel> models = getAllData<CourseModel>(
+      AppConstants.boxCourses,
+    );
     return models; // بما أن Model يرث من Entity، سيعمل هذا مباشرة
   }
 
   @override
   List<CourseEntity> getMyCourses() {
-    final List<CourseModel> models = getAllData<CourseModel>(AppConstants.boxMyCourses);
+    final List<CourseModel> models = getAllData<CourseModel>(
+      AppConstants.boxMyCourses,
+    );
     return models;
   }
 
   @override
   Future<void> saveCourses(List<CourseEntity> courses) async {
     // 🌟 السر هنا: تحويل الـ Entities إلى Models قبل إرسالها للـ Generic Function
-    final List<CourseModel> models = courses.map((e) => CourseModel.fromEntity(e)).toList();
-    
+    final List<CourseModel> models = courses
+        .map((e) => CourseModel.fromEntity(e))
+        .toList();
+
     // الآن نرسلها لـ cacheList بالنوع الصريح <CourseModel>
     await cacheList<CourseModel>(models, AppConstants.boxCourses);
   }
 
   @override
   Future<void> saveMyCourses(List<CourseEntity> courses) async {
-    final List<CourseModel> models = courses.map((e) => CourseModel.fromEntity(e)).toList();
-    
+    final List<CourseModel> models = courses
+        .map((e) => CourseModel.fromEntity(e))
+        .toList();
+
     await cacheList<CourseModel>(models, AppConstants.boxMyCourses);
   }
 }

@@ -7,7 +7,6 @@ import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.da
 import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
 import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
 
-
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveService {
@@ -19,9 +18,12 @@ class HiveService {
     Hive.registerAdapter<ModuleModel>(ModuleModelAdapter()); // typeId: 5
     Hive.registerAdapter<ExamModel>(ExamModelAdapter()); // typeId: 6
     Hive.registerAdapter<QuestionModel>(QuestionModelAdapter()); // typeId: 7
-    Hive.registerAdapter<QuestionOptionModel>(QuestionOptionModelAdapter()); // typeId: 8
-    Hive.registerAdapter<ExamResultModel>(ExamResultModelAdapter()); // typeId: 9
-
+    Hive.registerAdapter<QuestionOptionModel>(
+      QuestionOptionModelAdapter(),
+    ); // typeId: 8
+    Hive.registerAdapter<ExamResultModel>(
+      ExamResultModelAdapter(),
+    ); // typeId: 9
 
     await Hive.openBox(AppConstants.boxAuthTokenName);
     await Hive.openBox<CourseModel>(AppConstants.boxCourses);

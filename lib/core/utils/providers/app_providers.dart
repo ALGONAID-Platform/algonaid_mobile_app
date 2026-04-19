@@ -27,13 +27,14 @@ class AppProviders extends StatelessWidget {
             myCoursesUsecase: getIt(),
           ),
         ),
-        Provider<GetLessonDetail>( // Added
+        Provider<GetLessonDetail>(
+          // Added
           create: (_) => getIt<GetLessonDetail>(),
         ),
-        ChangeNotifierProvider<LessonDetailProvider>( // Added
-          create: (context) => LessonDetailProvider(
-            context.read<GetLessonDetail>(),
-          ),
+        ChangeNotifierProvider<LessonDetailProvider>(
+          // Added
+          create: (context) =>
+              LessonDetailProvider(context.read<GetLessonDetail>()),
         ),
       ],
       child: child,

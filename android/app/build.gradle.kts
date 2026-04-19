@@ -8,6 +8,7 @@ plugins {
 android {
     namespace = "com.example.algonaid_mobail_app"
     compileSdk = flutter.compileSdkVersion
+    ndkVersion = "30.0.14904198"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

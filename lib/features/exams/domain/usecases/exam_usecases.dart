@@ -25,7 +25,10 @@ class SubmitExamUseCase {
   final ExamRepository repository;
   SubmitExamUseCase(this.repository);
 
-  Future<Either<Failure, ExamResult>> call(String attemptId, Map<String, String> answers) async {
+  Future<Either<Failure, ExamResult>> call(
+    String attemptId,
+    Map<String, String> answers,
+  ) async {
     return await repository.submitExam(attemptId, answers);
   }
 }

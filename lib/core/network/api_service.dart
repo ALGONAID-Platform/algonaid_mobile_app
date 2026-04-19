@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio;
 
-
   ApiService(this._dio) {
     initializeDio(_dio);
   }
@@ -41,13 +40,15 @@ class ApiService {
     required String path,
   }) async {
     return await _dio.download(
-        finalUrl,
-        path,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-             debugPrint("📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%");
-          }
-        },
-      );
+      finalUrl,
+      path,
+      onReceiveProgress: (received, total) {
+        if (total != -1) {
+          debugPrint(
+            "📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%",
+          );
+        }
+      },
+    );
   }
 }

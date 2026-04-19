@@ -60,10 +60,7 @@ class ExamHeader extends StatelessWidget {
                       ),
                       const Text(
                         'طالب',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -74,7 +71,11 @@ class ExamHeader extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.access_time, size: 16, color: Colors.teal),
+                      const Icon(
+                        Icons.access_time,
+                        size: 16,
+                        color: Colors.teal,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '$remainingMinutes:45',
@@ -87,10 +88,7 @@ class ExamHeader extends StatelessWidget {
                   ),
                   const Text(
                     'الوقت المتبقي',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
                   ),
                 ],
               ),
@@ -102,7 +100,10 @@ class ExamHeader extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.teal.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -170,10 +171,7 @@ class QuestionCard extends StatelessWidget {
           Text(
             question.text,
             textAlign: TextAlign.right,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
           // Question description
@@ -312,10 +310,7 @@ class QuestionNavigation extends StatelessWidget {
         children: [
           const Text(
             'قائمة الأسئلة',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -336,8 +331,8 @@ class QuestionNavigation extends StatelessWidget {
                     color: isCurrent
                         ? Colors.teal
                         : isAnswered
-                            ? Colors.teal.withOpacity(0.2)
-                            : Colors.white,
+                        ? Colors.teal.withOpacity(0.2)
+                        : Colors.white,
                     border: Border.all(
                       color: isCurrent ? Colors.teal : Colors.grey[300]!,
                     ),
@@ -403,7 +398,10 @@ class ExamBottomNavigation extends StatelessWidget {
             OutlinedButton(
               onPressed: onPrevious,
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               child: const Text('السابق'),
             )
@@ -415,7 +413,10 @@ class ExamBottomNavigation extends StatelessWidget {
               onPressed: onSubmit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               child: const Text(
                 'تسليم الاختبار',
@@ -427,7 +428,10 @@ class ExamBottomNavigation extends StatelessWidget {
               onPressed: onNext,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               child: const Text(
                 'التالي',

@@ -32,7 +32,7 @@ class AllCoursesListSection extends StatelessWidget {
           height: 330,
           child: ListView.builder(
             reverse: true,
-            padding: const EdgeInsets.only(right: 16), 
+            padding: const EdgeInsets.only(right: 16),
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: allCourses.length,
