@@ -20,11 +20,12 @@ class _ResultsPageState extends State<ResultsPage> {
     final scoreGrade = _getScoreGrade(widget.result.score);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: const Text('نتائج الاختبار'),
         centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -35,7 +36,7 @@ class _ResultsPageState extends State<ResultsPage> {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: scoreColor, width: 3),
                 boxShadow: [
@@ -62,19 +63,17 @@ class _ResultsPageState extends State<ResultsPage> {
                       children: [
                         Text(
                           '${widget.result.score.toStringAsFixed(1)}%',
-                          style: TextStyle(
-                            fontSize: 48,
-                            fontWeight: FontWeight.w900,
-                            color: scoreColor,
-                          ),
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: scoreColor,
+                                fontWeight: FontWeight.w900,
+                              ),
                         ),
                         Text(
                           scoreGrade,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: scoreColor,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                color: scoreColor,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ],
                     ),
@@ -86,12 +85,11 @@ class _ResultsPageState extends State<ResultsPage> {
                         ? 'ممتاز! لقد نجحت في الاختبار'
                         : 'يجب عليك المحاولة مرة أخرى',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: scoreColor,
-                      height: 1.3,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: scoreColor,
+                          fontWeight: FontWeight.w700,
+                          height: 1.3,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -99,11 +97,10 @@ class _ResultsPageState extends State<ResultsPage> {
                         ? 'أحسنت! لقد حققت نتيجة جيدة في هذا الاختبار'
                         : 'لا تقلق، يمكنك المحاولة مرة أخرى وتحسين نتيجتك',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                      height: 1.5,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                          height: 1.5,
+                        ),
                   ),
                 ],
               ),
@@ -136,7 +133,7 @@ class _ResultsPageState extends State<ResultsPage> {
                       icon: Icons.quiz,
                       label: 'إجمالي الأسئلة',
                       value: widget.result.totalQuestions.toString(),
-                      color: Colors.teal,
+                      color: Theme.of(context).colorScheme.primary, // Theme aware
                     ),
                   ),
                 ],
@@ -149,13 +146,12 @@ class _ResultsPageState extends State<ResultsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
+                  Text(
                     'مراجعة الأسئلة',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   ...List.generate(widget.exam.questions.length, (index) {
@@ -216,18 +212,17 @@ class _ResultsPageState extends State<ResultsPage> {
                         ).popUntil((route) => route.isFirst);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'العودة إلى الرئيسية',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ),
                   ),
@@ -240,18 +235,17 @@ class _ResultsPageState extends State<ResultsPage> {
                         // Share results
                       },
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.teal, width: 1.5),
+                        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'مشاركة النتائج',
-                        style: TextStyle(
-                          color: Colors.teal,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ),
                   ),
@@ -293,7 +287,7 @@ class _StatisticCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withOpacity(0.3), width: 1.5),
         boxShadow: [
@@ -310,21 +304,19 @@ class _StatisticCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w800,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),
@@ -361,7 +353,7 @@ class _QuestionReviewCardState extends State<_QuestionReviewCard> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: borderColor.withOpacity(0.3), width: 1.5),
         boxShadow: [
@@ -407,20 +399,18 @@ class _QuestionReviewCardState extends State<_QuestionReviewCard> {
                       children: [
                         Text(
                           'السؤال ${widget.questionNumber}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           widget.isCorrect ? 'إجابة صحيحة' : 'إجابة خاطئة',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: borderColor,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: borderColor,
+                              ),
                         ),
                       ],
                     ),
@@ -428,7 +418,7 @@ class _QuestionReviewCardState extends State<_QuestionReviewCard> {
                   // Expand icon
                   Icon(
                     _expanded ? Icons.expand_less : Icons.expand_more,
-                    color: Colors.grey[400],
+                    color: Theme.of(context).iconTheme.color?.withOpacity(0.6), // Theme aware
                   ),
                 ],
               ),
@@ -436,7 +426,7 @@ class _QuestionReviewCardState extends State<_QuestionReviewCard> {
           ),
           // Expanded content
           if (_expanded) ...[
-            Divider(height: 1, color: Colors.grey[200]),
+            Divider(height: 1, color: Theme.of(context).dividerColor),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -446,12 +436,11 @@ class _QuestionReviewCardState extends State<_QuestionReviewCard> {
                   Text(
                     widget.question.text,
                     textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                      height: 1.5,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onBackground,
+                          height: 1.5,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   // User answer
@@ -475,10 +464,10 @@ class _QuestionReviewCardState extends State<_QuestionReviewCard> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.05),
+                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.blue.withOpacity(0.2),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
                         width: 1,
                       ),
                     ),
@@ -486,23 +475,21 @@ class _QuestionReviewCardState extends State<_QuestionReviewCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text(
+                        Text(
                           'الشرح',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.blue,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           widget.question.explanation ?? 'لا يوجد شرح متاح',
                           textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[700],
-                            height: 1.5,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                                height: 1.5,
+                              ),
                         ),
                       ],
                     ),
@@ -546,21 +533,19 @@ class _AnswerBox extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: 11,
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 6),
           Text(
             answer,
             textAlign: TextAlign.right,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.black87,
-              height: 1.4,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  height: 1.4,
+                ),
           ),
         ],
       ),

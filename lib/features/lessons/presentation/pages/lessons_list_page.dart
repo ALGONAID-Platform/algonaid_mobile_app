@@ -43,11 +43,11 @@ class _LessonsListView extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: AppColors.grey50,
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
           title: Text(moduleTitle),
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
         body: Consumer<LessonsListProvider>(
           builder: (context, provider, _) {

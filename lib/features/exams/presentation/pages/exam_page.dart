@@ -26,13 +26,13 @@ class _ExamPageState extends State<ExamPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Consumer<ExamProvider>(
         builder: (context, examProvider, _) {
           // Show loading state
           if (examProvider.state == ExamState.loading) {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.teal),
+              child: CircularProgressIndicator(), // Removed hardcoded color
             );
           }
 
@@ -42,22 +42,22 @@ class _ExamPageState extends State<ExamPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red), // Red for error is fine
                   const SizedBox(height: 16),
                   Text(
                     'حدث خطأ: ${examProvider.error}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onBackground), // Theme aware text color
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () => examProvider.loadExam(widget.examId),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
-                    child: const Text(
+                    child: Text(
                       'إعادة المحاولة',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ),
                 ],
@@ -152,23 +152,23 @@ class _ExamPageState extends State<ExamPage> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.teal.withOpacity(0.1),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Colors.teal.withOpacity(0.3),
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(Icons.info, color: Colors.teal, size: 20),
-                              SizedBox(width: 12),
+                              Icon(Icons.info, color: Theme.of(context).colorScheme.primary, size: 20),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   'تأكد من مراجعة خطوات الحل بدقة قبل اختيار الإجابة. يمكنك تعديل إجاباتك في أي وقت.',
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.teal,
+                                    color: Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -227,11 +227,11 @@ class _ExamPageState extends State<ExamPage> {
                         examProvider.submitExam();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
-                      child: const Text(
+                      child: Text(
                         'تسليم',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ],

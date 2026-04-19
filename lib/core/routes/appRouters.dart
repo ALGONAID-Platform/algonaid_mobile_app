@@ -9,8 +9,10 @@ import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart'; // New Import for ExamPage
+import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -74,10 +76,13 @@ abstract class AppRouters {
         },
       ),
       GoRoute(
-        path: '${Routes.examPage}/:examId', // Changed from :lessonId to :examId
+        path: '${Routes.examPage}/:examId',
         builder: (context, state) {
-          final examId = state.pathParameters['examId']!; // Get examId as String
-          return ExamPage(examId: examId); // Pass examId
+          final examId = state.pathParameters['examId']!;
+          return ChangeNotifierProvider(
+            create: (_) => ExamProvider(),
+            child: ExamPage(examId: examId),
+          );
         },
       ),
     ],
