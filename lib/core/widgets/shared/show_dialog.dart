@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart'; 
+import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
 
 class AppDialog {
@@ -55,9 +55,9 @@ class AppDialog {
                   title,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                  ),
                 ),
                 const SizedBox(height: 12),
 
@@ -66,9 +66,11 @@ class AppDialog {
                   message,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                        height: 1.5,
-                      ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withOpacity(0.7),
+                    height: 1.5,
+                  ),
                 ),
                 const SizedBox(height: 30),
 
@@ -108,9 +110,7 @@ class AppDialog {
         padding: const EdgeInsets.symmetric(vertical: 14),
         backgroundColor: isError ? Colors.red : AppColors.primary,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       child: Text(
         confirmText ?? (isError ? "حسناً" : "تأكيد"),
@@ -123,10 +123,7 @@ class AppDialog {
 
     // إذا كان المطلوب إخفاء زر الإلغاء، نعيد زر التأكيد ممتداً على العرض بالكامل
     if (!showCancelButton) {
-      return SizedBox(
-        width: double.infinity,
-        child: confirmButton,
-      );
+      return SizedBox(width: double.infinity, child: confirmButton);
     }
 
     // إذا كان المطلوب زرين (تأكيد وإلغاء) كما في السابق

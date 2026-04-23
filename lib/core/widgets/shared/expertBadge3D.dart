@@ -1,13 +1,16 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart'; // استيراد ملف الألوان الخاص بك
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class Badge3DDialog extends StatefulWidget {
   final String heroTag;
   final String title;
   final String description;
-  final Color iconColor;
+  final String lottie;
   final List<Color> gradientColors;
   final Color borderColor;
 
@@ -15,7 +18,7 @@ class Badge3DDialog extends StatefulWidget {
     super.key,
     required this.title,
     required this.description,
-    required this.iconColor,
+    required this.lottie,
     required this.gradientColors,
     required this.borderColor,
     required this.heroTag,
@@ -220,14 +223,7 @@ class Badge3DDialogState extends State<Badge3DDialog>
           ],
           stops: const [0.0, 0.2, 0.8, 1.0],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: widget.gradientColors.last.withOpacity(0.5),
-            blurRadius: 25,
-            spreadRadius: 2,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        boxShadow: AppShadows.cardShadow,
       ),
       child: Padding(
         padding: const EdgeInsets.all(6.0),
@@ -242,7 +238,12 @@ class Badge3DDialogState extends State<Badge3DDialog>
             border: Border.all(color: Colors.black12, width: 1),
           ),
           child: Center(
-            child: Icon(Icons.emoji_events, color: widget.iconColor, size: 90),
+            child: Lottie.asset(
+              widget.lottie,
+              width: 150,
+              height: 150,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +47,6 @@ class CustomTextFormField extends StatelessWidget {
     final effectiveBorderColor =
         borderColor ?? Theme.of(context).colorScheme.primary;
 
-    // تحديد لون التعبئة الافتراضي (أخضر شفاف مثلاً)
     final progressColor = fillColorValue ?? AppColors.green.withOpacity(0.2);
 
     return Directionality(
@@ -99,9 +99,7 @@ class CustomTextFormField extends StatelessWidget {
               floatingLabelBehavior: FloatingLabelBehavior.never,
               labelText: labelText,
               labelStyle: TextStyle(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withOpacity(0.45),
+                color: context.colorScheme.onBackground.withOpacity(0.45),
               ),
               hintText: hintText,
               prefixIcon: prefixIcon,
@@ -126,10 +124,7 @@ class CustomTextFormField extends StatelessWidget {
                 borderRadius,
                 width: 2,
               ),
-              errorBorder: _buildBorder(
-                Theme.of(context).colorScheme.error,
-                borderRadius,
-              ),
+              errorBorder: _buildBorder(context.error, borderRadius),
             ),
           ),
         ],
