@@ -7,7 +7,7 @@ class GetExamUseCase {
   final ExamRepository repository;
   GetExamUseCase(this.repository);
 
-  Future<Either<Failure, Exam>> call(String examId) async {
+  Future<Either<Failure, Exam>> call(int examId) async {
     return await repository.getExam(examId);
   }
 }
@@ -16,7 +16,7 @@ class StartExamUseCase {
   final ExamRepository repository;
   StartExamUseCase(this.repository);
 
-  Future<String> call(String examId) async {
+  Future<Either<Failure, ExamAttempt>> call(int examId) async {
     return await repository.startExam(examId);
   }
 }
@@ -26,8 +26,8 @@ class SubmitExamUseCase {
   SubmitExamUseCase(this.repository);
 
   Future<Either<Failure, ExamResult>> call(
-    String attemptId,
-    Map<String, String> answers,
+    int attemptId,
+    Map<int, int> answers,
   ) async {
     return await repository.submitExam(attemptId, answers);
   }
@@ -37,7 +37,7 @@ class SaveExamProgressUseCase {
   final ExamRepository repository;
   SaveExamProgressUseCase(this.repository);
 
-  Future<void> call(String examId, Map<String, String> answers) async {
+  Future<void> call(int examId, Map<int, int> answers) async {
     await repository.saveExamProgress(examId, answers);
   }
 }
@@ -46,7 +46,7 @@ class GetExamProgressUseCase {
   final ExamRepository repository;
   GetExamProgressUseCase(this.repository);
 
-  Future<Map<String, String>?> call(String examId) async {
+  Future<Map<int, int>?> call(int examId) async {
     return await repository.getExamProgress(examId);
   }
 }
@@ -55,7 +55,7 @@ class GetExamResultUseCase {
   final ExamRepository repository;
   GetExamResultUseCase(this.repository);
 
-  Future<Either<Failure, ExamResult>> call(String attemptId) async {
+  Future<Either<Failure, ExamResult>> call(int attemptId) async {
     return await repository.getExamResult(attemptId);
   }
 }

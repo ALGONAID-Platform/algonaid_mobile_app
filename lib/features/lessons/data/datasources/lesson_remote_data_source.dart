@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobail_app/core/network/end_points.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_detail_model.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';

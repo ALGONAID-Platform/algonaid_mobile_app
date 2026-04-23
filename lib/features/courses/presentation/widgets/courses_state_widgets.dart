@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
 import 'package:flutter/material.dart';
 
 class LoadingWidget extends StatelessWidget {
@@ -25,15 +25,6 @@ class ErrorStateWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(message, style: Styles.style16(context)),
-          TextButton(onPressed: onRetry, child: const Text("إعادة المحاولة")),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      AppErrorState(message: message, onRetry: onRetry);
 }

@@ -2,152 +2,243 @@ import 'package:equatable/equatable.dart';
 
 /// Represents a single exam/test
 class Exam extends Equatable {
-  final String id;
+  final int id;
   final String title;
-  final String subject;
-  final int duration; // in minutes
-  final int totalQuestions;
-  final int currentQuestion;
-  final String studentName;
-  final String studentImage;
-  final List<Question> questions;
+  final String? description;
+  final int passingScore;
+  final int maxAttempts;
+  final int lessonId;
+  final List<Question> questions; // Questions are part of the exam details
 
   const Exam({
     required this.id,
     required this.title,
-    required this.subject,
-    required this.duration,
-    required this.totalQuestions,
-    required this.currentQuestion,
-    required this.studentName,
-    required this.studentImage,
-    required this.questions,
+    this.description,
+    required this.passingScore,
+    required this.maxAttempts,
+    required this.lessonId,
+    this.questions = const [], // Initialize as empty list
   });
 
   @override
   List<Object?> get props => [
     id,
     title,
-    subject,
-    duration,
-    totalQuestions,
-    currentQuestion,
-    studentName,
-    studentImage,
+    description,
+    passingScore,
+    maxAttempts,
+    lessonId,
     questions,
   ];
+
+  int get totalQuestions => questions.length;
+
+  Exam copyWith({
+    int? id,
+    String? title,
+    String? description,
+    int? passingScore,
+    int? maxAttempts,
+    int? lessonId,
+    List<Question>? questions,
+  }) {
+    return Exam(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      passingScore: passingScore ?? this.passingScore,
+      maxAttempts: maxAttempts ?? this.maxAttempts,
+      lessonId: lessonId ?? this.lessonId,
+      questions: questions ?? this.questions,
+    );
+  }
 }
 
 /// Represents a single exam question
 class Question extends Equatable {
-  final String id;
-  final int questionNumber;
-  final String type; // 'multiple_choice', 'true_false', etc.
+  final int id;
   final String text;
-  final String description;
+  final String type; // e.g., 'MULTIPLE_CHOICE', 'TRUE_FALSE'
+  final int points;
+  final int examId;
+  final List<Option> options;
+  final String? description;
   final String? imageUrl;
-  final List<QuestionOption> options;
-  final String? userAnswer;
-  final String explanation;
+  final String? explanation;
+  final int? userAnswer;
 
   const Question({
     required this.id,
-    required this.questionNumber,
-    required this.type,
     required this.text,
-    required this.description,
+    required this.type,
+    required this.points,
+    required this.examId,
+    this.options = const [], // Initialize as empty list
+    this.description,
     this.imageUrl,
-    required this.options,
+    this.explanation,
     this.userAnswer,
-    required this.explanation,
   });
 
   @override
   List<Object?> get props => [
     id,
-    questionNumber,
-    type,
     text,
+    type,
+    points,
+    examId,
+    options,
     description,
     imageUrl,
-    options,
-    userAnswer,
     explanation,
+    userAnswer,
   ];
 
-  /// Create a copy of this question with updated fields
   Question copyWith({
-    String? id,
-    int? questionNumber,
-    String? type,
+    int? id,
     String? text,
+    String? type,
+    int? points,
+    int? examId,
+    List<Option>? options,
     String? description,
     String? imageUrl,
-    List<QuestionOption>? options,
-    String? userAnswer,
     String? explanation,
+    int? userAnswer,
   }) {
     return Question(
       id: id ?? this.id,
-      questionNumber: questionNumber ?? this.questionNumber,
-      type: type ?? this.type,
       text: text ?? this.text,
+      type: type ?? this.type,
+      points: points ?? this.points,
+      examId: examId ?? this.examId,
+      options: options ?? this.options,
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
-      options: options ?? this.options,
-      userAnswer: userAnswer ?? this.userAnswer,
       explanation: explanation ?? this.explanation,
+      userAnswer: userAnswer ?? this.userAnswer,
     );
   }
 }
 
 /// Represents a single option in a multiple choice question
-class QuestionOption extends Equatable {
-  final String id;
+class Option extends Equatable {
+  final int id;
   final String text;
-  final bool isCorrect;
+  final bool isCorrect; // Only relevant for results/admin view
+  final int questionId;
 
-  const QuestionOption({
+  const Option({
     required this.id,
     required this.text,
     required this.isCorrect,
+    required this.questionId,
   });
 
   @override
-  List<Object?> get props => [id, text, isCorrect];
+  List<Object?> get props => [id, text, isCorrect, questionId];
 }
 
-/// Represents exam results/submission
+/// Represents an attempt at an exam by a student
+class ExamAttempt extends Equatable {
+  final int id;
+  final int score;
+  final String status; // e.g., 'IN_PROGRESS', 'PASSED', 'FAILED'
+  final DateTime startedAt;
+  final DateTime? completedAt;
+  final int studentId;
+  final int examId;
+  final Map<int, int> answers; // questionId -> selectedOptionId
+  final List<Question> questions;
+
+  const ExamAttempt({
+    required this.id,
+    required this.score,
+    required this.status,
+    required this.startedAt,
+    this.completedAt,
+    required this.studentId,
+    required this.examId,
+    this.answers = const {},
+    this.questions = const [],
+  });
+
+  @override
+  List<Object?> get props => [
+    id,
+    score,
+    status,
+    startedAt,
+    completedAt,
+    studentId,
+    examId,
+    answers,
+    questions,
+  ];
+
+  ExamAttempt copyWith({
+    int? id,
+    int? score,
+    String? status,
+    DateTime? startedAt,
+    DateTime? completedAt,
+    int? studentId,
+    int? examId,
+    Map<int, int>? answers,
+    List<Question>? questions,
+  }) {
+    return ExamAttempt(
+      id: id ?? this.id,
+      score: score ?? this.score,
+      status: status ?? this.status,
+      startedAt: startedAt ?? this.startedAt,
+      completedAt: completedAt ?? this.completedAt,
+      studentId: studentId ?? this.studentId,
+      examId: examId ?? this.examId,
+      answers: answers ?? this.answers,
+      questions: questions ?? this.questions,
+    );
+  }
+}
+
+/// Represents exam results, could be same as ExamAttempt but for clarity
+/// Keeping it separate as the API might return a specialized result object
 class ExamResult extends Equatable {
-  final String examId;
-  final String studentId;
+  final int attemptId;
+  final int examId;
+  final int studentId;
+  final int score;
+  final String status;
+  final DateTime submittedAt;
   final int totalQuestions;
   final int correctAnswers;
   final int wrongAnswers;
-  final double score; // percentage
-  final DateTime submittedAt;
-  final Map<String, String> answers; // questionId -> answerId
+  final Map<int, int> answers; // questionId -> selectedOptionId
 
   const ExamResult({
+    required this.attemptId,
     required this.examId,
     required this.studentId,
+    required this.score,
+    required this.status,
+    required this.submittedAt,
     required this.totalQuestions,
     required this.correctAnswers,
     required this.wrongAnswers,
-    required this.score,
-    required this.submittedAt,
     required this.answers,
   });
 
   @override
   List<Object?> get props => [
+    attemptId,
     examId,
     studentId,
+    score,
+    status,
+    submittedAt,
     totalQuestions,
     correctAnswers,
     wrongAnswers,
-    score,
-    submittedAt,
     answers,
   ];
 }

@@ -1,13 +1,16 @@
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/widgets/loading/continueLearningShimmer.dart';
+import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/all_courses_section.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
+
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildShimmerSection.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/my_courses_section.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/sliver_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
@@ -93,22 +96,74 @@ class CoursesHomePage extends StatefulWidget {
 }
 
 class _CoursesHomePageState extends State<CoursesHomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
   final _pages = [
-    CoursesPage(), // الصفحة الرئيسية
-    Placeholder(), // الدورات
-    Placeholder(), // المحفوظات
-    Placeholder(), // الحساب
+    const CoursesPage(),
+    const Placeholder(),
+    const Placeholder(),
+    const Placeholder(),
   ];
+
+  Future<void> _logout() async {
+    await context.read<AuthServiceProvider>().logout();
+    if (!mounted) {
+      return;
+    }
+    context.go(Routes.auth);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final userName =
+        CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم';
+    final userEmail = CacheHelper.getString(key: AppConstants.userEmail) ?? '';
+
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        width: 260,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      userName,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (userEmail.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        userEmail,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout_rounded),
+                title: const Text('تسجيل الخروج'),
+                onTap: _logout,
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: CustomWhiteAppBar(
-        userName: CacheHelper.getString(key: AppConstants.userName) ?? "مستخدم",
+        userName: userName,
         userImageUrl: null,
         notificationCount: 4,
+        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
         onProfilePressed: () {},
         onNotificationPressed: () {},
         onSearchPressed: () {
@@ -122,11 +177,7 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
         transitionBuilder: (child, animation) =>
             FadeTransition(opacity: animation, child: child),
       ),
-      extendBody: true, // مهم لكي يظهر البار عائم!
-      bottomNavigationBar: FancyFloatingNavBar(
-        selectedIndex: _currentIndex,
-        onItemSelected: (i) => setState(() => _currentIndex = i),
-      ),
+
     );
   }
 }

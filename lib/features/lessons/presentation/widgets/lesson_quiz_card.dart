@@ -1,14 +1,13 @@
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // New Import
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart'; 
-
-// New Import
+import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 
 class LessonQuizCard extends StatelessWidget {
-  final String? examId; // New Field
-  const LessonQuizCard({super.key, this.examId}); // Modified constructor
-  
+  final int? examId;
+
+  const LessonQuizCard({super.key, this.examId});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,8 +28,7 @@ class LessonQuizCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            // Update text based on exam availability
-            examId != null ? 'اختبر فهمك لهذا الدرس' : 'سيتوفر الاختبار قريباً',
+            'اختبر فهمك لهذا الدرس',
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: Colors.white70),
@@ -39,17 +37,31 @@ class LessonQuizCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed:
-                  examId !=
-                      null // Enable/disable based on examId
-                  ? () {
-                      debugPrint('Navigating to Exam Page for exam: $examId');
-                      GoRouter.of(context).push('${Routes.examPage}/$examId');
-                    }
-                  : null, // If examId is null, button is disabled
+              onPressed: () {
+                if (examId == null) {
+                  debugPrint(
+                    'LessonQuizCard: exam page was not opened because examId is null',
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('الاختبار غير متاح لهذا الدرس حالياً'),
+                    ),
+                  );
+                  return;
+                }
+
+                final targetRoute = '${Routes.examPage}/$examId';
+                debugPrint(
+                  'LessonQuizCard: navigating to exam page, examId=$examId, route=$targetRoute',
+                );
+                context.push(targetRoute);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: Text(examId != null ? 'الذهاب للاختبار' : 'سيتوفر قريباً'),
             ),
@@ -59,3 +71,4 @@ class LessonQuizCard extends StatelessWidget {
     );
   }
 }
+

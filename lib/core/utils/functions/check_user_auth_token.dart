@@ -1,17 +1,28 @@
 import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart'; // New Import
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart'; // New Import
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-Future<void> checkUserAuth() async {
-  // Force delete token and go to auth for testing
-  await TokenStorage.deleteToken();
-  final context = navigatorKey.currentContext;
-  if (context != null) {
-    GoRouter.of(context).go(Routes.auth);
+Future<void> checkUserAuth([BuildContext? buildContext]) async {
+  final context = buildContext ?? navigatorKey.currentContext;
+  if (context == null) {
+    return;
   }
-  return; // Exit early
+  final router = GoRouter.of(context);
+
+  final token = TokenStorage.getToken();
+  if (token == null || token.trim().isEmpty) {
+    router.go(Routes.auth);
+    return;
+  }
+
+  if (JwtDecoder.isExpired(token)) {
+    await TokenStorage.deleteToken();
+    router.go(Routes.auth);
+    return;
+  }
+
+  router.go(Routes.homePage);
 }

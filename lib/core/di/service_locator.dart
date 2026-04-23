@@ -30,10 +30,13 @@ import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_
 
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
 
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_datasources.dart';
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart'; // New Import
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart'; // New Import
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_mock_data_source.dart';
 import 'package:algonaid_mobail_app/features/exams/data/repositories/exam_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
+
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -73,12 +76,16 @@ void setupServiceLocator() {
     () => LessonLocalDataSourceImpl(),
   );
 
-  getIt.registerLazySingleton<ExamLocalDataSource>(
+  getIt.registerLazySingleton<ExamLocalDataSource>( // Updated
     () => ExamLocalDataSourceImpl(),
   );
 
   getIt.registerLazySingleton<ExamRemoteDataSource>(
-    () => ExamRemoteDataSourceImpl(getIt()),
+    () => ExamRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<ExamMockDataSource>(
+    () => ExamMockDataSourceImpl(),
   );
 
   // ================= REPOSITORIES =================
@@ -104,10 +111,11 @@ void setupServiceLocator() {
     ),
   );
 
-  getIt.registerLazySingleton<ExamRepository>(
+  getIt.registerLazySingleton<ExamRepository>( // Updated
     () => ExamRepositoryImpl(
       localDataSource: getIt<ExamLocalDataSource>(),
       remoteDataSource: getIt<ExamRemoteDataSource>(),
+      mockDataSource: getIt<ExamMockDataSource>(),
     ),
   );
 

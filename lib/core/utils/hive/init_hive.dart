@@ -18,6 +18,15 @@ Future<void> initHive() async {
   await Hive.openBox(AppConstants.boxAuthTokenName);
   await Hive.openBox<CourseModel>(AppConstants.boxCourses);
   await Hive.openBox<CourseModel>(AppConstants.boxMyCourses);
-  await Hive.openBox<ModuleModel>(AppConstants.boxModules); // New Open Box
-  await Hive.openBox<LessonModel>(AppConstants.boxLessons); // New Open Box
+  await _openBoxSafely<ModuleModel>(AppConstants.boxModules);
+  await _openBoxSafely<LessonModel>(AppConstants.boxLessons);
+}
+
+Future<Box<T>> _openBoxSafely<T>(String name) async {
+  try {
+    return await Hive.openBox<T>(name);
+  } catch (_) {
+    await Hive.deleteBoxFromDisk(name);
+    return Hive.openBox<T>(name);
+  }
 }

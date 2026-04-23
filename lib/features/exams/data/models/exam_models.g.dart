@@ -2,10 +2,6 @@
 
 part of 'exam_models.dart';
 
-// **************************************************************************
-// TypeAdapterGenerator
-// **************************************************************************
-
 class ExamModelAdapter extends TypeAdapter<ExamModel> {
   @override
   final int typeId = 6;
@@ -17,39 +13,33 @@ class ExamModelAdapter extends TypeAdapter<ExamModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExamModel(
-      id: fields[0] as String,
+      id: fields[0] as int,
       title: fields[1] as String,
-      subject: fields[2] as String,
-      duration: fields[3] as int,
-      totalQuestions: fields[4] as int,
-      currentQuestion: fields[5] as int,
-      studentName: fields[6] as String,
-      studentImage: fields[7] as String,
-      questions: (fields[8] as List).cast<Question>(),
+      description: fields[2] as String?,
+      passingScore: fields[3] as int,
+      maxAttempts: fields[4] as int,
+      lessonId: fields[5] as int,
+      questions: (fields[6] as List?)?.cast<QuestionModel>() ?? const [],
     );
   }
 
   @override
   void write(BinaryWriter writer, ExamModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.subject)
+      ..write(obj.description)
       ..writeByte(3)
-      ..write(obj.duration)
+      ..write(obj.passingScore)
       ..writeByte(4)
-      ..write(obj.totalQuestions)
+      ..write(obj.maxAttempts)
       ..writeByte(5)
-      ..write(obj.currentQuestion)
+      ..write(obj.lessonId)
       ..writeByte(6)
-      ..write(obj.studentName)
-      ..writeByte(7)
-      ..write(obj.studentImage)
-      ..writeByte(8)
       ..write(obj.questions);
   }
 
@@ -75,40 +65,43 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return QuestionModel(
-      id: fields[0] as String,
-      questionNumber: fields[1] as int,
+      id: fields[0] as int,
+      text: fields[1] as String,
       type: fields[2] as String,
-      text: fields[3] as String,
-      description: fields[4] as String,
-      imageUrl: fields[5] as String?,
-      options: (fields[6] as List).cast<QuestionOption>(),
-      userAnswer: fields[7] as String?,
-      explanation: fields[8] as String,
+      points: fields[3] as int,
+      examId: fields[4] as int,
+      options: (fields[5] as List?)?.cast<OptionModel>() ?? const [],
+      description: fields[6] as String?,
+      imageUrl: fields[7] as String?,
+      explanation: fields[8] as String?,
+      userAnswer: fields[9] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, QuestionModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.questionNumber)
+      ..write(obj.text)
       ..writeByte(2)
       ..write(obj.type)
       ..writeByte(3)
-      ..write(obj.text)
+      ..write(obj.points)
       ..writeByte(4)
-      ..write(obj.description)
+      ..write(obj.examId)
       ..writeByte(5)
-      ..write(obj.imageUrl)
-      ..writeByte(6)
       ..write(obj.options)
+      ..writeByte(6)
+      ..write(obj.description)
       ..writeByte(7)
-      ..write(obj.userAnswer)
+      ..write(obj.imageUrl)
       ..writeByte(8)
-      ..write(obj.explanation);
+      ..write(obj.explanation)
+      ..writeByte(9)
+      ..write(obj.userAnswer);
   }
 
   @override
@@ -122,33 +115,36 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
           typeId == other.typeId;
 }
 
-class QuestionOptionModelAdapter extends TypeAdapter<QuestionOptionModel> {
+class OptionModelAdapter extends TypeAdapter<OptionModel> {
   @override
   final int typeId = 8;
 
   @override
-  QuestionOptionModel read(BinaryReader reader) {
+  OptionModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return QuestionOptionModel(
-      id: fields[0] as String,
+    return OptionModel(
+      id: fields[0] as int,
       text: fields[1] as String,
       isCorrect: fields[2] as bool,
+      questionId: fields[3] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, QuestionOptionModel obj) {
+  void write(BinaryWriter writer, OptionModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.text)
       ..writeByte(2)
-      ..write(obj.isCorrect);
+      ..write(obj.isCorrect)
+      ..writeByte(3)
+      ..write(obj.questionId);
   }
 
   @override
@@ -157,14 +153,72 @@ class QuestionOptionModelAdapter extends TypeAdapter<QuestionOptionModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QuestionOptionModelAdapter &&
+      other is OptionModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ExamAttemptModelAdapter extends TypeAdapter<ExamAttemptModel> {
+  @override
+  final int typeId = 9;
+
+  @override
+  ExamAttemptModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ExamAttemptModel(
+      id: fields[0] as int,
+      score: fields[1] as int,
+      status: fields[2] as String,
+      startedAt: fields[3] as DateTime,
+      completedAt: fields[4] as DateTime?,
+      studentId: fields[5] as int,
+      examId: fields[6] as int,
+      answers: (fields[7] as Map?)?.cast<int, int>() ?? const {},
+      questions: (fields[8] as List?)?.cast<QuestionModel>() ?? const [],
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ExamAttemptModel obj) {
+    writer
+      ..writeByte(9)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.score)
+      ..writeByte(2)
+      ..write(obj.status)
+      ..writeByte(3)
+      ..write(obj.startedAt)
+      ..writeByte(4)
+      ..write(obj.completedAt)
+      ..writeByte(5)
+      ..write(obj.studentId)
+      ..writeByte(6)
+      ..write(obj.examId)
+      ..writeByte(7)
+      ..write(obj.answers)
+      ..writeByte(8)
+      ..write(obj.questions);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExamAttemptModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
 
 class ExamResultModelAdapter extends TypeAdapter<ExamResultModel> {
   @override
-  final int typeId = 9;
+  final int typeId = 10;
 
   @override
   ExamResultModel read(BinaryReader reader) {
@@ -173,36 +227,42 @@ class ExamResultModelAdapter extends TypeAdapter<ExamResultModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExamResultModel(
-      examId: fields[0] as String,
-      studentId: fields[1] as String,
-      totalQuestions: fields[2] as int,
-      correctAnswers: fields[3] as int,
-      wrongAnswers: fields[4] as int,
-      score: fields[5] as double,
-      submittedAt: fields[6] as DateTime,
-      answers: (fields[7] as Map).cast<String, String>(),
+      attemptId: fields[0] as int,
+      examId: fields[1] as int,
+      studentId: fields[2] as int,
+      score: fields[3] as int,
+      status: fields[4] as String,
+      submittedAt: fields[5] as DateTime,
+      totalQuestions: fields[6] as int,
+      correctAnswers: fields[7] as int,
+      wrongAnswers: fields[8] as int,
+      answers: (fields[9] as Map?)?.cast<int, int>() ?? const {},
     );
   }
 
   @override
   void write(BinaryWriter writer, ExamResultModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
-      ..write(obj.examId)
+      ..write(obj.attemptId)
       ..writeByte(1)
-      ..write(obj.studentId)
+      ..write(obj.examId)
       ..writeByte(2)
-      ..write(obj.totalQuestions)
+      ..write(obj.studentId)
       ..writeByte(3)
-      ..write(obj.correctAnswers)
-      ..writeByte(4)
-      ..write(obj.wrongAnswers)
-      ..writeByte(5)
       ..write(obj.score)
-      ..writeByte(6)
+      ..writeByte(4)
+      ..write(obj.status)
+      ..writeByte(5)
       ..write(obj.submittedAt)
+      ..writeByte(6)
+      ..write(obj.totalQuestions)
       ..writeByte(7)
+      ..write(obj.correctAnswers)
+      ..writeByte(8)
+      ..write(obj.wrongAnswers)
+      ..writeByte(9)
       ..write(obj.answers);
   }
 

@@ -21,8 +21,10 @@ void initializeDio(Dio dio) {
     dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
+        debugPrint('Dio Interceptor: Checking internet connection...');
         // فحص النت
         if (await hasNoInternet()) {
+          debugPrint('Dio Interceptor: No internet connection detected. Rejecting request.');
           return handler.reject(
             DioException(
               requestOptions: options,
@@ -31,6 +33,7 @@ void initializeDio(Dio dio) {
             ),
           );
         }
+        debugPrint('Dio Interceptor: Internet connection available.');
 
         // التوكن
         final token = TokenStorage.getToken();

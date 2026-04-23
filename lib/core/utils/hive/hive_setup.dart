@@ -18,18 +18,18 @@ class HiveService {
     Hive.registerAdapter<ModuleModel>(ModuleModelAdapter()); // typeId: 5
     Hive.registerAdapter<ExamModel>(ExamModelAdapter()); // typeId: 6
     Hive.registerAdapter<QuestionModel>(QuestionModelAdapter()); // typeId: 7
-    Hive.registerAdapter<QuestionOptionModel>(
-      QuestionOptionModelAdapter(),
-    ); // typeId: 8
+    Hive.registerAdapter<OptionModel>(OptionModelAdapter()); // typeId: 8
+    Hive.registerAdapter<ExamAttemptModel>(ExamAttemptModelAdapter()); // typeId: 9
     Hive.registerAdapter<ExamResultModel>(
       ExamResultModelAdapter(),
-    ); // typeId: 9
+    ); // typeId: 10
 
     await Hive.openBox(AppConstants.boxAuthTokenName);
     await Hive.openBox<CourseModel>(AppConstants.boxCourses);
     await Hive.openBox<CourseModel>(AppConstants.boxMyCourses);
     await Hive.openBox<LessonModel>(AppConstants.boxLessons);
     await Hive.openBox<ModuleModel>(AppConstants.boxModules);
+    await Hive.openBox<String>(AppConstants.boxReadingProgress);
     await Hive.openBox<ExamModel>(AppConstants.boxExams);
     await Hive.openBox<ExamResultModel>(AppConstants.boxExamResults);
   }

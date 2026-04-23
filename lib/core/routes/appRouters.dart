@@ -9,7 +9,7 @@ import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/pages/examIntroPage.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,12 +27,11 @@ abstract class AppRouters {
       ),
       GoRoute(
         path: Routes.homePage,
-        builder: (context, state) =>
-            const CoursesPage(), // Changed to CoursesPage
+        builder: (context, state) => const CoursesHomePage(),
       ),
       GoRoute(
         path: Routes.coursesPage,
-        builder: (context, state) => const CoursesPage(),
+        builder: (context, state) => const CoursesHomePage(),
       ),
       GoRoute(
         path: Routes.auth,
@@ -79,9 +78,12 @@ abstract class AppRouters {
         path: '${Routes.examPage}/:examId',
         builder: (context, state) {
           final examId = state.pathParameters['examId']!;
+          debugPrint(
+            'AppRouters: building exam route, location=${state.uri}, examId=$examId',
+          );
           return ChangeNotifierProvider(
             create: (_) => ExamProvider(),
-            child: ExamPage(examId: examId),
+            child: ExamIntroPage(examId: examId),
           );
         },
       ),

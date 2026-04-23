@@ -6,6 +6,7 @@ import 'package:algonaid_mobail_app/core/errors/failure.dart';
 import 'package:algonaid_mobail_app/features/auth/data/datasources/auth_remote_datasourse.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepoImpl extends AuthRepo {
@@ -21,6 +22,7 @@ class AuthRepoImpl extends AuthRepo {
         email: email,
         password: password,
       );
+      await TokenStorage.saveToken(authResponse.accessToken!);
 
       return Right(
         UserEntity(
@@ -54,6 +56,7 @@ class AuthRepoImpl extends AuthRepo {
         password: password,
         role: role,
       );
+      await TokenStorage.saveToken(authResponse.accessToken!);
 
       return Right(
         UserEntity(

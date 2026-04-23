@@ -6,82 +6,43 @@ part 'exam_models.g.dart';
 /// Model for Exam - extends Exam entity with JSON serialization
 @HiveType(typeId: 6)
 class ExamModel extends Exam {
-  @HiveField(0)
-  final String id;
-  @HiveField(1)
-  final String title;
-  @HiveField(2)
-  final String subject;
-  @HiveField(3)
-  final int duration;
-  @HiveField(4)
-  final int totalQuestions;
-  @HiveField(5)
-  final int currentQuestion;
-  @HiveField(6)
-  final String studentName;
-  @HiveField(7)
-  final String studentImage;
-  @HiveField(8)
-  final List<Question> questions;
-
-  ExamModel({
-    required this.id,
-    required this.title,
-    required this.subject,
-    required this.duration,
-    required this.totalQuestions,
-    required this.currentQuestion,
-    required this.studentName,
-    required this.studentImage,
-    required this.questions,
-  }) : super(
-         id: id,
-         title: title,
-         subject: subject,
-         duration: duration,
-         totalQuestions: totalQuestions,
-         currentQuestion: currentQuestion,
-         studentName: studentName,
-         studentImage: studentImage,
-         questions: questions,
-       );
+  const ExamModel({
+    required super.id,
+    required super.title,
+    super.description,
+    required super.passingScore,
+    required super.maxAttempts,
+    required super.lessonId,
+    super.questions,
+  });
 
   /// Convert JSON to ExamModel
   factory ExamModel.fromJson(Map<String, dynamic> json) {
-    final examData = json['exam'] as Map<String, dynamic>;
-
     return ExamModel(
-      id: examData['id'] as String,
-      title: examData['title'] as String,
-      subject: examData['subject'] as String,
-      duration: examData['duration'] as int,
-      totalQuestions: examData['totalQuestions'] as int,
-      currentQuestion: examData['currentQuestion'] as int,
-      studentName: examData['studentName'] as String,
-      studentImage: examData['studentImage'] as String,
-      questions: (examData['questions'] as List<dynamic>)
-          .map((q) => QuestionModel.fromJson(q as Map<String, dynamic>))
-          .toList(),
+      id: (json['id'] as num).toInt(),
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String?,
+      passingScore: (json['passingScore'] as num?)?.toInt() ?? 0,
+      maxAttempts: (json['maxAttempts'] as num?)?.toInt() ?? 0,
+      lessonId: (json['lessonId'] as num?)?.toInt() ?? 0,
+      questions:
+          (json['questions'] as List<dynamic>?)
+              ?.map((q) => QuestionModel.fromJson(q as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
   }
 
   /// Convert ExamModel to JSON
   Map<String, dynamic> toJson() {
     return {
-      'exam': {
-        'id': id,
-        'title': title,
-        'subject': subject,
-        'duration': duration,
-        'totalQuestions': totalQuestions,
-        'currentQuestion': currentQuestion,
-        'studentName': studentName,
-        'studentImage': studentImage,
-        'questions': questions
-            .map((q) => (q as QuestionModel).toJson())
-            .toList(),
-      },
+      'id': id,
+      'title': title,
+      'description': description,
+      'passingScore': passingScore,
+      'maxAttempts': maxAttempts,
+      'lessonId': lessonId,
+      'questions': questions.map((q) => (q as QuestionModel).toJson()).toList(),
     };
   }
 }
@@ -89,61 +50,36 @@ class ExamModel extends Exam {
 /// Model for Question - extends Question entity with JSON serialization
 @HiveType(typeId: 7)
 class QuestionModel extends Question {
-  @HiveField(0)
-  final String id;
-  @HiveField(1)
-  final int questionNumber;
-  @HiveField(2)
-  final String type;
-  @HiveField(3)
-  final String text;
-  @HiveField(4)
-  final String description;
-  @HiveField(5)
-  final String? imageUrl;
-  @HiveField(6)
-  final List<QuestionOption> options;
-  @HiveField(7)
-  final String? userAnswer;
-  @HiveField(8)
-  final String explanation;
-
-  QuestionModel({
-    required this.id,
-    required this.questionNumber,
-    required this.type,
-    required this.text,
-    required this.description,
-    this.imageUrl,
-    required this.options,
-    this.userAnswer,
-    required this.explanation,
-  }) : super(
-         id: id,
-         questionNumber: questionNumber,
-         type: type,
-         text: text,
-         description: description,
-         imageUrl: imageUrl,
-         options: options,
-         userAnswer: userAnswer,
-         explanation: explanation,
-       );
+  const QuestionModel({
+    required super.id,
+    required super.text,
+    required super.type,
+    required super.points,
+    required super.examId,
+    super.options,
+    super.description,
+    super.imageUrl,
+    super.explanation,
+    super.userAnswer,
+  });
 
   /// Convert JSON to QuestionModel
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
     return QuestionModel(
-      id: json['id'] as String,
-      questionNumber: json['questionNumber'] as int,
-      type: json['type'] as String,
-      text: json['text'] as String,
-      description: json['description'] as String,
+      id: (json['id'] as num).toInt(),
+      text: json['text'] as String? ?? '',
+      type: json['type'] as String? ?? 'MULTIPLE_CHOICE',
+      points: json.containsKey('points') ? (json['points'] as num).toInt() : 0,
+      examId: (json['examId'] as num?)?.toInt() ?? 0,
+      options:
+          (json['options'] as List<dynamic>?)
+              ?.map((o) => OptionModel.fromJson(o as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      description: json['description'] as String?,
       imageUrl: json['imageUrl'] as String?,
-      options: (json['options'] as List<dynamic>)
-          .map((o) => QuestionOptionModel.fromJson(o as Map<String, dynamic>))
-          .toList(),
-      userAnswer: json['userAnswer'] as String?,
-      explanation: json['explanation'] as String,
+      explanation: json['explanation'] as String?,
+      userAnswer: (json['userAnswer'] as num?)?.toInt(),
     );
   }
 
@@ -151,142 +87,267 @@ class QuestionModel extends Question {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'questionNumber': questionNumber,
-      'type': type,
       'text': text,
+      'type': type,
+      'points': points,
+      'examId': examId,
+      'options': options.map((o) => (o as OptionModel).toJson()).toList(),
       'description': description,
       'imageUrl': imageUrl,
-      'options': options
-          .map((o) => (o as QuestionOptionModel).toJson())
-          .toList(),
-      'userAnswer': userAnswer,
       'explanation': explanation,
+      'userAnswer': userAnswer,
     };
   }
 
-  /// Override copyWith to return QuestionModel
   @override
   QuestionModel copyWith({
-    String? id,
-    int? questionNumber,
-    String? type,
+    int? id,
     String? text,
+    String? type,
+    int? points,
+    int? examId,
+    List<Option>? options,
     String? description,
     String? imageUrl,
-    List<QuestionOption>? options,
-    String? userAnswer,
     String? explanation,
+    int? userAnswer,
   }) {
     return QuestionModel(
       id: id ?? this.id,
-      questionNumber: questionNumber ?? this.questionNumber,
-      type: type ?? this.type,
       text: text ?? this.text,
+      type: type ?? this.type,
+      points: points ?? this.points,
+      examId: examId ?? this.examId,
+      options: options ?? this.options,
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
-      options: options ?? this.options,
-      userAnswer: userAnswer ?? this.userAnswer,
       explanation: explanation ?? this.explanation,
+      userAnswer: userAnswer ?? this.userAnswer,
     );
   }
 }
 
-/// Model for QuestionOption - extends QuestionOption entity with JSON serialization
+/// Model for Option - extends Option entity with JSON serialization
 @HiveType(typeId: 8)
-class QuestionOptionModel extends QuestionOption {
-  @HiveField(0)
-  final String id;
-  @HiveField(1)
-  final String text;
-  @HiveField(2)
-  final bool isCorrect;
+class OptionModel extends Option {
+  const OptionModel({
+    required super.id,
+    required super.text,
+    required super.isCorrect,
+    required super.questionId,
+  });
 
-  QuestionOptionModel({
-    required this.id,
-    required this.text,
-    required this.isCorrect,
-  }) : super(id: id, text: text, isCorrect: isCorrect);
-
-  /// Convert JSON to QuestionOptionModel
-  factory QuestionOptionModel.fromJson(Map<String, dynamic> json) {
-    return QuestionOptionModel(
-      id: json['id'] as String,
-      text: json['text'] as String,
-      isCorrect: json['isCorrect'] as bool,
+  /// Convert JSON to OptionModel
+  factory OptionModel.fromJson(Map<String, dynamic> json) {
+    return OptionModel(
+      id: (json['id'] as num).toInt(),
+      text: json['text'] as String? ?? '',
+      isCorrect: json['isCorrect'] as bool? ?? false,
+      questionId: (json['questionId'] as num?)?.toInt() ?? 0,
     );
   }
 
-  /// Convert QuestionOptionModel to JSON
-  Map<String, dynamic> toJson() {
-    return {'id': id, 'text': text, 'isCorrect': isCorrect};
-  }
-}
-
-/// Model for ExamResult
-@HiveType(typeId: 9)
-class ExamResultModel extends ExamResult {
-  @HiveField(0)
-  final String examId;
-  @HiveField(1)
-  final String studentId;
-  @HiveField(2)
-  final int totalQuestions;
-  @HiveField(3)
-  final int correctAnswers;
-  @HiveField(4)
-  final int wrongAnswers;
-  @HiveField(5)
-  final double score;
-  @HiveField(6)
-  final DateTime submittedAt;
-  @HiveField(7)
-  final Map<String, String> answers;
-
-  ExamResultModel({
-    required this.examId,
-    required this.studentId,
-    required this.totalQuestions,
-    required this.correctAnswers,
-    required this.wrongAnswers,
-    required this.score,
-    required this.submittedAt,
-    required this.answers,
-  }) : super(
-         examId: examId,
-         studentId: studentId,
-         totalQuestions: totalQuestions,
-         correctAnswers: correctAnswers,
-         wrongAnswers: wrongAnswers,
-         score: score,
-         submittedAt: submittedAt,
-         answers: answers,
-       );
-
-  /// Convert JSON to ExamResultModel
-  factory ExamResultModel.fromJson(Map<String, dynamic> json) {
-    return ExamResultModel(
-      examId: json['examId'] as String,
-      studentId: json['studentId'] as String,
-      totalQuestions: json['totalQuestions'] as int,
-      correctAnswers: json['correctAnswers'] as int,
-      wrongAnswers: json['wrongAnswers'] as int,
-      score: (json['score'] as num).toDouble(),
-      submittedAt: DateTime.parse(json['submittedAt'] as String),
-      answers: Map<String, String>.from(json['answers'] as Map),
-    );
-  }
-
-  /// Convert ExamResultModel to JSON
+  /// Convert OptionModel to JSON
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
+      'text': text,
+      'isCorrect': isCorrect,
+      'questionId': questionId,
+    };
+  }
+}
+
+/// Model for ExamAttempt - extends ExamAttempt entity with JSON serialization
+@HiveType(typeId: 9)
+class ExamAttemptModel extends ExamAttempt {
+  const ExamAttemptModel({
+    required super.id,
+    required super.score,
+    required super.status,
+    required super.startedAt,
+    super.completedAt,
+    required super.studentId,
+    required super.examId,
+    super.answers,
+    super.questions,
+  });
+
+  /// Convert JSON to ExamAttemptModel
+  factory ExamAttemptModel.fromJson(Map<String, dynamic> json) {
+    return ExamAttemptModel(
+      id: (json['id'] as num).toInt(),
+      score: (json['score'] as num?)?.toInt() ?? 0,
+      status: json['status'] as String? ?? 'IN_PROGRESS',
+      startedAt: DateTime.parse(
+        json['startedAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
+      completedAt: json['completedAt'] != null
+          ? DateTime.parse(json['completedAt'] as String)
+          : null,
+      studentId: (json['studentId'] as num?)?.toInt() ?? 0,
+      examId: (json['examId'] as num?)?.toInt() ?? 0,
+      answers:
+          (json['answers'] as Map<String, dynamic>?)?.map(
+            (k, v) => MapEntry(int.parse(k), v as int),
+          ) ??
+          const {},
+      questions:
+          (json['questions'] as List<dynamic>?)
+              ?.whereType<Map<String, dynamic>>()
+              .map(QuestionModel.fromJson)
+              .toList() ??
+          const [],
+    );
+  }
+
+  factory ExamAttemptModel.fromStartJson(
+    Map<String, dynamic> json, {
+    required int examId,
+  }) {
+    return ExamAttemptModel(
+      id: (json['attemptId'] as num).toInt(),
+      score: 0,
+      status: json['status'] as String? ?? 'IN_PROGRESS',
+      startedAt: json['startedAt'] != null
+          ? DateTime.parse(json['startedAt'] as String)
+          : DateTime.now(),
+      studentId: (json['studentId'] as num?)?.toInt() ?? 0,
+      examId: (json['examId'] as num?)?.toInt() ?? examId,
+      questions: (json['questions'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (questionJson) =>
+                QuestionModel.fromJson({...questionJson, 'examId': examId}),
+          )
+          .toList(),
+    );
+  }
+
+  /// Convert ExamAttemptModel to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'score': score,
+      'status': status,
+      'startedAt': startedAt.toIso8601String(),
+      'completedAt': completedAt?.toIso8601String(),
+      'studentId': studentId,
+      'examId': examId,
+      'answers': answers.map((k, v) => MapEntry(k.toString(), v)),
+      'questions': questions
+          .map((question) => (question as QuestionModel).toJson())
+          .toList(),
+    };
+  }
+}
+
+/// Model for ExamResult - extends ExamResult entity with JSON serialization
+// Assuming ExamResult is similar to ExamAttempt for now, but specialized for results view
+@HiveType(typeId: 10) // Changed typeId to avoid conflict
+class ExamResultModel extends ExamResult {
+  const ExamResultModel({
+    required super.attemptId,
+    required super.examId,
+    required super.studentId,
+    required super.score,
+    required super.status,
+    required super.submittedAt,
+    required super.totalQuestions,
+    required super.correctAnswers,
+    required super.wrongAnswers,
+    required super.answers,
+  });
+
+  factory ExamResultModel.fromJson(Map<String, dynamic> json) {
+    return ExamResultModel.fromResultJson(json);
+  }
+
+  factory ExamResultModel.fromSubmissionJson(Map<String, dynamic> json) {
+    final exam = json['exam'] as Map<String, dynamic>?;
+    return ExamResultModel(
+      attemptId: (json['id'] as num).toInt(),
+      examId:
+          (json['examId'] as num?)?.toInt() ??
+          (exam?['id'] as num?)?.toInt() ??
+          0,
+      studentId: (json['studentId'] as num?)?.toInt() ?? 0,
+      score: (json['score'] as num?)?.toInt() ?? 0,
+      status: json['status'] as String? ?? 'FAILED',
+      submittedAt: DateTime.parse(
+        json['completedAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
+      totalQuestions: (exam?['questions'] as List?)?.length ?? 0,
+      correctAnswers: 0,
+      wrongAnswers: 0,
+      answers: const {},
+    );
+  }
+
+  factory ExamResultModel.fromResultJson(Map<String, dynamic> json) {
+    final answersList = (json['answers'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>()
+        .toList();
+
+    final examJson = json['exam'] as Map<String, dynamic>?;
+    final examQuestions =
+        (examJson?['questions'] as List<dynamic>? ?? const []);
+
+    final totalQuestions = examQuestions.length;
+    final answers = <int, int>{};
+    var correctAnswers = 0;
+
+    for (final answerJson in answersList) {
+      final questionJson = answerJson['question'] as Map<String, dynamic>?;
+      final selectedOptionJson =
+          answerJson['selectedOption'] as Map<String, dynamic>?;
+      final questionId =
+          (answerJson['questionId'] as num?)?.toInt() ??
+          (questionJson?['id'] as num?)?.toInt();
+      final selectedOptionId =
+          (answerJson['selectedOptionId'] as num?)?.toInt() ??
+          (selectedOptionJson?['id'] as num?)?.toInt();
+
+      if (questionId != null && selectedOptionId != null) {
+        answers[questionId] = selectedOptionId;
+      }
+
+      if ((selectedOptionJson?['isCorrect'] as bool?) ?? false) {
+        correctAnswers++;
+      }
+    }
+
+    return ExamResultModel(
+      attemptId: (json['id'] as num).toInt(),
+      examId:
+          (json['examId'] as num?)?.toInt() ??
+          (examJson?['id'] as num?)?.toInt() ??
+          0,
+      studentId: (json['studentId'] as num?)?.toInt() ?? 0,
+      score: (json['score'] as num?)?.toInt() ?? 0,
+      status: json['status'] as String? ?? 'FAILED',
+      submittedAt: DateTime.parse(
+        json['completedAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
+      totalQuestions: totalQuestions,
+      correctAnswers: correctAnswers,
+      wrongAnswers: totalQuestions - correctAnswers,
+      answers: answers,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': attemptId,
       'examId': examId,
       'studentId': studentId,
+      'score': score,
+      'status': status,
+      'completedAt': submittedAt.toIso8601String(),
       'totalQuestions': totalQuestions,
       'correctAnswers': correctAnswers,
       'wrongAnswers': wrongAnswers,
-      'score': score,
-      'submittedAt': submittedAt.toIso8601String(),
-      'answers': answers,
+      'answers': answers.map((k, v) => MapEntry(k.toString(), v)),
     };
   }
 }

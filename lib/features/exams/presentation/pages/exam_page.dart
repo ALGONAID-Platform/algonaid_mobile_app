@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/pages/examIntroPage.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/widgets/exam_widget.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/pages/results_page.dart';
@@ -7,7 +9,7 @@ import 'package:algonaid_mobail_app/features/exams/presentation/pages/results_pa
 class ExamPage extends StatefulWidget {
   final String examId;
 
-  ExamPage({Key? key, required this.examId}) : super(key: key);
+  const ExamPage({super.key, required this.examId});
 
   @override
   State<ExamPage> createState() => _ExamPageState();
@@ -17,55 +19,78 @@ class _ExamPageState extends State<ExamPage> {
   @override
   void initState() {
     super.initState();
-    // Load exam data when screen initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExamProvider>().loadExam(widget.examId);
+    debugPrint('ExamPage: initState for examId=${widget.examId}');
+    Future.microtask(() {
+      if (mounted) {
+        final examProvider = context.read<ExamProvider>();
+        debugPrint(
+          'ExamPage: entry check for examId=${widget.examId}, '
+          'providerState=${examProvider.state}, loadedExamId=${examProvider.exam?.id}',
+        );
+        final mustOpenIntroFirst =
+            examProvider.exam?.id.toString() != widget.examId ||
+            examProvider.state == ExamState.initial ||
+            (!examProvider.isSubmitted && examProvider.attemptId == null);
+
+        if (mustOpenIntroFirst) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => ChangeNotifierProvider.value(
+                value: examProvider,
+                child: ExamIntroPage(examId: widget.examId),
+              ),
+            ),
+          );
+        }
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: AppBar(
+        title: Consumer<ExamProvider>(
+          builder: (context, examProvider, child) {
+            if (examProvider.exam != null) {
+              return Text(examProvider.exam!.title);
+            }
+            return const Text('Exam');
+          },
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Consumer<ExamProvider>(
         builder: (context, examProvider, _) {
-          // Show loading state
-          if (examProvider.state == ExamState.loading) {
-            return const Center(
-              child: CircularProgressIndicator(), // Removed hardcoded color
-            );
+          debugPrint(
+            'ExamPage: build for examId=${widget.examId}, state=${examProvider.state}, '
+            'loadedExamId=${examProvider.exam?.id}, questions=${examProvider.totalQuestions}, '
+            'attemptId=${examProvider.attemptId}, error=${examProvider.error}',
+          );
+          // 1. Show loading state
+          if (examProvider.state == ExamState.loading ||
+              examProvider.state == ExamState.initial) {
+            return const SizedBox.shrink();
           }
 
-          // Show error state
+          // 2. Show error state
           if (examProvider.state == ExamState.error) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red), // Red for error is fine
-                  const SizedBox(height: 16),
-                  Text(
-                    'حدث خطأ: ${examProvider.error}',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onBackground), // Theme aware text color
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => examProvider.loadExam(widget.examId),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                    ),
-                    child: Text(
-                      'إعادة المحاولة',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                    ),
-                  ),
-                ],
-              ),
+            debugPrint(
+              'ExamPage: showing error state for examId=${widget.examId}, '
+              'message=${examProvider.error}',
+            );
+            return AppErrorState(
+              message: examProvider.error ?? 'حدث خطأ غير متوقع',
+              onRetry: () => examProvider.loadExam(int.parse(widget.examId)),
+              buttonText: 'تحميل الاختبار مرة أخرى',
             );
           }
 
-          // Show results if exam is submitted
+          // 3. Show results if exam is submitted
           if (examProvider.isSubmitted && examProvider.result != null) {
             return ResultsPage(
               result: examProvider.result!,
@@ -73,29 +98,21 @@ class _ExamPageState extends State<ExamPage> {
             );
           }
 
-          // Show exam content
-          if (examProvider.exam != null &&
-              examProvider.currentQuestion != null) {
-            final exam = examProvider.exam!;
-            final currentQuestion = examProvider.currentQuestion!;
+          // 4. Show exam content (ensure exam and currentQuestion are not null)
+          final exam = examProvider.exam;
+          final currentQuestion = examProvider.currentQuestion;
+
+          if (exam != null && currentQuestion != null) {
             final answeredList = List.generate(
-              exam.totalQuestions,
-              (index) =>
-                  examProvider.answers.containsKey(exam.questions[index].id),
+              examProvider.totalQuestions,
+              (index) => examProvider.answers.containsKey(
+                examProvider.questionAt(index)?.id,
+              ),
             );
 
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  // Header
-                  ExamHeader(
-                    studentName: exam.studentName,
-                    studentImage: exam.studentImage,
-                    subject: exam.subject,
-                    remainingMinutes: exam.duration,
-                    totalQuestions: exam.totalQuestions,
-                    currentQuestion: examProvider.currentQuestionIndex + 1,
-                  ),
                   // Main content
                   Padding(
                     padding: const EdgeInsets.all(16),
@@ -134,13 +151,13 @@ class _ExamPageState extends State<ExamPage> {
                                   examProvider.selectAnswer(option.id);
                                 },
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                         const SizedBox(height: 24),
                         // Question navigation
                         QuestionNavigation(
-                          totalQuestions: exam.totalQuestions,
+                          totalQuestions: examProvider.totalQuestions,
                           currentQuestion: examProvider.currentQuestionIndex,
                           answeredQuestions: answeredList,
                           onQuestionSelected: (index) {
@@ -152,15 +169,23 @@ class _ExamPageState extends State<ExamPage> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withOpacity(0.3),
                             ),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info, color: Theme.of(context).colorScheme.primary, size: 20),
+                              Icon(
+                                Icons.info,
+                                color: Theme.of(context).colorScheme.primary,
+                                size: 20,
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -168,7 +193,9 @@ class _ExamPageState extends State<ExamPage> {
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -183,12 +210,23 @@ class _ExamPageState extends State<ExamPage> {
             );
           }
 
-          return const SizedBox.shrink();
+          // Fallback if data is missing despite being in loaded state
+          debugPrint(
+            'ExamPage: loaded state but no renderable data for examId=${widget.examId}, '
+            'exam=${examProvider.exam != null}, currentQuestion=${examProvider.currentQuestion != null}',
+          );
+          return AppErrorState(
+            message: 'لا توجد أسئلة متاحة لهذا الاختبار حالياً.',
+            onRetry: () => examProvider.loadExam(int.parse(widget.examId)),
+            buttonText: 'إعادة المحاولة',
+          );
         },
       ),
       bottomNavigationBar: Consumer<ExamProvider>(
         builder: (context, examProvider, _) {
-          if (examProvider.exam == null || examProvider.isSubmitted) {
+          if (examProvider.exam == null ||
+              examProvider.currentQuestion == null ||
+              examProvider.isSubmitted) {
             return const SizedBox.shrink();
           }
 
@@ -208,7 +246,16 @@ class _ExamPageState extends State<ExamPage> {
               examProvider.nextQuestion();
             },
             onSubmit: () {
-              // Show confirmation dialog
+              if (examProvider.answeredQuestions != examProvider.totalQuestions) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('الرجاء الإجابة على جميع الأسئلة قبل التسليم.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
@@ -231,7 +278,9 @@ class _ExamPageState extends State<ExamPage> {
                       ),
                       child: Text(
                         'تسليم',
-                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
                       ),
                     ),
                   ],

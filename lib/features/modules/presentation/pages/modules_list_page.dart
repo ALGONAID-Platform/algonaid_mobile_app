@@ -54,6 +54,10 @@ class _ModulesListViewState extends State<_ModulesListView> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           title: Text(widget.courseTitle),
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,

@@ -12,11 +12,16 @@ class _AuthGateState extends State<AuthGate> {
   @override
   void initState() {
     super.initState();
-    _init();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _init();
+    });
   }
 
   Future<void> _init() async {
-    await checkUserAuth();
+    await checkUserAuth(context);
   }
 
   @override
