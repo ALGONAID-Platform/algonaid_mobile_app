@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/common/enums/password_strength.dart';
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/validations/app_validation.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
@@ -42,6 +43,8 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
   Widget build(BuildContext context) {
     final authService = context.watch<AuthServiceProvider>();
     return Scaffold(
+      backgroundColor: context.background,
+
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -69,7 +72,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                     CustomTextFormField(
                       controller: _nameController,
                       labelText: "ادخل اسمك الكامل",
-                      borderColor: AppColors.primary,
+                      borderColor: context.primary,
                       validator: (name) =>
                           Validator.length(name, min: 2, max: 50),
                     ),
@@ -85,7 +88,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                   CustomTextFormField(
                     controller: _emailController,
                     labelText: "ادخل عنوان البريد الإلكتروني",
-                    borderColor: AppColors.primary,
+                    borderColor: context.primary,
                     validator: (email) => Validator.email(email!),
                   ),
                   //=========================
@@ -99,7 +102,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                   CustomTextFormField(
                     controller: _passwordController,
                     labelText: "ادخل كلمة المرور",
-                    borderColor: AppColors.primary,
+                    borderColor: context.primary,
                     isPasswordVisible: authService.isPasswordVisible!,
                     isPassword: true,
                     fillPercentage: authService.showPasswordStrength ?? 0,
@@ -147,7 +150,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                     child: authService.isLoading
                         ? CircularProgressIndicator()
                         : CustomButton(
-                            color: AppColors.primary,
+                            color: context.primary,
                             onPressed: () async {
                               if (!_formKey.currentState!.validate()) return;
 

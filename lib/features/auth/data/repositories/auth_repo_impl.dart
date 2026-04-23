@@ -67,9 +67,16 @@ class AuthRepoImpl extends AuthRepo {
       );
     } catch (e) {
       if (e is DioException) {
-        return left(DioErrorHandler.handle(e));
+        return Left(DioErrorHandler.handle(e));
       }
-      return left(ServerFailure(e.toString()));
+
+      return Left(
+        ServerFailure("حدث خطأ غير متوقع في الخادم، يرجى المحاولة لاحقاً"),
+      );
     }
   }
 }
+
+
+// في ملف AuthRepoImpl.dart
+

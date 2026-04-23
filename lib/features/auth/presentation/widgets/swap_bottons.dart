@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class SwapAuthButtonCostum extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 48),
       width: 280,
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: context.primary,
         borderRadius: BorderRadius.circular(30),
       ),
       child: StackButtons(auth: auth),
@@ -45,7 +46,7 @@ class StackButtons extends StatelessWidget {
             padding: EdgeInsets.all(5),
             width: 140,
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: context.onPrimary,
               borderRadius: BorderRadius.circular(30),
             ),
           ),

@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/widgets/label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,12 +16,12 @@ class SignInWithGoogle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: context.surfaceContainer,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppColors.primary, width: 0.8),
+        border: Border.all(color: context.primary, width: 0.8),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
