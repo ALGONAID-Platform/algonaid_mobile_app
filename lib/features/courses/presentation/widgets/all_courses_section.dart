@@ -1,4 +1,6 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseCard.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
@@ -14,15 +16,7 @@ class AllCoursesListSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-          child: Text(
-            'كل الكورسات',
-            style: Styles.style18(
-              context,
-            ).copyWith(fontWeight: FontWeight.bold),
-          ),
-        ),
+        SectionHeader(text: 'كل الكورسات'),
 
         // إذا كانت القائمة فارغة، نظهر الصندوق الجمالي
         if (allCourses.isEmpty)
@@ -57,18 +51,18 @@ class AllCoursesListSection extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         // ألوان هادئة (خلفية زرقاء فاتحة جداً أو رمادي فاتح)
-        color: AppColors.primary.withOpacity(0.05),
+        color: context.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+        border: Border.all(color: context.primary.withOpacity(0.1)),
       ),
       child: Column(
         children: [
-          const Icon(Icons.auto_awesome, color: AppColors.primary, size: 40),
+          Icon(Icons.auto_awesome, color: context.primary, size: 40),
           const SizedBox(height: 16),
           Text(
             "لقد قمت بالتسجيل في كل الكورسات!",
             textAlign: TextAlign.center,
-            style: Styles.style16(context).copyWith(
+            style: context.textTheme.titleMedium!.copyWith(
               fontWeight: FontWeight.bold,
               color: Colors.blueGrey[800],
             ),
@@ -77,9 +71,10 @@ class AllCoursesListSection extends StatelessWidget {
           Text(
             "أنت الآن في رحلة تعلم شاملة. في حال توفر عروض أو دورات جديدة، ستظهر لك هنا مباشرة.",
             textAlign: TextAlign.center,
-            style: Styles.style14(
-              context,
-            ).copyWith(color: Colors.blueGrey[600], height: 1.5),
+            style: context.textTheme.bodySmall!.copyWith(
+              color: Colors.blueGrey[600],
+              height: 1.5,
+            ),
           ),
         ],
       ),

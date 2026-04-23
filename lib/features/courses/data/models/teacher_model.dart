@@ -17,7 +17,7 @@ class TeacherModel extends TeacherEntity {
   @HiveField(4)
   final int userId;
   @HiveField(5)
-  final UserModel user; // 🌟 تأكد أنه UserModel وليس Entity ليقبله Hive
+  final UserModel user;
 
   TeacherModel({
     required this.id,
@@ -46,7 +46,6 @@ class TeacherModel extends TeacherEntity {
     );
   }
 
-  // دالة مساعدة للتحويل من Entity لموديل عند الكاش
   factory TeacherModel.fromEntity(TeacherEntity entity) {
     return TeacherModel(
       id: entity.id,

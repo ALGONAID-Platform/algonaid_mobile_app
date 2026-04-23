@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
@@ -10,14 +11,12 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(15),
-        boxShadow:AppShadows.cardShadow
+        boxShadow: AppShadows.cardShadow,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
@@ -28,14 +27,7 @@ class CourseCard extends StatelessWidget {
 
             Flexible(
               fit: FlexFit.tight,
-              child: BuildCourseDetails(
-                tags: course.moduleTitles,
-                modulesCount: course.modulesCount,
-                isEnrolled: course.isEnrolled,
-                courseId: course.id,
-                courseTitle: course.title,
-                courseImage: course.thumbnail,
-              ),
+              child: BuildCourseDetails(course: course),
             ),
           ],
         ),

@@ -1,16 +1,21 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/widgets/loading/continueLearningShimmer.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/all_courses_section.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildShimmerSection.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/courseHeader.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/my_courses_section.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/sliver_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/continue_learning_card.dart';
 
 class CoursesPage extends StatefulWidget {
@@ -27,21 +32,30 @@ class _CoursesPageState extends State<CoursesPage> {
     // جلب البيانات عند تشغيل الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GetCoursesProvider>().refreshAll();
+      context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: RefreshIndicator(
-        onRefresh: () => context.read<GetCoursesProvider>().refreshAll(),
+        elevation: 0.0,
+
+        onRefresh: () async {
+          await context.read<GetCoursesProvider>().refreshAll();
+          await context
+              .read<LastAccessedModuleProvider>()
+              .fetchLastAccessedModule();
+        },
         color: AppColors.primary,
         child: Consumer<GetCoursesProvider>(
           builder: (context, provider, child) {
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
+                SliverToBoxAdapter(child: SectionHeader(text: 'اخر باب')),
                 if (provider.isLoading)
                   SliverToBoxAdapter(
                     child: Column(
@@ -58,19 +72,13 @@ class _CoursesPageState extends State<CoursesPage> {
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
-                        const SizedBox(height: 20),
-
-                        if (provider.myCourses.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: ContinueLearningCard(),
-                          ),
+                        courseHeader(),
 
                         MyCoursesListSection(myCourses: provider.myCourses),
 
                         AllCoursesListSection(allCourses: provider.allCourses),
 
-                        const SizedBox(height: 50), // مسافة في النهاية
+                        const SizedBox(height: 50), 
                       ],
                     ),
                   ),
@@ -83,6 +91,7 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 }
+
 
 class CoursesHomePage extends StatefulWidget {
   const CoursesHomePage({Key? key}) : super(key: key);
@@ -104,17 +113,16 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.background,
+
       appBar: CustomWhiteAppBar(
         userName: CacheHelper.getString(key: AppConstants.userName) ?? "مستخدم",
         userImageUrl: null,
         notificationCount: 4,
         onProfilePressed: () {},
         onNotificationPressed: () {},
-        onSearchPressed: () {
-          print(TokenStorage.getToken());
-        },
+        onSearchPressed: () {},
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 350),
         child: _pages[_currentIndex],

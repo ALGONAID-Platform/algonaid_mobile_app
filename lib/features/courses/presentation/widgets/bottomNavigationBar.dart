@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 
@@ -65,15 +66,13 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return SafeArea(
       minimum: const EdgeInsets.only(bottom: 12),
       child: Container(
         height: 50,
         margin: const EdgeInsets.symmetric(horizontal: 32),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface,
+          color: context.surfaceContainer,
 
           borderRadius: BorderRadius.circular(30),
           boxShadow: AppShadows.cardShadow,
@@ -89,32 +88,29 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
                 behavior: HitTestBehavior.opaque,
                 child: Center(
                   child: AnimatedContainer(
+                    width: isActive ? 100 : 50,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
-                    // 🌟 قللنا الـ Padding لضمان عدم حدوث زحام عرضي
                     padding: EdgeInsets.symmetric(
-                      horizontal: isActive ? 16 : 0,
+                      horizontal: 0,
                       vertical: isActive ? 6 : 0,
                     ),
                     decoration: isActive
                         ? BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withOpacity(0.12),
+                            color: context.primary.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(30),
                           )
                         : null,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ScaleTransition(
                           scale: _iconControllers[i],
                           child: Icon(
                             icons[i],
                             color: isActive
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey[isDark ? 500 : 600],
+                                ? context.primary
+                                : Colors.grey[context.isDarkMode ? 200 : 600],
                             size: 22,
                           ),
                         ),
@@ -124,16 +120,15 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
                               duration: const Duration(milliseconds: 200),
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 10),
-                                child: Text(
-                                  labels[i],
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  overflow: TextOverflow.clip,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    labels[i],
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.clip,
+                                    style: context.textTheme.labelMedium!
+                                        .copyWith(color: context.primary),
                                   ),
                                 ),
                               ),

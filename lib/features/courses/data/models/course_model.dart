@@ -40,6 +40,15 @@ class CourseModel extends CourseEntity {
   @HiveField(10)
   final bool isEnrolled;
 
+  @HiveField(11, defaultValue: 0)
+  final int totalLessons;
+
+  @HiveField(12, defaultValue: 0)
+  final int completedLessons;
+
+  @HiveField(13, defaultValue: 0.0)
+  final double progressPercentage;
+
   CourseModel({
     required this.id,
     required this.title,
@@ -52,6 +61,9 @@ class CourseModel extends CourseEntity {
     required this.moduleTitles,
     required this.modulesCount,
     required this.isEnrolled,
+    required this.totalLessons,
+    required this.completedLessons,
+    required this.progressPercentage,
   }) : super(
           id: id,
           title: title,
@@ -64,6 +76,9 @@ class CourseModel extends CourseEntity {
           moduleTitles: moduleTitles,
           modulesCount: modulesCount,
           isEnrolled: isEnrolled,
+          totalLessons: totalLessons,
+          completedLessons: completedLessons,
+          progressPercentage: progressPercentage,
         );
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
@@ -79,6 +94,9 @@ class CourseModel extends CourseEntity {
       moduleTitles: (List<String>.from(json['moduleTitles'] ?? [])),
       modulesCount: json['modulesCount'] ?? 0,
       isEnrolled: json['isEnrolled'] ?? false,
+      totalLessons: json['totalLessons'] ?? 0,
+      completedLessons: json['completedLessons'] ?? 0,
+      progressPercentage: (json['progressPercentage'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -96,6 +114,9 @@ class CourseModel extends CourseEntity {
       moduleTitles: entity.moduleTitles,
       modulesCount: entity.modulesCount,
       isEnrolled: entity.isEnrolled,
+      totalLessons: entity.totalLessons,
+      completedLessons: entity.completedLessons,
+      progressPercentage: entity.progressPercentage,
     );
   }
 
@@ -112,6 +133,9 @@ class CourseModel extends CourseEntity {
       'moduleTitles': moduleTitles,
       'modulesCount': modulesCount,
       'isEnrolled': isEnrolled,
+      'totalLessons': totalLessons,
+      'completedLessons': completedLessons,
+      'progressPercentage': progressPercentage,
     };
   }
 

@@ -28,13 +28,16 @@ class CourseModelAdapter extends TypeAdapter<CourseModel> {
       moduleTitles: (fields[8] as List).cast<String>(),
       modulesCount: fields[9] as int,
       isEnrolled: fields[10] as bool,
+      totalLessons: fields[11] == null ? 0 : fields[11] as int,
+      completedLessons: fields[12] == null ? 0 : fields[12] as int,
+      progressPercentage: fields[13] == null ? 0.0 : fields[13] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, CourseModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +59,13 @@ class CourseModelAdapter extends TypeAdapter<CourseModel> {
       ..writeByte(9)
       ..write(obj.modulesCount)
       ..writeByte(10)
-      ..write(obj.isEnrolled);
+      ..write(obj.isEnrolled)
+      ..writeByte(11)
+      ..write(obj.totalLessons)
+      ..writeByte(12)
+      ..write(obj.completedLessons)
+      ..writeByte(13)
+      ..write(obj.progressPercentage);
   }
 
   @override

@@ -1,47 +1,52 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
 import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
-import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:go_router/go_router.dart';
 
 class ContinueLearningCard extends StatelessWidget {
-  const ContinueLearningCard({super.key});
+  final LastAccessedModuleEntity module;
+  const ContinueLearningCard({super.key, required this.module});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: context.colorScheme.surface,
           borderRadius: BorderRadius.circular(15),
-          boxShadow:AppShadows.cardShadow
+          boxShadow: AppShadows.cardShadow,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: Column(
-            mainAxisSize:
-                MainAxisSize.min, // حل مشكلة التمدد الطولي: يأخذ حجم محتواه فقط
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(
-                height: 160, // يمكنك تعديل الارتفاع حسب الرغبة
-                child: _CourseImagePreview(),
+              SizedBox(
+                height: 160,
+                child: _CourseImagePreview(image_irl: module.image_url),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const _CourseMetaTags(),
+                    _CourseMetaTags(moduleName: module.moduleName),
                     const SizedBox(height: 12),
                     Text(
-                      'الاشتقاق - تفاضل وتكامل',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                      module.courseName,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: context.colorScheme.onBackground,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 1,
@@ -49,15 +54,19 @@ class ContinueLearningCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'تعلم أساسيات الاشتقاق وقواعده الأساسية بشكل مبسط.',
-                      style: theme.textTheme.bodySmall,
+                      module.moduleDescription,
+                      style: context.textTheme.bodySmall,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 16),
-                    const _ProgressBarSection(),
+                    _ProgressBarSection(
+                      progressPercentage: module.progressPercentage.toDouble(),
+                      completedLessons: module.completedLessons,
+                      totalLessons: module.totalLessons,
+                    ),
                     const SizedBox(height: 16),
-                    const _ActionButtonsRow(),
+                    _ActionButtonsRow(module: module),
                   ],
                 ),
               ),
@@ -70,7 +79,9 @@ class ContinueLearningCard extends StatelessWidget {
 }
 
 class _CourseMetaTags extends StatelessWidget {
-  const _CourseMetaTags();
+  final String moduleName;
+  const _CourseMetaTags({required this.moduleName});
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -83,41 +94,38 @@ class _CourseMetaTags extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            'رياضيات',
-            style: Styles.style12(context).copyWith(
+            moduleName,
+            style: context.textTheme.labelMedium!.copyWith(
               color: theme.colorScheme.primary,
-              fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        Icon(Icons.access_time, size: 14, color: theme.hintColor),
-        const SizedBox(width: 4),
-        Text('٤٥ د', style: Styles.style12(context)),
       ],
     );
   }
 }
 
 class _ProgressBarSection extends StatelessWidget {
-  const _ProgressBarSection();
+  final double progressPercentage;
+  final int completedLessons;
+  final int totalLessons;
+
+  const _ProgressBarSection({
+    required this.progressPercentage,
+    required this.completedLessons,
+    required this.totalLessons,
+  });
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LinearProgressIndicator(
-          value: 0.46,
-
-          backgroundColor: Colors.grey[300],
-          color: theme.colorScheme.primary,
-          minHeight: 6,
-          borderRadius: BorderRadius.circular(10),
-        ),
+        LinearProgress(progressPercentage: progressPercentage, hPadding: 0),
         const SizedBox(height: 6),
         Text(
-          '١٤ درس مكتمل من أصل ٢٠ درساً',
+          '$completedLessons درس مكتمل من أصل $totalLessons درساً',
           style: theme.textTheme.labelSmall?.copyWith(color: theme.hintColor),
         ),
       ],
@@ -126,7 +134,8 @@ class _ProgressBarSection extends StatelessWidget {
 }
 
 class _ActionButtonsRow extends StatelessWidget {
-  const _ActionButtonsRow();
+  final LastAccessedModuleEntity module;
+  const _ActionButtonsRow({required this.module});
 
   @override
   Widget build(BuildContext context) {
@@ -134,15 +143,23 @@ class _ActionButtonsRow extends StatelessWidget {
 
     return Row(
       children: [
-        // زر استمرار - استخدمنا Expanded ليتساوى مع الزر الآخر
         Expanded(
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              GoRouter.of(context).push(
+                '${Routes.lessonsList}/${module.moduleId}',
+                extra: {
+                  'moduleTitle': module.moduleName,
+                  'completedLessons': module.completedLessons,
+                  'progressPercentage': module.progressPercentage,
+                  'totalLessons': module.totalLessons,
+                },
+              );
+            },
             style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
+              backgroundColor: context.primary,
               foregroundColor: theme.colorScheme.onPrimary,
               elevation: 0,
-              // أزلنا العرض الثابت هنا لأن Expanded سيتولى الأمر
               minimumSize: const Size(0, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -154,15 +171,14 @@ class _ActionButtonsRow extends StatelessWidget {
             ),
           ),
         ),
-
-        const SizedBox(width: 12), // مسافة أكبر قليلاً لمظهر أنظف
-        // زر التفاصيل - باهت ومتساوي في الحجم
+        const SizedBox(width: 12),
         Expanded(
           child: OutlinedButton(
             onPressed: () {},
             style: OutlinedButton.styleFrom(
-              // حدود باهتة جداً
-              side: BorderSide(color: theme.dividerColor.withOpacity(0.5)),
+              side: BorderSide(
+                color: context.colorScheme.onSecondary.withOpacity(0.5),
+              ),
               minimumSize: const Size(0, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -170,10 +186,8 @@ class _ActionButtonsRow extends StatelessWidget {
             ),
             child: Text(
               'التفاصيل',
-              style: TextStyle(
-                // نص باهت باستخدام الشفافية
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
-                fontSize: 13,
+              style: context.textTheme.labelLarge!.copyWith(
+                color: theme.colorScheme.onSecondary.withOpacity(0.5),
               ),
             ),
           ),
@@ -184,21 +198,19 @@ class _ActionButtonsRow extends StatelessWidget {
 }
 
 class _CourseImagePreview extends StatelessWidget {
-  const _CourseImagePreview();
+  final String image_irl;
+  const _CourseImagePreview({Key? key, required this.image_irl})
+    : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Image.asset(
-          Images.onboarding1,
+        CachedNetworkImage(
+          imageUrl: image_irl,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: Colors.grey[300],
-            child: const Icon(Icons.image_not_supported),
-          ),
+          errorWidget: (context, url, error) => Image.asset(Images.onboarding1),
         ),
-        // طبقة تظليل خفيفة ليظهر زر التشغيل بوضوح
         Container(color: Colors.black12),
         const Center(
           child: Icon(Icons.play_circle_fill, color: Colors.white, size: 45),

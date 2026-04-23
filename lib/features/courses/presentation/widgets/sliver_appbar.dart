@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
@@ -72,24 +73,17 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final dynamicTextColor = isDark ? Colors.white : AppColors.indigo;
-
     return Directionality(
       textDirection: TextDirection.rtl,
       child: ClipRRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 12,
-            sigmaY: 12,
-          ), // تأثير الزجاج الحقيقي
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withOpacity(isDark ? 0.7 : 0.85),
+              color: context.surface,
               border: Border(
                 bottom: BorderSide(
-                  color: theme.dividerColor.withOpacity(0.08),
+                  color: context.theme.disabledColor.withOpacity(0.08),
                   width: 1,
                 ),
               ),
@@ -109,21 +103,24 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
                         tag: 'user_profile_avatar',
                         child: ScaleTransition(
                           scale: _avatarPulseAnimation,
-                          child: _buildUserAvatar(theme),
+                          child: _buildUserAvatar(context.theme),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    _buildGreetingText(context, dynamicTextColor),
+                    _buildGreetingText(context, context.onBackground),
                   ],
                 ),
                 actions: [
                   _buildCircleIconButton(
                     icon: Icons.search_rounded,
                     onPressed: widget.onSearchPressed,
-                    color: dynamicTextColor,
+                    color: context.onBackground,
                   ),
-                  _buildAnimatedNotificationIcon(theme, dynamicTextColor),
+                  _buildAnimatedNotificationIcon(
+                    context.theme,
+                    context.onBackground,
+                  ),
                   const SizedBox(width: 12),
                 ],
               ),
@@ -154,11 +151,11 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 2),
+        border: Border.all(color: context.primary.withOpacity(0.2), width: 2),
       ),
       child: CircleAvatar(
         radius: 20,
-        backgroundColor: AppColors.primary.withOpacity(0.1),
+        backgroundColor: context.primary.withOpacity(0.1),
         backgroundImage:
             (widget.userImageUrl != null && widget.userImageUrl!.isNotEmpty)
             ? NetworkImage(widget.userImageUrl!)
@@ -168,10 +165,8 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
                 widget.userName.isNotEmpty
                     ? widget.userName[0].toUpperCase()
                     : '',
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
+                style: context.textTheme.titleMedium!.copyWith(
+                  color: context.primary,
                 ),
               )
             : null,
@@ -186,18 +181,9 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
       children: [
         Text(
           'مرحباً بك في منصة الجنيد',
-          style: Styles.style12(
-            context,
-          ).copyWith(color: textColor.withOpacity(0.6), fontFamily: 'Cairo'),
+          style: context.textTheme.bodySmall!.copyWith(),
         ),
-        Text(
-          widget.userName,
-          style: Styles.style14(context).copyWith(
-            fontWeight: FontWeight.w900,
-            color: textColor,
-            fontFamily: 'Cairo',
-          ),
-        ),
+        Text(widget.userName, style: context.textTheme.titleMedium),
       ],
     );
   }

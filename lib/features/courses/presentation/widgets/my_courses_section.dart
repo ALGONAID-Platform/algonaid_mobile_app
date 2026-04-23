@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseCard.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
@@ -17,16 +18,7 @@ class MyCoursesListSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // عنوان القسم
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-          child: Text(
-            'دوراتك الحالية',
-            style: Styles.style18(
-              context,
-            ).copyWith(fontWeight: FontWeight.bold),
-          ),
-        ),
-
+       SectionHeader(text: 'دوراتك الحالية',),
         SizedBox(
           height: 320,
           child: ListView.builder(

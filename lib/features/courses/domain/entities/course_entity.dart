@@ -12,6 +12,9 @@ class CourseEntity {
   final List<String> moduleTitles;
   final int modulesCount;
   final bool isEnrolled;
+  final int totalLessons;
+  final int completedLessons;
+  final double progressPercentage;
 
   CourseEntity({
     required this.id,
@@ -25,6 +28,9 @@ class CourseEntity {
     required this.moduleTitles,
     required this.modulesCount,
     required this.isEnrolled,
+    required this.totalLessons,
+    required this.completedLessons,
+    required this.progressPercentage,
   });
 
   CourseEntity copyWith({
@@ -39,6 +45,9 @@ class CourseEntity {
     List<String>? moduleTitles,
     int? modulesCount,
     bool? isEnrolled,
+    int? totalLessons,
+    int? completedLessons,
+    double? progressPercentage,
   }) {
     return CourseEntity(
       id: id ?? this.id,
@@ -52,6 +61,9 @@ class CourseEntity {
       moduleTitles: moduleTitles ?? this.moduleTitles,
       modulesCount: modulesCount ?? this.modulesCount,
       isEnrolled: isEnrolled ?? this.isEnrolled,
+      totalLessons: totalLessons ?? this.totalLessons,
+      completedLessons: completedLessons ?? this.completedLessons,
+      progressPercentage: progressPercentage ?? this.progressPercentage,
     );
   }
 }
