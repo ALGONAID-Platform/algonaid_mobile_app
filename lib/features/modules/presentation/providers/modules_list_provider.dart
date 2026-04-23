@@ -45,7 +45,10 @@ class ModulesListProvider extends ChangeNotifier {
     result.fold(
       (failure) {
         _state = _state.copyWith(
-            isLoading: false, errorMessage: failure.message, modules: []);
+          isLoading: false,
+          errorMessage: failure.message,
+          modules: [],
+        );
       },
       (modules) {
         _state = _state.copyWith(isLoading: false, modules: modules);

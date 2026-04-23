@@ -9,6 +9,9 @@ class Module extends Equatable {
   final String description;
   final int courseId;
   final List<Lesson> lessons;
+  final int completedLessons;
+  final double progressPercentage;
+  final int totalLessons;
 
   const Module({
     required this.id,
@@ -16,8 +19,20 @@ class Module extends Equatable {
     required this.description,
     required this.courseId,
     required this.lessons,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
   });
 
   @override
-  List<Object?> get props => [id, title, description, courseId, lessons];
+  List<Object?> get props => [
+    id,
+    title,
+    description,
+    courseId,
+    lessons,
+    completedLessons,
+    progressPercentage,
+    totalLessons,
+  ];
 }
