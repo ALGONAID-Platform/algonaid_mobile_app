@@ -17,10 +17,7 @@ abstract class AppConstants {
   static const String tokenKey = 'auth_token';
   static const String boxCourses = "courses_box";
   static const String boxMyCourses = "my_courses_box";
-  static const String boxFeaturedTrendinBooks = "featured_trending_books";
-  static const String boxFeaturedTopRatedBooks = "featured_top_rated_books";
-  static const String boxFeaturedQuickReadBooks = "featured_quick_read_books";
-  static const String boxReadingProgress = "reading_progress_box";
+  static const String boxCourseProgress = "course_progress_box";
 
   // shared preferences keys
   static const String token = 'TOKEN';

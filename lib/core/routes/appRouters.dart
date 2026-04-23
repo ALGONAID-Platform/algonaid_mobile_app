@@ -4,6 +4,7 @@ import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/circular_reveal.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_page.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
@@ -39,12 +40,10 @@ abstract class AppRouters {
         builder: (context, state) {
           final courseId = int.parse(state.pathParameters['courseId']!);
 
-          final data = state.extra as Map<String, dynamic>?;
+          final data = state.extra as CourseEntity;
         
           return ModulesListPage(
-            courseId: courseId,
-            courseTitle: data?['courseTitle'] ?? 'الوحدات',
-            courseImage: data?['courseImage'] ?? '',
+            course: data,
           );
         },
       ),
@@ -56,7 +55,10 @@ abstract class AppRouters {
 
           return LessonsListPage(
             moduleId: moduleId,
-            moduleTitle: data?['moduleTitle'] ?? 'الدروس',
+            moduleTitle: data?['moduleTitle'] as String? ?? 'تفاصيل الوحدة',
+            completedLessons: (data?['completedLessons'] as num?)?.toInt() ?? 0,
+            progressPercentage: (data?['progressPercentage'] as num?)?.toDouble() ?? 0.0,
+            totalLessons: (data?['totalLessons'] as num?)?.toInt() ?? 0,
           );
         },
       ),

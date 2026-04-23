@@ -20,8 +20,8 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      height: 40,
-      minWidth: 80,
+      height: 50,
+      minWidth: 150,
 
       elevation: 0,
       padding: const EdgeInsets.all(10),

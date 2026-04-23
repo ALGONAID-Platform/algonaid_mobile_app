@@ -1,5 +1,6 @@
 
 
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/animation.dart';
 import 'package:algonaid_mobail_app/features/onboard/data/models/onboarding_data.dart';
 import 'package:algonaid_mobail_app/features/onboard/domain/entity/onboarding_entity.dart';
@@ -21,6 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.background,
       body: SafeArea(
         child: Consumer<OnboardingProvider>(
           builder: (context, onboardinValue, child) {
