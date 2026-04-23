@@ -6,6 +6,7 @@ import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.da
 abstract class LessonRemoteDataSource {
   Future<List<LessonModel>> fetchLessonsByModule(int moduleId);
   Future<LessonDetailModel> fetchLessonDetail(int lessonId);
+  Future<void> updateLessonProgress(int lessonId, bool isCompleted);
 }
 
 class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
@@ -34,6 +35,17 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
 
     final lessonMap = _extractLesson(data);
     return LessonDetailModel.fromJson(lessonMap);
+  }
+
+  @override
+  Future<void> updateLessonProgress(int lessonId, bool isCompleted) async {
+    await _api.post(
+      endpoint: EndPoint.progressUpdate,
+      data: {
+        "lessonId": lessonId,
+        "isCompleted": isCompleted,
+      },
+    );
   }
 
   List<dynamic> _extractList(dynamic data) {

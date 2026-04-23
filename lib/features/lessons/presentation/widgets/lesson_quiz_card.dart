@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -7,9 +8,11 @@ class LessonQuizCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
+        color: context.surface,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -17,17 +20,15 @@ class LessonQuizCard extends StatelessWidget {
         children: [
           Text(
             'اختبار الدرس',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            style: context.textTheme.titleMedium?.copyWith(
+              color: context.onBackground,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'اختبر فهمك لهذا الدرس قريبًا',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white70,
-                ),
+            style: context.textTheme.bodySmall?.copyWith(color: Colors.white70),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -35,10 +36,10 @@ class LessonQuizCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: AppColors.primary,
-                disabledBackgroundColor: Colors.white,
-                disabledForegroundColor: AppColors.primary,
+                backgroundColor: context.surfaceContainer,
+                foregroundColor: context.onBackground,
+                disabledBackgroundColor: context.surfaceContainer,
+                disabledForegroundColor: context.onBackground,
               ),
               child: const Text('سيتوفر قريبًا'),
             ),

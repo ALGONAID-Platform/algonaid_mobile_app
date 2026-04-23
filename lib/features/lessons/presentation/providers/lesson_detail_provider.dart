@@ -1,5 +1,6 @@
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_lesson_progress.dart';
 import 'package:flutter/foundation.dart';
 
 class LessonDetailState {
@@ -36,9 +37,10 @@ class LessonDetailState {
 
 class LessonDetailProvider extends ChangeNotifier {
   final GetLessonDetail _getLessonDetail;
+  final UpdateLessonProgress _updateLessonProgress;
   LessonDetailState _state = LessonDetailState.initial();
 
-  LessonDetailProvider(this._getLessonDetail);
+  LessonDetailProvider(this._getLessonDetail, this._updateLessonProgress);
 
   LessonDetailState get state => _state;
   Future<void> loadLesson(int lessonId) async {
@@ -63,6 +65,22 @@ class LessonDetailProvider extends ChangeNotifier {
           errorMessage: null,
         );
         notifyListeners();
+      },
+    );
+  }
+
+  Future<void> updateProgress(int lessonId, bool isCompleted) async {
+    final result = await _updateLessonProgress(
+      lessonId: lessonId,
+      isCompleted: isCompleted,
+    );
+
+    result.fold(
+      (failure) {
+        // Optional: handle failure silently or log it
+      },
+      (_) {
+        // Progress successfully updated
       },
     );
   }

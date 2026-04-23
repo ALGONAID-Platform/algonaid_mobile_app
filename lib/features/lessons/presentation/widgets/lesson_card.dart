@@ -1,3 +1,5 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +27,7 @@ class LessonCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          boxShadow:AppShadows.cardShadow
         ),
         child: Row(
           children: [
@@ -58,7 +54,7 @@ class LessonCard extends StatelessWidget {
                 children: [
                   Text(
                     lesson.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style:context.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.indigo,
                         ),
@@ -70,7 +66,7 @@ class LessonCard extends StatelessWidget {
                         : 'اضغط لعرض تفاصيل الدرس',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: context.textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondaryLight,
                         ),
                   ),

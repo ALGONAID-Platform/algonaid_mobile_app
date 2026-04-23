@@ -8,4 +8,5 @@ import 'package:dartz/dartz.dart';
 abstract class LessonRepository {
   Future<Either<Failure, List<Lesson>>> getModuleLessons(int moduleId);
   Future<Either<Failure, LessonDetail>> getLessonDetail(int lessonId);
+  Future<Either<Failure, void>> updateLessonProgress(int lessonId, bool isCompleted);
 }

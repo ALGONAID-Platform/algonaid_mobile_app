@@ -1,25 +1,32 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/expertBadge3D.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class ModuleHeaderStats extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final double progressValue; // من 0.0 إلى 1.0
+  final int moduleId;
+  final String moduleTitle;
   final int completedLessons;
+  final double progressPercentage;
   final int totalLessons;
-
   const ModuleHeaderStats({
     super.key,
-    this.title = 'الوحدة الثانية: الاشتقاق',
-    this.subtitle = 'مقرر الرياضيات • المستوى المتقدم',
-    this.progressValue = 0.5,
-    this.completedLessons = 3,
-    this.totalLessons = 6,
+    required this.moduleId,
+    required this.moduleTitle,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
   });
 
   @override
   Widget build(BuildContext context) {
+    print("===============================");
+    print(totalLessons);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -28,49 +35,40 @@ class ModuleHeaderStats extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // ليأخذ حجم محتواه فقط كـ Header
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. قسم العنوان والنص الفرعي مع زر الرجوع
             Stack(
-              alignment: Alignment.center, // لتوسيط النصوص في المنتصف
+              alignment: Alignment.center,
               children: [
-                // النصوص في المنتصف
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      title,
-                      style: theme.textTheme.headlineSmall?.copyWith(
+                      moduleTitle,
+                      style: context.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : Colors.black87,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark
-                            ? AppColors.textSecondaryDark
-                            : AppColors.textSecondaryLight,
-                      ),
+                      "module.description",
+                      style: context.textTheme.bodySmall?.copyWith(),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
 
-                // أيقونة الرجوع في جهة اليمين (بما أننا في وضع RTL)
                 Positioned(
-                  right: 0, // تثبيت في أقصى اليمين
+                  right: 0,
                   child: IconButton(
                     icon: Directionality(
                       textDirection: TextDirection.ltr,
                       child: Icon(
-                        Icons
-                            .arrow_forward_ios, // سهم الرجوع لليمين في اللغة العربية
+                        Icons.arrow_forward_ios,
                         size: 20,
-                        color: isDark ? Colors.white : Colors.black87,
+                        color: context.onBackground,
                       ),
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -80,7 +78,6 @@ class ModuleHeaderStats extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // 2. الكارد الرئيسي (الوسام + التقدم)
             GestureDetector(
               onTap: () {
                 showDialog(
@@ -88,34 +85,29 @@ class ModuleHeaderStats extends StatelessWidget {
                   barrierColor: Colors.black.withOpacity(0.5),
                   builder: (context) => Badge3DDialog(
                     heroTag: "expert_badge_",
-                    title: "وسام خبير المادة",
-                    description: "أكمل 100% من الوحدة بمتوسط 90%",
-                    iconColor: AppColors.white,
-                    gradientColors: [AppColors.primary, AppColors.primaryLight],
-                    borderColor: AppColors.primary,
+                    title: "وسام البراعة الفضي",
+                    description:
+                        "أنت على بُعد خطوة من التميّز! ستحصل على وسام البراعة الفضي عند اجتيازك لجميع اختبارات هذه الوحدة بنسبة %90 أو أكثر. أثبت مهاراتك الآن!",
+                    lottie: AppLottie.goldMedal2,
+                    gradientColors: [
+                      const Color.fromARGB(255, 94, 94, 94),
+                      const Color.fromARGB(255, 153, 153, 153),
+                    ],
+                    borderColor: AppColors.black,
                   ),
                 );
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.surfaceDark
-                      : AppColors.surfaceLight,
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(
                     color: isDark ? AppColors.indigoDark : AppColors.grey200,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark ? Colors.black26 : AppColors.shadow,
-                      blurRadius: 10,
-                      offset: const Offset(1, 1),
-                    ),
-                  ],
+                  boxShadow: AppShadows.cardShadow,
                 ),
                 child: Column(
                   children: [
-                    // --- الجزء العلوي: قسم الوسام ---
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20.0),
@@ -131,44 +123,46 @@ class ModuleHeaderStats extends StatelessWidget {
                       child: Column(
                         children: [
                           Stack(
-                            alignment: Alignment.center,
+                            alignment: Alignment
+                                .center, // لضمان تمركز القفل فوق الوسام
                             children: [
-                              Icon(
-                                Icons.emoji_events,
-                                color: AppColors.primary.withOpacity(0.3),
-                                size: 70,
+                              AppHero(
+                                tag: "MedalHero",
+                                child: Lottie.asset(
+                                  AppLottie.goldMedal2,
+                                  width: 130,
+                                  height: 130,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
-                              Positioned(
-                                bottom: 2,
-                                right: 2,
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.lock,
-                                    color: AppColors.primary,
-                                    size: 16,
+
+                              Container(
+                                width: 120,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.3),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.lock_outline_rounded,
+                                    color: Color.fromARGB(161, 255, 255, 255),
+                                    size: 50,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'وسام الإتقان',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                           const SizedBox(height: 4),
                           Text(
+                            "وسام البراعة الفضي",
+                            style: theme.textTheme.headlineSmall,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
                             'يتطلب الحصول على درجة 85% أو أعلى في الاختبار النهائي.',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontSize: 11,
-                            ),
+                            style: theme.textTheme.bodySmall,
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -178,7 +172,6 @@ class ModuleHeaderStats extends StatelessWidget {
                     // الخط المنقط
                     const _DashedDivider(),
 
-                    // --- الجزء السفلي: ملخص التقدم ---
                     Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
@@ -189,16 +182,16 @@ class ModuleHeaderStats extends StatelessWidget {
                             children: [
                               Text(
                                 'ملخص التقدم',
-                                style: theme.textTheme.titleSmall?.copyWith(
+                                style: theme.textTheme.labelMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.onBackground
+                                      .withOpacity(0.7),
                                 ),
                               ),
                               Text(
-                                '${(progressValue * 100).toInt()}%',
-                                style: const TextStyle(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 28,
+                                '${(progressPercentage).toInt()}%',
+                                style: context.textTheme.titleLarge!.copyWith(
+                                  color: context.primary,
                                 ),
                               ),
                             ],
@@ -206,20 +199,15 @@ class ModuleHeaderStats extends StatelessWidget {
                           const SizedBox(height: 12),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: LinearProgressIndicator(
-                              value: progressValue,
-                              minHeight: 10,
-                              backgroundColor: isDark
-                                  ? AppColors.indigoDark
-                                  : AppColors.grey100,
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                AppColors.green,
-                              ),
+                            child: LinearProgress(
+                              progressPercentage: progressPercentage,
+                              minHieght: 10,
+                              hPadding: 0,
                             ),
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'لقد أنجزت $completedLessons دروس ومتبقي لك ${totalLessons - completedLessons} دروس لإنهاء هذه الوحدة.',
+                            'لقد أنجزت ${completedLessons} دروس ومتبقي لك ${totalLessons - completedLessons} دروس لإنهاء هذه الوحدة.',
                             style: theme.textTheme.bodySmall,
                             textAlign: TextAlign.center,
                           ),

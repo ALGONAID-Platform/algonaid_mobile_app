@@ -1,9 +1,10 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lessonHeader.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/moduleTimelineList.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/textDivider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
@@ -14,14 +15,16 @@ import 'package:provider/provider.dart';
 class LessonsListPage extends StatelessWidget {
   final int moduleId;
   final String moduleTitle;
-  // 1. إضافة متغير لاستقبال السليفرز الخارجية (مثل الهيدر أو شريط التقدم)
-  final List<Widget>? headerSlivers;
-
+  final int completedLessons;
+  final double progressPercentage;
+  final int totalLessons;
   const LessonsListPage({
     super.key,
     required this.moduleId,
-    this.moduleTitle = 'الوحدة',
-    this.headerSlivers,
+    required this.moduleTitle,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
   });
 
   @override
@@ -33,9 +36,11 @@ class LessonsListPage extends StatelessWidget {
         return provider;
       },
       child: _LessonsListView(
+        completedLessons: completedLessons,
         moduleId: moduleId,
         moduleTitle: moduleTitle,
-        headerSlivers: headerSlivers,
+        progressPercentage: progressPercentage,
+        totalLessons: totalLessons,
       ),
     );
   }
@@ -44,12 +49,15 @@ class LessonsListPage extends StatelessWidget {
 class _LessonsListView extends StatelessWidget {
   final int moduleId;
   final String moduleTitle;
-  final List<Widget>? headerSlivers;
-
+  final int completedLessons;
+  final double progressPercentage;
+  final int totalLessons;
   const _LessonsListView({
     required this.moduleId,
     required this.moduleTitle,
-    this.headerSlivers,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
   });
 
   @override
@@ -58,46 +66,26 @@ class _LessonsListView extends StatelessWidget {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          backgroundColor: AppColors.grey50,
+          backgroundColor: context.background,
           body: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: ModuleHeaderStats(title: moduleTitle)),
               SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 32,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "مسار التعلم",
-                        style: Styles.style16(
-                          context,
-                        ).copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: AppColors.grey200,
-                        ),
-                        child: Text("6 دروس"),
-                      ),
-                    ],
-                  ),
+                child: ModuleHeaderStats(
+                  completedLessons: completedLessons,
+                  moduleId: moduleId,
+                  progressPercentage: progressPercentage,
+                  moduleTitle: moduleTitle,
+                  totalLessons: totalLessons,
                 ),
-              ), // مسافة بين الهيدر والقائمة
+              ),
+              SliverToBoxAdapter(
+                child: TextDivider(totalLessons: totalLessons),
+              ),
 
               Consumer<LessonsListProvider>(
                 builder: (context, provider, _) {
                   final state = provider.state;
 
-                  // حالة التحميل (نستخدم SliverFillRemaining لتوسيط العنصر في المساحة المتبقية)
                   if (state.isLoading) {
                     return const SliverFillRemaining(
                       hasScrollBody: false,
@@ -133,15 +121,13 @@ class _LessonsListView extends StatelessWidget {
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final lessonData = lessons[index]; // البيانات من DB
-
                         return LessonTimelineItem(
                           lesson: lessonData,
                           isLast: index == lessons.length - 1,
                           onTap: () {
-                            // التنقل باستخدام المعرف الحقيقي
                             GoRouter.of(
                               context,
-                            ).go('${Routes.lessonDetails}/${lessonData.id}');
+                            ).push('${Routes.lessonDetails}/${lessonData.id}');
                           },
                         );
                       }, childCount: lessons.length),

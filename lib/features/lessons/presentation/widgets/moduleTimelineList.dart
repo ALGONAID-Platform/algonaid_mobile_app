@@ -1,8 +1,12 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid_mobail_app/core/common/extensions/lession_status.dart';
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
 import 'package:flutter/material.dart';
 
 class LessonTimelineItem extends StatelessWidget {
-  final dynamic lesson; // هنا نمرر كائن الدرس القادم من قاعدة البيانات
+  final Lesson lesson;
   final bool isLast;
   final VoidCallback onTap;
 
@@ -16,91 +20,60 @@ class LessonTimelineItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    // --- منطق استخراج الحالة من قاعدة البيانات ---
-    // افترضت هنا مسميات الحقول، قم بتغييرها حسب الـ Model الخاص بك
-    final bool isCompleted = true;
-    final bool isLocked = false;
-    final bool isCurrent = true;
-    final bool isOptional = false;
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: IntrinsicHeight(
-        // لضمان تمدد الخط الجانبي مع طول الكارد
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. الجزء الجانبي (Timeline)
-            _buildTimelineIndicator(isDark, isCompleted, isCurrent, isLocked),
+            _buildTimelineIndicator(isLast, lesson.status, context),
 
             const SizedBox(width: 16),
 
-            // 2. الكارد الرئيسي
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 24.0,
-                ), // مسافة بين الكاردات
+                padding: const EdgeInsets.only(bottom: 24.0),
                 child: InkWell(
-                  onTap: isLocked ? null : onTap, // تعطيل الضغط إذا كان مقفلاً
+                  onTap: onTap,
                   borderRadius: BorderRadius.circular(18),
                   child: Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.surfaceDark
-                          : AppColors.surfaceLight,
+                      color: theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: isLocked
-                            ? (isDark ? Colors.white10 : Colors.grey.shade100)
-                            : (isDark
-                                  ? AppColors.indigoDark
-                                  : AppColors.grey200),
-                      ),
-                      boxShadow: [
-                        if (!isLocked)
-                          BoxShadow(
-                            color: isDark ? Colors.black26 : AppColors.shadow,
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                      ],
+                      border: Border.all(color: theme.colorScheme.background),
+                      boxShadow: AppShadows.cardShadow,
                     ),
-                    child: Opacity(
-                      opacity: isLocked ? 0.6 : 1.0, // تقليل الوضوح للمقفل
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  lesson.title ?? 'بدون عنوان',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                lesson.title,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              if (isCompleted)
-                                _buildStatusTag('مكتمل', AppColors.green),
-                              if (isCurrent)
-                                _buildStatusTag('قيد التعلم', Colors.blue),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          _buildActionButton(
-                            isCompleted,
-                            isCurrent,
-                            isLocked,
-                            isOptional,
-                            isDark,
-                          ),
-                        ],
-                      ),
+                            ),
+
+                            _buildStatusTag(
+                              lesson.status.label,
+                              lesson.status.getStatusColor(context),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _customButton(
+                          lesson.status.buttonText,
+                          lesson.status.getStatusColor(context),
+                          isOutlined: true,
+                          icon: lesson.status.buttonIcon,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -112,28 +85,29 @@ class LessonTimelineItem extends StatelessWidget {
     );
   }
 
-  // بناء الخط والأيقونة الجانبية
   Widget _buildTimelineIndicator(
-    bool isDark,
-    bool completed,
-    bool current,
-    bool locked,
+    bool isLast,
+    LessonStatus status,
+    BuildContext context,
   ) {
-    Color color = locked ? AppColors.grey300 : AppColors.green;
-    IconData icon = locked
-        ? Icons.lock_outline
-        : (completed ? Icons.check_circle : Icons.play_circle_filled);
+    final Color iconColor = status.getStatusColor(context);
+
+    final Color lineColor = (status == LessonStatus.completed)
+        ? Colors.green.withOpacity(0.5)
+        : context.outline.withOpacity(0.3);
 
     return Column(
       children: [
-        Icon(icon, color: color, size: 32),
+        Icon(status.timeLineIcons, color: iconColor, size: 32),
+
         if (!isLast)
           Expanded(
             child: Container(
               width: 2,
-              color: locked
-                  ? AppColors.grey200
-                  : AppColors.green.withOpacity(0.5),
+              decoration: BoxDecoration(
+                color: lineColor,
+                borderRadius: BorderRadius.circular(1),
+              ),
             ),
           ),
       ],
@@ -158,37 +132,6 @@ class LessonTimelineItem extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(
-    bool completed,
-    bool current,
-    bool locked,
-    bool optional,
-    bool isDark,
-  ) {
-    if (completed) {
-      return _customButton(
-        'مراجعة الدرس',
-        AppColors.green,
-        isOutlined: true,
-        icon: Icons.refresh,
-      );
-    } else if (current) {
-      return _customButton(
-        'استمرار التعلم',
-        Colors.blue,
-        isOutlined: false,
-        icon: Icons.play_arrow,
-      );
-    } else if (optional) {
-      return Text(
-        'اختياري',
-        style: TextStyle(color: AppColors.grey400, fontSize: 12),
-        textAlign: TextAlign.left,
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
   Widget _customButton(
     String text,
     Color color, {
@@ -210,9 +153,11 @@ class LessonTimelineItem extends StatelessWidget {
           Text(
             text,
             style: TextStyle(
-              color: isOutlined ? color : Colors.white,
+              color: isOutlined
+                  ? color
+                  : const Color.fromARGB(255, 137, 42, 42),
               fontWeight: FontWeight.bold,
-              fontSize: 13,
+              fontSize: 12,
             ),
           ),
         ],

@@ -41,4 +41,16 @@ class LessonRepositoryImpl implements LessonRepository {
       return Left(DioErrorHandler.handle(e));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> updateLessonProgress(int lessonId, bool isCompleted) async {
+    try {
+      await remoteDataSource.updateLessonProgress(lessonId, isCompleted);
+      return const Right(null);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on DioException catch (e) {
+      return Left(DioErrorHandler.handle(e));
+    }
+  }
 }

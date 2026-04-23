@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
@@ -9,6 +10,7 @@ import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_tabs.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LessonDetailPage extends StatelessWidget {
@@ -35,11 +37,15 @@ class _LessonDetailView extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: AppColors.grey50,
+        backgroundColor: context.background,
         appBar: AppBar(
           title: const Text('تفاصيل الدرس'),
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          backgroundColor: context.surface,
+          foregroundColor: context.onBackground,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new),
+            onPressed: () => GoRouter.of(context).pop(),
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: SizedBox(
@@ -65,10 +71,7 @@ class _LessonDetailView extends StatelessWidget {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Text(
-                    state.errorMessage!,
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text(state.errorMessage!, textAlign: TextAlign.center),
                 ),
               );
             }
@@ -81,11 +84,26 @@ class _LessonDetailView extends StatelessWidget {
             final pdfUrl = _resolvePdfUrl(lesson.pdfUrl);
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  LessonVideoPlayer(videoUrl: lesson.videoUrl),
+                  LessonVideoPlayer(
+                    videoUrl: lesson.videoUrl,
+                    // 1. عند فتح الفيديو (بدء المشاهدة)
+                    onVideoStart: () {
+                      context.read<LessonDetailProvider>().updateProgress(
+                        lesson.id,
+                        false,
+                      );
+                    },
+                    // 2. عند الوصول لـ 90% (الإكمال)
+                    onProgressComplete: () {
+                      context.read<LessonDetailProvider>().updateProgress(
+                        lesson.id,
+                        true,
+                      );
+                    },
+                  ),
                   const SizedBox(height: 16),
                   LessonInfoCard(title: lesson.title),
                   const SizedBox(height: 16),
