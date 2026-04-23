@@ -10,33 +10,45 @@ class ThemeApp {
 
   static TextTheme _buildTextTheme({required bool isDark}) {
     final Color primaryText = isDark
-        ? AppColors.textPrimaryDark
+        ? AppColors.textPrimaryDark.withOpacity(0.85)
         : AppColors.textPrimaryLight;
     final Color secondaryText = isDark
-        ? AppColors.textSecondaryDark
+        ? AppColors.textSecondaryDark.withOpacity(0.65)
         : AppColors.textSecondaryLight;
-
+    final Color tertiaryText = isDark
+        ? AppColors.textSecondaryDark.withOpacity(0.45) // خافت جداً
+        : AppColors.textSecondaryLight.withOpacity(0.70);
     final TextTheme headings = GoogleFonts.readexProTextTheme();
     final TextTheme body = GoogleFonts.readexProTextTheme();
 
     return headings.copyWith(
+      // --- عائلة الـ Display (للأرقام الكبيرة والترحيب) ---
       displayLarge: headings.displayLarge?.copyWith(
-        fontSize: 49,
-        fontWeight: FontWeight.w700,
+        fontSize: 48,
+        fontWeight: FontWeight.w800, // عريض جداً
         color: primaryText,
+        letterSpacing: 0, // العربية لا تحتاج مسافات بين الحروف
       ),
       displayMedium: headings.displayMedium?.copyWith(
-        fontSize: 39,
+        fontSize: 36,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
       displaySmall: headings.displaySmall?.copyWith(
-        fontSize: 31,
+        fontSize: 30,
+        fontWeight: FontWeight.w700,
+        color: primaryText,
+      ),
+
+      // --- عائلة الـ Headline (عناوين الصفحات والأقسام) ---
+      headlineLarge: headings.headlineLarge?.copyWith(
+        // أضفت Large للكمال
+        fontSize: 28,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
       headlineMedium: headings.headlineMedium?.copyWith(
-        fontSize: 25,
+        fontSize: 24,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
@@ -45,31 +57,56 @@ class ThemeApp {
         fontWeight: FontWeight.w600,
         color: primaryText,
       ),
+
+      // --- عائلة الـ Title (عناوين الكروت والأشرطة) ---
+      titleLarge: body.titleLarge?.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: primaryText,
+      ),
       titleMedium: body.titleMedium?.copyWith(
         fontSize: 16,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w600, // تم التعديل إلى 600 ليبرز كعنوان
         color: primaryText,
       ),
-      bodyLarge: body.bodyLarge?.copyWith(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        color: primaryText,
-      ),
-      bodyMedium: body.bodyMedium?.copyWith(
-        //default theme
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: secondaryText,
-      ),
-      bodySmall: body.bodySmall?.copyWith(
-        fontSize: 10,
-        fontWeight: FontWeight.w400,
-        color: secondaryText,
-      ),
-      labelLarge: body.labelLarge?.copyWith(
+      titleSmall: body.titleSmall?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: primaryText,
+      ),
+
+      // --- عائلة الـ Body (النصوص القرائية والوصف) ---
+      bodyLarge: body.bodyLarge?.copyWith(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: primaryText, // محتوى أساسي
+      ),
+      bodyMedium: body.bodyMedium?.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: secondaryText, // النص الافتراضي يفضل أن يكون أهدأ قليلاً
+      ),
+      bodySmall: body.bodySmall?.copyWith(
+        fontSize: 12, // تم الرفع من 10 إلى 12 لأن 10 صغير جداً للعربي
+        fontWeight: FontWeight.w400,
+        color: secondaryText, // الوصف الباهت
+      ),
+
+      // --- عائلة الـ Label (الأزرار والتاغات) ---
+      labelLarge: body.labelLarge?.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: primaryText, // نص الأزرار
+      ),
+      labelMedium: body.labelMedium?.copyWith(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: secondaryText,
+      ),
+      labelSmall: body.labelSmall?.copyWith(
+        fontSize: 10,
+        fontWeight: FontWeight.w500,
+        color: tertiaryText, // التاغات الصغيرة جداً
       ),
     );
   }
@@ -92,8 +129,9 @@ class ThemeApp {
       background: AppColors.bgLight,
       error: AppColors.red,
       onPrimary: AppColors.white,
-      onSecondary: AppColors.white,
-      onSurface: AppColors.textPrimaryLight,
+      onSecondary: AppColors.textPrimaryLight,
+      surfaceContainer: AppColors.white,
+
       onBackground: AppColors.textPrimaryLight,
       onError: AppColors.white,
     ),
@@ -164,14 +202,16 @@ class ThemeApp {
     scaffoldBackgroundColor: AppColors.bgDark,
 
     colorScheme: const ColorScheme.dark(
-      primary: AppColors.primary,
+      primary: Color(0xFF2397E9),
       secondary: AppColors.indigo,
       surface: AppColors.cardDark,
+      onSurface: AppColors.white,
       background: AppColors.bgDark,
       error: AppColors.red,
       onPrimary: AppColors.white,
       onSecondary: AppColors.white,
-      onSurface: AppColors.textPrimaryDark,
+
+      surfaceContainer: Color(0xFF212E3E),
       onBackground: AppColors.textPrimaryDark,
       onError: AppColors.white,
     ),

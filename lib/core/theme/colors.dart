@@ -17,7 +17,7 @@ class AppColors {
   static const Color green = Color(0xFF2BB673); // Success
 
   // Background Colors
-  static const Color bgLight = Color(0xFFF0F5FA);
+  static const Color bgLight = Color.fromARGB(255, 249, 252, 255);
   static const Color bgDark = Color(0xFF19222C);
   static const Color cardDark = Color(0xFF1D2733);
   static const Color surfaceLight = white;
@@ -62,6 +62,4 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
-  
 }

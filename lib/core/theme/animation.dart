@@ -22,7 +22,6 @@ class _MathBackgroundState extends State<MathBackground>
       vsync: this,
     )..repeat();
 
-    // إنشاء 15 رمزاً رياضياً في أماكن عشوائية
     List<String> mathIcons = [
       '∑',
       'π',
