@@ -2,11 +2,13 @@
 
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart'; // Import LessonsListPage
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_card.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/modules_error_state.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 const Duration _kFastMotionDuration = Duration(milliseconds: 200);
@@ -54,11 +56,14 @@ class _ModulesListViewState extends State<_ModulesListView> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          automaticallyImplyLeading: false,
           title: Text(widget.courseTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new),
+              onPressed: () => _handleBackNavigation(context),
+            ),
+          ],
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
@@ -118,6 +123,8 @@ class _ModulesListViewState extends State<_ModulesListView> {
                             builder: (_) => LessonsListPage(
                               moduleId: module.id,
                               moduleTitle: module.title,
+                              previousRoute:
+                                  '${Routes.modulesList}/${widget.courseId}',
                             ),
                           ),
                         );
@@ -162,5 +169,17 @@ class _AnimatedModuleItem extends StatelessWidget {
       },
       child: child,
     );
+  }
+}
+
+extension on _ModulesListViewState {
+  void _handleBackNavigation(BuildContext context) {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
+      return;
+    }
+
+    router.go(Routes.coursesPage);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart'; // Added
 import 'package:go_router/go_router.dart'; // Added
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
@@ -12,11 +12,13 @@ import 'package:provider/provider.dart';
 class LessonsListPage extends StatelessWidget {
   final int moduleId;
   final String moduleTitle;
+  final String? previousRoute;
 
   const LessonsListPage({
     super.key,
     required this.moduleId,
     this.moduleTitle = 'الوحدة',
+    this.previousRoute,
   });
 
   @override
@@ -27,7 +29,11 @@ class LessonsListPage extends StatelessWidget {
         provider.loadLessons(moduleId);
         return provider;
       },
-      child: _LessonsListView(moduleId: moduleId, moduleTitle: moduleTitle),
+      child: _LessonsListView(
+        moduleId: moduleId,
+        moduleTitle: moduleTitle,
+        previousRoute: previousRoute,
+      ),
     );
   }
 }
@@ -35,8 +41,13 @@ class LessonsListPage extends StatelessWidget {
 class _LessonsListView extends StatelessWidget {
   final int moduleId;
   final String moduleTitle;
+  final String? previousRoute;
 
-  const _LessonsListView({required this.moduleId, required this.moduleTitle});
+  const _LessonsListView({
+    required this.moduleId,
+    required this.moduleTitle,
+    this.previousRoute,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +56,14 @@ class _LessonsListView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () => context.pop(),
-          ),
+          automaticallyImplyLeading: false,
           title: Text(moduleTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () => _handleBackNavigation(context),
+            ),
+          ],
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
@@ -83,9 +97,10 @@ class _LessonsListView extends StatelessWidget {
                   lesson: lesson,
                   displayOrder: lesson.order > 0 ? lesson.order : index + 1,
                   onTap: () {
-                    GoRouter.of(
-                      context,
-                    ).go('${Routes.lessonDetails}/${lesson.id}');
+                    GoRouter.of(context).push(
+                      '${Routes.lessonDetails}/${lesson.id}',
+                      extra: '${Routes.lessonsList}/$moduleId',
+                    );
                   },
                 );
               },
@@ -94,5 +109,16 @@ class _LessonsListView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleBackNavigation(BuildContext context) {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+
+    final fallbackRoute = previousRoute ?? Routes.coursesPage;
+    GoRouter.of(context).go(fallbackRoute);
   }
 }

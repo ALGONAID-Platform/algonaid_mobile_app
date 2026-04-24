@@ -62,10 +62,13 @@ abstract class AppRouters {
         path: '${Routes.lessonsList}/:moduleId',
         builder: (context, state) {
           final moduleId = int.parse(state.pathParameters['moduleId']!);
-          final moduleTitle = state.extra as String?;
+          final extra = state.extra;
+          final metadata = extra is Map<String, dynamic> ? extra : null;
+          final moduleTitle = extra is String ? extra : metadata?['moduleTitle'] as String?;
           return LessonsListPage(
             moduleId: moduleId,
             moduleTitle: moduleTitle ?? 'الدروس',
+            previousRoute: metadata?['previousRoute'] as String?,
           );
         },
       ),
@@ -73,7 +76,11 @@ abstract class AppRouters {
         path: '${Routes.lessonDetails}/:lessonId',
         builder: (context, state) {
           final lessonId = int.parse(state.pathParameters['lessonId']!);
-          return LessonDetailPage(lessonId: lessonId);
+          final previousRoute = state.extra is String ? state.extra as String : null;
+          return LessonDetailPage(
+            lessonId: lessonId,
+            previousRoute: previousRoute,
+          );
         },
       ),
       GoRoute(

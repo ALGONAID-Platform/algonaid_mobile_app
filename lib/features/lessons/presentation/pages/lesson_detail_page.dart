@@ -27,8 +27,13 @@ import 'package:go_router/go_router.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final int lessonId;
+  final String? previousRoute;
 
-  const LessonDetailPage({super.key, required this.lessonId});
+  const LessonDetailPage({
+    super.key,
+    required this.lessonId,
+    this.previousRoute,
+  });
 
   @override
   State<LessonDetailPage> createState() => _LessonDetailPageState();
@@ -46,14 +51,18 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _LessonDetailView(lessonId: widget.lessonId);
+    return _LessonDetailView(
+      lessonId: widget.lessonId,
+      previousRoute: widget.previousRoute,
+    );
   }
 }
 
 class _LessonDetailView extends StatefulWidget {
   final int lessonId;
+  final String? previousRoute;
 
-  const _LessonDetailView({required this.lessonId});
+  const _LessonDetailView({required this.lessonId, this.previousRoute});
 
   @override
   State<_LessonDetailView> createState() => _LessonDetailViewState();
@@ -387,7 +396,7 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new),
-              onPressed: () => context.pop(),
+              onPressed: () => _handleBackNavigation(lesson),
             ),
             title: Text(
               lesson.title,
@@ -533,5 +542,17 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
     if (pdfUrl.startsWith('http')) return pdfUrl;
 
     return '${EndPoint.uploadsBaseUrl}$pdfUrl';
+  }
+
+  void _handleBackNavigation(LessonDetail lesson) {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
+      return;
+    }
+
+    final fallbackRoute =
+        widget.previousRoute ?? '${Routes.lessonsList}/${lesson.moduleId}';
+    router.go(fallbackRoute);
   }
 }

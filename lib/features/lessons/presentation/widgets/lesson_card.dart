@@ -23,7 +23,7 @@ class LessonCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
@@ -60,7 +60,6 @@ class LessonCard extends StatelessWidget {
                     lesson.title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.indigo,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -70,9 +69,7 @@ class LessonCard extends StatelessWidget {
                         : 'اضغط لعرض تفاصيل الدرس',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondaryLight,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(),
                   ),
                 ],
               ),
@@ -91,7 +88,11 @@ class LessonCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: hasVideo ? AppColors.primary : AppColors.grey400,
+                  color: hasVideo
+                      ? AppColors.primary
+                      : Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.grey400,
                 ),
               ),
             ),

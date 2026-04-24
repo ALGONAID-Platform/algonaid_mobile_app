@@ -9,25 +9,37 @@ class LessonTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return DefaultTabController(
       length: 2,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.08)
+                : AppColors.primary.withOpacity(0.10),
+          ),
+          boxShadow: isDark
+              ? const []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
         ),
         child: Column(
           children: [
             TabBar(
               labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondaryLight,
+              unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(
+                0.68,
+              ),
               indicatorColor: AppColors.primary,
               tabs: const [
                 Tab(text: 'الوصف'),
@@ -46,8 +58,8 @@ class LessonTabs extends StatelessWidget {
                           : (content?.isNotEmpty == true
                                 ? content!
                                 : 'لا يوجد وصف متوفر لهذا الدرس حالياً.'),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondaryLight,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.78),
                       ),
                     ),
                   ),
@@ -55,8 +67,8 @@ class LessonTabs extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       'سيتم إضافة قسم التعليقات قريبًا.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondaryLight,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.78),
                       ),
                     ),
                   ),

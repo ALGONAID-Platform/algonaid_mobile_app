@@ -9,6 +9,8 @@ class LessonPdfCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final hasPdf = pdfUrl != null && pdfUrl!.isNotEmpty;
 
     return InkWell(
@@ -17,10 +19,12 @@ class LessonPdfCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.25),
+            color: isDark
+                ? Colors.white.withOpacity(0.08)
+                : AppColors.primary.withOpacity(0.25),
             width: 1.5,
           ),
         ),
@@ -29,7 +33,7 @@ class LessonPdfCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.12),
+                color: AppColors.primary.withOpacity(isDark ? 0.20 : 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -45,16 +49,16 @@ class LessonPdfCard extends StatelessWidget {
                 children: [
                   Text(
                     'ملخص الدرس',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.indigo,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     hasPdf ? 'عرض ملف PDF' : 'لا يوجد ملف مرفق',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondaryLight,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.72),
                     ),
                   ),
                 ],
@@ -62,7 +66,9 @@ class LessonPdfCard extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_left,
-              color: hasPdf ? AppColors.primary : AppColors.grey300,
+              color: hasPdf
+                  ? AppColors.primary
+                  : theme.colorScheme.onSurface.withOpacity(0.35),
             ),
           ],
         ),
