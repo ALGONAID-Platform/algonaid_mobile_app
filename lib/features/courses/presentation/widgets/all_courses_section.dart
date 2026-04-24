@@ -13,34 +13,39 @@ class AllCoursesListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        SectionHeader(text: 'كل الكورسات'),
+    final reversedCourses = allCourses.reversed.toList();
 
-        // إذا كانت القائمة فارغة، نظهر الصندوق الجمالي
-        if (allCourses.isEmpty)
-          _buildAllEnrolledCard(context)
-        else
-          // إذا كانت تحتوي على كورسات، نظهر القائمة الأفقية
-          SizedBox(
-            height: 330,
-            child: ListView.builder(
-              reverse: true,
-              padding: const EdgeInsets.only(right: 16),
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              itemCount: allCourses.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  width: 300,
-                  margin: const EdgeInsets.only(left: 16),
-                  child: CourseCard(course: allCourses[index]),
-                );
-              },
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // تم التعديل لتتناسب مع اتجاه النص العربي
+        children: [
+          const SectionHeader(text: 'كل الكورسات'),
+
+          if (allCourses.isEmpty)
+            _buildAllEnrolledCard(context)
+          else
+            SizedBox(
+              height: 330,
+              child: ListView.builder(
+                reverse: false,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemCount: reversedCourses.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 300,
+                    // تعديل المارجن ليكون متناسقاً مع الاتجاه العكسي
+                    margin: const EdgeInsets.only(left: 16),
+                    child: CourseCard(course: reversedCourses[index]),
+                  );
+                },
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

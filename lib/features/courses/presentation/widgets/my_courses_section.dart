@@ -11,31 +11,36 @@ class MyCoursesListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // إذا كانت القائمة فارغة لا نعرض شيئاً
-    if (myCourses.isEmpty) return const SizedBox.shrink();
+    final reversedCourses = myCourses.reversed.toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        // عنوان القسم
-       SectionHeader(text: 'دوراتك الحالية',),
-        SizedBox(
-          height: 320,
-          child: ListView.builder(
-            reverse: true,
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: myCourses.length,
-            itemBuilder: (context, index) {
-              return Container(
-                width: 300,
-                margin: const EdgeInsets.only(right: 16),
-                child: CourseCard(course: myCourses[index]),
-              );
-            },
+    // if (myCourses.isEmpty) {
+    //   return _buildEmptyStateCard(context);
+    // }
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeader(text: 'دوراتك الحالية'),
+          SizedBox(
+            height: 320,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              physics: const BouncingScrollPhysics(),
+              itemCount: reversedCourses.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: 300,
+                  margin: const EdgeInsets.only(left: 16), // تنسيق الهوامش
+                  child: CourseCard(course: reversedCourses[index]),
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

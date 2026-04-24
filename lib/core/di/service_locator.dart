@@ -16,10 +16,12 @@ import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
 
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
 import 'package:algonaid_mobail_app/features/modules/data/repositories/module_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules_by_course.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
 
@@ -61,6 +63,10 @@ void setupServiceLocator() {
     () => ModuleRemoteDataSourceImpl(apiService: getIt()),
   );
 
+  getIt.registerLazySingleton<ModuleLocalDataSource>(
+    () => ModuleLocalDataSourceImpl(),
+  );
+
   getIt.registerLazySingleton<LessonRemoteDataSource>(
     () => LessonRemoteDataSourceImpl(getIt()),
   );
@@ -75,7 +81,10 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<ModuleRepository>(
-    () => ModuleRepositoryImpl(remoteDataSource: getIt()),
+    () => ModuleRepositoryImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+    ),
   );
 
   getIt.registerLazySingleton<LessonRepository>(
@@ -108,6 +117,10 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<GetLastAccessedModuleUseCase>(
     () => GetLastAccessedModuleUseCase(repository: getIt<ModuleRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetCachedLastAccessedModuleUseCase>(
+    () => GetCachedLastAccessedModuleUseCase(repository: getIt<ModuleRepository>()),
   );
 
   getIt.registerLazySingleton<GetModuleLessons>(
@@ -150,6 +163,7 @@ void setupServiceLocator() {
   getIt.registerFactory<LastAccessedModuleProvider>(
     () => LastAccessedModuleProvider(
       getLastAccessedModuleUseCase: getIt<GetLastAccessedModuleUseCase>(),
+      getCachedLastAccessedModuleUseCase: getIt<GetCachedLastAccessedModuleUseCase>(),
     ),
   );
 }

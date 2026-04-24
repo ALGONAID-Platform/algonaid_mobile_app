@@ -6,54 +6,64 @@ import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
+import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
-  // Ensures that widget binding is initialized before any asynchronous operations
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive for Flutter to support local data storage
   await Hive.initFlutter();
-
-  // Custom initialization logic for Hive (e.g., registering adapters)
-
-  // Initialize the TokenStorage box to manage user authentication tokens
   await TokenStorage.init();
-
-  // Initialize SharedPreferences or custom caching helper for general app data
   await CacheHelper.init();
-
-  // Initialize the Hive service instance for database operations
   await HiveService.init();
 
-  // Set up the Service Locator (GetIt) to handle Dependency Injection across the app
   setupServiceLocator();
 
-  // Launch the root widget of the application wrapped with global providers
-  runApp(AppProviders(child: const MyApp()));
+  // جلب الحالة المحفوظة قبل تشغيل التطبيق لتجنب الوميض (Flicker)
+  final isDark = CacheHelper.getBool(key: 'isDarkMode') ?? false;
+  final initTheme = isDark ? ThemeApp.darkTheme : ThemeApp.lightTheme;
+
+  runApp(
+    AppProviders(
+      child: MyApp(initTheme: initTheme),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ThemeData initTheme;
+  const MyApp({super.key, required this.initTheme});
 
   @override
   Widget build(BuildContext context) {
+    // إعدادات شريط الحالة
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: AppColors.primaryLight,
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // شفاف ليبدو أجمل مع الأنميشن
         statusBarIconBrightness: Brightness.light,
       ),
     );
 
-    return MaterialApp.router(
-      title: 'Algonaid Lessons',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeApp.lightTheme,
-      darkTheme: ThemeApp.darkTheme,
-      themeMode: ThemeMode.dark,
-      routerConfig: AppRouters.routers,
+    return ThemeProvider(
+      initTheme: initTheme,
+      // الـ duration هنا يتحكم في سرعة انتشار الدائرة (نفس سرعة تليجرام تقريباً)
+      duration: const Duration(milliseconds: 500), 
+      builder: (context, myTheme) {
+        return MaterialApp.router(
+          title: 'Algonaid Lessons',
+          debugShowCheckedModeBanner: false,
+          theme: myTheme,
+          routerConfig: AppRouters.routers,
+          // إضافة Builder هنا مهمة جداً لضمان عمل الـ ThemeSwitcher في الصفحات الداخلية
+          builder: (context, child) {
+            return ThemeSwitchingArea(
+              child: child!,
+            );
+          },
+        );
+      },
     );
   }
 }

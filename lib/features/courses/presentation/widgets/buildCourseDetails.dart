@@ -19,46 +19,110 @@ class BuildCourseDetails extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          _buildHeaderSection(context, colorScheme),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              "عدد الوحدات : ${course.modulesCount}",
+              style: context.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (course.isEnrolled == false)
+              _buildHeaderSection(context, colorScheme),
 
-          if (course.isEnrolled) _buildProgressSection(context, colorScheme),
+            if (course.isEnrolled) _buildProgressSection(context, colorScheme),
 
-          _buildActionButton(context),
-        ],
+            _buildActionButton(context),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildHeaderSection(BuildContext context, ColorScheme colorScheme) {
+    final bool hasModules =
+        course.moduleTitles != null && course.moduleTitles!.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          " وحدات تعليمية متاحة ${course.modulesCount}",
-          style: context.textTheme.titleMedium,
-        ),
-        if (course.moduleTitles != null && course.isEnrolled == false) ...[
-          const SizedBox(height: 12),
+        const SizedBox(height: 12),
+
+        // قسم عرض الوحدات أو الوصف
+        if (course.isEnrolled == false)
           SizedBox(
-            height: 35,
-            child: ClipRect(
-              child: Wrap(
-                spacing: 8,
-                children: course.moduleTitles
-                    .map((tag) => _CourseTag(label: tag))
-                    .toList(),
+            height: 35, // ارتفاع ثابت لمنع القفز في التصميم
+            child: hasModules
+                ? _buildModulesList(context) // دالة عرض الوحدات كـ Tags
+                : _buildDescriptionText(context), // دالة عرض الوصف
+          ),
+      ],
+    );
+  }
+
+  Widget _buildModulesList(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Row(
+        children: [
+          Icon(
+            Icons.collections_bookmark_outlined,
+            size: 16,
+            color: context.primary.withOpacity(0.7),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics:
+                  const NeverScrollableScrollPhysics(), // منع التمرير ليبقى التصميم ثابتاً
+              child: Row(
+                children: course.moduleTitles.map((title) {
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 6),
+                    child: _CourseTag(label: title),
+                  );
+                }).toList(),
               ),
             ),
           ),
         ],
-      ],
+      ),
+    );
+  }
+
+  // دالة عرض الوصف بأسلوب مميز
+  Widget _buildDescriptionText(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 16,
+            color: context.primary.withOpacity(0.7),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              course.description,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.bodySmall!.copyWith(
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -83,17 +147,7 @@ class BuildCourseDetails extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-
-          child: Directionality(
-            textDirection:
-                TextDirection.rtl, // لجعل التقدم يتجه من اليمين لليسار
-            child: LinearProgress(
-              progressPercentage: course.progressPercentage,
-            ),
-          ),
-        ),
+        LinearProgress(progressPercentage: course.progressPercentage),
       ],
     );
   }
@@ -173,10 +227,11 @@ class BuildCourseDetails extends StatelessWidget {
   }
 }
 
-// فصل الـ Tag في Class مستقل واستخدام الـ Theme داخله
 class _CourseTag extends StatelessWidget {
   final String label;
-  const _CourseTag({required this.label});
+  final bool isMore;
+
+  const _CourseTag({required this.label, this.isMore = false});
 
   @override
   Widget build(BuildContext context) {
@@ -185,16 +240,22 @@ class _CourseTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        color: isMore
+            ? theme.colorScheme.primary.withOpacity(0.1)
+            : theme.colorScheme.surfaceVariant.withOpacity(0.5),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+        border: Border.all(
+          color: isMore
+              ? theme.colorScheme.primary.withOpacity(0.2)
+              : theme.dividerColor.withOpacity(0.1),
+        ),
       ),
       child: Text(
         label,
-        style: Styles.style12(context).copyWith(
-          color: theme
-              .colorScheme
-              .surfaceContainer, // لون النص التلقائي المتوافق مع الخلفية
+        style: context.textTheme.labelMedium?.copyWith(
+          // إذا كان "المزيد" نبرز النص بلون المنصة الأساسي
+          color: isMore ? theme.colorScheme.primary : null,
+          fontWeight: isMore ? FontWeight.bold : null,
         ),
       ),
     );

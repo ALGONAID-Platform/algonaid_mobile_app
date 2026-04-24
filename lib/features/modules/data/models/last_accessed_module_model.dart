@@ -1,16 +1,51 @@
 import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:hive/hive.dart';
 
+part 'last_accessed_module_model.g.dart';
+
+@HiveType(typeId: 7)
 class LastAccessedModuleModel extends LastAccessedModuleEntity {
-  const LastAccessedModuleModel({
-    required int moduleId,
-    required String courseName,
-    required String moduleName,
-    required String moduleDescription,
-    required int totalLessons,
-    required int completedLessons,
-    required num progressPercentage,
-        required String image_url,
+  @override
+  @HiveField(0)
+  final int moduleId;
 
+  @override
+  @HiveField(1)
+  final String courseName;
+
+  @override
+  @HiveField(2)
+  final String moduleName;
+
+  @override
+  @HiveField(3)
+  final String moduleDescription;
+
+  @override
+  @HiveField(4)
+  final int totalLessons;
+
+  @override
+  @HiveField(5)
+  final int completedLessons;
+
+  @override
+  @HiveField(6)
+  final num progressPercentage;
+
+  @override
+  @HiveField(7)
+  final String image_url;
+
+  const LastAccessedModuleModel({
+    required this.moduleId,
+    required this.courseName,
+    required this.moduleName,
+    required this.moduleDescription,
+    required this.totalLessons,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.image_url,
   }) : super(
           moduleId: moduleId,
           courseName: courseName,

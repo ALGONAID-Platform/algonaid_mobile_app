@@ -17,6 +17,7 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/continue_learning_card.dart';
+import 'package:algonaid_mobail_app/features/profile/presentation/pages/profile_page.dart'; // Added
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({Key? key}) : super(key: key);
@@ -103,11 +104,11 @@ class CoursesHomePage extends StatefulWidget {
 class _CoursesHomePageState extends State<CoursesHomePage> {
   int _currentIndex = 0;
 
-  final _pages = [
-    CoursesPage(), // الصفحة الرئيسية
-    Placeholder(), // الدورات
-    Placeholder(), // المحفوظات
-    Placeholder(), // الحساب
+  List<Widget> get _pages => const [
+    CoursesPage(key: ValueKey('home')), // الصفحة الرئيسية
+    Placeholder(key: ValueKey('courses')), // الدورات
+    Placeholder(key: ValueKey('bookmarks')), // المحفوظات
+    ProfilePage(key: ValueKey('profile')), // الحساب
   ];
 
   @override

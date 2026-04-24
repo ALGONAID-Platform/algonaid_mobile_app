@@ -7,29 +7,44 @@ class ContinueLearningShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // تحديد الألوان بناءً على الثيم (فاتح/داكن)
-    final baseColor = Colors.grey[300]!;
-    final highlightColor = Colors.grey[100]!;
+    // الألوان الخاصة بتأثير اللمعان نفسه
+    final shimmerBase = context.isDarkMode
+        ? Colors.grey[700]!
+        : Colors.grey[300]!;
+    final shimmerHighlight = context.isDarkMode
+        ? Colors.grey[600]!
+        : Colors.grey[100]!;
 
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: Container(
-        margin: EdgeInsets.all(16),
-        constraints: const BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: Colors.white, // ضروري ليظهر الشيمر
-          borderRadius: BorderRadius.circular(15),
-        ),
+    // لون خلفية البطاقة (تكون أغمق أو أفتح قليلاً من الخلفية العامة)
+    final cardBackground = context.isDarkMode
+        ? Colors.grey[800]!
+        : Colors.white;
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardBackground, // خلفية البطاقة ثابتة لا تتحرك
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Shimmer.fromColors(
+        baseColor: shimmerBase,
+        highlightColor: shimmerHighlight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // محاكاة مكان الصورة (بنفس الارتفاع 160)
+            // الجزء العلوي (مكان الصورة)
             Container(
               height: 160,
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Colors.white, // أي لون هنا سيتحول لتأثير شيمر
                 borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
               ),
             ),
@@ -38,7 +53,7 @@ class ContinueLearningShimmer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // محاكاة الـ Meta Tags (التاغ الصغير)
+                  // محاكاة التصنيف
                   Container(
                     width: 80,
                     height: 18,
@@ -48,23 +63,16 @@ class ContinueLearningShimmer extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // محاكاة عنوان الكورس (Course Name)
+                  // محاكاة الأسطر
                   Container(
                     width: double.infinity,
                     height: 18,
                     color: Colors.white,
                   ),
                   const SizedBox(height: 6),
-                  // محاكاة الوصف (Module Description) - سطرين
-                  Container(
-                    width: double.infinity,
-                    height: 12,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 4),
                   Container(width: 150, height: 12, color: Colors.white),
                   const SizedBox(height: 16),
-                  // محاكاة الـ Progress Bar
+                  // محاكاة شريط التقدم
                   Container(
                     width: double.infinity,
                     height: 8,
@@ -73,14 +81,14 @@ class ContinueLearningShimmer extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Container(width: 120, height: 10, color: Colors.white),
                   const SizedBox(height: 16),
-                  // محاكاة الأزرار (Action Buttons)
+                  // محاكاة الأزرار
                   Row(
-                    children: [
-                      Expanded(
+                    children: List.generate(
+                      2,
+                      (index) => Expanded(
                         child: Container(
+                          margin: EdgeInsets.only(left: index == 1 ? 12 : 0),
                           height: 40,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -88,17 +96,7 @@ class ContinueLearningShimmer extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),

@@ -18,6 +18,7 @@ abstract class AppConstants {
   static const String boxCourses = "courses_box";
   static const String boxMyCourses = "my_courses_box";
   static const String boxCourseProgress = "course_progress_box";
+  static const String boxLastAccessedModule = "boxLastAccessedModule";
 
   // shared preferences keys
   static const String token = 'TOKEN';

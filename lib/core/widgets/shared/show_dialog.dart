@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
@@ -54,10 +55,7 @@ class AppDialog {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.surfaceContainer,
-                  ),
+                  style: context.textTheme.titleLarge?.copyWith(),
                 ),
                 const SizedBox(height: 12),
 
@@ -65,12 +63,7 @@ class AppDialog {
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainer.withOpacity(0.7),
-                    height: 1.5,
-                  ),
+                  style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
                 ),
                 const SizedBox(height: 30),
 
@@ -134,14 +127,18 @@ class AppDialog {
             onPressed: () => Navigator.pop(context),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(color: Colors.grey.shade300),
+              side: BorderSide(
+                color: context.colorScheme.onSecondary.withOpacity(0.5),
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               cancelText ?? "إغلاق",
-              style: const TextStyle(color: Colors.grey),
+              style: context.textTheme.labelMedium!.copyWith(
+                color: context.colorScheme.onSecondary.withOpacity(0.5),
+              ),
             ),
           ),
         ),
