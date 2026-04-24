@@ -28,6 +28,7 @@ class HiveService {
     await Hive.openBox<CourseModel>(AppConstants.boxCourses);
     await Hive.openBox<CourseModel>(AppConstants.boxMyCourses);
     await Hive.openBox<LessonModel>(AppConstants.boxLessons);
+    await Hive.openBox<String>(AppConstants.boxLessonDetails);
     await Hive.openBox<ModuleModel>(AppConstants.boxModules);
     await Hive.openBox<String>(AppConstants.boxReadingProgress);
     await Hive.openBox<ExamModel>(AppConstants.boxExams);

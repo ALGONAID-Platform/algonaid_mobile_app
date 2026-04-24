@@ -60,7 +60,10 @@ class _ModulesListViewState extends State<_ModulesListView> {
           title: Text(widget.courseTitle),
           actions: [
             IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
+              icon: Transform.flip(
+                flipX: true,
+                child: Icon(Icons.arrow_back_ios_new),
+              ),
               onPressed: () => _handleBackNavigation(context),
             ),
           ],

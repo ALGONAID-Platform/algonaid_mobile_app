@@ -20,6 +20,7 @@ Future<void> initHive() async {
   await Hive.openBox<CourseModel>(AppConstants.boxMyCourses);
   await _openBoxSafely<ModuleModel>(AppConstants.boxModules);
   await _openBoxSafely<LessonModel>(AppConstants.boxLessons);
+  await _openBoxSafely<String>(AppConstants.boxLessonDetails);
 }
 
 Future<Box<T>> _openBoxSafely<T>(String name) async {

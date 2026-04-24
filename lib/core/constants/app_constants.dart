@@ -18,6 +18,7 @@ abstract class AppConstants {
   static const String boxCourses = "courses_box";
   static const String boxMyCourses = "my_courses_box";
   static const String boxLessons = "lessons_box";
+  static const String boxLessonDetails = "lesson_details_box";
   static const String boxModules = "modules_box";
   static const String boxExams = "exams_box";
   static const String boxExamResults = "exam_results_box";

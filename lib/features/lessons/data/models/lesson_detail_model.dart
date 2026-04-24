@@ -38,6 +38,20 @@ class LessonDetailModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'moduleId': moduleId,
+      'title': title,
+      'description': description,
+      'content': content,
+      'videoUrl': videoUrl,
+      'pdfUrl': pdfUrl,
+      'exam': exam?.toJson(),
+      'order': order,
+    };
+  }
+
   LessonDetail toEntity() {
     return LessonDetail(
       id: id,

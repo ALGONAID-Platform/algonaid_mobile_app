@@ -12,21 +12,31 @@ class ModuleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.08)
+                : AppColors.primary.withOpacity(0.10),
+          ),
+          boxShadow: isDark
+              ? const []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
         ),
         child: Row(
           children: [
@@ -37,9 +47,9 @@ class ModuleCard extends StatelessWidget {
                 children: [
                   Text(
                     module.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.indigo,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -47,17 +57,17 @@ class ModuleCard extends StatelessWidget {
                     module.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondaryLight,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.72),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
-              color: AppColors.grey400,
+              color: theme.colorScheme.onSurface.withOpacity(0.45),
               size: 16,
             ),
           ],

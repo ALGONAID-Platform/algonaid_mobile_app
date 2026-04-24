@@ -60,7 +60,10 @@ class _LessonsListView extends StatelessWidget {
           title: Text(moduleTitle),
           actions: [
             IconButton(
-              icon: const Icon(Icons.chevron_left),
+              icon: Transform.flip(
+                flipX: true,
+                child: Icon(Icons.arrow_back_ios_new),
+              ),
               onPressed: () => _handleBackNavigation(context),
             ),
           ],

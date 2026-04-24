@@ -10,7 +10,7 @@ import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/examIntroPage.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_intro_page.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

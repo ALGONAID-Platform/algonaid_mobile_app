@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/examIntroPage.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_intro_page.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/widgets/exam_widget.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/pages/results_page.dart';
@@ -251,6 +251,18 @@ class _ExamPageState extends State<ExamPage> {
                   const SnackBar(
                     content: Text('الرجاء الإجابة على جميع الأسئلة قبل التسليم.'),
                     backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              if ((examProvider.attemptId ?? 0) <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'لا يمكن تسليم الاختبار بدون اتصال بالإنترنت. يمكنك المتابعة والمراجعة ثم الإرسال عند عودة الاتصال.',
+                    ),
+                    backgroundColor: Colors.orange,
                   ),
                 );
                 return;

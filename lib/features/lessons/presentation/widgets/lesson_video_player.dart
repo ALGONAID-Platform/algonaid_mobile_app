@@ -48,18 +48,34 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
     } else {
       final url = widget.videoUrl?.trim();
       if (url != null && url.isNotEmpty) {
-        final videoId = YoutubePlayer.convertUrlToId(url) ?? url;
-        _youtubeVideoId = videoId;
+        final videoId = YoutubePlayer.convertUrlToId(url);
 
-        if (!kIsWeb) {
-          _youtubeController = YoutubePlayerController(
-            initialVideoId: videoId,
-            flags: const YoutubePlayerFlags(
-              autoPlay: false,
-              mute: false,
-              enableCaption: true,
-            ),
-          );
+        if (videoId != null) {
+          // This is a YouTube URL
+          _youtubeVideoId = videoId;
+          if (!kIsWeb) {
+            _youtubeController = YoutubePlayerController(
+              initialVideoId: videoId,
+              flags: const YoutubePlayerFlags(
+                autoPlay: false,
+                mute: false,
+                enableCaption: true,
+              ),
+            );
+          }
+        } else if (!kIsWeb) {
+          // This is a direct video URL (not YouTube) for non-web platforms
+          _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
+          _videoPlayerController!.initialize().then((_) {
+            setState(() {
+              _chewieController = ChewieController(
+                videoPlayerController: _videoPlayerController!,
+                autoPlay: false,
+                looping: false,
+                // Additional Chewie options
+              );
+            });
+          });
         }
       }
     }
@@ -106,10 +122,9 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
           borderRadius: BorderRadius.circular(18),
         ),
         child: const Center(
-          child: Icon(
-            Icons.play_circle_fill,
-            color: AppColors.primary,
-            size: 64,
+          child: Text(
+            'لا يوجد فيديو متاح', // "No video available" in Arabic
+            style: TextStyle(color: Colors.white, fontSize: 18),
           ),
         ),
       );
@@ -127,7 +142,8 @@ class _WebYoutubeFallback extends StatelessWidget {
     final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
 
     return Container(
-      height: 210,
+      height: 250,
+      width: 500,
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(18),
@@ -154,11 +170,7 @@ class _WebYoutubeFallback extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(
-              Icons.play_circle_fill_rounded,
-              color: Colors.white,
-              size: 56,
-            ),
+
           ],
         ),
       ),

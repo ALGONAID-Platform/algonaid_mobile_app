@@ -1,16 +1,15 @@
 import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
 import 'package:algonaid_mobail_app/core/errors/failure.dart';
+import 'package:algonaid_mobail_app/core/network/check_internet.dart';
 import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart';
-
 import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 
 class ExamRepositoryImpl implements ExamRepository {
-
-
   final ExamRemoteDataSource remoteDataSource;
   final ExamLocalDataSource localDataSource;
   ExamRepositoryImpl({
@@ -20,8 +19,19 @@ class ExamRepositoryImpl implements ExamRepository {
 
   @override
   Future<Either<Failure, Exam>> getExam(int examId) async {
-    try {
+    final localExam = await localDataSource.getCachedExam(examId);
+    final isOffline = await hasNoInternet();
 
+    if (isOffline) {
+      if (localExam != null) {
+        return Right(localExam);
+      }
+      return Left(
+        ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد بيانات محفوظة لهذا الاختبار.'),
+      );
+    }
+
+    try {
       final remoteExam = await remoteDataSource.getExam(examId);
       try {
         await localDataSource.cacheExam(remoteExam);
@@ -33,9 +43,11 @@ class ExamRepositoryImpl implements ExamRepository {
       }
       return Right(remoteExam);
     } on ServerException catch (e) {
+      if (localExam != null) {
+        return Right(localExam);
+      }
       return Left(ServerFailure(e.message));
     } on CacheException catch (e) {
-      final localExam = await localDataSource.getCachedExam(examId);
       if (localExam != null) {
         return Right(localExam);
       }
@@ -51,17 +63,36 @@ class ExamRepositoryImpl implements ExamRepository {
 
   @override
   Future<Either<Failure, ExamAttempt>> startExam(int examId) async {
-    try {
+    final isOffline = await hasNoInternet();
 
+    if (isOffline) {
+      final localExam = await localDataSource.getCachedExam(examId);
+      if (localExam != null) {
+        return Right(_buildOfflineAttempt(localExam));
+      }
+      return Left(
+        ServerFailure('لا يمكن بدء الاختبار بدون اتصال بالإنترنت لعدم توفر نسخة محفوظة.'),
+      );
+    }
+
+    try {
       final examAttempt = await remoteDataSource.startExam(examId);
       return Right(examAttempt);
     } on ServerException catch (e) {
+      final localExam = await localDataSource.getCachedExam(examId);
+      if (localExam != null) {
+        return Right(_buildOfflineAttempt(localExam));
+      }
       return Left(ServerFailure(e.message));
     } catch (e, stackTrace) {
       debugPrint(
         'ExamRepositoryImpl: startExam unexpected error for examId=$examId: $e',
       );
       debugPrintStack(stackTrace: stackTrace);
+      final localExam = await localDataSource.getCachedExam(examId);
+      if (localExam != null) {
+        return Right(_buildOfflineAttempt(localExam));
+      }
       return Left(ServerFailure('تعذر بدء الاختبار حالياً. حاول مرة أخرى.'));
     }
   }
@@ -124,5 +155,17 @@ class ExamRepositoryImpl implements ExamRepository {
   @override
   Future<Map<int, int>?> getExamProgress(int examId) async {
     return await localDataSource.getExamProgress(examId);
+  }
+
+  ExamAttemptModel _buildOfflineAttempt(ExamModel exam) {
+    return ExamAttemptModel(
+      id: -exam.id,
+      score: 0,
+      status: 'OFFLINE',
+      startedAt: DateTime.now(),
+      studentId: 0,
+      examId: exam.id,
+      questions: exam.questions,
+    );
   }
 }

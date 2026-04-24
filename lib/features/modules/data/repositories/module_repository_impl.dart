@@ -1,5 +1,6 @@
 import 'package:algonaid_mobail_app/core/errors/exception.dart';
 import 'package:algonaid_mobail_app/core/errors/failure.dart';
+import 'package:algonaid_mobail_app/core/network/check_internet.dart';
 import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
@@ -20,18 +21,28 @@ class ModuleRepositoryImpl implements ModuleRepository {
 
   @override
   Future<Either<Failure, List<Module>>> getModulesByCourse(int courseId) async {
+    final localModules = localDataSource.getModules(courseId);
+    final isOffline = await hasNoInternet();
+
+    if (isOffline) {
+      if (localModules.isNotEmpty) {
+        return Right(localModules);
+      }
+      return Left(
+        ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد بيانات محفوظة لهذه الوحدة.'),
+      );
+    }
+
     try {
       final remoteModules = await remoteDataSource.getModulesByCourse(courseId);
       await localDataSource.saveModules(
+        courseId,
         remoteModules.map((e) => e as ModuleModel).toList(),
       );
       return Right(remoteModules);
     } catch (e) {
-      if (e is DioException || e is ServerException) {
-        final localModules = localDataSource.getModules(courseId);
-        if (localModules.isNotEmpty) {
-          return Right(localModules);
-        }
+      if ((e is DioException || e is ServerException) && localModules.isNotEmpty) {
+        return Right(localModules);
       }
 
       if (e is DioException) {
