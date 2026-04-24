@@ -98,7 +98,9 @@ class ExamProvider extends ChangeNotifier {
     _isSubmitted = false;
     _result = null;
     _answers.clear();
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
 
     try {
       // 2. Fetch Exam Details
@@ -125,7 +127,9 @@ class ExamProvider extends ChangeNotifier {
       );
 
       if (hasError) {
-        notifyListeners();
+        if (hasListeners) {
+      notifyListeners();
+    }
         return;
       }
 
@@ -135,7 +139,9 @@ class ExamProvider extends ChangeNotifier {
         );
         _state = ExamState.error;
         _error = 'هذا الاختبار لا يحتوي على أسئلة حالياً.';
-        notifyListeners();
+        if (hasListeners) {
+      notifyListeners();
+    }
         return;
       }
 
@@ -162,7 +168,9 @@ class ExamProvider extends ChangeNotifier {
       );
 
       if (hasError) {
-        notifyListeners();
+        if (hasListeners) {
+      notifyListeners();
+    }
         return;
       }
 
@@ -189,7 +197,9 @@ class ExamProvider extends ChangeNotifier {
     }
 
     // Final notification to update UI
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   /// Select an answer for the current question
@@ -202,7 +212,9 @@ class ExamProvider extends ChangeNotifier {
         await _saveProgressUseCase.call(_exam!.id, _answers);
       }
 
+      if (hasListeners) {
       notifyListeners();
+    }
     }
   }
 
@@ -210,7 +222,9 @@ class ExamProvider extends ChangeNotifier {
   void nextQuestion() {
     if (_currentQuestionIndex < totalQuestions - 1) {
       _currentQuestionIndex++;
+      if (hasListeners) {
       notifyListeners();
+    }
     }
   }
 
@@ -218,7 +232,9 @@ class ExamProvider extends ChangeNotifier {
   void previousQuestion() {
     if (_currentQuestionIndex > 0) {
       _currentQuestionIndex--;
+      if (hasListeners) {
       notifyListeners();
+    }
     }
   }
 
@@ -226,7 +242,9 @@ class ExamProvider extends ChangeNotifier {
   void goToQuestion(int index) {
     if (index >= 0 && index < totalQuestions) {
       _currentQuestionIndex = index;
+      if (hasListeners) {
       notifyListeners();
+    }
     }
   }
 
@@ -235,7 +253,9 @@ class ExamProvider extends ChangeNotifier {
     if (_exam == null || _attemptId == null) return;
 
     _state = ExamState.loading;
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
 
     final result = await _submitExamUseCase.call(_attemptId!, _answers);
 
@@ -256,7 +276,9 @@ class ExamProvider extends ChangeNotifier {
         await _saveProgressUseCase.call(_exam!.id, <int, int>{});
       },
     );
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   /// Reset exam
@@ -270,7 +292,9 @@ class ExamProvider extends ChangeNotifier {
     _attemptId = null;
     _isSubmitted = false;
     _result = null;
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   /// Check if current question is answered

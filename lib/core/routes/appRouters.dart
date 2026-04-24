@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/auth_gate.dart';
+import 'package:algonaid_mobail_app/core/di/service_locator.dart'; // Import service_locator
 import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
@@ -13,6 +14,7 @@ import 'package:algonaid_mobail_app/features/exams/presentation/pages/examIntroP
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart'; // Add this import
 
 import 'package:go_router/go_router.dart';
 
@@ -81,8 +83,8 @@ abstract class AppRouters {
           debugPrint(
             'AppRouters: building exam route, location=${state.uri}, examId=$examId',
           );
-          return ChangeNotifierProvider(
-            create: (_) => ExamProvider(),
+          return ChangeNotifierProvider.value(
+            value: getIt<ExamProvider>(),
             child: ExamIntroPage(examId: examId),
           );
         },

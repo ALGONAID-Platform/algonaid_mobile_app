@@ -32,10 +32,11 @@ import 'package:algonaid_mobail_app/features/modules/presentation/providers/modu
 
 import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart'; // New Import
 import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart'; // New Import
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_mock_data_source.dart';
+
 import 'package:algonaid_mobail_app/features/exams/data/repositories/exam_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 
 
 import 'package:dio/dio.dart';
@@ -84,9 +85,7 @@ void setupServiceLocator() {
     () => ExamRemoteDataSourceImpl(apiService: getIt<ApiService>()),
   );
 
-  getIt.registerLazySingleton<ExamMockDataSource>(
-    () => ExamMockDataSourceImpl(),
-  );
+
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepo>(
@@ -115,10 +114,8 @@ void setupServiceLocator() {
     () => ExamRepositoryImpl(
       localDataSource: getIt<ExamLocalDataSource>(),
       remoteDataSource: getIt<ExamRemoteDataSource>(),
-      mockDataSource: getIt<ExamMockDataSource>(),
     ),
   );
-
   // ================= USE CASES =================
   getIt.registerLazySingleton<SigninUsecase>(
     () => SigninUsecase(authRepo: getIt()),
@@ -184,5 +181,9 @@ void setupServiceLocator() {
 
   getIt.registerFactory<ModulesListProvider>(
     () => ModulesListProvider(getIt<GetModulesByCourse>()),
+  );
+
+  getIt.registerLazySingleton<ExamProvider>(
+    () => ExamProvider(),
   );
 }

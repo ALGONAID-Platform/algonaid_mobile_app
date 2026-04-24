@@ -1,8 +1,10 @@
+import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
+import 'package:get_it/get_it.dart';
 
 class ResultsPage extends StatefulWidget {
   final ExamResult result;
@@ -25,13 +27,6 @@ class _ResultsPageState extends State<ResultsPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
-        title: const Text('نتائج الاختبار'),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -226,19 +221,15 @@ class _ResultsPageState extends State<ResultsPage> {
                     width: double.infinity,
                     height: 48,
                     child: OutlinedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // Retake exam
+                        final examProvider = getIt<ExamProvider>();
+                        examProvider.resetExam();
+                        await examProvider.loadExam(widget.exam.id);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (_) => ExamProvider(
-                                getExamUseCase: context.read(),
-                                startExamUseCase: context.read(),
-                                submitExamUseCase: context.read(),
-                                saveExamProgressUseCase: context.read(),
-                                getExamProgressUseCase: context.read(),
-                                getExamResultUseCase: context.read(),
-                              ),
+                            builder: (context) => ChangeNotifierProvider.value(
+                              value: examProvider,
                               child: ExamPage(
                                 examId: widget.exam.id.toString(),
                               ),

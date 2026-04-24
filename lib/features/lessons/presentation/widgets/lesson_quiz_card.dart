@@ -13,7 +13,7 @@ class LessonQuizCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -22,7 +22,6 @@ class LessonQuizCard extends StatelessWidget {
           Text(
             'اختبار الدرس',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -31,7 +30,9 @@ class LessonQuizCard extends StatelessWidget {
             'اختبر فهمك لهذا الدرس',
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+            ).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -57,8 +58,8 @@ class LessonQuizCard extends StatelessWidget {
                 context.push(targetRoute);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: AppColors.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
