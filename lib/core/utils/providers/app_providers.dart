@@ -6,6 +6,7 @@ import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_lesson_progress.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart'; // Added
 import 'package:algonaid_mobail_app/features/onboard/presentaion/providers/onboarding_provider.dart';
+import 'package:algonaid_mobail_app/core/theme/theme_provider.dart'; // Added
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -22,6 +23,7 @@ class AppProviders extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<AuthServiceProvider>()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // Added
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(
           create: (_) => GetCoursesProvider(

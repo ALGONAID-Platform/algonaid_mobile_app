@@ -6,9 +6,11 @@ import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
+import 'package:algonaid_mobail_app/core/theme/theme_provider.dart'; // Added
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart'; // Added
 
 void main() async {
   // Ensures that widget binding is initialized before any asynchronous operations
@@ -47,13 +49,17 @@ class MyApp extends StatelessWidget {
       ),
     );
 
-    return MaterialApp.router(
-      title: 'Algonaid Lessons',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeApp.lightTheme,
-      darkTheme: ThemeApp.darkTheme,
-      themeMode: ThemeMode.dark,
-      routerConfig: AppRouters.routers,
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp.router(
+          title: 'Algonaid Lessons',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeApp.lightTheme,
+          darkTheme: ThemeApp.darkTheme,
+          themeMode: themeProvider.themeMode,
+          routerConfig: AppRouters.routers,
+        );
+      },
     );
   }
 }

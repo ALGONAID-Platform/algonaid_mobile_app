@@ -17,6 +17,7 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/continue_learning_card.dart';
+import 'package:algonaid_mobail_app/features/profile/presentation/pages/profile_page.dart'; // Added
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({Key? key}) : super(key: key);
@@ -29,7 +30,6 @@ class _CoursesPageState extends State<CoursesPage> {
   @override
   void initState() {
     super.initState();
-    // جلب البيانات عند تشغيل الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GetCoursesProvider>().refreshAll();
       context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
@@ -39,7 +39,7 @@ class _CoursesPageState extends State<CoursesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: context.background,
       body: RefreshIndicator(
         elevation: 0.0,
 
@@ -78,7 +78,7 @@ class _CoursesPageState extends State<CoursesPage> {
 
                         AllCoursesListSection(allCourses: provider.allCourses),
 
-                        const SizedBox(height: 50), 
+                        const SizedBox(height: 50),
                       ],
                     ),
                   ),
@@ -91,7 +91,6 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 }
-
 
 class CoursesHomePage extends StatefulWidget {
   const CoursesHomePage({Key? key}) : super(key: key);
@@ -107,7 +106,7 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
     CoursesPage(), // الصفحة الرئيسية
     Placeholder(), // الدورات
     Placeholder(), // المحفوظات
-    Placeholder(), // الحساب
+    ProfilePage(), // الحساب
   ];
 
   @override

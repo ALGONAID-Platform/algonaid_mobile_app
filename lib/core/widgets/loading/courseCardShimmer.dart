@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -6,9 +7,12 @@ class CourseCardShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
-    final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
+    final baseColor = context.isDarkMode
+        ? Colors.grey[800]!
+        : Colors.grey[300]!;
+    final highlightColor = context.isDarkMode
+        ? Colors.grey[700]!
+        : Colors.grey[100]!;
 
     return Container(
       width: 300,
@@ -23,7 +27,6 @@ class CourseCardShimmer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // محاكاة مكان الصورة
             Container(
               height: 150,
               width: double.infinity,
@@ -64,7 +67,6 @@ class CourseCardShimmer extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 25),
-                  // محاكاة الزر السفلي
                   Container(
                     width: double.infinity,
                     height: 40,

@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
@@ -25,7 +26,7 @@ class AppDialog {
             borderRadius: BorderRadius.circular(24),
           ),
           elevation: 10,
-          backgroundColor: Theme.of(context).cardColor,
+          backgroundColor: context.surfaceContainer,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -50,27 +51,17 @@ class AppDialog {
                 ),
                 const SizedBox(height: 20),
 
-                // العنوان
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.surfaceContainer,
-                  ),
+                  style: context.textTheme.titleLarge,
                 ),
                 const SizedBox(height: 12),
 
-                // الرسالة
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainer.withOpacity(0.7),
-                    height: 1.5,
-                  ),
+                  style: context.textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 30),
 
@@ -108,7 +99,7 @@ class AppDialog {
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        backgroundColor: isError ? Colors.red : AppColors.primary,
+        backgroundColor: isError ? Colors.red : context.primary,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -134,14 +125,16 @@ class AppDialog {
             onPressed: () => Navigator.pop(context),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(color: Colors.grey.shade300),
+              side: BorderSide(color: context.onSecondary.withOpacity(0.5)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               cancelText ?? "إغلاق",
-              style: const TextStyle(color: Colors.grey),
+              style: context.textTheme.labelMedium!.copyWith(
+                color: context.onSecondary.withOpacity(0.5),
+              ),
             ),
           ),
         ),

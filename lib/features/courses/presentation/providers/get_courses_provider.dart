@@ -84,7 +84,7 @@ class GetCoursesProvider extends ChangeNotifier {
     if (courseId == null) return;
 
     _isLoading = true;
-    _isSuccessEnroll = false; // 🌟 إعادة ضبط الحالة عند بدء طلب جديد
+    _isSuccessEnroll = false;
     _errorMessage = null;
     notifyListeners();
 
@@ -95,15 +95,19 @@ class GetCoursesProvider extends ChangeNotifier {
     result.fold(
       (failure) {
         _errorMessage = failure.message;
-        _isSuccessEnroll = false; // فشل التسجيل
+        _isSuccessEnroll = false;
         _isLoading = false;
         notifyListeners();
       },
       (isSuccess) {
+        // 🌟 استدعاء النقل المحلي فور نجاح الرد من السيرفر
         _moveCourseToMyCourses(courseId);
-        _isSuccessEnroll = true; // 🌟 نجاح التسجيل
+
+        _isSuccessEnroll = true;
         _isLoading = false;
         _errorMessage = null;
+
+        // notifyListeners هنا ستجعل القوائم في الواجهة تتحدث فوراً
         notifyListeners();
       },
     );
@@ -134,16 +138,25 @@ class GetCoursesProvider extends ChangeNotifier {
 
   void _moveCourseToMyCourses(int courseId) {
     try {
+      // البحث عن الكورس في القائمة العامة
       final courseIndex = allCourses.indexWhere((c) => c.id == courseId);
+
       if (courseIndex != -1) {
-        final updatedCourse = allCourses[courseIndex].copyWith(
-          isEnrolled: true,
-        );
+        final CourseEntity originalCourse = allCourses[courseIndex];
+
+        final updatedCourse = originalCourse.copyWith(isEnrolled: true);
+        originalCourse.copyWith(id: 55);
+
         allCourses.removeAt(courseIndex);
-        myCourses.add(updatedCourse);
-        // لا تضع notifyListeners هنا لأن الدالة الأب ستستدعيها
+        if (!myCourses.any((c) => c.id == courseId)) {
+          myCourses.add(updatedCourse);
+        }
+
+        notifyListeners();
+        debugPrint("تم نقل الكورس بنجاح كـ Entity");
       }
     } catch (e) {
+      // هذا هو الخطأ الذي ظهر لك، والآن سيعطيك تفاصيل أكثر إذا استمر
       debugPrint("Error updating local lists: $e");
     }
   }

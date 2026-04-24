@@ -18,15 +18,12 @@ class AllCoursesListSection extends StatelessWidget {
       children: [
         SectionHeader(text: 'كل الكورسات'),
 
-        // إذا كانت القائمة فارغة، نظهر الصندوق الجمالي
         if (allCourses.isEmpty)
           _buildAllEnrolledCard(context)
         else
-          // إذا كانت تحتوي على كورسات، نظهر القائمة الأفقية
           SizedBox(
             height: 330,
             child: ListView.builder(
-              reverse: true,
               padding: const EdgeInsets.only(right: 16),
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -50,7 +47,6 @@ class AllCoursesListSection extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        // ألوان هادئة (خلفية زرقاء فاتحة جداً أو رمادي فاتح)
         color: context.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: context.primary.withOpacity(0.1)),

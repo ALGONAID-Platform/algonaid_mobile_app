@@ -26,41 +26,62 @@ class CourseHeaderSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 200.0, // الارتفاع عند التمدد
-      pinned: true, // ليبقى العنوان ثابتاً عند الانكماش
-      stretch: true,
-      backgroundColor: context.primary,
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-      leading: IconButton(
-        icon: Directionality(
-          textDirection: TextDirection.ltr,
-          child: const Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.white,
-            size: 20,
+    return SliverAppBar(
+      expandedHeight: 220.0,
+      pinned: true,
+      stretch: true,
+      backgroundColor: context.surfaceContainer,
+      iconTheme: IconThemeData(color: Colors.white),
+      leading: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              color: Colors.black.withOpacity(0.2), // خلفية خفيفة جداً للزر
+              child: IconButton(
+                icon: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: const Icon(Icons.arrow_forward_ios, size: 18),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
           ),
         ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
       ),
-
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsetsDirectional.only(start: 48, bottom: 16),
+        titlePadding: const EdgeInsetsDirectional.only(
+          start: 48,
+          bottom: 16,
+          end: 16,
+        ),
+        centerTitle: false,
         title: AppHero(
-          tag: "course_name${courseId}",
+          tag: "course_name$courseId",
           child: Text(
             title,
-            style: context.titleLarge!.copyWith(color: AppColors.white),
+            style: context.titleLarge!.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  blurRadius: 10.0,
+                  color: Colors.black.withOpacity(0.9),
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
           ),
         ),
         background: Stack(
           fit: StackFit.expand,
           children: [
+            // الصورة الأساسية
             AppHero(
-              tag: "course_image${courseId}",
-
+              tag: "course_image$courseId",
               child: CachedNetworkImage(
                 imageUrl: imageUrl ?? "",
                 fit: BoxFit.cover,
@@ -68,16 +89,26 @@ class CourseHeaderSliver extends StatelessWidget {
                     Image.asset(Images.noImageFound, fit: BoxFit.cover),
               ),
             ),
-            Container(
+            // تدرج لوني ذكي (Gradient Scrim)
+            // في الوضع الفاتح نزيد التعتيم، وفي الداكن نتركه يندمج مع اللون الأصلي
+            DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.3),
+                    Colors.black.withOpacity(0.4), // تعتيم علوي للزر
                     Colors.transparent,
-                    Colors.black.withOpacity(0.7), // تعتيم أسفل النص
+                    Colors.transparent,
+                    isDark
+                        ? context.surfaceContainer.withOpacity(
+                            0.9,
+                          ) // يندمج مع الثيم الداكن
+                        : Colors.black.withOpacity(
+                            0.7,
+                          ), // تعتيم سفلي للنص في الوضع الفاتح
                   ],
+                  stops: const [0.0, 0.3, 0.6, 1.0],
                 ),
               ),
             ),
