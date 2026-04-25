@@ -10,6 +10,7 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart'; // Added
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -26,7 +26,7 @@ class AppDialog {
             borderRadius: BorderRadius.circular(24),
           ),
           elevation: 10,
-          backgroundColor: Theme.of(context).cardColor,
+          backgroundColor: context.surfaceContainer,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -51,7 +51,6 @@ class AppDialog {
                 ),
                 const SizedBox(height: 20),
 
-                // العنوان
                 Text(
                   title,
                   textAlign: TextAlign.center,
@@ -59,7 +58,6 @@ class AppDialog {
                 ),
                 const SizedBox(height: 12),
 
-                // الرسالة
                 Text(
                   message,
                   textAlign: TextAlign.center,
@@ -101,7 +99,7 @@ class AppDialog {
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        backgroundColor: isError ? Colors.red : AppColors.primary,
+        backgroundColor: isError ? Colors.red : context.primary,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),

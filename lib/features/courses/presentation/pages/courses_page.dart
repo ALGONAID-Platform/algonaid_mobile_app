@@ -30,7 +30,6 @@ class _CoursesPageState extends State<CoursesPage> {
   @override
   void initState() {
     super.initState();
-    // جلب البيانات عند تشغيل الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GetCoursesProvider>().refreshAll();
       context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
@@ -40,7 +39,7 @@ class _CoursesPageState extends State<CoursesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: context.background,
       body: RefreshIndicator(
         elevation: 0.0,
 
@@ -79,7 +78,7 @@ class _CoursesPageState extends State<CoursesPage> {
 
                         AllCoursesListSection(allCourses: provider.allCourses),
 
-                        const SizedBox(height: 50), 
+                        const SizedBox(height: 50),
                       ],
                     ),
                   ),
@@ -92,7 +91,6 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 }
-
 
 class CoursesHomePage extends StatefulWidget {
   const CoursesHomePage({Key? key}) : super(key: key);

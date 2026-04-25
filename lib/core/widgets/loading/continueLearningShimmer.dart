@@ -1,6 +1,7 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 
 class ContinueLearningShimmer extends StatelessWidget {
   const ContinueLearningShimmer({super.key});
@@ -78,7 +79,6 @@ class ContinueLearningShimmer extends StatelessWidget {
                     height: 8,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -99,11 +99,11 @@ class ContinueLearningShimmer extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-            ),
-          ],
+              ),)
+            ],
+          ),
         ),
-      ),
+      
     );
   }
 }

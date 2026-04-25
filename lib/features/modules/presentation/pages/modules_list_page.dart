@@ -47,7 +47,7 @@ class _ModulesListView extends StatelessWidget {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-               backgroundColor: context.background,
+          backgroundColor: context.background,
 
           body: Consumer<ModulesListProvider>(
             builder: (context, provider, _) {
@@ -77,10 +77,15 @@ class _ModulesListView extends StatelessWidget {
                   SliverToBoxAdapter(child: BuildExpertBadge()),
 
                   //modules list
-                  SliverPadding(
-                    padding: const EdgeInsets.all(16),
-                    sliver: sliverListItemsBuilder(modules: modules),
-                  ),
+                  modules.isEmpty
+                      ? const SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(child: Text('لا توجد وحدات حالياً')),
+                        )
+                      : SliverPadding(
+                          padding: const EdgeInsets.all(16),
+                          sliver: sliverListItemsBuilder(modules: modules),
+                        ),
                 ],
               );
             },

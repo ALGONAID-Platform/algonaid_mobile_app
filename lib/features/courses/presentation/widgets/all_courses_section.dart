@@ -55,7 +55,6 @@ class AllCoursesListSection extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        // ألوان هادئة (خلفية زرقاء فاتحة جداً أو رمادي فاتح)
         color: context.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: context.primary.withOpacity(0.1)),
