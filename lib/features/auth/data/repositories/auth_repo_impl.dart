@@ -75,8 +75,17 @@ class AuthRepoImpl extends AuthRepo {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, void>> logout() async {
+    try {
+      await authRemotDataSource.logout();
+      return const Right(null);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
-
-
-// في ملف AuthRepoImpl.dart
-

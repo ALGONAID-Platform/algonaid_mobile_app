@@ -12,6 +12,7 @@ abstract class AuthRemoteDatasourse {
     required String password,
     required UserRole role,
   });
+  Future<void> logout(); // Added
 }
 
 class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
@@ -49,5 +50,10 @@ class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
     );
 
     return AuthResponse.fromJson(user);
+  }
+
+  @override
+  Future<void> logout() async {
+    await apiService.post(endpoint: EndPoint.logout, data: {});
   }
 }

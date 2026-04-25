@@ -14,4 +14,5 @@ abstract class AuthRepo {
     required String password,
     required UserRole role,
   });
+  Future<Either<Failure, void>> logout(); // Added
 }

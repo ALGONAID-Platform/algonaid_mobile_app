@@ -6,15 +6,18 @@ import 'package:algonaid_mobail_app/core/utils/validations/app_validation.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:algonaid_mobail_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
 import 'package:flutter/material.dart';
 
 class AuthServiceProvider extends ChangeNotifier {
   final SigninUsecase signInUseCase;
   final SignupUsecase signUpUseCase;
+  final LogoutUsecase logoutUseCase; // Added
 
   AuthServiceProvider({
     required this.signInUseCase,
     required this.signUpUseCase,
+    required this.logoutUseCase, // Added
   });
 
   UserEntity? _user;
@@ -135,5 +138,31 @@ class AuthServiceProvider extends ChangeNotifier {
     CacheHelper.saveData(key: AppConstants.userRole, value: userEntity.role);
 
     TokenStorage.saveToken(userEntity.token ?? "");
+  }
+
+  Future<void> logout() async {
+    _prepareForRequest();
+    
+    final result = await logoutUseCase();
+    
+    result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        _isLoading = false;
+        notifyListeners();
+      },
+      (_) async {
+        // Clear cached user data
+        await CacheHelper.removeData(key: AppConstants.userName);
+        await CacheHelper.removeData(key: AppConstants.userEmail);
+        await CacheHelper.removeData(key: AppConstants.userRole);
+        await TokenStorage.deleteToken();
+        
+        _user = null;
+        _errorMessage = null;
+        _isLoading = false;
+        notifyListeners();
+      },
+    );
   }
 }

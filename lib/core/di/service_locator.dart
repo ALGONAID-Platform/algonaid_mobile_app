@@ -5,6 +5,7 @@ import 'package:algonaid_mobail_app/features/auth/data/repositories/auth_repo_im
 import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:algonaid_mobail_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 
 import 'package:algonaid_mobail_app/features/courses/data/datasources/course_local_stroage.dart';
@@ -100,6 +101,10 @@ void setupServiceLocator() {
     () => SignupUsecase(authRepo: getIt()),
   );
 
+  getIt.registerLazySingleton<LogoutUsecase>(
+    () => LogoutUsecase(authRepo: getIt()),
+  );
+
   getIt.registerLazySingleton<GetCoursesUsecase>(
     () => GetCoursesUsecase(repository: getIt()),
   );
@@ -142,6 +147,7 @@ void setupServiceLocator() {
     () => AuthServiceProvider(
       signInUseCase: getIt(),
       signUpUseCase: getIt(),
+      logoutUseCase: getIt(), // Added
     ),
   );
 

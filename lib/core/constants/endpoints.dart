@@ -9,6 +9,7 @@ class EndPoint {
   // API endpoints
   static const String signin = '$baseUrl/auth/signin';
   static const String signup = '$baseUrl/auth/signup';
+  static const String logout = '$baseUrl/auth/logout'; // Added
   static const String courses = '$baseUrl/courses';
   static const String myCourses = '$baseUrl/courses/my-courses';
   static const String enrollment = '$baseUrl/enrollment';

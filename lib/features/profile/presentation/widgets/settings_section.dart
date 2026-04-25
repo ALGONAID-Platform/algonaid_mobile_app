@@ -3,6 +3,10 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/theme.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 
@@ -82,7 +86,14 @@ class SettingsSection extends StatelessWidget {
                         color: AppColors.red,
                       ),
                     ),
-                    onTap: () {
+                    onTap: () async {
+                      // Call logout in AuthServiceProvider
+                      await context.read<AuthServiceProvider>().logout();
+                      
+                      // Navigate back to the auth page
+                      if (context.mounted) {
+                        context.go(Routes.auth);
+                      }
                     },
                   ),
                 ],
