@@ -16,9 +16,7 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
 
   @override
   Future<List<LessonModel>> fetchLessonsByModule(int moduleId) async {
-    final data = await _api.get(
-      endpoint: EndPoint.lessonsByModule(moduleId),
-    );
+    final data = await _api.get(endpoint: EndPoint.lessonsByModule(moduleId));
 
     final items = _extractList(data);
     return items
@@ -29,9 +27,7 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
 
   @override
   Future<LessonDetailModel> fetchLessonDetail(int lessonId) async {
-    final data = await _api.get(
-      endpoint: EndPoint.lessonDetails(lessonId),
-    );
+    final data = await _api.get(endpoint: EndPoint.lessonDetails(lessonId));
 
     final lessonMap = _extractLesson(data);
     return LessonDetailModel.fromJson(lessonMap);

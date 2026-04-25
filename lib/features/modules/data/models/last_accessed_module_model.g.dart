@@ -6,11 +6,10 @@ part of 'last_accessed_module_model.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-
 class LastAccessedModuleModelAdapter
     extends TypeAdapter<LastAccessedModuleModel> {
   @override
-  final int typeId = 7;
+  final int typeId = 12;
 
   @override
   LastAccessedModuleModel read(BinaryReader reader) {

@@ -19,6 +19,16 @@ abstract class AppConstants {
   static const String boxMyCourses = "my_courses_box";
   static const String boxCourseProgress = "course_progress_box";
   static const String boxLastAccessedModule = "boxLastAccessedModule";
+  static const String boxLessons = "lessons_box";
+  static const String boxLessonDetails = "lesson_details_box";
+  static const String boxModules = "modules_box";
+  static const String boxExams = "exams_box";
+  static const String boxExamResults = "exam_results_box";
+  static const String boxFeaturedTrendinBooks = "featured_trending_books";
+  static const String boxFeaturedTopRatedBooks = "featured_top_rated_books";
+  static const String boxFeaturedQuickReadBooks = "featured_quick_read_books";
+  static const String boxReadingProgress = "reading_progress_box";
+  static const String boxLessonProgress = "lesson_progress_box";
 
   // shared preferences keys
   static const String token = 'TOKEN';
@@ -70,12 +80,15 @@ abstract class AppConstants {
   static const drawBarPageFlex = 2;
 
   // user data
-  static int userIdValue =
-      int.tryParse(CacheHelper.getString(key: AppConstants.userId)!)!;
-  static String userNameValue =
-      CacheHelper.getString(key: AppConstants.userName)!;
-  static String userEmailValue =
-      CacheHelper.getString(key: AppConstants.userEmail)!;
+  static int userIdValue = int.tryParse(
+    CacheHelper.getString(key: AppConstants.userId)!,
+  )!;
+  static String userNameValue = CacheHelper.getString(
+    key: AppConstants.userName,
+  )!;
+  static String userEmailValue = CacheHelper.getString(
+    key: AppConstants.userEmail,
+  )!;
 
   //color dark matrix for pdf viewer
   static const colorFilter = ColorFilter.matrix([

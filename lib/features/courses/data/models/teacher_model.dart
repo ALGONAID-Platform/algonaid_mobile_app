@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart'; // 🌟
-import 'package:algonaid_mobail_app/features/courses/data/models/user_model.dart' show UserModel;
+import 'package:algonaid_mobail_app/features/courses/data/models/user_model.dart'
+    show UserModel;
 import 'package:algonaid_mobail_app/features/courses/domain/entities/teacher_entity.dart';
 
 part 'teacher_model.g.dart'; // 🌟
@@ -27,13 +28,13 @@ class TeacherModel extends TeacherEntity {
     required this.userId,
     required this.user,
   }) : super(
-          id: id,
-          specialization: specialization,
-          bio: bio,
-          experience: experience,
-          userId: userId,
-          user: user,
-        );
+         id: id,
+         specialization: specialization,
+         bio: bio,
+         experience: experience,
+         userId: userId,
+         user: user,
+       );
 
   factory TeacherModel.fromJson(Map<String, dynamic> json) {
     return TeacherModel(

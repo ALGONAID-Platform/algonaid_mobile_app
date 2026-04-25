@@ -3,8 +3,8 @@ import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 
 class TextLabel extends StatelessWidget {
-  String text;
-  double Vpadding;
+  final String text;
+  final double Vpadding;
   TextLabel({Key? key, required this.text, this.Vpadding = 0.0});
   @override
   Widget build(BuildContext context) {

@@ -41,6 +41,7 @@ class GetCoursesProvider extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
+    debugPrint('getCourses: isLoading set to true');
 
     final result = await coursesUsecase();
 
@@ -49,6 +50,8 @@ class GetCoursesProvider extends ChangeNotifier {
         _isLoading = false;
         _errorMessage = failure.message;
         notifyListeners();
+        debugPrint('getCourses: Failed with error: $_errorMessage');
+        debugPrint('getCourses: isLoading set to false');
       },
       (fetchedCourses) {
         _isLoading = false;
@@ -64,6 +67,7 @@ class GetCoursesProvider extends ChangeNotifier {
   Future<void> getMyCourses() async {
     // نلاحظ هنا: لا نجعل الـ Loading يغطي الشاشة كاملة لضمان تجربة أسلس
     _errorMessage = null;
+    debugPrint('getMyCourses: started');
 
     final result = await myCoursesUsecase();
 
@@ -71,10 +75,11 @@ class GetCoursesProvider extends ChangeNotifier {
       (failure) {
         _errorMessage = failure.message;
         notifyListeners();
+        debugPrint('getMyCourses: Failed with error: $_errorMessage');
       },
       (fetchedCourses) {
         myCourses = fetchedCourses;
-        print(myCourses);
+        debugPrint('getMyCourses: myCourses loaded. Count: ${myCourses.length}');
         notifyListeners();
       },
     );
@@ -164,10 +169,10 @@ class GetCoursesProvider extends ChangeNotifier {
   Future<void> refreshAll() async {
     _isLoading = true;
     notifyListeners();
-
     await Future.wait([getCourses(), getMyCourses()]);
 
     _isLoading = false;
     notifyListeners();
+    debugPrint('refreshAll: isLoading set to false');
   }
 }

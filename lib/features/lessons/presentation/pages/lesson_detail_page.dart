@@ -1,9 +1,16 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_pdf_viewer_page.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_detail_app_bar.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_detail_bottom_bar.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_detail_content.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_info_card.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_pdf_card.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_quiz_card.dart';
@@ -13,95 +20,155 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class LessonDetailPage extends StatelessWidget {
+class LessonDetailPage extends StatefulWidget {
   final int lessonId;
+  final String? previousRoute;
 
-  const LessonDetailPage({super.key, required this.lessonId});
+  const LessonDetailPage({
+    super.key,
+    required this.lessonId,
+    this.previousRoute,
+  });
+
+  @override
+  State<LessonDetailPage> createState() => _LessonDetailPageState();
+}
+
+class _LessonDetailPageState extends State<LessonDetailPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      context.read<LessonDetailProvider>().loadLesson(widget.lessonId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // We already provide LessonDetailProvider higher up in the widget tree.
-    // Ensure the lesson is loaded when this page is accessed.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LessonDetailProvider>().loadLesson(lessonId);
-    });
-    return const _LessonDetailView();
+    return _LessonDetailView(
+      lessonId: widget.lessonId,
+      previousRoute: widget.previousRoute,
+    );
   }
 }
 
-class _LessonDetailView extends StatelessWidget {
-  const _LessonDetailView();
+class _LessonDetailView extends StatefulWidget {
+  final int lessonId;
+  final String? previousRoute;
+
+  const _LessonDetailView({required this.lessonId, this.previousRoute});
+
+  @override
+  State<_LessonDetailView> createState() => _LessonDetailViewState();
+}
+
+class _LessonDetailViewState extends State<_LessonDetailView> {
+  late final LessonDetailDownloadController _downloadController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _downloadController = LessonDetailDownloadController()
+      ..addListener(() {
+        if (mounted) setState(() {});
+      });
+    _downloadController.initialize(widget.lessonId);
+  }
+
+  @override
+  void dispose() {
+    _downloadController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: context.background,
-        appBar: AppBar(
-          title: const Text('تفاصيل الدرس'),
-          backgroundColor: context.surface,
-          foregroundColor: context.onBackground,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () => GoRouter.of(context).pop(),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: SizedBox(
-          height: 48,
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            label: const Text('قائمة الدروس'),
-            icon: const Icon(Icons.list_alt),
-          ),
-        ),
-        body: Consumer<LessonDetailProvider>(
-          builder: (context, provider, _) {
-            final state = provider.state;
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return Consumer<LessonDetailProvider>(
+      builder: (context, provider, _) {
+        final state = provider.state;
+        final lesson = state.lesson;
 
-            if (state.errorMessage != null) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(state.errorMessage!, textAlign: TextAlign.center),
-                ),
-              );
-            }
+        // حالة التحميل الأولية
+        if (state.isLoading && lesson == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-            final lesson = state.lesson;
-            if (lesson == null) {
-              return const Center(child: Text('تعذر تحميل الدرس'));
-            }
+        // حالة الخطأ
+        if (state.errorMessage != null && lesson == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('تفاصيل الدرس')),
+            body: AppErrorState(
+              message: state.errorMessage!,
+              onRetry: () => provider.loadLesson(widget.lessonId),
+              buttonText: 'إعادة المحاولة',
+            ),
+          );
+        }
 
-            final pdfUrl = _resolvePdfUrl(lesson.pdfUrl);
+        // في حال عدم وجود بيانات
+        if (lesson == null) {
+          return const Scaffold(
+            body: Center(child: Text('تعذر تحميل الدرس')),
+          );
+        }
 
-            return SingleChildScrollView(
+        // مزامنة حالة التنزيل للملفات
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _downloadController.syncDownloadStatus(lesson);
+        });
+
+        debugPrint(
+          'LessonDetailPage: rendering lessonId=${lesson.id}, title=${lesson.title}, '
+          'examId=${lesson.exam?.id}, hasExam=${lesson.exam != null}',
+        );
+
+        // دمج منطق معالجة مسار ملف الـ PDF 
+        final pdfUrl = _downloadController.resolvePdfUrl(lesson.pdfUrl) ?? lesson.pdfUrl;
+
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            backgroundColor: context.background,
+            appBar: LessonDetailAppBar(
+              title: lesson.title,
+              onBack: () => _handleBackNavigation(lesson),
+            ),
+            bottomNavigationBar: LessonDetailBottomBar(
+              onLessonsListPressed: () {
+                context.go('${Routes.lessonsList}/${lesson.moduleId}');
+              },
+              onDownloadPressed:
+                  _downloadController.downloadStatus == DownloadStatus.downloading
+                      ? null
+                      : () => _downloadController.downloadLesson(context, lesson),
+              downloadLabel: _downloadController.downloadButtonLabel(),
+              isDownloaded:
+                  _downloadController.downloadStatus == DownloadStatus.downloaded,
+            ),
+            body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LessonVideoPlayer(
                     videoUrl: lesson.videoUrl,
+                    localVideoPath: _downloadController.localVideoFilePath, // دعم الفيديو المحلي
                     // 1. عند فتح الفيديو (بدء المشاهدة)
                     onVideoStart: () {
                       context.read<LessonDetailProvider>().updateProgress(
-                        lesson.id,
-                        false,
-                      );
+                            lesson.id,
+                            false,
+                          );
                     },
                     // 2. عند الوصول لـ 90% (الإكمال)
                     onProgressComplete: () {
                       context.read<LessonDetailProvider>().updateProgress(
-                        lesson.id,
-                        true,
-                      );
+                            lesson.id,
+                            true,
+                          );
                     },
                   ),
                   const SizedBox(height: 16),
@@ -114,6 +181,7 @@ class _LessonDetailView extends StatelessWidget {
                   const SizedBox(height: 16),
                   LessonPdfCard(
                     pdfUrl: pdfUrl,
+                    // تمرير المسار المحلي لبطاقة العرض إن كانت تدعمه، وإلا نعتمد على المتصفح/الرابط
                     onOpen: () {
                       if (pdfUrl == null) return;
                       Navigator.of(context).push(
@@ -127,26 +195,25 @@ class _LessonDetailView extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  const LessonQuizCard(),
+                  LessonQuizCard(examId: lesson.id),
                 ],
               ),
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  String? _resolvePdfUrl(String? pdfUrl) {
-    if (pdfUrl == null || pdfUrl.trim().isEmpty) {
-      return null;
+  void _handleBackNavigation(LessonDetail lesson) {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
+      return;
     }
-    if (pdfUrl.startsWith('http')) {
-      return pdfUrl;
-    }
-    final cleaned = pdfUrl.startsWith('uploads/')
-        ? pdfUrl.replaceFirst('uploads/', '')
-        : pdfUrl;
-    return '${EndPoint.uploadsBaseUrl}$cleaned';
+
+    final fallbackRoute =
+        widget.previousRoute ?? '${Routes.lessonsList}/${lesson.moduleId}';
+    router.go(fallbackRoute);
   }
 }

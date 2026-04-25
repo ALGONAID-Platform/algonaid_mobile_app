@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 
 part 'last_accessed_module_model.g.dart';
 
-@HiveType(typeId: 7)
+@HiveType(typeId: 12)
 class LastAccessedModuleModel extends LastAccessedModuleEntity {
   @override
   @HiveField(0)

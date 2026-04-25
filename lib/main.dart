@@ -10,16 +10,23 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart'; // Added
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
-  await TokenStorage.init();
-  await CacheHelper.init();
+  
+  // تهيئة تخزين التوكن
+  // await TokenStorage.init();
+
+  // Register adapters and open all Hive boxes used by the app.
   await HiveService.init();
 
+  // Initialize SharedPreferences or custom caching helper for general app data
+  await CacheHelper.init();
+
+  // Set up the Service Locator (GetIt) to handle Dependency Injection across the app
   setupServiceLocator();
 
   // جلب الحالة المحفوظة قبل تشغيل التطبيق لتجنب الوميض (Flicker)
@@ -39,7 +46,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // إعدادات شريط الحالة
+    // إعدادات شريط الحالة (Status Bar Configuration)
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent, // شفاف ليبدو أجمل مع الأنميشن
@@ -55,7 +62,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           title: 'Algonaid Lessons',
           debugShowCheckedModeBanner: false,
-          theme: myTheme,
+          theme: myTheme, // يتم إدارة السمة بالكامل بواسطة ThemeProvider
           routerConfig: AppRouters.routers,
           // إضافة Builder هنا مهمة جداً لضمان عمل الـ ThemeSwitcher في الصفحات الداخلية
           builder: (context, child) {

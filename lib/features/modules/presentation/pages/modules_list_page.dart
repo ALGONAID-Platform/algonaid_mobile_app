@@ -1,22 +1,15 @@
 // algonaid_mobail_app/lib/features/modules/presentation/pages/modules_list_page.dart
 
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/buildExpertBadge.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/expertBadge3D.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/progressInfo.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/widgets/animatedModuleItem.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/moduleHaeder.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_card.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/sliverListItemBuilder.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:provider/provider.dart';
 
 class ModulesListPage extends StatelessWidget {

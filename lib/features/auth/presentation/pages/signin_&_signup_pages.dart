@@ -3,6 +3,7 @@ import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/validations/app_validation.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobail_app/core/utils/functions/user_friendly_error.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/widgets/label.dart';
 import 'package:flutter/material.dart';
@@ -190,9 +191,12 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                               } else if (authService.errorMessage != null) {
                                 AppDialog.showDynamicDialog(
                                   context: context,
-                                  title: "Error",
-                                  message: authService.errorMessage!,
+                                  title: "تعذر تسجيل الدخول",
+                                  message: toUserFriendlyErrorMessage(
+                                    authService.errorMessage,
+                                  ),
                                   isError: true,
+                                  confirmText: "حاول مرة أخرى",
                                 );
                               }
                             },

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:algonaid_mobail_app/core/network/execute_request.dart';
 import 'package:algonaid_mobail_app/core/network/initial_dio.dart';
 import 'package:dio/dio.dart';
@@ -5,9 +6,8 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio;
 
-
   ApiService(this._dio) {
-    initializeDio(this._dio);
+    initializeDio(_dio);
   }
 
   Future<dynamic> get({
@@ -40,13 +40,15 @@ class ApiService {
     required String path,
   }) async {
     return await _dio.download(
-        finalUrl,
-        path,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-             print("📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%");
-          }
-        },
-      );
+      finalUrl,
+      path,
+      onReceiveProgress: (received, total) {
+        if (total != -1) {
+          debugPrint(
+            "📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%",
+          );
+        }
+      },
+    );
   }
 }

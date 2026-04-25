@@ -183,6 +183,10 @@ class BuildCourseDetails extends StatelessWidget {
               ),
             )
           : ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.primary,
+                foregroundColor: Colors.white,
+              ),
               onPressed: () {
                 if (!course.isEnrolled) {
                   AppDialog.showDynamicDialog(

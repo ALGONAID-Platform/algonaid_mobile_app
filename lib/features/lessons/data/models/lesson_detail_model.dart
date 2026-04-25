@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 
 class LessonDetailModel {
@@ -8,7 +9,7 @@ class LessonDetailModel {
   final String? content;
   final String? videoUrl;
   final String? pdfUrl;
-  final String? exam;
+  final ExamModel? exam;
   final int order;
 
   LessonDetailModel({
@@ -25,16 +26,30 @@ class LessonDetailModel {
 
   factory LessonDetailModel.fromJson(Map<String, dynamic> json) {
     return LessonDetailModel(
-      id: json['id'],
-      moduleId: json['moduleId'],
-      title: json['title'],
-      description: json['description'],
-      content: json['content'],
-      videoUrl: json['videoUrl'],
-      pdfUrl: json['pdfUrl'],
-      exam: json['exam'],
-      order: json['order'],
+      id: json['id'] as int,
+      moduleId: json['moduleId'] as int,
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      content: json['content'] as String?,
+      videoUrl: json['videoUrl'] as String?,
+      pdfUrl: json['pdfUrl'] as String?,
+      exam: json['exam'] != null ? ExamModel.fromJson(json['exam'] as Map<String, dynamic>) : null,
+      order: json['order'] as int,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'moduleId': moduleId,
+      'title': title,
+      'description': description,
+      'content': content,
+      'videoUrl': videoUrl,
+      'pdfUrl': pdfUrl,
+      'exam': exam?.toJson(),
+      'order': order,
+    };
   }
 
   LessonDetail toEntity() {

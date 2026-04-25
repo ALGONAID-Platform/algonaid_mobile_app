@@ -26,7 +26,7 @@ class SignInWithGoogle extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(SVG.google_svg, width: 20, height: 20),
+          SvgPicture.asset(SVG.googleSvg, width: 20, height: 20),
           SizedBox(width: 10),
           auth.isLogin
               ? TextLabel(text: "سجل الدخول عن طريق جوجل")

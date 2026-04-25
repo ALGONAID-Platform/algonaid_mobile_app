@@ -24,7 +24,7 @@ class AuthServiceProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   bool _isLogin = true; // الحالة الافتراضية
-  UserRole? _selectedRole = UserRole.STUDENT;
+  UserRole? _selectedRole = UserRole.student;
   bool _isPasswordVisible = false;
   double? _showPasswordStrength;
 
@@ -52,9 +52,9 @@ class AuthServiceProvider extends ChangeNotifier {
 
         notifyListeners();
       },
-      (userEntity) {
+      (userEntity) async {
         _user = userEntity;
-        cashUserData(userEntity);
+        await cacheUserData(userEntity);
         _errorMessage = null; // التأكد من مسح أي خطأ قديم
         _isLoading = false;
         notifyListeners();
@@ -88,9 +88,9 @@ class AuthServiceProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       },
-      (userEntity) {
+      (userEntity) async {
         _user = userEntity;
-        cashUserData(userEntity);
+        await cacheUserData(userEntity);
         _errorMessage = null;
         _isLoading = false;
         notifyListeners();
@@ -98,17 +98,17 @@ class AuthServiceProvider extends ChangeNotifier {
     );
   }
 
-  toggleAuthMode() {
+  void toggleAuthMode() {
     _isLogin = !_isLogin;
     notifyListeners();
   }
 
-  setRole(UserRole? role) {
+  void setRole(UserRole? role) {
     _selectedRole = role;
     notifyListeners();
   }
 
-  checkPassStrength(String? pass) {
+  void checkPassStrength(String? pass) {
     _showPasswordStrength = Validator.getPasswordStrength(pass!);
     notifyListeners();
   }
@@ -119,26 +119,36 @@ class AuthServiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
   void changePasswordVisiblity() {
     _isPasswordVisible = !_isPasswordVisible;
     notifyListeners();
   }
 
-  void cashUserData(UserEntity userEntity) {
-    CacheHelper.saveData(
+  Future<void> cacheUserData(UserEntity userEntity) async {
+    await CacheHelper.saveData(
+      key: AppConstants.userId,
+      value: userEntity.id.toString(),
+    );
+    await CacheHelper.saveData(
       key: AppConstants.userName,
       value: userEntity.username,
     );
-    CacheHelper.saveData(key: AppConstants.userEmail, value: userEntity.email);
-    CacheHelper.saveData(key: AppConstants.userRole, value: userEntity.role);
+    await CacheHelper.saveData(
+      key: AppConstants.userEmail,
+      value: userEntity.email,
+    );
+    await CacheHelper.saveData(
+      key: AppConstants.userRole,
+      value: userEntity.role.code,
+    );
 
-    TokenStorage.saveToken(userEntity.token ?? "");
+    final token = userEntity.token?.trim();
+    if (token != null && token.isNotEmpty) {
+      await TokenStorage.saveToken(token);
+    }
   }
+
+
 
   Future<void> logout() async {
     _prepareForRequest();

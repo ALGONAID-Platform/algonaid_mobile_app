@@ -25,7 +25,7 @@ class LessonCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(18),
           boxShadow:AppShadows.cardShadow
         ),
@@ -61,8 +61,8 @@ class LessonCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    lesson.description?.isNotEmpty == true
-                        ? lesson.description!
+                    lesson.description.isNotEmpty
+                        ? lesson.description
                         : 'اضغط لعرض تفاصيل الدرس',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -87,7 +87,11 @@ class LessonCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: hasVideo ? AppColors.primary : AppColors.grey400,
+                  color: hasVideo
+                      ? AppColors.primary
+                      : Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.grey400,
                 ),
               ),
             ),

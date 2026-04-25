@@ -1,4 +1,3 @@
-
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/network/check_internet.dart';
@@ -10,20 +9,22 @@ import 'package:flutter/foundation.dart';
 void initializeDio(Dio dio) {
   dio.options
     ..baseUrl = EndPoint.baseUrl
-    ..connectTimeout = AppConstants.apiConnectTimeout 
+    ..connectTimeout = AppConstants.apiConnectTimeout
     ..receiveTimeout = AppConstants.apiReceiveTimeout
-    ..sendTimeout =kIsWeb ? null :  AppConstants.apiSendTimeout
+    ..sendTimeout = kIsWeb ? null : AppConstants.apiSendTimeout
     ..headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ${TokenStorage.getToken() ?? ''}',
+      'Authorization': 'Bearer ${TokenStorage.getToken() ?? ''}', // Reintroduced initial Authorization header setup
     };
 
-  dio.interceptors.add(
+    dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
+        debugPrint('Dio Interceptor: Checking internet connection...');
         // فحص النت
         if (await hasNoInternet()) {
+          debugPrint('Dio Interceptor: No internet connection detected. Rejecting request.');
           return handler.reject(
             DioException(
               requestOptions: options,
@@ -32,6 +33,7 @@ void initializeDio(Dio dio) {
             ),
           );
         }
+        debugPrint('Dio Interceptor: Internet connection available.');
 
         // التوكن
         final token = TokenStorage.getToken();
@@ -41,12 +43,12 @@ void initializeDio(Dio dio) {
 
         return handler.next(options);
       },
-      
       onError: (DioException e, handler) async {
       
 
-       
-        return handler.next(e); 
+        // 2. مهم جداً: تمرير الخطأ لباقي التطبيق (الريبو) مهما كان نوعه!
+        // بدون هذا السطر، أي خطأ غير 401 سيجعل التطبيق يعلق للأبد
+        return handler.next(e);
       },
     ),
   );

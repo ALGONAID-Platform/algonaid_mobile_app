@@ -1,22 +1,24 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/widgets/loading/continueLearningShimmer.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/all_courses_section.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
+
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildShimmerSection.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/courseHeader.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/my_courses_section.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/sliver_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/continue_learning_card.dart';
 import 'package:algonaid_mobail_app/features/profile/presentation/pages/profile_page.dart'; // Added
 
 class CoursesPage extends StatefulWidget {
@@ -34,6 +36,7 @@ class _CoursesPageState extends State<CoursesPage> {
       context.read<GetCoursesProvider>().refreshAll();
       context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
     });
+    debugPrint('User Token on CoursesPage init: ${TokenStorage.getToken()}');
   }
 
   @override
@@ -100,6 +103,7 @@ class CoursesHomePage extends StatefulWidget {
 }
 
 class _CoursesHomePageState extends State<CoursesHomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
   List<Widget> get _pages => const [
@@ -109,15 +113,36 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
     ProfilePage(key: ValueKey('profile')), // الحساب
   ];
 
+  Future<void> _logout() async {
+    await context.read<AuthServiceProvider>().logout();
+    if (!mounted) {
+      return;
+    }
+    context.go(Routes.auth);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userName =
+        CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم';
+    final userEmail = CacheHelper.getString(key: AppConstants.userEmail) ?? '';
+
     return Scaffold(
       backgroundColor: context.background,
+      bottomNavigationBar: FancyFloatingNavBar(
+        selectedIndex: _currentIndex,
+        onItemSelected: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
 
       appBar: CustomWhiteAppBar(
-        userName: CacheHelper.getString(key: AppConstants.userName) ?? "مستخدم",
+        userName: userName,
         userImageUrl: null,
         notificationCount: 4,
+        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
         onProfilePressed: () {},
         onNotificationPressed: () {},
         onSearchPressed: () {},
@@ -127,11 +152,6 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
         child: _pages[_currentIndex],
         transitionBuilder: (child, animation) =>
             FadeTransition(opacity: animation, child: child),
-      ),
-      extendBody: true, // مهم لكي يظهر البار عائم!
-      bottomNavigationBar: FancyFloatingNavBar(
-        selectedIndex: _currentIndex,
-        onItemSelected: (i) => setState(() => _currentIndex = i),
       ),
     );
   }

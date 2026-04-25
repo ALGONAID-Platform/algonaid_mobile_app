@@ -7,6 +7,7 @@ import 'package:algonaid_mobail_app/core/theme/styles.dart';
 class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String userName;
   final String? userImageUrl;
+  final VoidCallback? onMenuPressed;
   final VoidCallback? onNotificationPressed;
   final VoidCallback? onSearchPressed;
   final VoidCallback? onProfilePressed;
@@ -16,6 +17,7 @@ class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
     super.key,
     required this.userName,
     this.userImageUrl,
+    this.onMenuPressed,
     this.onNotificationPressed,
     this.onSearchPressed,
     this.onProfilePressed,

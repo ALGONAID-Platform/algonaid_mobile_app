@@ -1,15 +1,16 @@
-const PORT = '3000';
-const IP = '10.153.168.22';
+const port = '3000';
+const ip = '10.153.168.22';
 
 class EndPoint {
-  //base url for app API
-  static const String baseUrl = 'http://$IP:$PORT/api/v1';
+  // base url for app API
+  static const String baseUrl = 'http://$ip:$port/api/v1';
   // base url for uploaded files
-  static const String uploadsBaseUrl = 'http://$IP:$PORT/uploads/';
+  static const String uploadsBaseUrl = 'http://$ip:$port/uploads/';
+  
   // API endpoints
   static const String signin = '$baseUrl/auth/signin';
   static const String signup = '$baseUrl/auth/signup';
-  static const String logout = '$baseUrl/auth/logout'; // Added
+  static const String logout = '$baseUrl/auth/logout';
   static const String courses = '$baseUrl/courses';
   static const String myCourses = '$baseUrl/courses/my-courses';
   static const String enrollment = '$baseUrl/enrollment';
@@ -21,7 +22,14 @@ class EndPoint {
       '$baseUrl/progress/course/$courseId';
   static String modulesByCourse(int courseId) =>
       '$baseUrl/modules/course/$courseId';
+  
   static const String lastAccessedModule =
       '$baseUrl/progress/last-accessed-module';
   static const String progressUpdate = '$baseUrl/progress/update';
+  // static String getExamDetails(int examId) => '/exams/$examId';
+
+  static String getExamDetails(int examId) => '$baseUrl/lessons/$examId';
+  static String startExam(int examId) => '$baseUrl/exams/2/start';
+  static String submitExam(int attemptId) => '$baseUrl/exams/attempts/$attemptId/submit';
+  static String getExamResult(int attemptId) => '$baseUrl/exams/attempts/$attemptId/result';
 }

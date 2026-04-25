@@ -52,8 +52,7 @@ class SettingsSection extends StatelessWidget {
                               theme: context.isDarkMode
                                   ? ThemeApp.lightTheme
                                   : ThemeApp.darkTheme,
-                              isReversed: context
-                                  .isDarkMode, 
+                              isReversed: context.isDarkMode,
                             );
 
                             CacheHelper.saveData(
@@ -89,7 +88,7 @@ class SettingsSection extends StatelessWidget {
                     onTap: () async {
                       // Call logout in AuthServiceProvider
                       await context.read<AuthServiceProvider>().logout();
-                      
+
                       // Navigate back to the auth page
                       if (context.mounted) {
                         context.go(Routes.auth);

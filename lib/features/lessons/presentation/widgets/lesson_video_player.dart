@@ -1,18 +1,23 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'dart:io';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:chewie/chewie.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class LessonVideoPlayer extends StatefulWidget {
   final String? videoUrl;
-  final VoidCallback? onProgressComplete; // للـ 90% (مكتمل)
-  final VoidCallback? onVideoStart; // عند البدء (قيد التقدم)
+  final String? localVideoPath;
+  final VoidCallback? onProgressComplete; // عند الوصول لـ 90%
+  final VoidCallback? onVideoStart; // عند بدء التشغيل
 
   const LessonVideoPlayer({
     super.key,
     required this.videoUrl,
+    this.localVideoPath,
     this.onProgressComplete,
-    this.onVideoStart, // أضفه هنا
+    this.onVideoStart,
   });
 
   @override
@@ -20,89 +25,101 @@ class LessonVideoPlayer extends StatefulWidget {
 }
 
 class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
-  YoutubePlayerController? _controller;
-
-  bool _isStartedReported = false; // لمنع التكرار عند كل ضغطة Play
+  YoutubePlayerController? _youtubeController;
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
+  
+  String? _youtubeVideoId;
+  bool _isStartedReported = false;
   bool _isProgressReported = false;
-
-  @override
-  Widget build(BuildContext context) {
-    if (_controller == null) {
-      return Container(
-        height: 210,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(0),
-        ),
-        child: Center(
-          child: Icon(Icons.play_circle_fill, color: context.primary, size: 64),
-        ),
-      );
-    }
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: YoutubePlayer(
-        controller: _controller!,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: context.primary,
-        progressColors: const ProgressBarColors(
-          playedColor: AppColors.primary,
-          handleColor: AppColors.primaryLight,
-        ),
-      ),
-    );
-  }
 
   @override
   void initState() {
     super.initState();
-    final url = widget.videoUrl?.trim();
-    if (url != null && url.isNotEmpty) {
-      final videoId = YoutubePlayer.convertUrlToId(url) ?? url;
-      _controller = YoutubePlayerController(
-        initialVideoId: videoId,
-        flags: const YoutubePlayerFlags(
-          autoPlay: false,
-          mute: false,
-          enableCaption: true,
-        ),
-      )..addListener(_onPlayerStateChange);
+    _initializePlayer();
+  }
+
+  void _initializePlayer() {
+    // 1. التحقق من الفيديو المحلي أولاً (في غير الويب)
+    if (!kIsWeb &&
+        widget.localVideoPath != null &&
+        File(widget.localVideoPath!).existsSync()) {
+      _videoPlayerController = VideoPlayerController.file(File(widget.localVideoPath!));
+      _setupVideoPlayer();
+    } 
+    // 2. التحقق من الرابط (يوتيوب أو رابط مباشر)
+    else {
+      final url = widget.videoUrl?.trim();
+      if (url == null || url.isEmpty) return;
+
+      final videoId = YoutubePlayer.convertUrlToId(url);
+
+      if (videoId != null) {
+        // حالة اليوتيوب
+        _youtubeVideoId = videoId;
+        _youtubeController = YoutubePlayerController(
+          initialVideoId: videoId,
+          flags: const YoutubePlayerFlags(
+            autoPlay: false,
+            mute: false,
+            enableCaption: true,
+          ),
+        )..addListener(_onPlayerStateChange);
+      } else if (!kIsWeb) {
+        // حالة رابط فيديو مباشر (MP4 مثلاً)
+        _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
+        _setupVideoPlayer();
+      }
     }
   }
 
-  @override
-  void dispose() {
-    _controller?.removeListener(_onPlayerStateChange);
-    _controller?.dispose();
-    super.dispose();
+  void _setupVideoPlayer() {
+    if (_videoPlayerController == null) return;
+    
+    _videoPlayerController!.initialize().then((_) {
+      if (!mounted) return;
+      setState(() {
+        _chewieController = ChewieController(
+          videoPlayerController: _videoPlayerController!,
+          autoPlay: false,
+          looping: false,
+        );
+      });
+      _videoPlayerController!.addListener(_onPlayerStateChange);
+    });
   }
 
   void _onPlayerStateChange() {
-    if (!mounted || _controller == null) return;
+    if (!mounted) return;
 
-    // أولاً: التحقق من بدء المشاهدة (قيد التقدم)
-    if (_controller!.value.isPlaying && !_isStartedReported) {
-      _isStartedReported = true;
-      if (widget.onVideoStart != null) {
-        widget
-            .onVideoStart!(); // نبلغ الـ Provider بإنشاء السجل (isCompleted = false)
-      }
+    bool isPlaying = false;
+    Duration position = Duration.zero;
+    Duration duration = Duration.zero;
+
+    // استخراج البيانات بناءً على نوع المشغل النشط
+    if (_youtubeController != null) {
+      isPlaying = _youtubeController!.value.isPlaying;
+      position = _youtubeController!.value.position;
+      duration = _youtubeController!.metadata.duration;
+    } else if (_videoPlayerController != null) {
+      isPlaying = _videoPlayerController!.value.isPlaying;
+      position = _videoPlayerController!.value.position;
+      duration = _videoPlayerController!.value.duration;
     }
 
-    if (_isProgressReported) return;
+    // أولاً: تتبع بدء المشاهدة
+    if (isPlaying && !_isStartedReported) {
+      _isStartedReported = true;
+      widget.onVideoStart?.call();
+    }
 
-    final metadata = _controller!.metadata;
-    final position = _controller!.value.position;
-
-    if (metadata.duration.inSeconds > 0) {
-      final percentage = position.inSeconds / metadata.duration.inSeconds;
+    // ثانياً: تتبع نسبة الإنجاز (90%)
+    if (!_isProgressReported && duration.inSeconds > 0) {
+      final percentage = position.inSeconds / duration.inSeconds;
       if (percentage >= 0.90) {
-        _showSuccessSheet(context);
         _isProgressReported = true;
-        if (widget.onProgressComplete != null) {
-          widget.onProgressComplete!(); // نحدث السجل ليصبح (isCompleted = true)
-        }
+        _showSuccessSheet(context);
+        widget.onProgressComplete?.call();
       }
     }
   }
@@ -123,23 +140,15 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.check_circle_outline,
-              color: Color(0xFF33E1B3),
-              size: 80,
-            ),
+            const Icon(Icons.check_circle_outline, color: Color(0xFF33E1B3), size: 80),
             const SizedBox(height: 16),
             const Text(
               "أحسنت! لقد أتممت الدرس",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
             const SizedBox(height: 8),
             const Text(
-              "تم تسجيل تقدمك بنجاح في المسار الجمهوري",
+              "تم تسجيل تقدمك بنجاح في المسار التعليمي",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
             ),
@@ -150,24 +159,61 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
                   "متابعة المسار",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _youtubeController?.removeListener(_onPlayerStateChange);
+    _youtubeController?.dispose();
+    _videoPlayerController?.removeListener(_onPlayerStateChange);
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget playerWidget;
+
+    if (_chewieController != null && _chewieController!.videoPlayerController.value.isInitialized) {
+      playerWidget = Chewie(controller: _chewieController!);
+    } else if (kIsWeb && _youtubeVideoId != null) {
+      // هنا يجب أن يكون لديك كلاس _WebYoutubeFallback معرف في مشروعك
+      playerWidget = Center(child: Text("YouTube Web Placeholder for $_youtubeVideoId"));
+    } else if (_youtubeController != null) {
+      playerWidget = YoutubePlayer(
+        controller: _youtubeController!,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: AppColors.primary,
+        progressColors: const ProgressBarColors(
+          playedColor: AppColors.primary,
+          handleColor: AppColors.primaryLight,
+        ),
+      );
+    } else {
+      playerWidget = Container(
+        height: 210,
+        color: Colors.black,
+        child: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: playerWidget,
     );
   }
 }

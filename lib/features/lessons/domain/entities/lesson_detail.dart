@@ -1,4 +1,7 @@
-class LessonDetail {
+import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:equatable/equatable.dart';
+
+class LessonDetail extends Equatable {
   final int id;
   final int moduleId;
   final String title;
@@ -6,7 +9,7 @@ class LessonDetail {
   final String? content;
   final String? videoUrl;
   final String? pdfUrl;
-  final String? exam;
+  final Exam? exam; // Changed from String? to Exam?
   final int order;
 
   const LessonDetail({
@@ -20,4 +23,17 @@ class LessonDetail {
     this.pdfUrl,
     this.exam,
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        moduleId,
+        title,
+        description,
+        content,
+        videoUrl,
+        pdfUrl,
+        exam,
+        order,
+      ];
 }

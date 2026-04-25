@@ -1,16 +1,21 @@
 import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
+import 'package:hive/hive.dart';
 
+part 'module_model.g.dart';
+
+@HiveType(typeId: 13)
 class ModuleModel extends Module {
   const ModuleModel({
-    required super.id,
-    required super.title,
-    required super.description,
-    required super.courseId,
-    required super.lessons,
-    required super.completedLessons,
-    required super.progressPercentage,
-    required super.totalLessons,
+    @HiveField(0) required super.id,
+    @HiveField(1) required super.title,
+    @HiveField(2) required super.description,
+    @HiveField(3) required super.courseId,
+    @HiveField(4) required super.lessons,
+    @HiveField(5) required super.completedLessons,
+    @HiveField(6) required super.progressPercentage,
+    @HiveField(7) required super.totalLessons,
   });
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {

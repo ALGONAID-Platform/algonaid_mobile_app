@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:algonaid_mobail_app/core/errors/exception.dart';
 import 'package:algonaid_mobail_app/core/errors/failure.dart';
 import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
@@ -50,7 +51,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
       final remoteCourses = await fetchRemote();
 
       await cacheData(remoteCourses);
-   
+     
       return Right(remoteCourses);
     } catch (e) {
       try {

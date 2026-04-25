@@ -35,12 +35,14 @@ class ModulesListProvider extends ChangeNotifier {
 
   ModulesListState _state = ModulesListState();
   ModulesListState get state => _state;
-
-  Future<void> loadModules(int courseId) async {
+Future<void> loadModules(int courseId) async {
     _state = _state.copyWith(isLoading: true, errorMessage: null);
     notifyListeners();
 
     final result = await getModulesByCourse(courseId);
+
+    // التحقق مما إذا كان الـ Provider قد تم إغلاقه أثناء انتظار البيانات
+    if (!hasListeners) return; 
 
     result.fold(
       (failure) {
@@ -54,6 +56,10 @@ class ModulesListProvider extends ChangeNotifier {
         _state = _state.copyWith(isLoading: false, modules: modules);
       },
     );
-    notifyListeners();
+
+    // تحقق مرة أخرى قبل إخطار المستمعين
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 }

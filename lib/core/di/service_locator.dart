@@ -20,6 +20,7 @@ import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
 
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
 import 'package:algonaid_mobail_app/features/modules/data/repositories/module_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
@@ -27,6 +28,7 @@ import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
 
 import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_local_data_source.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/repositories/lesson_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
@@ -36,6 +38,15 @@ import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_less
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart'; // New Import
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart'; // New Import
+
+import 'package:algonaid_mobail_app/features/exams/data/repositories/exam_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
+
+
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -43,9 +54,7 @@ final getIt = GetIt.instance;
 
 void setupServiceLocator() {
   // ================= CORE =================
-  getIt.registerLazySingleton<ApiService>(
-    () => ApiService(Dio()),
-  );
+  getIt.registerLazySingleton<ApiService>(() => ApiService(Dio()));
 
   // ================= DATA SOURCES =================
   getIt.registerLazySingleton<AuthRemoteDatasourse>(
@@ -72,6 +81,20 @@ void setupServiceLocator() {
     () => LessonRemoteDataSourceImpl(getIt()),
   );
 
+  getIt.registerLazySingleton<LessonLocalDataSource>(
+    () => LessonLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<ExamLocalDataSource>( // Updated
+    () => ExamLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<ExamRemoteDataSource>(
+    () => ExamRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+
+
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(authRemotDataSource: getIt()),
@@ -89,9 +112,18 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<LessonRepository>(
-    () => LessonRepositoryImpl(remoteDataSource: getIt<LessonRemoteDataSource>()),
+    () => LessonRepositoryImpl(
+      remoteDataSource: getIt<LessonRemoteDataSource>(),
+      localDataSource: getIt<LessonLocalDataSource>(),
+    ),
   );
 
+  getIt.registerLazySingleton<ExamRepository>( // Updated
+    () => ExamRepositoryImpl(
+      localDataSource: getIt<ExamLocalDataSource>(),
+      remoteDataSource: getIt<ExamRemoteDataSource>(),
+    ),
+  );
   // ================= USE CASES =================
   getIt.registerLazySingleton<SigninUsecase>(
     () => SigninUsecase(authRepo: getIt()),
@@ -142,6 +174,30 @@ void setupServiceLocator() {
     () => GetCourseProgressUsecase(repository: getIt()),
   );
 
+  getIt.registerLazySingleton<GetExamUseCase>(
+    () => GetExamUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<StartExamUseCase>(
+    () => StartExamUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<SubmitExamUseCase>(
+    () => SubmitExamUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<SaveExamProgressUseCase>(
+    () => SaveExamProgressUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetExamProgressUseCase>(
+    () => GetExamProgressUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetExamResultUseCase>(
+    () => GetExamResultUseCase(getIt<ExamRepository>()),
+  );
+
   // ================= PROVIDERS =================
   getIt.registerFactory<AuthServiceProvider>(
     () => AuthServiceProvider(
@@ -160,10 +216,10 @@ void setupServiceLocator() {
     ),
   );
 
+
+
   getIt.registerFactory<ModulesListProvider>(
-    () => ModulesListProvider(
-      getIt<GetModulesByCourse>(),
-    ),
+    () => ModulesListProvider(getIt<GetModulesByCourse>()),
   );
 
   getIt.registerFactory<LastAccessedModuleProvider>(
@@ -172,4 +228,8 @@ void setupServiceLocator() {
       getCachedLastAccessedModuleUseCase: getIt<GetCachedLastAccessedModuleUseCase>(),
     ),
   );
+  getIt.registerLazySingleton<ExamProvider>(
+    () => ExamProvider(),
+  );
+
 }
