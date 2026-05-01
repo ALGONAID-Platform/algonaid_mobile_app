@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 
 class ExamIntroPage extends StatefulWidget {
   final String examId;
+  final String? previousRoute;
 
-  const ExamIntroPage({super.key, required this.examId});
+  const ExamIntroPage({super.key, required this.examId, this.previousRoute});
 
   @override
   State<ExamIntroPage> createState() => _ExamIntroPageState();
@@ -23,8 +24,8 @@ class _ExamIntroPageState extends State<ExamIntroPage> {
         return;
       }
 
-        final examProvider = context.read<ExamProvider>();
-        if (examProvider.exam?.id.toString() != widget.examId ||
+      final examProvider = context.read<ExamProvider>();
+      if (examProvider.exam?.id.toString() != widget.examId ||
           examProvider.state == ExamState.initial) {
         examProvider.loadExam(int.parse(widget.examId));
       }
@@ -48,7 +49,8 @@ class _ExamIntroPageState extends State<ExamIntroPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (examProvider.state == ExamState.error || examProvider.exam == null) {
+          if (examProvider.state == ExamState.error ||
+              examProvider.exam == null) {
             return AppErrorState(
               message: examProvider.error ?? 'تعذر تحميل بيانات الاختبار.',
               onRetry: () => examProvider.loadExam(int.parse(widget.examId)),
@@ -68,7 +70,10 @@ class _ExamIntroPageState extends State<ExamIntroPage> {
                 MaterialPageRoute(
                   builder: (_) => ChangeNotifierProvider.value(
                     value: examProvider,
-                    child: ExamPage(examId: widget.examId),
+                    child: ExamPage(
+                      examId: widget.examId,
+                      previousRoute: widget.previousRoute,
+                    ),
                   ),
                 ),
               );

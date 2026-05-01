@@ -5,6 +5,7 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/expertBadge3D.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -128,12 +129,19 @@ class ModuleHeaderStats extends StatelessWidget {
                             children: [
                               AppHero(
                                 tag: "MedalHero",
-                                child: Lottie.asset(
-                                  AppLottie.goldMedal2,
-                                  width: 130,
-                                  height: 130,
-                                  fit: BoxFit.contain,
-                                ),
+                                child: kIsWeb
+                                    ? Image.asset(
+                                        Images.trophy,
+                                        width: 130,
+                                        height: 130,
+                                        fit: BoxFit.contain,
+                                      )
+                                    : Lottie.asset(
+                                        AppLottie.goldMedal2,
+                                        width: 130,
+                                        height: 130,
+                                        fit: BoxFit.contain,
+                                      ),
                               ),
 
                               Container(

@@ -8,11 +8,13 @@ import 'package:algonaid_mobail_app/features/exams/presentation/widgets/results_
 class ResultsPage extends StatefulWidget {
   final ExamResult result;
   final Exam exam;
+  final String? previousRoute;
 
   const ResultsPage({
     super.key,
     required this.result,
     required this.exam,
+    this.previousRoute,
   });
 
   @override
@@ -51,7 +53,10 @@ class _ResultsPageState extends State<ResultsPage> {
               findCorrectAnswer: _findCorrectAnswer,
             ),
             const SizedBox(height: 24),
-            ResultsActionsSection(exam: widget.exam),
+            ResultsActionsSection(
+              exam: widget.exam,
+              previousRoute: widget.previousRoute,
+            ),
             const SizedBox(height: 24),
           ],
         ),

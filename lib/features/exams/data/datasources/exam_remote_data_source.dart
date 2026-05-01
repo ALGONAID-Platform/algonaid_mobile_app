@@ -17,7 +17,9 @@ class ExamRemoteDataSourceImpl implements ExamRemoteDataSource {
 
   @override
   Future<ExamModel> getExam(int examId) async {
-    final response = await apiService.get(endpoint: EndPoint.startExam(examId));
+    final response = await apiService.get(
+      endpoint: EndPoint.getExamDetails(examId),
+    );
     final examJson = _asMap(response, context: 'getExam');
     return ExamModel.fromJson(examJson);
   }

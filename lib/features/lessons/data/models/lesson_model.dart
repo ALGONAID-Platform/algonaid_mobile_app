@@ -21,7 +21,9 @@ class LessonModel extends Lesson {
   });
 
   factory LessonModel.fromJson(Map<String, dynamic> json) {
-    final progressRaw = json['lessonProgress'] as List<dynamic>?;
+    final progressRaw =
+        json['lessonProgress'] as List<dynamic>? ??
+        json['lesson_progress'] as List<dynamic>?;
     final progressList = progressRaw
         ?.map((e) => LessonProgressModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -29,19 +31,21 @@ class LessonModel extends Lesson {
     final calculatedStatus = _determineStatus(progressList);
 
     return LessonModel(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      videoUrl: json['videoUrl'] as String?,
-      pdfUrl: json['pdfUrl'] as String?,
-      moduleId: json['moduleId'] as int,
-      order: json['order'] as int,
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      videoUrl: json['videoUrl'] as String? ?? json['video_url'] as String?,
+      pdfUrl: json['pdfUrl'] as String? ?? json['pdf_url'] as String?,
+      moduleId:
+          (json['moduleId'] as num?)?.toInt() ??
+          (json['module_id'] as num?)?.toInt() ??
+          0,
+      order: (json['order'] as num?)?.toInt() ?? 0,
       lessonProgress: progressList,
       status: calculatedStatus,
     );
   }
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

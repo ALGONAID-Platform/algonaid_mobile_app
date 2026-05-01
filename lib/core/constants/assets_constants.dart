@@ -21,6 +21,6 @@ class Images {
 class AppLottie {
   static const String trophy = "assets/lottie/Trophy.json";
   static const String trophy2 = "assets/lottie/Trophy2.json";
-  static const String goldMedal = "assets/lottie/gold medal.json";
-  static const String goldMedal2 = "assets/lottie/gold medal2.json";
+  static const String goldMedal = "assets/lottie/gold_medal.json";
+  static const String goldMedal2 = "assets/lottie/gold_medal2.json";
 }

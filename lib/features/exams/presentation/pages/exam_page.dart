@@ -8,8 +8,9 @@ import 'package:algonaid_mobail_app/features/exams/presentation/pages/results_pa
 
 class ExamPage extends StatefulWidget {
   final String examId;
+  final String? previousRoute;
 
-  const ExamPage({super.key, required this.examId});
+  const ExamPage({super.key, required this.examId, this.previousRoute});
 
   @override
   State<ExamPage> createState() => _ExamPageState();
@@ -37,7 +38,10 @@ class _ExamPageState extends State<ExamPage> {
             MaterialPageRoute(
               builder: (_) => ChangeNotifierProvider.value(
                 value: examProvider,
-                child: ExamIntroPage(examId: widget.examId),
+                child: ExamIntroPage(
+                  examId: widget.examId,
+                  previousRoute: widget.previousRoute,
+                ),
               ),
             ),
           );
@@ -95,6 +99,7 @@ class _ExamPageState extends State<ExamPage> {
             return ResultsPage(
               result: examProvider.result!,
               exam: examProvider.exam!,
+              previousRoute: widget.previousRoute,
             );
           }
 
@@ -246,10 +251,13 @@ class _ExamPageState extends State<ExamPage> {
               examProvider.nextQuestion();
             },
             onSubmit: () {
-              if (examProvider.answeredQuestions != examProvider.totalQuestions) {
+              if (examProvider.answeredQuestions !=
+                  examProvider.totalQuestions) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('الرجاء الإجابة على جميع الأسئلة قبل التسليم.'),
+                    content: Text(
+                      'الرجاء الإجابة على جميع الأسئلة قبل التسليم.',
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );

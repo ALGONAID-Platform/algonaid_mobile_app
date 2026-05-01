@@ -1,14 +1,21 @@
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ResultsActionsSection extends StatelessWidget {
   final Exam exam;
+  final String? previousRoute;
 
-  const ResultsActionsSection({super.key, required this.exam});
+  const ResultsActionsSection({
+    super.key,
+    required this.exam,
+    this.previousRoute,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,8 @@ class ResultsActionsSection extends StatelessWidget {
             height: 48,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
+                final targetRoute = previousRoute ?? Routes.coursesPage;
+                GoRouter.of(context).go(targetRoute);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -43,15 +51,19 @@ class ResultsActionsSection extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: OutlinedButton(
-              onPressed: () async {
+              onPressed: () {
+                final navigator = Navigator.of(context);
                 final examProvider = getIt<ExamProvider>();
                 examProvider.resetExam();
-                await examProvider.loadExam(exam.id);
-                Navigator.of(context).pushReplacement(
+                examProvider.loadExam(exam.id);
+                navigator.pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => ChangeNotifierProvider.value(
                       value: examProvider,
-                      child: ExamPage(examId: exam.id.toString()),
+                      child: ExamPage(
+                        examId: exam.id.toString(),
+                        previousRoute: previousRoute,
+                      ),
                     ),
                   ),
                 );

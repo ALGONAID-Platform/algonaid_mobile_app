@@ -1,5 +1,4 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -7,8 +6,9 @@ import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 
 class LessonQuizCard extends StatelessWidget {
   final int? examId;
+  final String? previousRoute;
 
-  const LessonQuizCard({super.key, this.examId});
+  const LessonQuizCard({super.key, this.examId, this.previousRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +66,16 @@ class LessonQuizCard extends StatelessWidget {
                 debugPrint(
                   'LessonQuizCard: navigating to exam page, examId=$examId, route=$targetRoute',
                 );
-                GoRouter.of(context).push(targetRoute);
+                GoRouter.of(context).push(targetRoute, extra: previousRoute);
               },
               style: ElevatedButton.styleFrom(
                 // دمج الألوان بناءً على حالة توفر الاختبار
-                backgroundColor: hasExam ? theme.colorScheme.primary : context.surfaceContainer,
-                foregroundColor: hasExam ? theme.colorScheme.onPrimary : context.onBackground,
+                backgroundColor: hasExam
+                    ? theme.colorScheme.primary
+                    : context.surfaceContainer,
+                foregroundColor: hasExam
+                    ? theme.colorScheme.onPrimary
+                    : context.onBackground,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

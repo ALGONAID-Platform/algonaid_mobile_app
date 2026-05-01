@@ -1,5 +1,4 @@
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/errors/exception.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/courses/data/models/courseProgress_model.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/courseProgress_entity.dart';

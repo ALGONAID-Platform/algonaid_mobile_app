@@ -1,16 +1,12 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_pdf_viewer_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_detail_app_bar.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_detail_bottom_bar.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_detail_content.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_info_card.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_pdf_card.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_quiz_card.dart';
@@ -111,9 +107,7 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
 
         // في حال عدم وجود بيانات
         if (lesson == null) {
-          return const Scaffold(
-            body: Center(child: Text('تعذر تحميل الدرس')),
-          );
+          return const Scaffold(body: Center(child: Text('تعذر تحميل الدرس')));
         }
 
         // مزامنة حالة التنزيل للملفات
@@ -126,8 +120,9 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
           'examId=${lesson.exam?.id}, hasExam=${lesson.exam != null}',
         );
 
-        // دمج منطق معالجة مسار ملف الـ PDF 
-        final pdfUrl = _downloadController.resolvePdfUrl(lesson.pdfUrl) ?? lesson.pdfUrl;
+        // دمج منطق معالجة مسار ملف الـ PDF
+        final pdfUrl =
+            _downloadController.resolvePdfUrl(lesson.pdfUrl) ?? lesson.pdfUrl;
 
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -142,12 +137,14 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                 context.go('${Routes.lessonsList}/${lesson.moduleId}');
               },
               onDownloadPressed:
-                  _downloadController.downloadStatus == DownloadStatus.downloading
-                      ? null
-                      : () => _downloadController.downloadLesson(context, lesson),
+                  _downloadController.downloadStatus ==
+                      DownloadStatus.downloading
+                  ? null
+                  : () => _downloadController.downloadLesson(context, lesson),
               downloadLabel: _downloadController.downloadButtonLabel(),
               isDownloaded:
-                  _downloadController.downloadStatus == DownloadStatus.downloaded,
+                  _downloadController.downloadStatus ==
+                  DownloadStatus.downloaded,
             ),
             body: SingleChildScrollView(
               child: Column(
@@ -155,20 +152,21 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                 children: [
                   LessonVideoPlayer(
                     videoUrl: lesson.videoUrl,
-                    localVideoPath: _downloadController.localVideoFilePath, // دعم الفيديو المحلي
+                    localVideoPath: _downloadController
+                        .localVideoFilePath, // دعم الفيديو المحلي
                     // 1. عند فتح الفيديو (بدء المشاهدة)
                     onVideoStart: () {
                       context.read<LessonDetailProvider>().updateProgress(
-                            lesson.id,
-                            false,
-                          );
+                        lesson.id,
+                        false,
+                      );
                     },
                     // 2. عند الوصول لـ 90% (الإكمال)
                     onProgressComplete: () {
                       context.read<LessonDetailProvider>().updateProgress(
-                            lesson.id,
-                            true,
-                          );
+                        lesson.id,
+                        true,
+                      );
                     },
                   ),
                   const SizedBox(height: 16),
@@ -195,7 +193,10 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  LessonQuizCard(examId: lesson.id),
+                  LessonQuizCard(
+                    examId: lesson.exam?.id,
+                    previousRoute: '${Routes.lessonsList}/${lesson.moduleId}',
+                  ),
                 ],
               ),
             ),

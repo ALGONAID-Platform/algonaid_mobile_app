@@ -21,17 +21,14 @@ class AppHero extends StatelessWidget {
           ? (flightContext, animation, direction, fromContext, toContext) {
               return Material(
                 color: Colors.transparent,
-                child: toContext.widget,
+                child: child,
               );
             }
           : null,
       placeholderBuilder: (context, size, widget) {
         return Opacity(opacity: 0.0, child: widget);
       },
-      child: Material( 
-        color: Colors.transparent, 
-        child: child,
-      ),
+      child: child,
     );
   }
 }

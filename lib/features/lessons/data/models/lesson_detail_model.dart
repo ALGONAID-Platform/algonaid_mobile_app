@@ -26,15 +26,20 @@ class LessonDetailModel {
 
   factory LessonDetailModel.fromJson(Map<String, dynamic> json) {
     return LessonDetailModel(
-      id: json['id'] as int,
-      moduleId: json['moduleId'] as int,
-      title: json['title'] as String,
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      moduleId:
+          (json['moduleId'] as num?)?.toInt() ??
+          (json['module_id'] as num?)?.toInt() ??
+          0,
+      title: json['title'] as String? ?? '',
       description: json['description'] as String?,
       content: json['content'] as String?,
-      videoUrl: json['videoUrl'] as String?,
-      pdfUrl: json['pdfUrl'] as String?,
-      exam: json['exam'] != null ? ExamModel.fromJson(json['exam'] as Map<String, dynamic>) : null,
-      order: json['order'] as int,
+      videoUrl: json['videoUrl'] as String? ?? json['video_url'] as String?,
+      pdfUrl: json['pdfUrl'] as String? ?? json['pdf_url'] as String?,
+      exam: json['exam'] != null
+          ? ExamModel.fromJson(json['exam'] as Map<String, dynamic>)
+          : null,
+      order: (json['order'] as num?)?.toInt() ?? 0,
     );
   }
 
