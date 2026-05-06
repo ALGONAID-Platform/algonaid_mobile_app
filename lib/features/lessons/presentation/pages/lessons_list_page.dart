@@ -90,20 +90,7 @@ class _LessonsListView extends StatelessWidget {
                       totalLessons: totalLessons,
                     ),
                     // زر الرجوع المدمج من فرع exams
-                    Positioned(
-                      top: 10,
-                      left: 10,
-                      child: IconButton(
-                        icon: Transform.flip(
-                          flipX: true,
-                          child: const Icon(
-                            Icons.arrow_back_ios_new,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: () => _handleBackNavigation(context),
-                      ),
-                    ),
+                   
                   ],
                 ),
               ),

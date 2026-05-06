@@ -1,6 +1,7 @@
 
 import 'package:algonaid_mobail_app/core/widgets/loading/continueLearningShimmer.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/continue_learning_card.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/welcomeNewUserCard.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +27,9 @@ class courseHeader extends StatelessWidget {
               module: moduleProvider.lastAccessedModule!,
             ),
           );
+        }else {
+          return WelcomeCard();
         }
-        return const SizedBox.shrink();
       },
     );
   }

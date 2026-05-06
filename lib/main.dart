@@ -23,7 +23,7 @@ void main() async {
   // Register adapters and open all Hive boxes used by the app.
   await HiveService.init();
 
-  // Initialize SharedPreferences or custom caching helper for general app data
+  // Initialize SharedPreferences or custom caching helper ssssfor general app data
   await CacheHelper.init();
 
   // Set up the Service Locator (GetIt) to handle Dependency Injection across the app

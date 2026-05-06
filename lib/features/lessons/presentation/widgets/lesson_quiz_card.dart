@@ -25,7 +25,7 @@ class LessonQuizCard extends StatelessWidget {
         border: Border.all(
           color: isDark
               ? Colors.white.withOpacity(0.08)
-              : AppColors.primary.withOpacity(0.10),
+              : context.primary.withOpacity(0.10),
         ),
       ),
       child: Column(
@@ -72,7 +72,7 @@ class LessonQuizCard extends StatelessWidget {
                 // دمج الألوان بناءً على حالة توفر الاختبار
                 backgroundColor: hasExam
                     ? theme.colorScheme.primary
-                    : context.surfaceContainer,
+                    : context.colorScheme.onSurface.withOpacity(0.05),
                 foregroundColor: hasExam
                     ? theme.colorScheme.onPrimary
                     : context.onBackground,

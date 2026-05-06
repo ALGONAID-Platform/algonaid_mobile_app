@@ -52,7 +52,7 @@ class AppColors {
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, primaryLight],
+    colors: [primary, indigo],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );

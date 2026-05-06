@@ -17,7 +17,7 @@ class MyCoursesListSection extends StatelessWidget {
     //   return _buildEmptyStateCard(context);
     // }
 
-    return Directionality(
+    return myCourses.isEmpty?_buildEmptyStateCard(context) :  Directionality(
       textDirection: TextDirection.rtl,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +87,7 @@ class MyCoursesListSection extends StatelessWidget {
               backgroundColor: context.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             ),
