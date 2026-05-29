@@ -1,13 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_grades_widget.dart';
 
 import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,7 +27,7 @@ class ContinueLearningCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.colorScheme.surface,
           borderRadius: BorderRadius.circular(15),
-          boxShadow: AppShadows.cardShadow,
+          border : AppBorder.main_border
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
@@ -160,9 +163,9 @@ class _ActionButtonsRow extends StatelessWidget {
               backgroundColor: context.primary,
               foregroundColor: theme.colorScheme.onPrimary,
               elevation: 0,
-              minimumSize: const Size(0, 40),
+              minimumSize: const Size(0, 45),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
             child: const Text(
@@ -174,14 +177,21 @@ class _ActionButtonsRow extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              AppBottomSheet.show(
+                context: context,
+                title: 'تفاصيل درجات الوحدة',
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+                child: ModuleGradesWidget(moduleId: module.moduleId),
+              );
+            },
             style: OutlinedButton.styleFrom(
               side: BorderSide(
                 color: context.colorScheme.onSecondary.withOpacity(0.5),
               ),
-              minimumSize: const Size(0, 40),
+              minimumSize: const Size(0, 45),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
             child: Text(

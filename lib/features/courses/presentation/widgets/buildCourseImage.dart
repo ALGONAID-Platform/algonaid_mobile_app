@@ -21,7 +21,7 @@ class BuildCourseImage extends StatelessWidget {
 
             child: CachedNetworkImage(
               imageUrl: course.thumbnail,
-              height: 150,
+              height: 160,
               width: double.infinity,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(

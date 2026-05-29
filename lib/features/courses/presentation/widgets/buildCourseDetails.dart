@@ -192,6 +192,49 @@ class BuildCourseDetails extends StatelessWidget {
                   AppDialog.showDynamicDialog(
                     title: "ملاحظة",
                     message: "هل تريد التسجيل في الدورة؟",
+                    content: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: context.primary.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: context.primary.withOpacity(0.1)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.person, size: 16, color: context.primary),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    "المدرب: ${course.teacher.user.name}",
+                                    style: context.textTheme.labelMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: context.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(height: 1, color: context.primary.withOpacity(0.1)),
+                            const SizedBox(height: 8),
+                            Text(
+                              course.description,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                height: 1.5,
+                                color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     onConfirm: () async {
                       final context = navigatorKey.currentContext;
                       if (context != null) {

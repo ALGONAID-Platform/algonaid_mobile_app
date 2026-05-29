@@ -12,6 +12,7 @@ class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onSearchPressed;
   final VoidCallback? onProfilePressed;
   final int notificationCount;
+  final String? appBarTitle;
 
   const CustomWhiteAppBar({
     super.key,
@@ -22,6 +23,7 @@ class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.onSearchPressed,
     this.onProfilePressed,
     this.notificationCount = 0,
+    this.appBarTitle,
   });
 
   @override
@@ -99,18 +101,27 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
                 titleSpacing: 16,
                 title: Row(
                   children: [
-                    GestureDetector(
-                      onTap: _onAvatarTap,
-                      child: Hero(
-                        tag: 'user_profile_avatar',
-                        child: ScaleTransition(
-                          scale: _avatarPulseAnimation,
-                          child: _buildUserAvatar(context.theme),
+                    if (widget.appBarTitle == null) ...[
+                      GestureDetector(
+                        onTap: _onAvatarTap,
+                        child: Hero(
+                          tag: 'user_profile_avatar',
+                          child: ScaleTransition(
+                            scale: _avatarPulseAnimation,
+                            child: _buildUserAvatar(context.theme),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    _buildGreetingText(context, context.onBackground),
+                      const SizedBox(width: 12),
+                      _buildGreetingText(context, context.onBackground),
+                    ] else ...[
+                      Text(
+                        widget.appBarTitle!,
+                        style: context.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
                 actions: [
@@ -227,7 +238,6 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
                       color: Colors.white,
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),

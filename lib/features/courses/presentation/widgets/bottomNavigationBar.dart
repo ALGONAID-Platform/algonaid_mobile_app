@@ -20,13 +20,13 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
     with TickerProviderStateMixin {
   late final List<IconData> icons = [
     Icons.home_outlined,
-    Icons.play_circle_fill_rounded,
+    Icons.emoji_events_rounded,
     Icons.bookmark_rounded,
     Icons.person_rounded,
   ];
   late final List<String> labels = [
     'الرئيسية',
-    'الدورات',
+    'المسابقات',
     'المحفوظات',
     'الحساب',
   ];

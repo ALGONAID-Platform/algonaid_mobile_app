@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseCard.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class MyCoursesListSection extends StatelessWidget {
         children: [
           const SectionHeader(text: 'دوراتك الحالية'),
           SizedBox(
-            height: 320,
+            height: 345,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -52,7 +53,7 @@ class MyCoursesListSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.primary.withOpacity(0.1)),
+        border: AppBorder.main_border,
       ),
       child: Column(
         children: [

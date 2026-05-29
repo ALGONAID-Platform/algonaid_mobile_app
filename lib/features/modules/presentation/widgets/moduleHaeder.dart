@@ -42,10 +42,7 @@ class CourseHeaderSliver extends StatelessWidget {
             child: Container(
               color: Colors.black.withOpacity(0.2), // خلفية خفيفة جداً للزر
               child: IconButton(
-                icon: Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: const Icon(Icons.arrow_forward_ios, size: 18),
-                ),
+                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),

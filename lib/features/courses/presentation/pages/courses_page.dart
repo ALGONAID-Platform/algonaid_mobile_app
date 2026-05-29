@@ -20,6 +20,8 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:algonaid_mobail_app/features/profile/presentation/pages/profile_page.dart'; // Added
+import 'package:algonaid_mobail_app/features/downloads/presentation/pages/downloads_page.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/pages/competitions_page.dart';
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({Key? key}) : super(key: key);
@@ -81,7 +83,7 @@ class _CoursesPageState extends State<CoursesPage> {
 
                         AllCoursesListSection(allCourses: provider.allCourses),
 
-                        const SizedBox(height: 50),
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
@@ -108,8 +110,8 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
 
   List<Widget> get _pages => const [
     CoursesPage(key: ValueKey('home')), // الصفحة الرئيسية
-    Placeholder(key: ValueKey('courses')), // الدورات
-    Placeholder(key: ValueKey('bookmarks')), // المحفوظات
+    CompetitionsPage(key: ValueKey('competitions')), // المسابقات
+    DownloadsPage(key: ValueKey('bookmarks')), // المحفوظات والتحميلات
     ProfilePage(key: ValueKey('profile')), // الحساب
   ];
 
@@ -121,37 +123,70 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
     context.go(Routes.auth);
   }
 
+  String _getAppBarTitle(int index) {
+    switch (index) {
+      case 0:
+        return 'الصفحة الرئيسية';
+      case 1:
+        return 'المسابقات والتحديات';
+      case 2:
+        return ' الدروس المحفوظة';
+      case 3:
+        return 'الملف الشخصي';
+      default:
+        return 'الرئيسية';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userName =
         CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم';
     final userEmail = CacheHelper.getString(key: AppConstants.userEmail) ?? '';
+    final userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
 
     return Scaffold(
       backgroundColor: context.background,
-      bottomNavigationBar: FancyFloatingNavBar(
-        selectedIndex: _currentIndex,
-        onItemSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
-
       appBar: CustomWhiteAppBar(
         userName: userName,
-        userImageUrl: null,
+        userImageUrl: userAvatar,
+        appBarTitle: _getAppBarTitle(_currentIndex),
         notificationCount: 4,
         onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
-        onProfilePressed: () {},
-        onNotificationPressed: () {},
-        onSearchPressed: () {},
+        onProfilePressed: () {
+          setState(() {
+            _currentIndex = 3;
+          });
+        },
+        onNotificationPressed: () {
+          context.push(Routes.notificationsPage);
+        },
+        onSearchPressed: () {
+          context.push(Routes.searchPage);
+        },
       ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 350),
-        child: _pages[_currentIndex],
-        transitionBuilder: (child, animation) =>
-            FadeTransition(opacity: animation, child: child),
+      body: Stack(
+        children: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 350),
+            child: _pages[_currentIndex],
+            transitionBuilder: (child, animation) =>
+                FadeTransition(opacity: animation, child: child),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: FancyFloatingNavBar(
+              selectedIndex: _currentIndex,
+              onItemSelected: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
@@ -24,9 +25,8 @@ class ModuleCard extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: context.surface,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: context.background),
-              boxShadow: AppShadows.cardShadow,
+              borderRadius: BorderRadius.circular(18),
+              border: AppBorder.main_border,
             ),
             child: Row(
               children: [
@@ -35,7 +35,7 @@ class ModuleCard extends StatelessWidget {
                   color: context.isDarkMode
                       ? AppColors.textSecondaryDark
                       : AppColors.grey400,
-                  size: 18,
+                  size: 20,
                 ),
 
                 const SizedBox(width: 16),

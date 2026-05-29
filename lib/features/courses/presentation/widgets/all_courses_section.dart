@@ -27,7 +27,7 @@ class AllCoursesListSection extends StatelessWidget {
             _buildAllEnrolledCard(context)
           else
             SizedBox(
-              height: 330,
+              height: 345,
               child: ListView.builder(
                 reverse: false,
                 padding: const EdgeInsets.symmetric(horizontal: 16),

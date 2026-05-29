@@ -1,5 +1,6 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseDetails.dart';
@@ -16,10 +17,11 @@ class CourseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.surface,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: AppShadows.cardShadow,
+        border: AppBorder.main_border
+        // boxShadow: AppShadows.cardShadow,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(15),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
