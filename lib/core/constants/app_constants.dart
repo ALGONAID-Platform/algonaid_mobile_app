@@ -39,8 +39,20 @@ abstract class AppConstants {
   static const String userName = 'k_user_name';
   static const String userEmail = 'k_user_email';
   static const String userRole = 'k_user_role';
+  static const String userAvatar = 'k_user_avatar';
+  static const String userBackground = 'k_user_background';
+  static const String userAcademicId = 'k_user_academic_id';
+  static const String userGrade = 'k_user_grade';
+  static const String userAddress = 'k_user_address';
+  static const String userBirthDate = 'k_user_birth_date';
+  static const String userCreatedAt = 'k_user_created_at';
+  static const String userUpdatedAt = 'k_user_updated_at';
   static const String isFirstTime = 'k_is_first_time';
   static const String isDark = "isDark";
+  static const String cacheModuleGradesPrefix = 'module_grades_';
+  static const String cacheCourseGradesPrefix = 'course_grades_';
+  static const String cacheTotalPoints = 'cache_total_points';
+  static const String cacheExcellenceCourses = 'cache_excellence_courses';
 
   //validation
   static const int minPasswordLength = 6;

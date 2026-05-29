@@ -11,7 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-
+import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/global_video_state.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/native_pip_handler.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/floating_video_widget.dart';
+import 'package:video_player/video_player.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -31,7 +34,11 @@ void main() async {
 
   // جلب الحالة المحفوظة قبل تشغيل التطبيق لتجنب الوميض (Flicker)
   final isDark = CacheHelper.getBool(key: 'isDarkMode') ?? false;
-  final initTheme = isDark ? ThemeApp.darkTheme : ThemeApp.lightTheme;
+  final colorIndex = CacheHelper.getInt(key: 'primaryColorIndex') ?? 0;
+  final fontIndex = CacheHelper.getInt(key: 'fontFamilyIndex') ?? 0;
+  final initTheme = isDark 
+      ? ThemeApp.getDarkTheme(colorIndex: colorIndex, fontIndex: fontIndex) 
+      : ThemeApp.getLightTheme(colorIndex: colorIndex, fontIndex: fontIndex);
 
   runApp(
     AppProviders(
@@ -67,7 +74,39 @@ class MyApp extends StatelessWidget {
           // إضافة Builder هنا مهمة جداً لضمان عمل الـ ThemeSwitcher في الصفحات الداخلية
           builder: (context, child) {
             return ThemeSwitchingArea(
-              child: child!,
+              child: ValueListenableBuilder<bool>(
+                valueListenable: NativePipHandler().isInPipMode,
+                builder: (context, isPip, widgetChild) {
+                  if (isPip && GlobalVideoState().videoPlayerController != null) {
+                    return Material(
+                      child: Container(
+                        color: Colors.black,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: GlobalVideoState().videoPlayerController!.value.aspectRatio,
+                            child: VideoPlayer(GlobalVideoState().videoPlayerController!),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: GlobalVideoState().isFloatingNotifier,
+                    builder: (context, isFloating, _) {
+                      return Stack(
+                        children: [
+                          widgetChild!,
+                          if (isFloating && GlobalVideoState().currentLessonId != null)
+                            FloatingVideoWidget(
+                              lessonId: GlobalVideoState().currentLessonId!,
+                            ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: child!,
+              ),
             );
           },
         );

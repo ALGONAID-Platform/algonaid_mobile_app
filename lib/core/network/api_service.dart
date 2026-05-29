@@ -30,6 +30,13 @@ class ApiService {
   }) async {
     return performRequest(_dio.put(endpoint, data: data));
   }
+    Future<dynamic> patch({
+    required String endpoint,
+    required Map<String, dynamic> data,
+  }) async {
+    return performRequest(_dio.patch(endpoint, data: data));
+  }
+
 
   Future<dynamic> delete({required String endpoint}) async {
     return performRequest(_dio.delete(endpoint));

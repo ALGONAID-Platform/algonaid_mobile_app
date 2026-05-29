@@ -7,4 +7,10 @@ abstract class Routes {
   static const String lessonsList = '/lessonsList';
   static const String coursesPage = '/coursesPage';
   static const String examPage = '/examPage';
+  static const String searchPage = '/searchPage';
+  static const String notificationsPage = '/notificationsPage';
+  static const String aboutPage = '/aboutPage';
+  static const String developersPage = '/developersPage';
+  static const String settingsPage = '/settingsPage';
+  static const String allExcellenceCourses = '/allExcellenceCourses';
 }

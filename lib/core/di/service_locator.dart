@@ -16,7 +16,17 @@ import 'package:algonaid_mobail_app/features/courses/domain/usecases/enroll_usec
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_progress.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobail_app/features/search/domain/usecases/search_courses_usecase.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_grades.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
+import 'package:algonaid_mobail_app/features/search/presentation/providers/search_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/domain/usecases/get_excellence_courses_usecase.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/data/repositories/excellence_courses_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
 
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
@@ -26,6 +36,7 @@ import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules_by_course.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_module_grades.dart';
 
 import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_local_data_source.dart';
@@ -37,6 +48,7 @@ import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_less
 
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/module_grades_provider.dart';
 
 import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart'; // New Import
 import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart'; // New Import
@@ -45,6 +57,15 @@ import 'package:algonaid_mobail_app/features/exams/data/repositories/exam_reposi
 import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
+
+import 'package:algonaid_mobail_app/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:algonaid_mobail_app/features/profile/data/datasources/profile_local_datasource.dart';
+import 'package:algonaid_mobail_app/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/repositories/profile_repository.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_total_points_usecase.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_user_profile_usecase.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/usecases/update_user_profile_usecase.dart';
+import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
 
 
 import 'package:dio/dio.dart';
@@ -67,6 +88,14 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<CourseLocalDataSourse>(
     () => CourseLocalDataSourseImp(),
+  );
+
+  getIt.registerLazySingleton<ExcellenceCoursesRemoteDataSource>(
+    () => ExcellenceCoursesRemoteDataSourceImp(apiService: getIt()),
+  );
+
+  getIt.registerLazySingleton<ExcellenceCoursesLocalDataSource>(
+    () => ExcellenceCoursesLocalDataSourceImp(),
   );
 
   getIt.registerLazySingleton<ModuleRemoteDataSource>(
@@ -93,6 +122,14 @@ void setupServiceLocator() {
     () => ExamRemoteDataSourceImpl(apiService: getIt<ApiService>()),
   );
 
+  getIt.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(apiService: getIt()),
+  );
+
+  getIt.registerLazySingleton<ProfileLocalDataSource>(
+    () => ProfileLocalDataSourceImpl(),
+  );
+
 
 
   // ================= REPOSITORIES =================
@@ -102,6 +139,10 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<CoursesRepository>(
     () => CoursesRepositoryImpl(remote: getIt(), local: getIt()),
+  );
+
+  getIt.registerLazySingleton<ExcellenceCoursesRepository>(
+    () => ExcellenceCoursesRepositoryImpl(remote: getIt(), local: getIt()),
   );
 
   getIt.registerLazySingleton<ModuleRepository>(
@@ -124,6 +165,13 @@ void setupServiceLocator() {
       remoteDataSource: getIt<ExamRemoteDataSource>(),
     ),
   );
+
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+    ),
+  );
   // ================= USE CASES =================
   getIt.registerLazySingleton<SigninUsecase>(
     () => SigninUsecase(authRepo: getIt()),
@@ -141,8 +189,15 @@ void setupServiceLocator() {
     () => GetCoursesUsecase(repository: getIt()),
   );
 
+  getIt.registerLazySingleton<SearchCoursesUseCase>(
+    () => SearchCoursesUseCase(getIt()),
+  );
+
   getIt.registerLazySingleton<GetMycoureseUsecase>(
     () => GetMycoureseUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetCourseGrades>(
+    () => GetCourseGrades(getIt()),
   );
   getIt.registerLazySingleton<EnrollUsecase>(
     () => EnrollUsecase(repository: getIt()),
@@ -160,6 +215,10 @@ void setupServiceLocator() {
     () => GetCachedLastAccessedModuleUseCase(repository: getIt<ModuleRepository>()),
   );
 
+  getIt.registerLazySingleton<GetModuleGrades>(
+    () => GetModuleGrades(getIt<ModuleRepository>()),
+  );
+
   getIt.registerLazySingleton<GetModuleLessons>(
     () => GetModuleLessons(getIt<LessonRepository>()),
   );
@@ -172,6 +231,10 @@ void setupServiceLocator() {
   );
   getIt.registerLazySingleton<GetCourseProgressUsecase>(
     () => GetCourseProgressUsecase(repository: getIt()),
+  );
+
+  getIt.registerLazySingleton<GetExcellenceCoursesUseCase>(
+    () => GetExcellenceCoursesUseCase(getIt()),
   );
 
   getIt.registerLazySingleton<GetExamUseCase>(
@@ -198,6 +261,18 @@ void setupServiceLocator() {
     () => GetExamResultUseCase(getIt<ExamRepository>()),
   );
 
+  getIt.registerLazySingleton<GetTotalPointsUseCase>(
+    () => GetTotalPointsUseCase(getIt()),
+  );
+
+  getIt.registerLazySingleton<GetUserProfileUseCase>(
+    () => GetUserProfileUseCase(getIt()),
+  );
+
+  getIt.registerLazySingleton<UpdateUserProfileUseCase>(
+    () => UpdateUserProfileUseCase(getIt()),
+  );
+
   // ================= PROVIDERS =================
   getIt.registerFactory<AuthServiceProvider>(
     () => AuthServiceProvider(
@@ -216,6 +291,22 @@ void setupServiceLocator() {
     ),
   );
 
+  getIt.registerFactory<SearchCoursesProvider>(
+    () => SearchCoursesProvider(
+      searchCoursesUseCase: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton<CourseGradesProvider>(
+    () => CourseGradesProvider(getCourseGrades: getIt()),
+  );
+
+  getIt.registerFactory<ExcellenceCoursesProvider>(
+    () => ExcellenceCoursesProvider(
+      getExcellenceCoursesUseCase: getIt(),
+    ),
+  );
+
 
 
   getIt.registerFactory<ModulesListProvider>(
@@ -228,8 +319,21 @@ void setupServiceLocator() {
       getCachedLastAccessedModuleUseCase: getIt<GetCachedLastAccessedModuleUseCase>(),
     ),
   );
+  
+  getIt.registerLazySingleton<ModuleGradesProvider>(
+    () => ModuleGradesProvider(getModuleGrades: getIt()),
+  );
+
   getIt.registerLazySingleton<ExamProvider>(
     () => ExamProvider(),
+  );
+
+  getIt.registerFactory<ProfileProvider>(
+    () => ProfileProvider(
+      getTotalPointsUseCase: getIt(),
+      getUserProfileUseCase: getIt(),
+      updateUserProfileUseCase: getIt(),
+    ),
   );
 
 }
