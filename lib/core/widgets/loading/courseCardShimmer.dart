@@ -8,11 +8,11 @@ class CourseCardShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseColor = context.isDarkMode
-        ? Colors.grey[800]!
-        : Colors.grey[300]!;
+        ? const Color(0xFF2A3644)
+        : Colors.grey[200]!;
     final highlightColor = context.isDarkMode
-        ? Colors.grey[700]!
-        : Colors.grey[100]!;
+        ? const Color(0xFF3A4B5D)
+        : Colors.grey[50]!;
 
     return Container(
       width: 300,

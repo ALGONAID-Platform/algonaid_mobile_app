@@ -9,8 +9,8 @@ class CoursesSectionShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final baseColor = isDark ? Colors.grey[850]! : Colors.grey[300]!;
-    final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
+    final baseColor = isDark ? const Color(0xFF2A3644) : Colors.grey[200]!;
+    final highlightColor = isDark ? const Color(0xFF3A4B5D) : Colors.grey[50]!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end, // محاذاة لليمين

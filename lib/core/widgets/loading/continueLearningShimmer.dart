@@ -10,11 +10,11 @@ class ContinueLearningShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     // الألوان الخاصة بتأثير اللمعان نفسه
     final shimmerBase = context.isDarkMode
-        ? Colors.grey[700]!
-        : Colors.grey[300]!;
+        ? const Color(0xFF2A3644)
+        : Colors.grey[200]!;
     final shimmerHighlight = context.isDarkMode
-        ? Colors.grey[600]!
-        : Colors.grey[100]!;
+        ? const Color(0xFF3A4B5D)
+        : Colors.grey[50]!;
 
     // لون خلفية البطاقة (تكون أغمق أو أفتح قليلاً من الخلفية العامة)
     final cardBackground = context.isDarkMode
@@ -26,13 +26,6 @@ class ContinueLearningShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: cardBackground, // خلفية البطاقة ثابتة لا تتحرك
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
       ),
       child: Shimmer.fromColors(
         baseColor: shimmerBase,

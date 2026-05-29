@@ -31,14 +31,18 @@ class ShimmerLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? const Color(0xFF2A3644) : Colors.grey[200]!;
+    final highlightColor = isDark ? const Color(0xFF3A4B5D) : Colors.grey[50]!;
+
     return Shimmer.fromColors(
-      baseColor: AppColors.shimmerBase,
-      highlightColor: AppColors.shimmerHighlight,
+      baseColor: baseColor,
+      highlightColor: highlightColor,
       child: Container(
         width: width,
         height: height,
         decoration: ShapeDecoration(
-          color: AppColors.grey300,
+          color: Colors.white,
           shape: shapeBorder,
         ),
       ),
