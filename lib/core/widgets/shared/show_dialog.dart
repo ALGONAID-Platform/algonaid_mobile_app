@@ -13,6 +13,7 @@ class AppDialog {
     String? confirmText,
     String? cancelText,
     VoidCallback? onConfirm,
+    Widget? content,
   }) {
     final currentContext = context ?? navigatorKey.currentContext;
     if (currentContext == null) return;
@@ -63,6 +64,10 @@ class AppDialog {
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
                 ),
+                if (content != null) ...[
+                  const SizedBox(height: 20),
+                  content,
+                ],
                 const SizedBox(height: 30),
 
                 // 🌟 منطق الأزرار المحدث
