@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_intro_page.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/widgets/exam_widget.dart';
@@ -52,19 +53,26 @@ class _ExamPageState extends State<ExamPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios, size: 20),
+            padding: const EdgeInsets.only(right: 16),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
         title: Consumer<ExamProvider>(
           builder: (context, examProvider, child) {
             if (examProvider.exam != null) {
               return Text(examProvider.exam!.title);
             }
-            return const Text('Exam');
+            return const Text('الاختبار');
           },
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        elevation: 0,
         centerTitle: true,
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -276,40 +284,21 @@ class _ExamPageState extends State<ExamPage> {
                 return;
               }
 
-              showDialog(
+              AppDialog.showDynamicDialog(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('تسليم الاختبار'),
-                  content: Text(
-                    'هل أنت متأكد من تسليم الاختبار؟\nعدد الإجابات: ${examProvider.answeredQuestions}/${examProvider.totalQuestions}',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('إلغاء'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        examProvider.submitExam();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      child: Text(
-                        'تسليم',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                title: 'تسليم الاختبار',
+                message: 'هل أنت متأكد من تسليم الاختبار؟\nعدد الإجابات: ${examProvider.answeredQuestions}/${examProvider.totalQuestions}',
+                showCancelButton: true,
+                cancelText: 'إلغاء',
+                confirmText: 'تسليم',
+                onConfirm: () {
+                  examProvider.submitExam();
+                },
               );
             },
           );
         },
-      ),
+      ),)
     );
   }
 }

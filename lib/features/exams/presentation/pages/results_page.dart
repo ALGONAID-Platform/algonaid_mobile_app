@@ -42,8 +42,8 @@ class _ResultsPageState extends State<ResultsPage> {
             ),
             ResultsStatisticsSection(
               correctAnswers: widget.result.correctAnswers,
-              wrongAnswers: widget.result.wrongAnswers,
-              totalQuestions: widget.result.totalQuestions,
+              wrongAnswers: widget.exam.questions.length - widget.result.correctAnswers,
+              totalQuestions: widget.exam.questions.length,
             ),
             const SizedBox(height: 24),
             ResultsQuestionsReviewSection(
@@ -87,30 +87,52 @@ class _ResultsPageState extends State<ResultsPage> {
     required Question question,
     required int? userAnswerId,
   }) {
+    final correctOptionId = widget.result.correctOptions[question.id];
+    final isUserCorrect = userAnswerId != null && userAnswerId == correctOptionId;
+
     if (userAnswerId == null) {
-      return const Option(
+      return Option(
         id: -1,
-        text: 'No Answer Selected',
+        text: 'لم يتم اختيار إجابة',
         isCorrect: false,
-        questionId: -1,
+        questionId: question.id,
       );
     }
 
     for (final option in question.options) {
       if (option.id == userAnswerId) {
-        return option;
+        return Option(
+          id: option.id,
+          text: option.text,
+          isCorrect: isUserCorrect,
+          questionId: option.questionId,
+        );
       }
     }
 
-    return const Option(
+    return Option(
       id: -1,
-      text: 'No Answer Selected',
+      text: 'لم يتم العثور على الإجابة',
       isCorrect: false,
-      questionId: -1,
+      questionId: question.id,
     );
   }
 
   Option _findCorrectAnswer(Question question) {
+    final correctOptionId = widget.result.correctOptions[question.id];
+
+    for (final option in question.options) {
+      if (option.id == correctOptionId) {
+        return Option(
+          id: option.id,
+          text: option.text,
+          isCorrect: true,
+          questionId: option.questionId,
+        );
+      }
+    }
+
+    // Fallback if not found in correctOptions map
     for (final option in question.options) {
       if (option.isCorrect) {
         return option;
@@ -119,7 +141,7 @@ class _ResultsPageState extends State<ResultsPage> {
 
     return const Option(
       id: -1,
-      text: 'No Correct Answer',
+      text: 'لا توجد إجابة صحيحة محددة',
       isCorrect: false,
       questionId: -1,
     );

@@ -34,13 +34,17 @@ class _ExamIntroPageState extends State<ExamIntroPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: const Text('تعليمات الاختبار'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Consumer<ExamProvider>(
         builder: (context, examProvider, _) {
@@ -80,6 +84,7 @@ class _ExamIntroPageState extends State<ExamIntroPage> {
             },
           );
         },
+      ),
       ),
     );
   }

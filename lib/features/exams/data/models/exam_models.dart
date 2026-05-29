@@ -257,6 +257,7 @@ class ExamResultModel extends ExamResult {
     required super.correctAnswers,
     required super.wrongAnswers,
     required super.answers,
+    required super.correctOptions,
   });
 
   factory ExamResultModel.fromJson(Map<String, dynamic> json) {
@@ -281,6 +282,7 @@ class ExamResultModel extends ExamResult {
       correctAnswers: 0,
       wrongAnswers: 0,
       answers: const {},
+      correctOptions: const {},
     );
   }
 
@@ -295,7 +297,23 @@ class ExamResultModel extends ExamResult {
 
     final totalQuestions = examQuestions.length;
     final answers = <int, int>{};
+    final correctOptions = <int, int>{};
     var correctAnswers = 0;
+
+    // Parse correct options from exam JSON if available
+    for (final q in examQuestions) {
+      if (q is Map<String, dynamic>) {
+        final qId = (q['id'] as num?)?.toInt();
+        if (qId != null) {
+          final options = q['options'] as List<dynamic>? ?? [];
+          for (final opt in options) {
+            if (opt is Map<String, dynamic> && opt['isCorrect'] == true) {
+              correctOptions[qId] = (opt['id'] as num).toInt();
+            }
+          }
+        }
+      }
+    }
 
     for (final answerJson in answersList) {
       final questionJson = answerJson['question'] as Map<String, dynamic>?;
@@ -310,6 +328,16 @@ class ExamResultModel extends ExamResult {
 
       if (questionId != null && selectedOptionId != null) {
         answers[questionId] = selectedOptionId;
+      }
+
+      // Also fallback to find correct option from answer JSON if exam JSON didn't have it
+      if (questionId != null && questionJson != null && !correctOptions.containsKey(questionId)) {
+          final options = questionJson['options'] as List<dynamic>? ?? [];
+          for (final opt in options) {
+            if (opt is Map<String, dynamic> && opt['isCorrect'] == true) {
+              correctOptions[questionId] = (opt['id'] as num).toInt();
+            }
+          }
       }
 
       if ((selectedOptionJson?['isCorrect'] as bool?) ?? false) {
@@ -333,6 +361,7 @@ class ExamResultModel extends ExamResult {
       correctAnswers: correctAnswers,
       wrongAnswers: totalQuestions - correctAnswers,
       answers: answers,
+      correctOptions: correctOptions,
     );
   }
 
@@ -348,6 +377,7 @@ class ExamResultModel extends ExamResult {
       'correctAnswers': correctAnswers,
       'wrongAnswers': wrongAnswers,
       'answers': answers.map((k, v) => MapEntry(k.toString(), v)),
+      'correctOptions': correctOptions.map((k, v) => MapEntry(k.toString(), v)),
     };
   }
 }

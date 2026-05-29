@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
 
@@ -23,10 +24,12 @@ class ExamHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black.withOpacity(0.3)
+                : Colors.grey.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -52,10 +55,10 @@ class ExamHeader extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.grade_outlined,
                         size: 16,
-                        color: Colors.teal,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -166,7 +169,7 @@ class QuestionCard extends StatelessWidget {
                 height: 200,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey[100],
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
                 child: Image.network(
                   question.imageUrl!,
@@ -175,7 +178,7 @@ class QuestionCard extends StatelessWidget {
                     return Center(
                       child: Icon(
                         Icons.image_not_supported,
-                        color: Colors.grey[400],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     );
                   },
@@ -237,7 +240,7 @@ class AnswerOption extends StatelessWidget {
                 color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
               ),
               child: isSelected
-                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  ? Icon(Icons.check, size: 14, color: Theme.of(context).colorScheme.onPrimary)
                   : null,
             ),
             const SizedBox(width: 12),
@@ -282,8 +285,11 @@ class QuestionNavigation extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -309,12 +315,12 @@ class QuestionNavigation extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isCurrent
-                        ? Colors.teal
+                        ? Theme.of(context).colorScheme.primary
                         : isAnswered
-                        ? Colors.teal.withOpacity(0.2)
-                        : Colors.white,
+                        ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                        : Theme.of(context).colorScheme.surface,
                     border: Border.all(
-                      color: isCurrent ? Colors.teal : Colors.grey[300]!,
+                      color: isCurrent ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                     ),
                   ),
                   child: Center(
@@ -323,7 +329,7 @@ class QuestionNavigation extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: isCurrent ? Colors.white : Colors.black87,
+                        color: isCurrent ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -377,16 +383,38 @@ class ExamBottomNavigation extends StatelessWidget {
         children: [
           // Previous button
           if (showPrevious)
-            OutlinedButton(
-              onPressed: onPrevious,
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text('السابق'),
-            )
+           OutlinedButton(
+                  onPressed: onPrevious,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: context.colorScheme.onSecondary.withOpacity(0.5),
+                    ),
+                    minimumSize: const Size(0, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                       Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 14,
+                        color: context.colorScheme.onSecondary.withOpacity(0.5),
+                      ),
+                                            const SizedBox(width: 8),
+
+                      Text(
+                        ' السابق',
+                        style: context.textTheme.labelLarge!.copyWith(
+                          color: context.colorScheme.onSecondary.withOpacity(0.5),
+                        ),
+                      ),
+                     
+                    ],
+                  ),
+                )
+                
           else
             const SizedBox(width: 100),
           // Next or Submit button
@@ -394,30 +422,30 @@ class ExamBottomNavigation extends StatelessWidget {
             ElevatedButton(
               onPressed: onSubmit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 12,
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'تسليم الاختبار',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
               ),
             )
           else if (showNext)
             ElevatedButton(
               onPressed: onNext,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 12,
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'التالي',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
               ),
             ),
         ],

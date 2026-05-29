@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:flutter/material.dart';
 
 class ExamIntroContent extends StatelessWidget {
@@ -25,23 +26,17 @@ class ExamIntroContent extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(18),
+            border: AppBorder.main_border
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   height: 8,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF26B5B5),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
@@ -55,23 +50,23 @@ class ExamIntroContent extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const _ExamReadyBadge(),
+                      // const _ExamReadyBadge(),
                       const SizedBox(height: 16),
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3142),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'يرجى مراجعة تفاصيل الاختبار أدناه قبل البدء. تأكد من استقرار اتصال الإنترنت لديك.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF9094A6),
+                          color: Theme.of(context).colorScheme.onSurface.withAlpha((0.6 * 255).round()),
                           height: 1.5,
                         ),
                       ),
@@ -81,13 +76,13 @@ class ExamIntroContent extends StatelessWidget {
                         label: 'إجمالي الأسئلة',
                         value: '$totalQuestions أسئلة',
                       ),
-                      const Divider(height: 32, color: Color(0xFFF1F2F6)),
+                      Divider(height: 32, color: Theme.of(context).colorScheme.onSurface.withAlpha((0.1 * 255).round())),
                       ExamIntroInfoRow(
                         icon: Icons.timer_outlined,
                         label: 'الوقت المخصص',
                         value: '$durationMinutes دقيقة',
                       ),
-                      const Divider(height: 32, color: Color(0xFFF1F2F6)),
+                      Divider(height: 32, color: Theme.of(context).colorScheme.onSurface.withAlpha((0.1 * 255).round())),
                       ExamIntroInfoRow(
                         icon: Icons.refresh_outlined,
                         label: 'المحاولات المتبقية',
@@ -100,8 +95,8 @@ class ExamIntroContent extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: onStartExam,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF26B5B5),
-                            foregroundColor: Colors.white,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
@@ -149,10 +144,10 @@ class ExamIntroInfoRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFFF7F8FA),
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: const Color(0xFF26B5B5), size: 24),
+          child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -161,15 +156,15 @@ class ExamIntroInfoRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF9094A6)),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withAlpha((0.6 * 255).round())),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3142),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -188,9 +183,9 @@ class ExamIntroWarningNote extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF9F2),
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF2994A).withAlpha((0.1 * 255).round()) : const Color(0xFFFFF9F2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFFFEBD2)),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF2994A).withAlpha((0.2 * 255).round()) : const Color(0xFFFFEBD2)),
       ),
       child: Row(
         children: [
@@ -205,7 +200,7 @@ class ExamIntroWarningNote extends StatelessWidget {
               'المؤقت سيبدأ مباشرة ولا يمكن إيقافه بعد البدء، تأكد من أنك مستعد.',
               style: TextStyle(
                 fontSize: 12,
-                color: const Color(0xFFF2994A).withOpacity(0.9),
+                color: const Color(0xFFF2994A).withAlpha((0.9 * 255).round()),
                 height: 1.4,
               ),
             ),
@@ -224,13 +219,13 @@ class _ExamReadyBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFE9F7F7),
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Text(
+      child: Text(
         'جاهز للبدء؟',
         style: TextStyle(
-          color: Color(0xFF26B5B5),
+          color: Theme.of(context).colorScheme.primary,
           fontSize: 14,
           fontWeight: FontWeight.bold,
         ),

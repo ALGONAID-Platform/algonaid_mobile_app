@@ -241,13 +241,14 @@ class ExamResultModelAdapter extends TypeAdapter<ExamResultModel> {
       correctAnswers: fields[7] as int? ?? 0,
       wrongAnswers: fields[8] as int? ?? 0,
       answers: (fields[9] as Map?)?.cast<int, int>() ?? const {},
+      correctOptions: (fields[10] as Map?)?.cast<int, int>() ?? const {},
     );
   }
 
   @override
   void write(BinaryWriter writer, ExamResultModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.attemptId)
       ..writeByte(1)
@@ -267,7 +268,9 @@ class ExamResultModelAdapter extends TypeAdapter<ExamResultModel> {
       ..writeByte(8)
       ..write(obj.wrongAnswers)
       ..writeByte(9)
-      ..write(obj.answers);
+      ..write(obj.answers)
+      ..writeByte(10)
+      ..write(obj.correctOptions);
   }
 
   @override

@@ -214,6 +214,7 @@ class ExamResult extends Equatable {
   final int correctAnswers;
   final int wrongAnswers;
   final Map<int, int> answers; // questionId -> selectedOptionId
+  final Map<int, int> correctOptions; // questionId -> correctOptionId
 
   const ExamResult({
     required this.attemptId,
@@ -226,6 +227,7 @@ class ExamResult extends Equatable {
     required this.correctAnswers,
     required this.wrongAnswers,
     required this.answers,
+    required this.correctOptions,
   });
 
   @override
@@ -240,5 +242,6 @@ class ExamResult extends Equatable {
     correctAnswers,
     wrongAnswers,
     answers,
+    correctOptions,
   ];
 }
