@@ -25,12 +25,28 @@ class UserModel {
   final String name;
   final String email;
   final UserRole role;
+  final String? avatar;
+  final String? background;
+  final String? academicId;
+  final String? grade;
+  final String? birthDate;
+  final String? address;
+  final String? createdAt;
+  final String? updatedAt;
 
   UserModel({
     required this.id,
     required this.name,
     required this.email,
     required this.role,
+    this.avatar,
+    this.background,
+    this.academicId,
+    this.grade,
+    this.birthDate,
+    this.address,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +61,14 @@ class UserModel {
             (json['role'] ?? "").toString().toUpperCase(),
         orElse: () => UserRole.student,
       ),
+      avatar: json['avatar'],
+      background: json['background'],
+      academicId: json['academicId'],
+      grade: json['grade'],
+      birthDate: json['birthDate'],
+      address: json['address'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
     );
   }
 }

@@ -167,6 +167,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                     title: "تنبيه",
                                     message: "يرجى اختيار الدور",
                                     isError: true,
+                                    showCancelButton: false,
                                   );
                                   return;
                                 }
@@ -185,6 +186,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                   context: context,
                                   title: "Success",
                                   message: "Welcome Back!",
+                                  showCancelButton: false,
                                   onConfirm: () =>
                                       GoRouter.of(context).go(Routes.homePage),
                                 );
@@ -196,6 +198,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                     authService.errorMessage,
                                   ),
                                   isError: true,
+                                  showCancelButton: false,
                                   confirmText: "حاول مرة أخرى",
                                 );
                               }
@@ -203,7 +206,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                             text: authService.isLogin
                                 ? "تسجيل دخول"
                                 : "إنشاء حساب",
-                            textColor: AppColors.bgLight,
+                            textColor: Theme.of(context).colorScheme.onPrimary,
                           ),
                   ),
 

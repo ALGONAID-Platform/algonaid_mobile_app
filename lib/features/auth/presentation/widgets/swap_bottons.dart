@@ -64,7 +64,7 @@ class StackButtons extends StatelessWidget {
                   child: Text(
                     "تسجيل دخول",
                     style: Styles.textStyle16.copyWith(
-                      color: AppColors.bgLight,
+                      color: auth.isLogin ? context.primary : Colors.white,
                     ),
                   ),
                 ),
@@ -77,7 +77,7 @@ class StackButtons extends StatelessWidget {
                   child: Text(
                     "أنشاء حساب",
                     style: Styles.textStyle16.copyWith(
-                      color: AppColors.bgLight,
+                      color: !auth.isLogin ? context.primary : Colors.white,
                     ),
                   ),
                 ),

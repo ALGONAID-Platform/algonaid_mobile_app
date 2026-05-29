@@ -22,10 +22,7 @@ class DropDownButton extends StatelessWidget {
           for (var role in UserRole.values)
             DropdownMenuItem(
               value: role,
-              child: Text(
-                role.code,
-                style: const TextStyle(fontFamily: 'Tajawal'),
-              ),
+              child: Text(role.code),
             ),
         ],
 

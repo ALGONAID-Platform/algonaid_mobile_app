@@ -32,6 +32,14 @@ class AuthRepoImpl extends AuthRepo {
           role: authResponse.user.role,
           message: authResponse.message,
           token: authResponse.accessToken,
+          avatar: authResponse.user.avatar,
+          background: authResponse.user.background,
+          academicId: authResponse.user.academicId,
+          grade: authResponse.user.grade,
+          birthDate: authResponse.user.birthDate,
+          address: authResponse.user.address,
+          createdAt: authResponse.user.createdAt,
+          updatedAt: authResponse.user.updatedAt,
         ),
       );
     } catch (e) {
@@ -66,6 +74,14 @@ class AuthRepoImpl extends AuthRepo {
           role: authResponse.user.role,
           message: authResponse.message,
           token: authResponse.accessToken,
+          avatar: authResponse.user.avatar,
+          background: authResponse.user.background,
+          academicId: authResponse.user.academicId,
+          grade: authResponse.user.grade,
+          birthDate: authResponse.user.birthDate,
+          address: authResponse.user.address,
+          createdAt: authResponse.user.createdAt,
+          updatedAt: authResponse.user.updatedAt,
         ),
       );
     } catch (e) {

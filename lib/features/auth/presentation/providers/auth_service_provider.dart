@@ -141,6 +141,54 @@ class AuthServiceProvider extends ChangeNotifier {
       key: AppConstants.userRole,
       value: userEntity.role.code,
     );
+    if (userEntity.avatar != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userAvatar,
+        value: userEntity.avatar!,
+      );
+    }
+    if (userEntity.background != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userBackground,
+        value: userEntity.background!,
+      );
+    }
+    if (userEntity.academicId != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userAcademicId,
+        value: userEntity.academicId!,
+      );
+    }
+    if (userEntity.grade != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userGrade,
+        value: userEntity.grade!,
+      );
+    }
+    if (userEntity.address != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userAddress,
+        value: userEntity.address!,
+      );
+    }
+    if (userEntity.birthDate != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userBirthDate,
+        value: userEntity.birthDate!,
+      );
+    }
+    if (userEntity.createdAt != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userCreatedAt,
+        value: userEntity.createdAt!,
+      );
+    }
+    if (userEntity.updatedAt != null) {
+      await CacheHelper.saveData(
+        key: AppConstants.userUpdatedAt,
+        value: userEntity.updatedAt!,
+      );
+    }
 
     final token = userEntity.token?.trim();
     if (token != null && token.isNotEmpty) {
@@ -166,6 +214,14 @@ class AuthServiceProvider extends ChangeNotifier {
         await CacheHelper.removeData(key: AppConstants.userName);
         await CacheHelper.removeData(key: AppConstants.userEmail);
         await CacheHelper.removeData(key: AppConstants.userRole);
+        await CacheHelper.removeData(key: AppConstants.userAvatar);
+        await CacheHelper.removeData(key: AppConstants.userBackground);
+        await CacheHelper.removeData(key: AppConstants.userAcademicId);
+        await CacheHelper.removeData(key: AppConstants.userGrade);
+        await CacheHelper.removeData(key: AppConstants.userAddress);
+        await CacheHelper.removeData(key: AppConstants.userBirthDate);
+        await CacheHelper.removeData(key: AppConstants.userCreatedAt);
+        await CacheHelper.removeData(key: AppConstants.userUpdatedAt);
         await TokenStorage.deleteToken();
         
         _user = null;

@@ -8,6 +8,14 @@ class UserEntity {
   UserRole role;
   String message;
   final String? token;
+  final String? avatar;
+  final String? background;
+  final String? academicId;
+  final String? grade;
+  final String? birthDate;
+  final String? address;
+  final String? createdAt;
+  final String? updatedAt;
   UserEntity({
     required this.id,
     required this.username,
@@ -15,5 +23,13 @@ class UserEntity {
     required this.role,
     required this.message,
     this.token,
+    this.avatar,
+    this.background,
+    this.academicId,
+    this.grade,
+    this.birthDate,
+    this.address,
+    this.createdAt,
+    this.updatedAt,
   });
 }

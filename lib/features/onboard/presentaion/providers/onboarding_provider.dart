@@ -40,8 +40,8 @@ class OnboardingProvider extends ChangeNotifier {
       final context = navigatorKey.currentContext;
       await Future.delayed(const Duration(milliseconds: 200));
 
-      // Navigate to home page (CoursesListPage)
-      GoRouter.of(context!).go(Routes.homePage);
+      // Navigate to auth page
+      GoRouter.of(context!).go(Routes.auth);
     }
     notifyListeners();
   }
