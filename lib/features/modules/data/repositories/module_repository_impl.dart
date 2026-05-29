@@ -1,13 +1,15 @@
-import 'package:algonaid_mobail_app/core/errors/exception.dart';
+import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
 import 'package:algonaid_mobail_app/core/errors/failure.dart';
 import 'package:algonaid_mobail_app/core/network/check_internet.dart';
 import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/models/module_grades_model.dart';
 import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
 import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/entities/module_grades.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -81,13 +83,47 @@ class ModuleRepositoryImpl implements ModuleRepository {
     }
   }
 
-  @override
   Future<Either<Failure, LastAccessedModuleEntity?>> getCachedLastAccessedModule() async {
     try {
       final localModule = await localDataSource.getLastAccessedModule();
       return Right(localModule);
     } catch (e) {
       return Left(CacheFailure("Failed to load from cache: $e"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ModuleGrades>> getModuleGrades(int moduleId) async {
+    final isOffline = await hasNoInternet();
+
+    if (isOffline) {
+      try {
+        final localGrades = await localDataSource.getModuleGrades(moduleId);
+        if (localGrades != null) {
+          return Right(localGrades);
+        }
+      } catch (_) {}
+      return Left(ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد درجات محفوظة لهذه الوحدة.'));
+    }
+
+    try {
+      final grades = await remoteDataSource.getModuleGrades(moduleId);
+      await localDataSource.saveModuleGrades(moduleId, grades as ModuleGradesModel);
+      return Right(grades);
+    } catch (e) {
+      try {
+        final localGrades = await localDataSource.getModuleGrades(moduleId);
+        if (localGrades != null) {
+          return Right(localGrades);
+        }
+      } catch (_) {}
+
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
     }
   }
 }

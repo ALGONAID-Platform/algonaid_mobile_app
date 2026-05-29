@@ -4,12 +4,15 @@ import 'package:algonaid_mobail_app/features/courses/data/models/courseProgress_
 import 'package:algonaid_mobail_app/features/courses/domain/entities/courseProgress_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
-
+import 'package:algonaid_mobail_app/features/courses/data/models/course_grades_model.dart';
+import 'package:algonaid_mobail_app/features/search/data/models/global_search_model.dart';
 abstract class CoursesRemoteDataSource {
   Future<List<CourseEntity>> fetchCourses();
   Future<List<CourseEntity>> fetchMyCourses();
   Future<CourseProgressEntity> fetchCourseProgress({required int courseId});
   Future<bool> enrollInCourse(int courseId);
+  Future<CourseGradesModel> getCourseGrades(int courseId);
+  Future<GlobalSearchModel> searchCourses(String query);
 }
 
 class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
@@ -37,6 +40,15 @@ class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
     return courses;
   }
   
+  @override
+  Future<GlobalSearchModel> searchCourses(String query) async {
+    var data = await apiService.get(
+      endpoint: EndPoint.searchCourses,
+      query: {'q': query},
+    );
+    return GlobalSearchModel.fromJson(data as Map<String, dynamic>);
+  }
+  
 
   @override
   Future<CourseProgressEntity> fetchCourseProgress({
@@ -57,4 +69,14 @@ class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
 
     return true;
   }
+
+  @override
+  Future<CourseGradesModel> getCourseGrades(int courseId) async {
+    final response = await apiService.get(
+      endpoint: EndPoint.courseGrades(courseId),
+    );
+
+    return CourseGradesModel.fromJson(response as Map<String, dynamic>);
+  }
+
 }

@@ -4,10 +4,12 @@ import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
 import 'package:algonaid_mobail_app/features/modules/data/models/last_accessed_module_model.dart';
+import 'package:algonaid_mobail_app/features/modules/data/models/module_grades_model.dart';
 
 abstract class ModuleRemoteDataSource {
   Future<List<ModuleModel>> getModulesByCourse(int courseId);
   Future<LastAccessedModuleModel?> getLastAccessedModule();
+  Future<ModuleGradesModel> getModuleGrades(int moduleId);
 }
 
 class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
@@ -38,5 +40,14 @@ class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
       }
     }
     return null;
+  }
+
+  @override
+  Future<ModuleGradesModel> getModuleGrades(int moduleId) async {
+    final response = await apiService.get(
+      endpoint: EndPoint.moduleGrades(moduleId),
+    );
+
+    return ModuleGradesModel.fromJson(response as Map<String, dynamic>);
   }
 }

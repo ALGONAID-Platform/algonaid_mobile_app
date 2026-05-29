@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
-import 'package:algonaid_mobail_app/core/errors/exception.dart';
+import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
 import 'package:algonaid_mobail_app/core/errors/failure.dart';
 import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
+import 'package:algonaid_mobail_app/core/network/check_internet.dart';
 import 'package:algonaid_mobail_app/features/courses/data/datasources/course_local_stroage.dart';
 import 'package:algonaid_mobail_app/features/courses/data/datasources/courses_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/courses/data/models/course_grades_model.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/courseProgress_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid_mobail_app/features/search/domain/entities/global_search_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -120,5 +124,61 @@ class CoursesRepositoryImpl implements CoursesRepository {
 
       return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
     }
+  }
+
+  @override
+  Future<Either<Failure, CourseGrades>> getCourseGrades(int courseId) async {
+    final isOffline = await hasNoInternet();
+
+    if (isOffline) {
+      try {
+        final localGrades = await local.getCourseGrades(courseId);
+        if (localGrades != null) {
+          return Right(localGrades);
+        }
+      } catch (_) {}
+      return Left(ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد درجات محفوظة لهذا الكورس.'));
+    }
+
+    try {
+      final grades = await remote.getCourseGrades(courseId);
+      await local.saveCourseGrades(courseId, grades as CourseGradesModel);
+      return Right(grades);
+    } catch (e) {
+      try {
+        final localGrades = await local.getCourseGrades(courseId);
+        if (localGrades != null) {
+          return Right(localGrades);
+        }
+      } catch (_) {}
+
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, GlobalSearchEntity>> searchCourses(String query) async {
+    try {
+      final globalSearch = await remote.searchCourses(query);
+      return Right(globalSearch);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+    }
+  }
+  
+  @override
+  Future<dynamic> getExcellenceCourses() {
+    // TODO: implement getExcellenceCourses
+    throw UnimplementedError();
   }
 }

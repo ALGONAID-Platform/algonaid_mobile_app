@@ -38,12 +38,14 @@ class TeacherModel extends TeacherEntity {
 
   factory TeacherModel.fromJson(Map<String, dynamic> json) {
     return TeacherModel(
-      id: json['id'] as int,
-      specialization: json['specialization'] as String,
+      id: json['id'] as int? ?? 0,
+      specialization: json['specialization'] as String? ?? 'عام',
       bio: json['bio'] as String?,
-      experience: json['experience'] as int,
-      userId: json['userId'] as int,
-      user: UserModel.fromJson(json['user']),
+      experience: json['experience'] as int? ?? 0,
+      userId: json['userId'] as int? ?? 0,
+      user: json['user'] != null 
+          ? UserModel.fromJson(json['user']) 
+          : UserModel(name: json['name'] as String? ?? 'غير معروف', email: ''),
     );
   }
 

@@ -20,23 +20,18 @@ class ModuleModel extends Module {
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {
     return ModuleModel(
-      id: json['id'] as int? ?? 0,
-      title: json['title'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      courseId: json['courseId'] as int? ?? 0,
-
-      lessons:
-          (json['lessons'] as List<dynamic>?)
-              ?.map((e) => LessonModel.fromJson(e as Map<String, dynamic>))
+      id: int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      courseId: int.tryParse(json['courseId']?.toString() ?? json['course_id']?.toString() ?? '0') ?? 0,
+      lessons: (json['lessons'] as List<dynamic>?)
+              ?.where((e) => e != null)
+              .map((e) => LessonModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-
-      completedLessons: (json['completedLessons'] as num?)?.toInt() ?? 0,
-
-      progressPercentage:
-          (json['progressPercentage'] as num?)?.toDouble() ?? 0.0,
-
-      totalLessons: (json['totalLessons'] as num?)?.toInt() ?? 0,
+      completedLessons: int.tryParse(json['completedLessons']?.toString() ?? json['completed_lessons']?.toString() ?? '0') ?? 0,
+      progressPercentage: double.tryParse(json['progressPercentage']?.toString() ?? json['progress_percentage']?.toString() ?? '0.0') ?? 0.0,
+      totalLessons: int.tryParse(json['totalLessons']?.toString() ?? json['total_lessons']?.toString() ?? '0') ?? 0,
     );
   }
 
