@@ -1,12 +1,24 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:flutter/material.dart';
 
 class LessonPdfCard extends StatelessWidget {
   final String? pdfUrl;
   final VoidCallback onOpen;
+  final DownloadStatus downloadStatus;
+  final int downloadProgress;
+  final VoidCallback onDownload;
 
-  const LessonPdfCard({super.key, required this.pdfUrl, required this.onOpen});
+  const LessonPdfCard({
+    super.key, 
+    required this.pdfUrl, 
+    required this.onOpen,
+    required this.downloadStatus,
+    required this.downloadProgress,
+    required this.onDownload,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +35,8 @@ class LessonPdfCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withOpacity(0.08)
-                : context.primary.withOpacity(0.25),
-            width: 1.5,
-          ),
+         border: AppBorder.main_border
+          // دمج الحواف الديناميكية للوضع الداكن/الفاتح
         ),
         child: Row(
           children: [
@@ -66,12 +74,36 @@ class LessonPdfCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_left,
-              color: hasPdf
-                  ? context.primary
-                  : theme.colorScheme.onSurface.withOpacity(0.35),
-            ),
+            if (hasPdf)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (downloadStatus == DownloadStatus.downloading)
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        value: downloadProgress > 0 ? downloadProgress / 100 : null,
+                        strokeWidth: 2.5,
+                        color: context.primary,
+                      ),
+                    )
+                   
+                  else if (downloadStatus == DownloadStatus.downloaded)
+                    Icon(Icons.check_circle_rounded, color: context.primary),
+                    
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.chevron_right,
+                    color: context.primary,
+                  ),
+                ],
+              )
+            else
+              Icon(
+                Icons.chevron_left,
+                color: theme.colorScheme.onSurface.withOpacity(0.35),
+              ),
           ],
         ),
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:algonaid_mobail_app/core/errors/exception.dart';
+import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
 import 'package:algonaid_mobail_app/core/errors/failure.dart';
 import 'package:algonaid_mobail_app/core/network/check_internet.dart';
 import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';

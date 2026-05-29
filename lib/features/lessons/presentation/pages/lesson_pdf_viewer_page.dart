@@ -35,9 +35,18 @@ class LessonPdfViewerPage extends StatelessWidget {
       pdfViewer = const Center(child: Text('PDF غير متوفر'));
     }
 
-    return Scaffold(
-      appBar: AppBar(title: Text(title), backgroundColor: AppColors.primary),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(title),
+      ),
       body: pdfViewer,
+      ),
     );
   }
 }

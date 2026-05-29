@@ -1,5 +1,6 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -23,14 +24,7 @@ class LessonTabs extends StatelessWidget {
           color: context.surface,
           borderRadius: BorderRadius.circular(18),
           // دمج الحواف الديناميكية للوضع الداكن/الفاتح
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withOpacity(0.08)
-                : context.primary.withOpacity(0.10),
-          ),
-          // إخفاء الظلال في الوضع الداكن واستخدام AppShadows في الفاتح
-          boxShadow: isDark ? const [] : AppShadows.cardShadow,
-        ),
+         border: AppBorder.main_border ),
         child: Column(
           children: [
             TabBar(

@@ -1,6 +1,5 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:flutter/material.dart';
 
 class LessonInfoCard extends StatelessWidget {
@@ -11,7 +10,6 @@ class LessonInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       width: double.infinity,
@@ -20,14 +18,7 @@ class LessonInfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.surface,
         borderRadius: BorderRadius.circular(18),
-        // إضافة الحواف المخصصة للوضع الداكن والفاتح من فرع exams
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : AppColors.primary.withOpacity(0.10),
-        ),
-        // دمج منطق الظلال: استخدام AppShadows للوضع الفاتح وإلغائها للوضع الداكن
-        boxShadow: isDark ? const [] : AppShadows.cardShadow,
+        border: AppBorder.main_border
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,7 +26,6 @@ class LessonInfoCard extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            // استخدام الـ extensions من HEAD ولون النص المناسب من exams
             style: context.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,

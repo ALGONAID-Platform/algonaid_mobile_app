@@ -31,16 +31,13 @@ class LessonModel extends Lesson {
     final calculatedStatus = _determineStatus(progressList);
 
     return LessonModel(
-      id: (json['id'] as num?)?.toInt() ?? 0,
-      title: json['title'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      videoUrl: json['videoUrl'] as String? ?? json['video_url'] as String?,
-      pdfUrl: json['pdfUrl'] as String? ?? json['pdf_url'] as String?,
-      moduleId:
-          (json['moduleId'] as num?)?.toInt() ??
-          (json['module_id'] as num?)?.toInt() ??
-          0,
-      order: (json['order'] as num?)?.toInt() ?? 0,
+      id: int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      videoUrl: json['videoUrl']?.toString() ?? json['video_url']?.toString(),
+      pdfUrl: json['pdfUrl']?.toString() ?? json['pdf_url']?.toString(),
+      moduleId: int.tryParse(json['moduleId']?.toString() ?? json['module_id']?.toString() ?? '0') ?? 0,
+      order: int.tryParse(json['order']?.toString() ?? '0') ?? 0,
       lessonProgress: progressList,
       status: calculatedStatus,
     );

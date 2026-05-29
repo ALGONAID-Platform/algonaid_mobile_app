@@ -15,6 +15,13 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 enum DownloadStatus { notDownloaded, downloading, downloaded, failed }
 
+// يجب أن تكون الدالة خارج الكلاس (Top-Level) لتعمل في الـ Isolate الخاص بالخلفية
+@pragma('vm:entry-point')
+void downloadCallback(String id, int status, int progress) {
+  final SendPort? send = IsolateNameServer.lookupPortByName('downloader_send_port');
+  send?.send([id, status, progress]);
+}
+
 class LessonDetailDownloadController extends ChangeNotifier {
   static const bool supportsOfflineDownloads = !kIsWeb;
 
@@ -25,7 +32,9 @@ class LessonDetailDownloadController extends ChangeNotifier {
   ReceivePort? _port;
   SharedPreferences? _prefs;
 
-  DownloadStatus _downloadStatus = DownloadStatus.notDownloaded;
+  DownloadStatus _pdfDownloadStatus = DownloadStatus.notDownloaded;
+  DownloadStatus _videoDownloadStatus = DownloadStatus.notDownloaded;
+
   String? _pdfDownloadId;
   String? _videoDownloadId;
   String? _localPdfFilePath;
@@ -33,9 +42,17 @@ class LessonDetailDownloadController extends ChangeNotifier {
   int? _currentLessonId;
   int? _syncedLessonId;
 
-  DownloadStatus get downloadStatus => _downloadStatus;
+  DownloadStatus get pdfDownloadStatus => _pdfDownloadStatus;
+  DownloadStatus get videoDownloadStatus => _videoDownloadStatus;
+
   String? get localPdfFilePath => _localPdfFilePath;
   String? get localVideoFilePath => _localVideoFilePath;
+  
+  int _pdfDownloadProgress = 0;
+  int _videoDownloadProgress = 0;
+
+  int get pdfDownloadProgress => _pdfDownloadProgress;
+  int get videoDownloadProgress => _videoDownloadProgress;
 
   static bool _isDownloaderInitialized = false;
 
@@ -49,14 +66,16 @@ class LessonDetailDownloadController extends ChangeNotifier {
         await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
         _isDownloaderInitialized = true;
       }
+      // تسجيل دالة الاستماع لحالة التحميل
+      FlutterDownloader.registerCallback(downloadCallback);
       _bindBackgroundIsolate();
     }
 
-    notifyListeners();
+    _safeNotifyListeners();
   }
 
   Future<void> syncDownloadStatus(LessonDetail lesson) async {
-    if (!supportsOfflineDownloads || _prefs == null) return;
+    if (!supportsOfflineDownloads || _prefs == null || !_isDownloaderInitialized) return;
     if (_syncedLessonId == lesson.id) return;
 
     _syncedLessonId = lesson.id;
@@ -66,137 +85,195 @@ class LessonDetailDownloadController extends ChangeNotifier {
     _localPdfFilePath = _prefs?.getString('pdf_local_path_${lesson.id}');
     _localVideoFilePath = _prefs?.getString('video_local_path_${lesson.id}');
 
-    if (_pdfDownloadId == null && _videoDownloadId == null) {
-      _setDownloadStatus(DownloadStatus.notDownloaded);
-      return;
+    if (_pdfDownloadId == null) {
+      _setPdfDownloadStatus(DownloadStatus.notDownloaded);
+    }
+    if (_videoDownloadId == null) {
+      _setVideoDownloadStatus(DownloadStatus.notDownloaded);
     }
 
     final tasks = await FlutterDownloader.loadTasks();
 
-    var allCompleted = true;
-    var anyRunning = false;
+    bool isPdfDownloaded = _localPdfFilePath != null && File(_localPdfFilePath!).existsSync();
+    bool isVideoDownloaded = _localVideoFilePath != null && File(_localVideoFilePath!).existsSync();
 
-    for (final task in tasks ?? <DownloadTask>[]) {
-      if (task.taskId == _pdfDownloadId || task.taskId == _videoDownloadId) {
-        if (task.status != DownloadTaskStatus.complete) {
-          allCompleted = false;
-        }
-
-        if (task.status == DownloadTaskStatus.running ||
-            task.status == DownloadTaskStatus.enqueued) {
-          anyRunning = true;
+    if (isPdfDownloaded) {
+      _setPdfDownloadStatus(DownloadStatus.downloaded);
+    } else {
+      var pdfCompleted = false;
+      var pdfRunning = false;
+      int pdfProgress = 0;
+      
+      for (final task in tasks ?? <DownloadTask>[]) {
+        if (task.taskId == _pdfDownloadId) {
+          if (task.status == DownloadTaskStatus.complete) pdfCompleted = true;
+          if (task.status == DownloadTaskStatus.running || task.status == DownloadTaskStatus.enqueued) {
+            pdfRunning = true;
+            pdfProgress = task.progress > 0 ? task.progress : 0;
+          }
         }
       }
+      
+      _pdfDownloadProgress = pdfProgress;
+      if (pdfCompleted) _setPdfDownloadStatus(DownloadStatus.downloaded);
+      else if (pdfRunning) _setPdfDownloadStatus(DownloadStatus.downloading);
+      else _setPdfDownloadStatus(DownloadStatus.notDownloaded);
     }
 
-    if (allCompleted) {
-      _setDownloadStatus(DownloadStatus.downloaded);
-    } else if (anyRunning) {
-      _setDownloadStatus(DownloadStatus.downloading);
+    if (isVideoDownloaded) {
+      _setVideoDownloadStatus(DownloadStatus.downloaded);
     } else {
-      _setDownloadStatus(DownloadStatus.notDownloaded);
+      var videoCompleted = false;
+      var videoRunning = false;
+      int videoProgress = 0;
+
+      for (final task in tasks ?? <DownloadTask>[]) {
+        if (task.taskId == _videoDownloadId) {
+          if (task.status == DownloadTaskStatus.complete) videoCompleted = true;
+          if (task.status == DownloadTaskStatus.running || task.status == DownloadTaskStatus.enqueued) {
+            videoRunning = true;
+            videoProgress = task.progress > 0 ? task.progress : 0;
+          }
+        }
+      }
+
+      _videoDownloadProgress = videoProgress;
+      if (videoCompleted) _setVideoDownloadStatus(DownloadStatus.downloaded);
+      else if (videoRunning) _setVideoDownloadStatus(DownloadStatus.downloading);
+      else _setVideoDownloadStatus(DownloadStatus.notDownloaded);
     }
   }
 
-  Future<void> downloadLesson(BuildContext context, LessonDetail lesson) async {
+  Future<void> downloadVideo(BuildContext context, LessonDetail lesson) async {
     if (!supportsOfflineDownloads) {
-      _showSnackBar(context, 'تحميل الدرس غير متاح على هذا الجهاز حالياً.');
+      _showSnackBar(context, 'تحميل الفيديو غير متاح على هذا الجهاز حالياً.');
       return;
     }
 
-    if (_downloadStatus == DownloadStatus.downloading) return;
+    if (_videoDownloadStatus == DownloadStatus.downloading) return;
 
-    final pdfUrl = resolvePdfUrl(lesson.pdfUrl);
-    final videoUrl = resolveDownloadableVideoUrl(lesson.videoUrl);
-
-    if (pdfUrl == null && videoUrl == null) {
-      _showSnackBar(context, 'لا توجد ملفات متاحة لتحميل هذا الدرس.');
+    final videoUrl = await resolveDownloadableVideoUrl(lesson.videoUrl);
+    if (videoUrl == null) {
+      _showSnackBar(context, 'لا يوجد فيديو متاح للتحميل.');
       return;
     }
 
-    if (Platform.isAndroid) {
-      await Permission.notification.request();
-    }
-    
-    // Request storage permission just in case for older Android versions,
-    // but don't block if denied because Android 13+ denies it automatically 
-    // and we are using getApplicationDocumentsDirectory() which doesn't need it.
+    if (Platform.isAndroid) await Permission.notification.request();
     await Permission.storage.request();
 
     final saveDir = await _prepareDownloadDirectory(lesson.id);
 
     try {
-      _setDownloadStatus(DownloadStatus.downloading);
+      _videoDownloadProgress = 0;
+      _setVideoDownloadStatus(DownloadStatus.downloading);
 
-      if (pdfUrl != null) {
-        _pdfDownloadId = await FlutterDownloader.enqueue(
-          url: pdfUrl,
-          savedDir: saveDir,
-          fileName: 'lesson_${lesson.id}.pdf',
-          showNotification: true,
-          openFileFromNotification: true,
-        );
-        _localPdfFilePath = '$saveDir/lesson_${lesson.id}.pdf';
-        await _prefs?.setString('pdf_download_id_${lesson.id}', _pdfDownloadId!);
-        await _prefs?.setString('pdf_local_path_${lesson.id}', _localPdfFilePath!);
-      }
+      _videoDownloadId = await FlutterDownloader.enqueue(
+        url: videoUrl,
+        savedDir: saveDir,
+        fileName: 'lesson_${lesson.id}.mp4',
+        showNotification: true,
+        openFileFromNotification: false,
+      );
+      _localVideoFilePath = '$saveDir/lesson_${lesson.id}.mp4';
+      await _prefs?.setString('video_download_id_${lesson.id}', _videoDownloadId!);
+      await _prefs?.setString('video_local_path_${lesson.id}', _localVideoFilePath!);
 
-      if (videoUrl != null) {
-        _videoDownloadId = await FlutterDownloader.enqueue(
-          url: videoUrl,
-          savedDir: saveDir,
-          fileName: 'lesson_${lesson.id}.mp4',
-          showNotification: true,
-          openFileFromNotification: false,
-        );
-        _localVideoFilePath = '$saveDir/lesson_${lesson.id}.mp4';
-        await _prefs?.setString(
-          'video_download_id_${lesson.id}',
-          _videoDownloadId!,
-        );
-        await _prefs?.setString(
-          'video_local_path_${lesson.id}',
-          _localVideoFilePath!,
-        );
-      }
-
-      notifyListeners();
-      _showSnackBar(context, 'بدأ تحميل الدرس.');
+      _safeNotifyListeners();
+      _showSnackBar(context, 'بدأ تحميل الفيديو.');
     } catch (_) {
-      _setDownloadStatus(DownloadStatus.failed);
-      _showSnackBar(context, 'تعذر بدء تحميل الدرس.');
+      _setVideoDownloadStatus(DownloadStatus.failed);
+      _showSnackBar(context, 'تعذر بدء تحميل الفيديو.');
     }
   }
 
-  String downloadButtonLabel() {
-    switch (_downloadStatus) {
+  Future<void> downloadPdf(BuildContext context, LessonDetail lesson) async {
+    if (!supportsOfflineDownloads) {
+      _showSnackBar(context, 'تحميل المرفق غير متاح على هذا الجهاز حالياً.');
+      return;
+    }
+
+    if (_pdfDownloadStatus == DownloadStatus.downloading) return;
+
+    final pdfUrl = resolvePdfUrl(lesson.pdfUrl);
+    if (pdfUrl == null) {
+      _showSnackBar(context, 'لا يوجد ملف متاح للتحميل.');
+      return;
+    }
+
+    if (Platform.isAndroid) await Permission.notification.request();
+    await Permission.storage.request();
+
+    final saveDir = await _prepareDownloadDirectory(lesson.id);
+
+    try {
+      _pdfDownloadProgress = 0;
+      _setPdfDownloadStatus(DownloadStatus.downloading);
+
+      _pdfDownloadId = await FlutterDownloader.enqueue(
+        url: pdfUrl,
+        savedDir: saveDir,
+        fileName: 'lesson_${lesson.id}.pdf',
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+      _localPdfFilePath = '$saveDir/lesson_${lesson.id}.pdf';
+      await _prefs?.setString('pdf_download_id_${lesson.id}', _pdfDownloadId!);
+      await _prefs?.setString('pdf_local_path_${lesson.id}', _localPdfFilePath!);
+
+      _safeNotifyListeners();
+      _showSnackBar(context, 'بدأ تحميل الملف المرفق.');
+    } catch (_) {
+      _setPdfDownloadStatus(DownloadStatus.failed);
+      _showSnackBar(context, 'تعذر بدء تحميل الملف.');
+    }
+  }
+
+  String videoDownloadButtonLabel() {
+    switch (_videoDownloadStatus) {
+      case DownloadStatus.downloading:
+        return 'جاري تحميل الفيديو...';
+      case DownloadStatus.downloaded:
+        return 'تم تحميل الفيديو';
+      case DownloadStatus.failed:
+        return 'إعادة تحميل الفيديو';
+      case DownloadStatus.notDownloaded:
+        return 'تحميل الفيديو';
+    }
+  }
+
+  String pdfDownloadButtonLabel() {
+    switch (_pdfDownloadStatus) {
       case DownloadStatus.downloading:
         return 'جاري التحميل...';
       case DownloadStatus.downloaded:
-        return 'تم تحميل الدرس';
+        return 'تم التحميل';
       case DownloadStatus.failed:
-        return 'إعادة تحميل الدرس';
+        return 'إعادة التحميل';
       case DownloadStatus.notDownloaded:
-        return 'تحميل الدرس';
+        return 'تحميل المرفق';
     }
   }
 
-  String? resolveDownloadableVideoUrl(String? videoUrl) {
+  Future<String?> resolveDownloadableVideoUrl(String? videoUrl) async {
     if (videoUrl == null || videoUrl.isEmpty) return null;
+
+    if (videoUrl.contains('youtube.com') || videoUrl.contains('youtu.be')) {
+      try {
+        final videoId = VideoId(videoUrl);
+        final manifest = await _yt.videos.streamsClient.getManifest(videoId);
+        final streamInfo = manifest.muxed.withHighestBitrate();
+        return streamInfo.url.toString();
+      } catch (e) {
+        debugPrint('Error getting YouTube video stream: $e');
+        return null;
+      }
+    }
 
     if (!videoUrl.startsWith('http')) {
       return '${EndPoint.uploadsBaseUrl}$videoUrl';
     }
 
-    final uri = Uri.tryParse(videoUrl);
-    final path = uri?.path.toLowerCase() ?? '';
-    final isDirectFile =
-        path.endsWith('.mp4') ||
-        path.endsWith('.mov') ||
-        path.endsWith('.m4v') ||
-        path.endsWith('.webm');
-
-    return isDirectFile ? videoUrl : null;
+    return videoUrl;
   }
 
   String? resolvePdfUrl(String? pdfUrl) {
@@ -243,20 +320,37 @@ class LessonDetailDownloadController extends ChangeNotifier {
 
     _port!.listen((data) {
       final id = data[0] as String;
-      final status = data[1] as DownloadTaskStatus;
+      // تحويل الرقم القادم من الخلفية إلى DownloadTaskStatus بشكل صحيح
+      final status = DownloadTaskStatus.fromInt(data[1] as int);
       final progress = data[2] as int;
 
-      if (id == _pdfDownloadId || id == _videoDownloadId) {
+      if (id == _pdfDownloadId) {
+        if (status == DownloadTaskStatus.running || status == DownloadTaskStatus.enqueued) {
+          _pdfDownloadProgress = progress;
+        }
+
         if (status == DownloadTaskStatus.complete) {
-          _setDownloadStatus(DownloadStatus.downloaded);
+          _setPdfDownloadStatus(DownloadStatus.downloaded);
         } else if (status == DownloadTaskStatus.failed) {
-          _setDownloadStatus(DownloadStatus.failed);
+          _setPdfDownloadStatus(DownloadStatus.failed);
         } else if (status == DownloadTaskStatus.running) {
-          _showNotification(
-            _currentLessonId ?? 0,
-            'Downloading',
-            'Progress: $progress%',
-          );
+          _pdfDownloadStatus = DownloadStatus.downloading;
+          _safeNotifyListeners();
+          _showNotification(_currentLessonId ?? 0, 'Downloading PDF', 'Progress: $progress%');
+        }
+      } else if (id == _videoDownloadId) {
+        if (status == DownloadTaskStatus.running || status == DownloadTaskStatus.enqueued) {
+          _videoDownloadProgress = progress;
+        }
+
+        if (status == DownloadTaskStatus.complete) {
+          _setVideoDownloadStatus(DownloadStatus.downloaded);
+        } else if (status == DownloadTaskStatus.failed) {
+          _setVideoDownloadStatus(DownloadStatus.failed);
+        } else if (status == DownloadTaskStatus.running) {
+          _videoDownloadStatus = DownloadStatus.downloading;
+          _safeNotifyListeners();
+          _showNotification((_currentLessonId ?? 0) + 1000, 'Downloading Video', 'Progress: $progress%');
         }
       }
     });
@@ -276,16 +370,31 @@ class LessonDetailDownloadController extends ChangeNotifier {
   }
 
   void _showSnackBar(BuildContext context, String message) {
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _setDownloadStatus(DownloadStatus status) {
-    _downloadStatus = status;
-    notifyListeners();
+  bool _isDisposed = false;
+
+  void _safeNotifyListeners() {
+    if (!_isDisposed) {
+      notifyListeners();
+    }
+  }
+
+  void _setPdfDownloadStatus(DownloadStatus status) {
+    _pdfDownloadStatus = status;
+    _safeNotifyListeners();
+  }
+
+  void _setVideoDownloadStatus(DownloadStatus status) {
+    _videoDownloadStatus = status;
+    _safeNotifyListeners();
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     if (supportsOfflineDownloads) {
       IsolateNameServer.removePortNameMapping('downloader_send_port');
     }

@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -22,11 +23,7 @@ class LessonQuizCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : context.primary.withOpacity(0.10),
-        ),
+     border : AppBorder.main_border
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +45,7 @@ class LessonQuizCard extends StatelessWidget {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
               onPressed: () {
                 if (!hasExam) {
                   debugPrint(
@@ -68,19 +65,19 @@ class LessonQuizCard extends StatelessWidget {
                 );
                 GoRouter.of(context).push(targetRoute, extra: previousRoute);
               },
+              icon: Icon(hasExam ? Icons.assignment_rounded : Icons.lock_clock_rounded, size: 20),
               style: ElevatedButton.styleFrom(
-                // دمج الألوان بناءً على حالة توفر الاختبار
                 backgroundColor: hasExam
-                    ? theme.colorScheme.primary
+                    ? context.primary
                     : context.colorScheme.onSurface.withOpacity(0.05),
                 foregroundColor: hasExam
-                    ? theme.colorScheme.onPrimary
+                    ? Colors.white
                     : context.onBackground,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(hasExam ? 'الذهاب للاختبار' : 'سيتوفر قريباً'),
+              label: Text(hasExam ? 'الذهاب للاختبار' : 'سيتوفر قريباً'),
             ),
           ),
         ],

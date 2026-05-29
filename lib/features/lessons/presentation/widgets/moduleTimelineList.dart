@@ -2,6 +2,7 @@ import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
 import 'package:algonaid_mobail_app/core/common/extensions/lession_status.dart';
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
 import 'package:flutter/material.dart';
 
@@ -42,8 +43,7 @@ class LessonTimelineItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: theme.colorScheme.background),
-                      boxShadow: AppShadows.cardShadow,
+                      border: AppBorder.main_border,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

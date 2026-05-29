@@ -1,24 +1,40 @@
 import 'dart:io';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/global_video_state.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/native_pip_handler.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
+
+class VideoQuality {
+  final String resolution;
+  final String url;
+  VideoQuality(this.resolution, this.url);
+}
 
 class LessonVideoPlayer extends StatefulWidget {
+  final int lessonId;
   final String? videoUrl;
   final String? localVideoPath;
   final VoidCallback? onProgressComplete; // عند الوصول لـ 90%
   final VoidCallback? onVideoStart; // عند بدء التشغيل
+  final VoidCallback? onVideoEnd; // عند انتهاء الفيديو
 
   const LessonVideoPlayer({
     super.key,
+    required this.lessonId,
     required this.videoUrl,
     this.localVideoPath,
     this.onProgressComplete,
     this.onVideoStart,
+    this.onVideoEnd,
   });
 
   @override
@@ -26,13 +42,16 @@ class LessonVideoPlayer extends StatefulWidget {
 }
 
 class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
-  YoutubePlayerController? _youtubeController;
-  VideoPlayerController? _videoPlayerController;
-  ChewieController? _chewieController;
+  final YoutubeExplode _yt = YoutubeExplode();
 
   String? _playerError;
   bool _isStartedReported = false;
   bool _isProgressReported = false;
+  bool _isVideoEndedReported = false;
+  bool _isLoading = false;
+
+  List<VideoQuality> _availableQualities = [];
+  VideoQuality? _selectedQuality;
 
   @override
   void initState() {
@@ -40,222 +59,335 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
     _initializePlayer();
   }
 
-  void _initializePlayer() {
+  Future<void> _initializePlayer() async {
+    final globalState = GlobalVideoState();
+
+    if (globalState.currentLessonId == widget.lessonId &&
+        globalState.chewieController != null) {
+      globalState.hideFloatingVideo();
+      setState(() {
+        _isLoading = false;
+        _playerError = null;
+      });
+      globalState.videoPlayerController?.addListener(_onPlayerStateChange);
+      return;
+    }
+
     _disposeControllers();
-    _playerError = null;
-    _isStartedReported = false;
-    _isProgressReported = false;
+    setState(() {
+      _playerError = null;
+      _isLoading = true;
+      _isStartedReported = false;
+      _isProgressReported = false;
+      _isVideoEndedReported = false;
+      _availableQualities.clear();
+      _selectedQuality = null;
+    });
 
-    // 1. التحقق من الفيديو المحلي أولاً (في غير الويب)
-    if (!kIsWeb &&
-        widget.localVideoPath != null &&
-        File(widget.localVideoPath!).existsSync()) {
-      _videoPlayerController = VideoPlayerController.file(
-        File(widget.localVideoPath!),
-      );
-      _setupVideoPlayer();
-    }
-    // 2. التحقق من الرابط (يوتيوب أو رابط مباشر)
-    else {
-      final url = _resolveVideoUrl(widget.videoUrl);
-      if (url == null || url.isEmpty) return;
-
-      final videoId = YoutubePlayer.convertUrlToId(url);
-
-      if (videoId != null) {
-        _youtubeController = YoutubePlayerController(
-          initialVideoId: videoId,
-          flags: const YoutubePlayerFlags(
-            autoPlay: false,
-            mute: false,
-            enableCaption: true,
-          ),
-        )..addListener(_onPlayerStateChange);
-      } else {
-        _videoPlayerController = VideoPlayerController.networkUrl(
-          Uri.parse(url),
+    try {
+      if (!kIsWeb &&
+          widget.localVideoPath != null &&
+          File(widget.localVideoPath!).existsSync()) {
+        globalState.videoPlayerController = VideoPlayerController.file(
+          File(widget.localVideoPath!),
         );
-        _setupVideoPlayer();
+        await _setupVideoPlayer();
+      } else {
+        final rawUrl = widget.videoUrl?.trim();
+        if (rawUrl == null || rawUrl.isEmpty) {
+          setState(() {
+            _isLoading = false;
+          });
+          return;
+        }
+
+        String targetUrl = '';
+
+        if (rawUrl.contains('youtube.com') || rawUrl.contains('youtu.be')) {
+          final videoId = VideoId(rawUrl);
+          final manifest = await _yt.videos.streamsClient.getManifest(videoId);
+          final muxedStreams = manifest.muxed.sortByVideoQuality();
+
+          if (muxedStreams.isNotEmpty) {
+            for (var stream in muxedStreams) {
+              _availableQualities.add(VideoQuality(
+                '${stream.videoQuality.name} (${stream.size.totalMegaBytes.toStringAsFixed(1)}MB)',
+                stream.url.toString(),
+              ));
+            }
+            _availableQualities = _availableQualities.reversed.toList();
+            _selectedQuality = _availableQualities.first;
+            targetUrl = _selectedQuality!.url;
+          } else {
+            throw Exception('No streams found for this video');
+          }
+        } else {
+          targetUrl = rawUrl.startsWith('http')
+              ? rawUrl
+              : '${EndPoint.uploadsBaseUrl}$rawUrl';
+        }
+
+        globalState.videoPlayerController = VideoPlayerController.networkUrl(
+          Uri.parse(targetUrl),
+        );
+        await _setupVideoPlayer();
       }
+
+      globalState.currentLessonId = widget.lessonId;
+      globalState.currentVideoUrl = widget.videoUrl;
+      globalState.currentLocalPath = widget.localVideoPath;
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _playerError = 'تعذر تشغيل الفيديو الحالي';
+        _isLoading = false;
+      });
+      debugPrint('LessonVideoPlayer initialize error: $e');
     }
   }
 
-  void _setupVideoPlayer() {
-    if (_videoPlayerController == null) return;
+  Future<void> _setupVideoPlayer() async {
+    final globalState = GlobalVideoState();
+    if (globalState.videoPlayerController == null) return;
 
-    _videoPlayerController!
-        .initialize()
-        .then((_) {
-          if (!mounted) return;
-          setState(() {
-            _chewieController = ChewieController(
-              videoPlayerController: _videoPlayerController!,
-              autoPlay: false,
-              looping: false,
-            );
-          });
-          _videoPlayerController!.addListener(_onPlayerStateChange);
-        })
-        .catchError((Object error) {
-          if (!mounted) return;
-          setState(() {
-            _playerError = 'تعذر تشغيل الفيديو الحالي';
-          });
-          debugPrint('LessonVideoPlayer initialize error: $error');
-        });
+    try {
+      await globalState.videoPlayerController!.initialize();
+      if (!mounted) return;
+
+      setState(() {
+        globalState.chewieController = ChewieController(
+          videoPlayerController: globalState.videoPlayerController!,
+          autoPlay: CacheHelper.getBool(key: 'autoPlayNext') ?? false,
+          looping: false,
+          allowPlaybackSpeedChanging: true,
+          allowFullScreen: true,
+          allowMuting: true,
+          additionalOptions: (context) {
+            if (_availableQualities.isEmpty) return [];
+            return [
+              OptionItem(
+                onTap: (context) {
+                  Navigator.pop(context); // Close the chewie options menu
+                  _showQualitySelector();
+                },
+                iconData: Icons.hd_outlined,
+                title: 'الجودة (${_selectedQuality?.resolution.split(' ').first ?? "تلقائي"})',
+              )
+            ];
+          },
+          materialProgressColors: ChewieProgressColors(
+            playedColor: AppColors.primary,
+            handleColor: AppColors.primaryLight,
+            backgroundColor: Colors.white24,
+            bufferedColor: Colors.white54,
+          ),
+        );
+        _isLoading = false;
+      });
+
+      globalState.videoPlayerController!.addListener(_onPlayerStateChange);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _playerError = 'تعذر تشغيل الفيديو الحالي';
+        _isLoading = false;
+      });
+      debugPrint('LessonVideoPlayer setup error: $e');
+    }
   }
 
-  String? _resolveVideoUrl(String? rawUrl) {
-    final url = rawUrl?.trim();
-    if (url == null || url.isEmpty) return null;
-    if (url.startsWith('http')) return url;
-    return '${EndPoint.uploadsBaseUrl}$url';
+  void _showQualitySelector() {
+    AppBottomSheet.show(
+      context: context,
+      title: 'اختر جودة الفيديو',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: _availableQualities.map((quality) {
+          return ListTile(
+            title: Text(quality.resolution),
+            trailing: _selectedQuality == quality
+                ? Icon(Icons.check, color: AppColors.primary)
+                : null,
+            onTap: () {
+              Navigator.pop(context);
+              _changeQuality(quality);
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Future<void> _changeQuality(VideoQuality newQuality) async {
+    final globalState = GlobalVideoState();
+    if (_selectedQuality == newQuality || globalState.videoPlayerController == null) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final currentPosition = globalState.videoPlayerController!.value.position;
+    final wasPlaying = globalState.videoPlayerController!.value.isPlaying;
+
+    _disposeVideoControllerOnly();
+    
+    _selectedQuality = newQuality;
+    globalState.videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(newQuality.url));
+    
+    try {
+      await globalState.videoPlayerController!.initialize();
+      await globalState.videoPlayerController!.seekTo(currentPosition);
+      
+      if (!mounted) return;
+
+      setState(() {
+        globalState.chewieController = ChewieController(
+          videoPlayerController: globalState.videoPlayerController!,
+          autoPlay: wasPlaying,
+          looping: false,
+          allowPlaybackSpeedChanging: true,
+          allowFullScreen: true,
+          allowMuting: true,
+          additionalOptions: (context) {
+            if (_availableQualities.isEmpty) return [];
+            return [
+              OptionItem(
+                onTap: (context) {
+                  Navigator.pop(context);
+                  _showQualitySelector();
+                },
+                iconData: Icons.hd_outlined,
+                title: 'الجودة (${_selectedQuality?.resolution.split(' ').first ?? "تلقائي"})',
+              )
+            ];
+          },
+          materialProgressColors: ChewieProgressColors(
+            playedColor: AppColors.primary,
+            handleColor: AppColors.primaryLight,
+            backgroundColor: Colors.white24,
+            bufferedColor: Colors.white54,
+          ),
+        );
+        _isLoading = false;
+      });
+
+      globalState.videoPlayerController!.addListener(_onPlayerStateChange);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _playerError = 'فشل في تغيير الجودة';
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _disposeVideoControllerOnly() {
+    GlobalVideoState().videoPlayerController?.removeListener(_onPlayerStateChange);
+    GlobalVideoState().disposeControllers();
   }
 
   void _disposeControllers() {
-    _youtubeController?.removeListener(_onPlayerStateChange);
-    _youtubeController?.dispose();
-    _youtubeController = null;
-
-    _videoPlayerController?.removeListener(_onPlayerStateChange);
-    _videoPlayerController?.dispose();
-    _videoPlayerController = null;
-
-    _chewieController?.dispose();
-    _chewieController = null;
+    _disposeVideoControllerOnly();
   }
 
   @override
   void didUpdateWidget(covariant LessonVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.videoUrl != widget.videoUrl ||
-        oldWidget.localVideoPath != widget.localVideoPath) {
+        oldWidget.localVideoPath != widget.localVideoPath ||
+        oldWidget.lessonId != widget.lessonId) {
       _initializePlayer();
     }
   }
 
   void _onPlayerStateChange() {
-    if (!mounted) return;
+    final globalState = GlobalVideoState();
+    if (!mounted || globalState.videoPlayerController == null) return;
 
-    bool isPlaying = false;
-    Duration position = Duration.zero;
-    Duration duration = Duration.zero;
+    final isPlaying = globalState.videoPlayerController!.value.isPlaying;
+    final position = globalState.videoPlayerController!.value.position;
+    final duration = globalState.videoPlayerController!.value.duration;
 
-    // استخراج البيانات بناءً على نوع المشغل النشط
-    if (_youtubeController != null) {
-      isPlaying = _youtubeController!.value.isPlaying;
-      position = _youtubeController!.value.position;
-      duration = _youtubeController!.metadata.duration;
-    } else if (_videoPlayerController != null) {
-      isPlaying = _videoPlayerController!.value.isPlaying;
-      position = _videoPlayerController!.value.position;
-      duration = _videoPlayerController!.value.duration;
-    }
+    NativePipHandler().setPipAllowed(isPlaying);
 
-    // أولاً: تتبع بدء المشاهدة
     if (isPlaying && !_isStartedReported) {
       _isStartedReported = true;
       widget.onVideoStart?.call();
     }
 
-    // ثانياً: تتبع نسبة الإنجاز (90%)
     if (!_isProgressReported && duration.inSeconds > 0) {
       final percentage = position.inSeconds / duration.inSeconds;
       if (percentage >= 0.90) {
         _isProgressReported = true;
-        _showSuccessSheet(context);
         widget.onProgressComplete?.call();
+        
+        final autoPlayNext = CacheHelper.getBool(key: 'autoPlayNext') ?? false;
+        if (!autoPlayNext && mounted) {
+          _showSuccessSheet(context);
+        }
+      }
+    }
+
+    if (!_isVideoEndedReported && duration.inSeconds > 0) {
+      if (position >= duration) {
+        _isVideoEndedReported = true;
+        widget.onVideoEnd?.call();
       }
     }
   }
 
   void _showSuccessSheet(BuildContext context) {
-    showModalBottomSheet(
+    AppDialog.showDynamicDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.check_circle_outline,
-              color: Color(0xFF33E1B3),
-              size: 80,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "أحسنت! لقد أتممت الدرس",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "تم تسجيل تقدمك بنجاح في المسار التعليمي",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  "متابعة المسار",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      title: "أحسنت! لقد أتممت الدرس",
+      message: "تم تسجيل تقدمك بنجاح في المسار التعليمي",
+      showCancelButton: false,
+      confirmText: "تم",
     );
   }
 
   @override
   void dispose() {
-    _disposeControllers();
+    final globalState = GlobalVideoState();
+    globalState.videoPlayerController?.removeListener(_onPlayerStateChange);
+    
+    // Instead of disposing, check if it's playing and we should show floating video
+    if (globalState.videoPlayerController != null &&
+        globalState.videoPlayerController!.value.isPlaying) {
+      
+      // Delay showing the floating video until after the current frame to avoid Overlay conflicts
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Find top level context using navigator key or similar if possible.
+        // Actually, since this widget is disposing, context is invalid.
+        // But we can trigger it in LessonDetailPage's pop!
+      });
+      // We will handle showing the overlay in LessonDetailPage before this widget is disposed.
+    } else {
+      globalState.disposeControllers();
+    }
+    
+    _yt.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Widget playerWidget;
+    final globalState = GlobalVideoState();
 
-    if (_chewieController != null &&
-        _chewieController!.videoPlayerController.value.isInitialized) {
-      playerWidget = Chewie(controller: _chewieController!);
-    } else if (_youtubeController != null) {
-      playerWidget = YoutubePlayer(
-        controller: _youtubeController!,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: AppColors.primary,
-        progressColors: const ProgressBarColors(
-          playedColor: AppColors.primary,
-          handleColor: AppColors.primaryLight,
+    if (_isLoading) {
+      playerWidget = const SizedBox(
+        height: 210,
+        child: ColoredBox(
+          color: Colors.black,
+          child: Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          ),
         ),
       );
+    } else if (globalState.chewieController != null &&
+        globalState.chewieController!.videoPlayerController.value.isInitialized) {
+      playerWidget = Chewie(controller: globalState.chewieController!);
     } else if (_playerError != null) {
       playerWidget = _buildMessageState(
         message: _playerError!,
@@ -281,7 +413,11 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(18),
-      child: SizedBox(width: double.infinity, height: 210, child: playerWidget),
+      child: SizedBox(
+        width: double.infinity,
+        height: 210,
+        child: playerWidget,
+      ),
     );
   }
 

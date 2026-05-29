@@ -42,12 +42,35 @@ class LessonLocalDataSourceImpl implements LessonLocalDataSource {
 
   @override
   LessonDetailModel? getLessonDetail(int lessonId) {
-    final box = Hive.box<String>(AppConstants.boxLessonDetails);
-    final raw = box.get(lessonId.toString());
-    if (raw == null || raw.isEmpty) return null;
-    return LessonDetailModel.fromJson(
-      jsonDecode(raw) as Map<String, dynamic>,
-    );
+    try {
+      final box = Hive.box<String>(AppConstants.boxLessonDetails);
+      final raw = box.get(lessonId.toString());
+      if (raw != null && raw.isNotEmpty) {
+        return LessonDetailModel.fromJson(
+          jsonDecode(raw) as Map<String, dynamic>,
+        );
+      }
+    } catch (_) {}
+
+    // Fallback: Try to construct a basic LessonDetail from LessonModel
+    try {
+      final boxLessons = Hive.box<LessonModel>(AppConstants.boxLessons);
+      for (final lesson in boxLessons.values) {
+        if (lesson.id == lessonId) {
+          return LessonDetailModel(
+            id: lesson.id,
+            moduleId: lesson.moduleId,
+            title: lesson.title,
+            order: lesson.order,
+            description: lesson.description,
+            videoUrl: lesson.videoUrl,
+            pdfUrl: lesson.pdfUrl,
+          );
+        }
+      }
+    } catch (_) {}
+
+    return null;
   }
 
   @override

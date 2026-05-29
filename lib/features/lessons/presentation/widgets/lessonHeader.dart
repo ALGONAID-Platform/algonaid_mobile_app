@@ -1,6 +1,7 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/expertBadge3D.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
@@ -8,13 +9,20 @@ import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/module_grades_provider.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_grades_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:algonaid_mobail_app/core/di/service_locator.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
 
-class ModuleHeaderStats extends StatelessWidget {
+class ModuleHeaderStats extends StatefulWidget {
   final int moduleId;
   final String moduleTitle;
   final int completedLessons;
   final double progressPercentage;
   final int totalLessons;
+  final VoidCallback? onBack;
   const ModuleHeaderStats({
     super.key,
     required this.moduleId,
@@ -22,14 +30,36 @@ class ModuleHeaderStats extends StatelessWidget {
     required this.completedLessons,
     required this.progressPercentage,
     required this.totalLessons,
+    this.onBack,
   });
 
   @override
+  State<ModuleHeaderStats> createState() => _ModuleHeaderStatsState();
+}
+
+class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
+  late ModuleGradesProvider _gradesProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _gradesProvider = getIt<ModuleGradesProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _gradesProvider.fetchGrades(widget.moduleId);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("===============================");
-    print(totalLessons);
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    return ChangeNotifierProvider.value(
+      value: _gradesProvider,
+      child: Consumer<ModuleGradesProvider>(
+        builder: (context, provider, child) {
+          final state = provider.getState(widget.moduleId);
+          final isUnlocked = (state.grades?.averagePercentage ?? 0.0) > 85;
+
+          final theme = Theme.of(context);
+          final isDark = theme.brightness == Brightness.dark;
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -46,7 +76,7 @@ class ModuleHeaderStats extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      moduleTitle,
+                      widget.moduleTitle,
                       style: context.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -54,7 +84,7 @@ class ModuleHeaderStats extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "module.description",
+                      "وحدة تعليمية",
                       style: context.textTheme.bodySmall?.copyWith(),
                       textAlign: TextAlign.center,
                     ),
@@ -72,7 +102,13 @@ class ModuleHeaderStats extends StatelessWidget {
                         color: context.onBackground,
                       ),
                     ),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: widget.onBack ?? () {
+                      if (GoRouter.of(context).canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/homePage'); // fallback to Routes.homePage
+                      }
+                    },
                   ),
                 ),
               ],
@@ -87,8 +123,9 @@ class ModuleHeaderStats extends StatelessWidget {
                   builder: (context) => Badge3DDialog(
                     heroTag: "expert_badge_",
                     title: "وسام البراعة الفضي",
-                    description:
-                        "أنت على بُعد خطوة من التميّز! ستحصل على وسام البراعة الفضي عند اجتيازك لجميع اختبارات هذه الوحدة بنسبة %90 أو أكثر. أثبت مهاراتك الآن!",
+                    description: isUnlocked
+                        ? "تهانينا! لقد أثبت براعتك واجتزت اختبارات هذه الوحدة بنجاح باهر، وحصلت على وسام البراعة الفضي بكل جدارة. استمر في هذا التميز!"
+                        : "أنت على بُعد خطوة من التميّز! ستحصل على وسام البراعة الفضي عند اجتيازك لجميع اختبارات هذه الوحدة بنسبة %90 أو أكثر. أثبت مهاراتك الآن!",
                     lottie: AppLottie.goldMedal2,
                     gradientColors: [
                       const Color.fromARGB(255, 94, 94, 94),
@@ -102,10 +139,7 @@ class ModuleHeaderStats extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(25),
-                  border: Border.all(
-                    color: isDark ? AppColors.indigoDark : AppColors.grey200,
-                  ),
-                  boxShadow: AppShadows.cardShadow,
+                  border: AppBorder.main_border,
                 ),
                 child: Column(
                   children: [
@@ -143,22 +177,22 @@ class ModuleHeaderStats extends StatelessWidget {
                                         fit: BoxFit.contain,
                                       ),
                               ),
-
-                              Container(
-                                width: 120,
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.3),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.lock_outline_rounded,
-                                    color: Color.fromARGB(161, 255, 255, 255),
-                                    size: 50,
+                              if (!isUnlocked)
+                                Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.3),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.lock_outline_rounded,
+                                      color: Color.fromARGB(161, 255, 255, 255),
+                                      size: 50,
+                                    ),
                                   ),
                                 ),
-                              ),
                             ],
                           ),
                           const SizedBox(height: 4),
@@ -197,7 +231,7 @@ class ModuleHeaderStats extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${(progressPercentage).toInt()}%',
+                                '${(widget.progressPercentage).toInt()}%',
                                 style: context.textTheme.titleLarge!.copyWith(
                                   color: context.primary,
                                 ),
@@ -208,17 +242,40 @@ class ModuleHeaderStats extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: LinearProgress(
-                              progressPercentage: progressPercentage,
+                              progressPercentage: widget.progressPercentage,
                               minHieght: 10,
                               hPadding: 0,
                             ),
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'لقد أنجزت ${completedLessons} دروس ومتبقي لك ${totalLessons - completedLessons} دروس لإنهاء هذه الوحدة.',
+                            'لقد أنجزت ${widget.completedLessons} دروس ومتبقي لك ${widget.totalLessons - widget.completedLessons} دروس لإنهاء هذه الوحدة.',
                             style: theme.textTheme.bodySmall,
                             textAlign: TextAlign.center,
                           ),
+                          const SizedBox(height: 16),
+                          if (state.isLoading)
+                            const Center(child: CircularProgressIndicator())
+                          else
+                            ElevatedButton(
+                              onPressed: () {
+                                AppBottomSheet.show(
+                                  context: context,
+                                  title: 'تفاصيل الدرجات',
+                                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+                                  child: ModuleGradesWidget(moduleId: widget.moduleId),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: context.primary,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                              child: const Text("عرض تفاصيل الدرجات"),
+                            ),
                         ],
                       ),
                     ),
@@ -230,9 +287,11 @@ class ModuleHeaderStats extends StatelessWidget {
         ),
       ),
     );
+        },
+      ),
+    );  
   }
-}
-
+}                                              
 class _DashedDivider extends StatelessWidget {
   const _DashedDivider();
 

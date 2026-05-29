@@ -15,13 +15,13 @@ class LessonProgressModel extends LessonProgress {
 
   factory LessonProgressModel.fromJson(Map<String, dynamic> json) {
     return LessonProgressModel(
-      id: json['id'] as int,
-      isCompleted: json['isCompleted'] as bool,
+      id: int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      isCompleted: json['isCompleted'] == true || json['is_completed'] == true,
       completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'] as String)
-          : null,
-      studentId: json['studentId'] as int,
-      lessonId: json['lessonId'] as int,
+          ? DateTime.tryParse(json['completedAt'].toString())
+          : (json['completed_at'] != null ? DateTime.tryParse(json['completed_at'].toString()) : null),
+      studentId: int.tryParse(json['studentId']?.toString() ?? json['student_id']?.toString() ?? '0') ?? 0,
+      lessonId: int.tryParse(json['lessonId']?.toString() ?? json['lesson_id']?.toString() ?? '0') ?? 0,
     );
   }
 

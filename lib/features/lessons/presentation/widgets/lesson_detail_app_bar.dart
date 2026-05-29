@@ -14,7 +14,7 @@ class LessonDetailAppBar extends StatelessWidget implements PreferredSizeWidget 
   Widget build(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new),
+        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
         onPressed: onBack,
       ),
       title: Text(
@@ -22,7 +22,6 @@ class LessonDetailAppBar extends StatelessWidget implements PreferredSizeWidget 
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      elevation: 0,
     );
   }
 
