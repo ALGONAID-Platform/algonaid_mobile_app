@@ -1,35 +1,50 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lessonHeader.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/moduleTimelineList.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/textDivider.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lessons_error_state.dart';
+import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lesson_card.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lessons_error_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
+import 'package:go_router/go_router.dart';
 
 class LessonsListPage extends StatelessWidget {
   final int moduleId;
   final String moduleTitle;
+  final int completedLessons;
+  final double progressPercentage;
+  final int totalLessons;
+  final String? previousRoute; // تم دمجها من فرع exams
 
   const LessonsListPage({
     super.key,
     required this.moduleId,
     this.moduleTitle = 'الوحدة',
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
+    this.previousRoute,
   });
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) {
-        final provider = LessonsListProvider(
-          context.read<GetModuleLessons>(),
-        );
+      create: (_) {
+        final provider = LessonsListProvider(getIt<GetModuleLessons>());
         provider.loadLessons(moduleId);
         return provider;
       },
       child: _LessonsListView(
         moduleId: moduleId,
         moduleTitle: moduleTitle,
+        completedLessons: completedLessons,
+        progressPercentage: progressPercentage,
+        totalLessons: totalLessons,
+        previousRoute: previousRoute,
       ),
     );
   }
@@ -38,66 +53,127 @@ class LessonsListPage extends StatelessWidget {
 class _LessonsListView extends StatelessWidget {
   final int moduleId;
   final String moduleTitle;
+  final int completedLessons;
+  final double progressPercentage;
+  final int totalLessons;
+  final String? previousRoute;
 
   const _LessonsListView({
     required this.moduleId,
     required this.moduleTitle,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
+    this.previousRoute,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.grey50,
-        appBar: AppBar(
-          title: Text(moduleTitle),
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-        ),
-        body: Consumer<LessonsListProvider>(
-          builder: (context, provider, _) {
-            final state = provider.state;
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (state.errorMessage != null) {
-              return LessonsErrorState(
-                message: state.errorMessage!,
-                onRetry: () => context.read<LessonsListProvider>().loadLessons(
-                      moduleId,
+    return SafeArea(
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: context.background,
+          // تم دمج الـ AppBar من نسخة exams كـ SliverAppBar أو استبداله بالـ Header stats
+          body: CustomScrollView(
+            slivers: [
+              // الهيدر الذي يحتوي على الإحصائيات وزر الرجوع
+              SliverToBoxAdapter(
+                child: Stack(
+                  children: [
+                    ModuleHeaderStats(
+                      completedLessons: completedLessons,
+                      moduleId: moduleId,
+                      progressPercentage: progressPercentage,
+                      moduleTitle: moduleTitle,
+                      totalLessons: totalLessons,
+                      onBack: () => _handleBackNavigation(context),
                     ),
-              );
-            }
+                    // زر الرجوع المدمج من فرع exams
+                   
+                  ],
+                ),
+              ),
 
-            final lessons = state.lessons;
-            if (lessons.isEmpty) {
-              return const Center(child: Text('لا توجد دروس حالياً'));
-            }
+              SliverToBoxAdapter(
+                child: TextDivider(totalLessons: totalLessons),
+              ),
 
-            return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: lessons.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final lesson = lessons[index];
-                return LessonCard(
-                  lesson: lesson,
-                  displayOrder: lesson.order > 0 ? lesson.order : index + 1,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => LessonDetailPage(lessonId: lesson.id),
+              Consumer<LessonsListProvider>(
+                builder: (context, provider, _) {
+                  final state = provider.state;
+
+                  if (state.isLoading) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  if (state.errorMessage != null) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: LessonsErrorState(
+                        message: state.errorMessage!,
+                        onRetry: () => context
+                            .read<LessonsListProvider>()
+                            .loadLessons(moduleId),
                       ),
                     );
-                  },
-                );
-              },
-            );
-          },
+                  }
+
+                  final lessons = state.lessons;
+
+                  if (lessons.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: AppEmptyState(
+                        icon: Icons.menu_book_rounded,
+                        title: 'لا توجد دروس',
+                        subtitle: 'لا توجد دروس حالياً',
+                      ),
+                    );
+                  }
+
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 20,
+                    ),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final lessonData = lessons[index];
+                        // ملاحظة: يمكنك الاختيار بين LessonCard أو LessonTimelineItem حسب التصميم المطلوب
+                        // هنا استخدمنا LessonTimelineItem لأنه المعتمد في الهيكلية الأساسية للكود
+                        return LessonTimelineItem(
+                          lesson: lessonData,
+                          isLast: index == lessons.length - 1,
+                          onTap: () {
+                            GoRouter.of(context).push(
+                              '${Routes.lessonDetails}/${lessonData.id}',
+                              extra:
+                                  '${Routes.lessonsList}/$moduleId', // تمرير المسار السابق
+                            );
+                          },
+                        );
+                      }, childCount: lessons.length),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _handleBackNavigation(BuildContext context) {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      final fallbackRoute = previousRoute ?? Routes.coursesPage;
+      GoRouter.of(context).go(fallbackRoute);
+    }
   }
 }

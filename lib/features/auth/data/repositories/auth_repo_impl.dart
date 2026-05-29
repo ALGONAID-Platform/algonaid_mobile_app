@@ -6,6 +6,7 @@ import 'package:algonaid_mobail_app/core/errors/failure.dart';
 import 'package:algonaid_mobail_app/features/auth/data/datasources/auth_remote_datasourse.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepoImpl extends AuthRepo {
@@ -21,6 +22,7 @@ class AuthRepoImpl extends AuthRepo {
         email: email,
         password: password,
       );
+      await TokenStorage.saveToken(authResponse.accessToken!);
 
       return Right(
         UserEntity(
@@ -30,6 +32,14 @@ class AuthRepoImpl extends AuthRepo {
           role: authResponse.user.role,
           message: authResponse.message,
           token: authResponse.accessToken,
+          avatar: authResponse.user.avatar,
+          background: authResponse.user.background,
+          academicId: authResponse.user.academicId,
+          grade: authResponse.user.grade,
+          birthDate: authResponse.user.birthDate,
+          address: authResponse.user.address,
+          createdAt: authResponse.user.createdAt,
+          updatedAt: authResponse.user.updatedAt,
         ),
       );
     } catch (e) {
@@ -54,6 +64,7 @@ class AuthRepoImpl extends AuthRepo {
         password: password,
         role: role,
       );
+      await TokenStorage.saveToken(authResponse.accessToken!);
 
       return Right(
         UserEntity(
@@ -63,13 +74,37 @@ class AuthRepoImpl extends AuthRepo {
           role: authResponse.user.role,
           message: authResponse.message,
           token: authResponse.accessToken,
+          avatar: authResponse.user.avatar,
+          background: authResponse.user.background,
+          academicId: authResponse.user.academicId,
+          grade: authResponse.user.grade,
+          birthDate: authResponse.user.birthDate,
+          address: authResponse.user.address,
+          createdAt: authResponse.user.createdAt,
+          updatedAt: authResponse.user.updatedAt,
         ),
       );
     } catch (e) {
       if (e is DioException) {
-        return left(DioErrorHandler.handle(e));
+        return Left(DioErrorHandler.handle(e));
       }
-      return left(ServerFailure(e.toString()));
+
+      return Left(
+        ServerFailure("حدث خطأ غير متوقع في الخادم، يرجى المحاولة لاحقاً"),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logout() async {
+    try {
+      await authRemotDataSource.logout();
+      return const Right(null);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      }
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

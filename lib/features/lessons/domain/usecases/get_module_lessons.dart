@@ -1,12 +1,18 @@
+// algonaid_mobail_app/lib/features/lessons/domain/usecases/get_module_lessons.dart
+
+import 'package:algonaid_mobail_app/core/errors/failure.dart';
+import 'package:algonaid_mobail_app/core/usecase/usecase.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/repositories/lesson_repository.dart';
+import 'package:dartz/dartz.dart';
 
-class GetModuleLessons {
-  final LessonRepository _repository;
+class GetModuleLessons extends UseCase<List<Lesson>, int> {
+  final LessonRepository repository;
 
-  const GetModuleLessons(this._repository);
+  GetModuleLessons(this.repository);
 
-  Future<List<Lesson>> call(int moduleId) {
-    return _repository.getLessonsByModule(moduleId);
+  @override
+  Future<Either<Failure, List<Lesson>>> call(int moduleId) async {
+    return await repository.getModuleLessons(moduleId);
   }
 }

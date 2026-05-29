@@ -1,4 +1,3 @@
-
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/network/check_internet.dart';
@@ -7,23 +6,25 @@ import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-void initialiseDio(Dio dio) {
+void initializeDio(Dio dio) {
   dio.options
     ..baseUrl = EndPoint.baseUrl
-    ..connectTimeout = AppConstants.apiConnectTimeout // خليها 5 ثواني أفضل من 1
+    ..connectTimeout = AppConstants.apiConnectTimeout
     ..receiveTimeout = AppConstants.apiReceiveTimeout
-    ..sendTimeout =kIsWeb ? null :  AppConstants.apiSendTimeout
+    ..sendTimeout = kIsWeb ? null : AppConstants.apiSendTimeout
     ..headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ${TokenStorage.getToken() ?? ''}',
+      'Authorization': 'Bearer ${TokenStorage.getToken() ?? ''}', // Reintroduced initial Authorization header setup
     };
 
-  dio.interceptors.add(
+    dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
+        debugPrint('Dio Interceptor: Checking internet connection...');
         // فحص النت
         if (await hasNoInternet()) {
+          debugPrint('Dio Interceptor: No internet connection detected. Rejecting request.');
           return handler.reject(
             DioException(
               requestOptions: options,
@@ -32,6 +33,7 @@ void initialiseDio(Dio dio) {
             ),
           );
         }
+        debugPrint('Dio Interceptor: Internet connection available.');
 
         // التوكن
         final token = TokenStorage.getToken();
@@ -41,18 +43,12 @@ void initialiseDio(Dio dio) {
 
         return handler.next(options);
       },
-      
       onError: (DioException e, handler) async {
-        if (e.response?.statusCode == 401) {
-          final context = navigatorKey.currentContext;
-          if (context != null) {
-            // GoRouter.of(context).go(Routes.loginPage);
-          }
-        }
+      
 
         // 2. مهم جداً: تمرير الخطأ لباقي التطبيق (الريبو) مهما كان نوعه!
         // بدون هذا السطر، أي خطأ غير 401 سيجعل التطبيق يعلق للأبد
-        return handler.next(e); 
+        return handler.next(e);
       },
     ),
   );

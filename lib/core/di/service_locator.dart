@@ -1,60 +1,339 @@
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
+
 import 'package:algonaid_mobail_app/features/auth/data/datasources/auth_remote_datasourse.dart';
 import 'package:algonaid_mobail_app/features/auth/data/repositories/auth_repo_impl.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
 import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:algonaid_mobail_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+
+import 'package:algonaid_mobail_app/features/courses/data/datasources/course_local_stroage.dart';
 import 'package:algonaid_mobail_app/features/courses/data/datasources/courses_remote_data_source.dart';
 import 'package:algonaid_mobail_app/features/courses/data/repositories/courses_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/usecases/enroll_usecase.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_progress.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobail_app/features/search/domain/usecases/search_courses_usecase.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_grades.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
+import 'package:algonaid_mobail_app/features/search/presentation/providers/search_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/domain/usecases/get_excellence_courses_usecase.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/data/repositories/excellence_courses_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
+
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/repositories/module_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules_by_course.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_module_grades.dart';
+
+import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_local_data_source.dart';
+import 'package:algonaid_mobail_app/features/lessons/data/repositories/lesson_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/repositories/lesson_repository.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_lesson_progress.dart';
+
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/module_grades_provider.dart';
+
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart'; // New Import
+import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart'; // New Import
+
+import 'package:algonaid_mobail_app/features/exams/data/repositories/exam_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
+import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
+
+import 'package:algonaid_mobail_app/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:algonaid_mobail_app/features/profile/data/datasources/profile_local_datasource.dart';
+import 'package:algonaid_mobail_app/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/repositories/profile_repository.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_total_points_usecase.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_user_profile_usecase.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/usecases/update_user_profile_usecase.dart';
+import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
+
+
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;
+
 void setupServiceLocator() {
-  // 1. Core (الأدوات الأساسية)
+  // ================= CORE =================
   getIt.registerLazySingleton<ApiService>(() => ApiService(Dio()));
 
-  // 2. Data Sources (تعتمد على ApiService)
+  // ================= DATA SOURCES =================
   getIt.registerLazySingleton<AuthRemoteDatasourse>(
     () => AuthRemoteDatasourseImp(apiService: getIt()),
   );
+
   getIt.registerLazySingleton<CoursesRemoteDataSource>(
     () => CoursesRemoteDataSourceImp(apiService: getIt()),
   );
 
-  // 3. Repositories (تعتمد على Data Sources)
+  getIt.registerLazySingleton<CourseLocalDataSourse>(
+    () => CourseLocalDataSourseImp(),
+  );
+
+  getIt.registerLazySingleton<ExcellenceCoursesRemoteDataSource>(
+    () => ExcellenceCoursesRemoteDataSourceImp(apiService: getIt()),
+  );
+
+  getIt.registerLazySingleton<ExcellenceCoursesLocalDataSource>(
+    () => ExcellenceCoursesLocalDataSourceImp(),
+  );
+
+  getIt.registerLazySingleton<ModuleRemoteDataSource>(
+    () => ModuleRemoteDataSourceImpl(apiService: getIt()),
+  );
+
+  getIt.registerLazySingleton<ModuleLocalDataSource>(
+    () => ModuleLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<LessonRemoteDataSource>(
+    () => LessonRemoteDataSourceImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton<LessonLocalDataSource>(
+    () => LessonLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<ExamLocalDataSource>( // Updated
+    () => ExamLocalDataSourceImpl(),
+  );
+
+  getIt.registerLazySingleton<ExamRemoteDataSource>(
+    () => ExamRemoteDataSourceImpl(apiService: getIt<ApiService>()),
+  );
+
+  getIt.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(apiService: getIt()),
+  );
+
+  getIt.registerLazySingleton<ProfileLocalDataSource>(
+    () => ProfileLocalDataSourceImpl(),
+  );
+
+
+
+  // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(authRemotDataSource: getIt()),
   );
+
   getIt.registerLazySingleton<CoursesRepository>(
-    () => CoursesRepositoryImpl(remote: getIt()),
+    () => CoursesRepositoryImpl(remote: getIt(), local: getIt()),
   );
 
-  // 4. Use Cases (تعتمد على Repositories)
+  getIt.registerLazySingleton<ExcellenceCoursesRepository>(
+    () => ExcellenceCoursesRepositoryImpl(remote: getIt(), local: getIt()),
+  );
+
+  getIt.registerLazySingleton<ModuleRepository>(
+    () => ModuleRepositoryImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton<LessonRepository>(
+    () => LessonRepositoryImpl(
+      remoteDataSource: getIt<LessonRemoteDataSource>(),
+      localDataSource: getIt<LessonLocalDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<ExamRepository>( // Updated
+    () => ExamRepositoryImpl(
+      localDataSource: getIt<ExamLocalDataSource>(),
+      remoteDataSource: getIt<ExamRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+    ),
+  );
+  // ================= USE CASES =================
   getIt.registerLazySingleton<SigninUsecase>(
     () => SigninUsecase(authRepo: getIt()),
   );
+
   getIt.registerLazySingleton<SignupUsecase>(
     () => SignupUsecase(authRepo: getIt()),
   );
+
+  getIt.registerLazySingleton<LogoutUsecase>(
+    () => LogoutUsecase(authRepo: getIt()),
+  );
+
   getIt.registerLazySingleton<GetCoursesUsecase>(
     () => GetCoursesUsecase(repository: getIt()),
   );
+
+  getIt.registerLazySingleton<SearchCoursesUseCase>(
+    () => SearchCoursesUseCase(getIt()),
+  );
+
   getIt.registerLazySingleton<GetMycoureseUsecase>(
     () => GetMycoureseUsecase(repository: getIt()),
   );
+  getIt.registerLazySingleton<GetCourseGrades>(
+    () => GetCourseGrades(getIt()),
+  );
+  getIt.registerLazySingleton<EnrollUsecase>(
+    () => EnrollUsecase(repository: getIt()),
+  );
 
-  // 5. Providers (تعتمد على Use Cases)
+  getIt.registerLazySingleton<GetModulesByCourse>(
+    () => GetModulesByCourse(getIt<ModuleRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetLastAccessedModuleUseCase>(
+    () => GetLastAccessedModuleUseCase(repository: getIt<ModuleRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetCachedLastAccessedModuleUseCase>(
+    () => GetCachedLastAccessedModuleUseCase(repository: getIt<ModuleRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetModuleGrades>(
+    () => GetModuleGrades(getIt<ModuleRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetModuleLessons>(
+    () => GetModuleLessons(getIt<LessonRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetLessonDetail>(
+    () => GetLessonDetail(getIt<LessonRepository>()),
+  );
+  getIt.registerLazySingleton<UpdateLessonProgress>(
+    () => UpdateLessonProgress(getIt<LessonRepository>()),
+  );
+  getIt.registerLazySingleton<GetCourseProgressUsecase>(
+    () => GetCourseProgressUsecase(repository: getIt()),
+  );
+
+  getIt.registerLazySingleton<GetExcellenceCoursesUseCase>(
+    () => GetExcellenceCoursesUseCase(getIt()),
+  );
+
+  getIt.registerLazySingleton<GetExamUseCase>(
+    () => GetExamUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<StartExamUseCase>(
+    () => StartExamUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<SubmitExamUseCase>(
+    () => SubmitExamUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<SaveExamProgressUseCase>(
+    () => SaveExamProgressUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetExamProgressUseCase>(
+    () => GetExamProgressUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetExamResultUseCase>(
+    () => GetExamResultUseCase(getIt<ExamRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetTotalPointsUseCase>(
+    () => GetTotalPointsUseCase(getIt()),
+  );
+
+  getIt.registerLazySingleton<GetUserProfileUseCase>(
+    () => GetUserProfileUseCase(getIt()),
+  );
+
+  getIt.registerLazySingleton<UpdateUserProfileUseCase>(
+    () => UpdateUserProfileUseCase(getIt()),
+  );
+
+  // ================= PROVIDERS =================
   getIt.registerFactory<AuthServiceProvider>(
-    () => AuthServiceProvider(signInUseCase: getIt(), signUpUseCase: getIt()),
+    () => AuthServiceProvider(
+      signInUseCase: getIt(),
+      signUpUseCase: getIt(),
+      logoutUseCase: getIt(), // Added
+    ),
   );
+
   getIt.registerFactory<GetCoursesProvider>(
-    () =>
-        GetCoursesProvider(coursesUsecase: getIt(), myCoursesUsecase: getIt()),
+    () => GetCoursesProvider(
+      enrollmentUseCase: getIt(),
+      coursesUsecase: getIt(),
+      myCoursesUsecase: getIt(),
+      courseProgressUsecase: getIt(),
+    ),
   );
+
+  getIt.registerFactory<SearchCoursesProvider>(
+    () => SearchCoursesProvider(
+      searchCoursesUseCase: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton<CourseGradesProvider>(
+    () => CourseGradesProvider(getCourseGrades: getIt()),
+  );
+
+  getIt.registerFactory<ExcellenceCoursesProvider>(
+    () => ExcellenceCoursesProvider(
+      getExcellenceCoursesUseCase: getIt(),
+    ),
+  );
+
+
+
+  getIt.registerFactory<ModulesListProvider>(
+    () => ModulesListProvider(getIt<GetModulesByCourse>()),
+  );
+
+  getIt.registerFactory<LastAccessedModuleProvider>(
+    () => LastAccessedModuleProvider(
+      getLastAccessedModuleUseCase: getIt<GetLastAccessedModuleUseCase>(),
+      getCachedLastAccessedModuleUseCase: getIt<GetCachedLastAccessedModuleUseCase>(),
+    ),
+  );
+  
+  getIt.registerLazySingleton<ModuleGradesProvider>(
+    () => ModuleGradesProvider(getModuleGrades: getIt()),
+  );
+
+  getIt.registerLazySingleton<ExamProvider>(
+    () => ExamProvider(),
+  );
+
+  getIt.registerFactory<ProfileProvider>(
+    () => ProfileProvider(
+      getTotalPointsUseCase: getIt(),
+      getUserProfileUseCase: getIt(),
+      updateUserProfileUseCase: getIt(),
+    ),
+  );
+
 }

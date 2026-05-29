@@ -1,3 +1,6 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -5,34 +8,31 @@ class LessonTabs extends StatelessWidget {
   final String? description;
   final String? content;
 
-  const LessonTabs({
-    super.key,
-    this.description,
-    this.content,
-  });
+  const LessonTabs({super.key, this.description, this.content});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return DefaultTabController(
       length: 2,
       child: Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.surface,
           borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
+          // دمج الحواف الديناميكية للوضع الداكن/الفاتح
+         border: AppBorder.main_border ),
         child: Column(
           children: [
             TabBar(
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondaryLight,
-              indicatorColor: AppColors.primary,
+              // استخدام context.primary بدلاً من استدعاء AppColors مباشرة لتوحيد النمط
+              labelColor: context.primary,
+              // استخدام onSurface ليظهر بشكل واضح في كلا الوضعين
+              unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.68),
+              indicatorColor: context.primary,
               tabs: const [
                 Tab(text: 'الوصف'),
                 Tab(text: 'التعليقات'),
@@ -50,18 +50,19 @@ class LessonTabs extends StatelessWidget {
                           : (content?.isNotEmpty == true
                               ? content!
                               : 'لا يوجد وصف متوفر لهذا الدرس حالياً.'),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondaryLight,
-                          ),
+                      // دمج textTheme من HEAD مع ألوان الخطوط الديناميكية من exams
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.78),
+                      ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       'سيتم إضافة قسم التعليقات قريبًا.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondaryLight,
-                          ),
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.78),
+                      ),
                     ),
                   ),
                 ],

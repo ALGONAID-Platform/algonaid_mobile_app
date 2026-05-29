@@ -1,76 +1,79 @@
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_grades_widget.dart';
+
+import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:go_router/go_router.dart';
 
 class ContinueLearningCard extends StatelessWidget {
-  const ContinueLearningCard({super.key});
+  final LastAccessedModuleEntity module;
+  const ContinueLearningCard({super.key, required this.module});
 
   @override
   Widget build(BuildContext context) {
-    // نستخدم Theme.of(context) لجلب الألوان تلقائياً
-    final theme = Theme.of(context);
-
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
+        constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-          // التبديل التلقائي بين لون السطح في الفاتح والمظلم
-          color: theme.colorScheme.surface,
+          color: context.colorScheme.surface,
           borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border : AppBorder.main_border
         ),
         child: ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(15)),
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const _CourseMetaTags(),
-                        const SizedBox(height: 10),
-                        Text(
-                          'الاشتقاق - تفاضل وتكامل',
-                          // استخدام ستايل العناوين من الثيم
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'تعلم أساسيات الاشتقاق وقواعده الأساسية بشكل مبسط.',
-                          // استخدام ستايل الجسم الصغير من الثيم
-                          style: theme.textTheme.bodySmall,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 12),
-                        const _ProgressBarSection(),
-                        const SizedBox(height: 16),
-                        const _ActionButtonsRow(),
-                      ],
+          borderRadius: BorderRadius.circular(15),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 160,
+                child: _CourseImagePreview(image_irl: module.image_url),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _CourseMetaTags(moduleName: module.moduleName),
+                    const SizedBox(height: 12),
+                    Text(
+                      module.courseName,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: context.colorScheme.onBackground,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                    const SizedBox(height: 6),
+                    Text(
+                      module.moduleDescription,
+                      style: context.textTheme.bodySmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 16),
+                    _ProgressBarSection(
+                      progressPercentage: module.progressPercentage.toDouble(),
+                      completedLessons: module.completedLessons,
+                      totalLessons: module.totalLessons,
+                    ),
+                    const SizedBox(height: 16),
+                    _ActionButtonsRow(module: module),
+                  ],
                 ),
-                const _CourseImagePreview(),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -79,7 +82,9 @@ class ContinueLearningCard extends StatelessWidget {
 }
 
 class _CourseMetaTags extends StatelessWidget {
-  const _CourseMetaTags();
+  final String moduleName;
+  const _CourseMetaTags({required this.moduleName});
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -92,43 +97,39 @@ class _CourseMetaTags extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            'رياضيات',
-            style: Styles.style12(context).copyWith(
+            moduleName,
+            style: context.textTheme.labelMedium!.copyWith(
               color: theme.colorScheme.primary,
-              fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        Icon(Icons.access_time, size: 12, color: theme.hintColor),
-        const SizedBox(width: 2),
-        Text('٤٥ د', style: Styles.style12(context)),
       ],
     );
   }
 }
 
 class _ProgressBarSection extends StatelessWidget {
-  const _ProgressBarSection();
+  final double progressPercentage;
+  final int completedLessons;
+  final int totalLessons;
+
+  const _ProgressBarSection({
+    required this.progressPercentage,
+    required this.completedLessons,
+    required this.totalLessons,
+  });
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LinearProgressIndicator(
-          value: 0.46,
-          backgroundColor: theme.colorScheme.surfaceVariant,
-          color: theme.colorScheme.primary,
-          minHeight: 6,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        const SizedBox(height: 4),
+        LinearProgress(progressPercentage: progressPercentage, hPadding: 0),
+        const SizedBox(height: 6),
         Text(
-          '١٤ درس مكتمل من أصل ٢٠ درساً',
-          style: theme.textTheme.labelSmall!.copyWith(
-            color: theme.colorScheme.onSurface,
-          ),
+          '$completedLessons درس مكتمل من أصل $totalLessons درساً',
+          style: theme.textTheme.labelSmall?.copyWith(color: theme.hintColor),
         ),
       ],
     );
@@ -136,44 +137,69 @@ class _ProgressBarSection extends StatelessWidget {
 }
 
 class _ActionButtonsRow extends StatelessWidget {
-  const _ActionButtonsRow();
+  final LastAccessedModuleEntity module;
+  const _ActionButtonsRow({required this.module});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-            foregroundColor: theme.colorScheme.onPrimary,
-            elevation: 0,
-            minimumSize: const Size(80, 36),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(7),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              GoRouter.of(context).push(
+                '${Routes.lessonsList}/${module.moduleId}',
+                extra: {
+                  'moduleTitle': module.moduleName,
+                  'completedLessons': module.completedLessons,
+                  'progressPercentage': module.progressPercentage,
+                  'totalLessons': module.totalLessons,
+                },
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              elevation: 0,
+              minimumSize: const Size(0, 45),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text(
+              'استمرار',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
           ),
-          child: const Text('استمرار', style: TextStyle(fontSize: 12)),
         ),
-        const SizedBox(width: 8),
-        OutlinedButton(
-          onPressed: () {},
-          style: OutlinedButton.styleFrom(
-            // استخدام لون الإطار من الثيم
-            side: BorderSide(color: theme.dividerColor),
-            minimumSize: const Size(80, 36),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(7),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () {
+              AppBottomSheet.show(
+                context: context,
+                title: 'تفاصيل درجات الوحدة',
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+                child: ModuleGradesWidget(moduleId: module.moduleId),
+              );
+            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(
+                color: context.colorScheme.onSecondary.withOpacity(0.5),
+              ),
+              minimumSize: const Size(0, 45),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-          ),
-          child: Text(
-            'التفاصيل',
-            style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface),
+            child: Text(
+              'التفاصيل',
+              style: context.textTheme.labelLarge!.copyWith(
+                color: theme.colorScheme.onSecondary.withOpacity(0.5),
+              ),
+            ),
           ),
         ),
       ],
@@ -182,21 +208,24 @@ class _ActionButtonsRow extends StatelessWidget {
 }
 
 class _CourseImagePreview extends StatelessWidget {
-  const _CourseImagePreview();
+  final String image_irl;
+  const _CourseImagePreview({Key? key, required this.image_irl})
+    : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 3,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(Images.noImageFound, fit: BoxFit.cover),
-          Container(color: Colors.black26),
-          const Center(
-            child: Icon(Icons.play_circle_fill, color: Colors.white, size: 40),
-          ),
-        ],
-      ),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        CachedNetworkImage(
+          imageUrl: image_irl,
+          fit: BoxFit.cover,
+          errorWidget: (context, url, error) => Image.asset(Images.onboarding1),
+        ),
+        Container(color: Colors.black12),
+        const Center(
+          child: Icon(Icons.play_circle_fill, color: Colors.white, size: 45),
+        ),
+      ],
     );
   }
 }

@@ -1,44 +1,54 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:flutter/material.dart';
 
 class LessonPdfCard extends StatelessWidget {
   final String? pdfUrl;
   final VoidCallback onOpen;
+  final DownloadStatus downloadStatus;
+  final int downloadProgress;
+  final VoidCallback onDownload;
 
   const LessonPdfCard({
-    super.key,
-    required this.pdfUrl,
+    super.key, 
+    required this.pdfUrl, 
     required this.onOpen,
+    required this.downloadStatus,
+    required this.downloadProgress,
+    required this.onDownload,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final hasPdf = pdfUrl != null && pdfUrl!.isNotEmpty;
 
     return InkWell(
       onTap: hasPdf ? onOpen : null,
       borderRadius: BorderRadius.circular(18),
       child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: AppColors.primary.withOpacity(0.25),
-            width: 1.5,
-          ),
+         border: AppBorder.main_border
+          // دمج الحواف الديناميكية للوضع الداكن/الفاتح
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.12),
+                color: context.primary.withOpacity(isDark ? 0.20 : 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.picture_as_pdf,
-                color: AppColors.primary,
+                color: context.primary,
                 size: 26,
               ),
             ),
@@ -49,25 +59,51 @@ class LessonPdfCard extends StatelessWidget {
                 children: [
                   Text(
                     'ملخص الدرس',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.indigo,
-                        ),
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     hasPdf ? 'عرض ملف PDF' : 'لا يوجد ملف مرفق',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondaryLight,
-                        ),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.72),
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_left,
-              color: hasPdf ? AppColors.primary : AppColors.grey300,
-            ),
+            if (hasPdf)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (downloadStatus == DownloadStatus.downloading)
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        value: downloadProgress > 0 ? downloadProgress / 100 : null,
+                        strokeWidth: 2.5,
+                        color: context.primary,
+                      ),
+                    )
+                   
+                  else if (downloadStatus == DownloadStatus.downloaded)
+                    Icon(Icons.check_circle_rounded, color: context.primary),
+                    
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.chevron_right,
+                    color: context.primary,
+                  ),
+                ],
+              )
+            else
+              Icon(
+                Icons.chevron_left,
+                color: theme.colorScheme.onSurface.withOpacity(0.35),
+              ),
           ],
         ),
       ),

@@ -17,8 +17,9 @@ class AppColors {
   static const Color green = Color(0xFF2BB673); // Success
 
   // Background Colors
-  static const Color bgLight = Color(0xFFF0F5FA);
-  static const Color bgDark = Color(0xFF161726);
+  static const Color bgLight = Color.fromARGB(255, 249, 252, 255);
+  static const Color bgDark = Color(0xFF19222C);
+  static const Color cardDark = Color(0xFF1D2733);
   static const Color surfaceLight = white;
   static const Color surfaceDark = Color(0xFF1F2138);
 
@@ -51,7 +52,7 @@ class AppColors {
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, primaryLight],
+    colors: [primary, indigo],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );

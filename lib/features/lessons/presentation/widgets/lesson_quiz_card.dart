@@ -1,46 +1,83 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 
 class LessonQuizCard extends StatelessWidget {
-  const LessonQuizCard({super.key});
+  final int? examId;
+  final String? previousRoute;
+
+  const LessonQuizCard({super.key, this.examId, this.previousRoute});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final hasExam = examId != null;
+
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
+        color: context.surface,
         borderRadius: BorderRadius.circular(18),
+     border : AppBorder.main_border
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'اختبار الدرس',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            style: context.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
-            'اختبر فهمك لهذا الدرس قريبًا',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white70,
-                ),
+            hasExam ? 'اختبر فهمك لهذا الدرس' : 'اختبر فهمك لهذا الدرس قريبًا',
+            style: context.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.72),
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: null,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                if (!hasExam) {
+                  debugPrint(
+                    'LessonQuizCard: exam page was not opened because examId is null',
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('الاختبار غير متاح لهذا الدرس حالياً'),
+                    ),
+                  );
+                  return;
+                }
+
+                final targetRoute = '${Routes.examPage}/$examId';
+                debugPrint(
+                  'LessonQuizCard: navigating to exam page, examId=$examId, route=$targetRoute',
+                );
+                GoRouter.of(context).push(targetRoute, extra: previousRoute);
+              },
+              icon: Icon(hasExam ? Icons.assignment_rounded : Icons.lock_clock_rounded, size: 20),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: AppColors.primary,
-                disabledBackgroundColor: Colors.white,
-                disabledForegroundColor: AppColors.primary,
+                backgroundColor: hasExam
+                    ? context.primary
+                    : context.colorScheme.onSurface.withOpacity(0.05),
+                foregroundColor: hasExam
+                    ? Colors.white
+                    : context.onBackground,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              child: const Text('سيتوفر قريبًا'),
+              label: Text(hasExam ? 'الذهاب للاختبار' : 'سيتوفر قريباً'),
             ),
           ),
         ],

@@ -21,7 +21,8 @@ class CacheHelper {
     if (value is int) return await _sharedPreferences.setInt(key, value);
     if (value is bool) return await _sharedPreferences.setBool(key, value);
     if (value is double) return await _sharedPreferences.setDouble(key, value);
-    if (value is List<String>) return await _sharedPreferences.setStringList(key, value);
+    if (value is List<String>)
+      return await _sharedPreferences.setStringList(key, value);
 
     return false; // إذا كان النوع غير مدعوم
   }
@@ -29,7 +30,7 @@ class CacheHelper {
   // ============================================================
   // 3️⃣ دوال الجلب (Getters)
   // ============================================================
-  
+
   // جلب نص (مثل التوكن أو الاسم)
   static String? getString({required String key}) {
     return _sharedPreferences.getString(key);
@@ -67,7 +68,7 @@ class CacheHelper {
   // ============================================================
   // 5️⃣ دوال مساعدة خاصة (Helpers) - لتسهيل الاستخدام
   // ============================================================
-  
+
   // هل يوجد مفتاح بهذا الاسم؟
   static bool containsKey({required String key}) {
     return _sharedPreferences.containsKey(key);

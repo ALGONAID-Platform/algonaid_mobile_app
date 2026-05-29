@@ -1,29 +1,73 @@
+import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 
-class LessonDetailModel extends LessonDetail {
-  const LessonDetailModel({
-    required super.id,
-    required super.moduleId,
-    required super.title,
-    required super.order,
-    super.description,
-    super.content,
-    super.videoUrl,
-    super.pdfUrl,
-    super.exam,
+class LessonDetailModel {
+  final int id;
+  final int moduleId;
+  final String title;
+  final String? description;
+  final String? content;
+  final String? videoUrl;
+  final String? pdfUrl;
+  final ExamModel? exam;
+  final int order;
+
+  LessonDetailModel({
+    required this.id,
+    required this.moduleId,
+    required this.title,
+    required this.order,
+    this.description,
+    this.content,
+    this.videoUrl,
+    this.pdfUrl,
+    this.exam,
   });
 
   factory LessonDetailModel.fromJson(Map<String, dynamic> json) {
     return LessonDetailModel(
-      id: json['id'] ?? 0,
-      moduleId: json['moduleId'] ?? 0,
-      title: (json['title'] ?? '').toString(),
-      description: json['description']?.toString(),
-      content: json['content']?.toString(),
-      videoUrl: json['videoUrl']?.toString(),
-      pdfUrl: json['pdfUrl']?.toString(),
-      exam: json['exam']?.toString(),
-      order: json['order'] ?? 0,
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      moduleId:
+          (json['moduleId'] as num?)?.toInt() ??
+          (json['module_id'] as num?)?.toInt() ??
+          0,
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String?,
+      content: json['content'] as String?,
+      videoUrl: json['videoUrl'] as String? ?? json['video_url'] as String?,
+      pdfUrl: json['pdfUrl'] as String? ?? json['pdf_url'] as String?,
+      exam: json['exam'] != null
+          ? ExamModel.fromJson(json['exam'] as Map<String, dynamic>)
+          : null,
+      order: (json['order'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'moduleId': moduleId,
+      'title': title,
+      'description': description,
+      'content': content,
+      'videoUrl': videoUrl,
+      'pdfUrl': pdfUrl,
+      'exam': exam?.toJson(),
+      'order': order,
+    };
+  }
+
+  LessonDetail toEntity() {
+    return LessonDetail(
+      id: id,
+      moduleId: moduleId,
+      title: title,
+      description: description,
+      content: content,
+      videoUrl: videoUrl,
+      pdfUrl: pdfUrl,
+      exam: exam,
+      order: order,
     );
   }
 }

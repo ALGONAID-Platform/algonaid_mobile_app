@@ -1,29 +1,36 @@
+import 'dart:ui';
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
 
 class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String userName;
   final String? userImageUrl;
+  final VoidCallback? onMenuPressed;
   final VoidCallback? onNotificationPressed;
   final VoidCallback? onSearchPressed;
   final VoidCallback? onProfilePressed;
   final int notificationCount;
+  final String? appBarTitle;
 
   const CustomWhiteAppBar({
     super.key,
     required this.userName,
     this.userImageUrl,
+    this.onMenuPressed,
     this.onNotificationPressed,
     this.onSearchPressed,
     this.onProfilePressed,
     this.notificationCount = 0,
+    this.appBarTitle,
   });
 
   @override
   State<CustomWhiteAppBar> createState() => _CustomWhiteAppBarState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 8); // Slightly bigger for glass effect
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 12);
 }
 
 class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
@@ -37,27 +44,22 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
   void initState() {
     super.initState();
 
-    // نبض لبادج الإشعارات
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 950),
+      duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.17).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOutCubic),
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    // نبض لصورة المستخدم عند الضغط
     _avatarPulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       lowerBound: 1.0,
-      upperBound: 1.12,
+      upperBound: 1.1,
     );
-    _avatarPulseAnimation = CurvedAnimation(
-      parent: _avatarPulseController,
-      curve: Curves.easeOutBack,
-    );
+    _avatarPulseAnimation = _avatarPulseController;
   }
 
   @override
@@ -68,79 +70,72 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
   }
 
   void _onAvatarTap() async {
-    if (widget.onProfilePressed != null) {
-      await _avatarPulseController.forward();
-      widget.onProfilePressed?.call();
-      _avatarPulseController.reverse();
-    }
+    await _avatarPulseController.forward();
+    widget.onProfilePressed?.call();
+    _avatarPulseController.reverse();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final dynamicTextColor = theme.colorScheme.onSurface;
-
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface.withOpacity(0.85),
-          backgroundBlendMode: BlendMode.luminosity,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            title: Row(
-              children: [
-                GestureDetector(
-                  onTap: _onAvatarTap,
-                  child: Hero(
-                    tag: 'user_profile_avatar',
-                    child: ScaleTransition(
-                      scale: _avatarPulseAnimation,
-                      child: _buildUserAvatar(theme),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                _buildGreetingText(context, dynamicTextColor),
-              ],
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.search_rounded),
-                color: dynamicTextColor.withOpacity(0.86),
-                splashRadius: 22,
-                onPressed: widget.onSearchPressed,
-                tooltip: 'بحث',
-                style: IconButton.styleFrom(
-                  backgroundColor: dynamicTextColor.withOpacity(0.03),
-                  shape: const CircleBorder(),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: ClipRRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.surface,
+              border: Border(
+                bottom: BorderSide(
+                  color: context.theme.disabledColor.withOpacity(0.08),
+                  width: 1,
                 ),
               ),
-              _buildAnimatedNotificationIcon(theme),
-              const SizedBox(width: 10),
-            ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1.2),
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: Divider(
-                  height: 1,
-                  thickness: 0.7,
-                  color: theme.dividerColor.withOpacity(0.10),
+            ),
+            child: SafeArea(
+              child: AppBar(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                automaticallyImplyLeading: false,
+                titleSpacing: 16,
+                title: Row(
+                  children: [
+                    if (widget.appBarTitle == null) ...[
+                      GestureDetector(
+                        onTap: _onAvatarTap,
+                        child: Hero(
+                          tag: 'user_profile_avatar',
+                          child: ScaleTransition(
+                            scale: _avatarPulseAnimation,
+                            child: _buildUserAvatar(context.theme),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      _buildGreetingText(context, context.onBackground),
+                    ] else ...[
+                      Text(
+                        widget.appBarTitle!,
+                        style: context.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
+                actions: [
+                  _buildCircleIconButton(
+                    icon: Icons.search_rounded,
+                    onPressed: widget.onSearchPressed,
+                    color: context.onBackground,
+                  ),
+                  _buildAnimatedNotificationIcon(
+                    context.theme,
+                    context.onBackground,
+                  ),
+                  const SizedBox(width: 12),
+                ],
               ),
             ),
           ),
@@ -149,40 +144,45 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
     );
   }
 
-  // --- Widgets ---
+  Widget _buildCircleIconButton({
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required Color color,
+  }) {
+    return IconButton(
+      icon: Icon(icon, size: 24),
+      color: color.withOpacity(0.8),
+      onPressed: onPressed,
+      style: IconButton.styleFrom(
+        backgroundColor: color.withOpacity(0.05),
+        shape: const CircleBorder(),
+      ),
+    );
+  }
 
   Widget _buildUserAvatar(ThemeData theme) {
-    if (widget.userImageUrl != null && widget.userImageUrl!.isNotEmpty) {
-      return CircleAvatar(
-        radius: 22,
-        backgroundColor: theme.primaryColor.withOpacity(0.11),
-        backgroundImage: NetworkImage(widget.userImageUrl!),
-      );
-    }
-    // متدرج لوني مع الحرف الأول
-    return CircleAvatar(
-      radius: 22,
-      backgroundColor: theme.primaryColor.withOpacity(0.08),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [theme.primaryColor, theme.primaryColorLight],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: Text(
-            widget.userName.isNotEmpty ? widget.userName[0].toUpperCase() : '',
-            style: TextStyle(
-              color: theme.primaryColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-              fontFamily: 'Cairo',
-            ),
-          ),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: context.primary.withOpacity(0.2), width: 2),
+      ),
+      child: CircleAvatar(
+        radius: 20,
+        backgroundColor: context.primary.withOpacity(0.1),
+        backgroundImage:
+            (widget.userImageUrl != null && widget.userImageUrl!.isNotEmpty)
+            ? NetworkImage(widget.userImageUrl!)
+            : null,
+        child: (widget.userImageUrl == null || widget.userImageUrl!.isEmpty)
+            ? Text(
+                widget.userName.isNotEmpty
+                    ? widget.userName[0].toUpperCase()
+                    : '',
+                style: context.textTheme.titleMedium!.copyWith(
+                  color: context.primary,
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -190,84 +190,61 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
   Widget _buildGreetingText(BuildContext context, Color textColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'مرحبا بك الى منصة الجنيد التعليمية',
-          style: Styles.style12(
-            context,
-          ).copyWith(color: textColor.withOpacity(0.53), fontFamily: 'Cairo'),
+          'مرحباً بك في منصة الجنيد',
+          style: context.textTheme.bodySmall!.copyWith(),
         ),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 450),
-          style: Styles.style14(context).copyWith(
-            fontWeight: FontWeight.w800,
-            color: textColor,
-            fontFamily: 'Cairo',
-          ),
-          child: Text(widget.userName),
-        ),
+        Text(widget.userName, style: context.textTheme.titleMedium),
       ],
     );
   }
 
-  Widget _buildAnimatedNotificationIcon(ThemeData theme) {
+  Widget _buildAnimatedNotificationIcon(ThemeData theme, Color color) {
     final hasNotifications = widget.notificationCount > 0;
-    final iconColor = theme.colorScheme.onSurface.withOpacity(0.87);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none_rounded),
-            color: iconColor,
-            splashRadius: 22,
-            onPressed: widget.onNotificationPressed,
-            tooltip: 'الإشعارات',
-            style: IconButton.styleFrom(
-              backgroundColor: iconColor.withOpacity(0.025),
-              shape: const CircleBorder(),
-            ),
-          ),
-          if (hasNotifications)
-            Positioned(
-              right: 3,
-              top: 0,
-              child: ScaleTransition(
-                scale: _pulseAnimation,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.circular(11),
-                    border: Border.all(
-                      color: theme.colorScheme.background,
-                      width: 1,
-                    ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        _buildCircleIconButton(
+          icon: Icons.notifications_none_rounded,
+          onPressed: widget.onNotificationPressed,
+          color: color,
+        ),
+        if (hasNotifications)
+          Positioned(
+            right: 8,
+            top: 8,
+            child: ScaleTransition(
+              scale: _pulseAnimation,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.red,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: theme.colorScheme.surface,
+                    width: 1.5,
                   ),
-                  constraints: const BoxConstraints(
-                    minWidth: 10,
-                    minHeight: 10,
-                  ),
-                  child: Center(
-                    child: Text(
-                      widget.notificationCount > 99
-                          ? "99+"
-                          : widget.notificationCount.toString(),
-                      style: Styles.style12(context).copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
-                      ),
+                ),
+                constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
+                child: Center(
+                  child: Text(
+                    widget.notificationCount > 9
+                        ? "+9"
+                        : widget.notificationCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }

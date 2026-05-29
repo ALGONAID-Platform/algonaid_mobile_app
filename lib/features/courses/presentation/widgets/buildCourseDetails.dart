@@ -1,75 +1,128 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class BuildCourseDetails extends StatelessWidget {
-  const BuildCourseDetails({
-    super.key,
-    required this.tags,
-    this.modulesCount = 0,
-    this.isEnrolled = false,
-    this.progress = 0.1,
-    this.completedModules = 1,
-  });
-
-  final List<String> tags;
-  final int modulesCount;
-  final bool isEnrolled;
-  final double progress;
-  final int completedModules;
+  const BuildCourseDetails({super.key, required this.course});
+  final CourseEntity course;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      // استخدمنا LayoutBuilder كخيار إضافي إذا أردت مستقبلاً التحكم في المحتوى بناءً على المساحة
-      child: Column(
-        // 🌟 أهم نقطة: التوزيع لضمان استقرار الزر في الأسفل
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              "عدد الوحدات : ${course.modulesCount}",
+              style: context.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (course.isEnrolled == false)
+              _buildHeaderSection(context, colorScheme),
+
+            if (course.isEnrolled) _buildProgressSection(context, colorScheme),
+
+            _buildActionButton(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderSection(BuildContext context, ColorScheme colorScheme) {
+    final bool hasModules =
+        course.moduleTitles != null && course.moduleTitles!.isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 12),
+
+        // قسم عرض الوحدات أو الوصف
+        if (course.isEnrolled == false)
+          SizedBox(
+            height: 35, // ارتفاع ثابت لمنع القفز في التصميم
+            child: hasModules
+                ? _buildModulesList(context) // دالة عرض الوحدات كـ Tags
+                : _buildDescriptionText(context), // دالة عرض الوصف
+          ),
+      ],
+    );
+  }
+
+  Widget _buildModulesList(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Row(
         children: [
-          // 1. الجزء العلوي (العناوين والتاغات)
-          _buildHeaderSection(context, colorScheme),
-
-          // 2. الجزء الأوسط (التقدم) - يظهر فقط إذا كان المستخدم مسجلاً
-          if (isEnrolled) _buildProgressSection(context, colorScheme),
-
-          // 3. الجزء السفلي (الزر)
-          _buildActionButton(colorScheme),
+          Icon(
+            Icons.collections_bookmark_outlined,
+            size: 16,
+            color: context.primary.withOpacity(0.7),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics:
+                  const NeverScrollableScrollPhysics(), // منع التمرير ليبقى التصميم ثابتاً
+              child: Row(
+                children: course.moduleTitles.map((title) {
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 6),
+                    child: _CourseTag(label: title),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // --- ودجت فرعي للهيدر ---
-  Widget _buildHeaderSection(BuildContext context, ColorScheme colorScheme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          " وحدات تعليمية متاحة $modulesCount",
-          style: Styles.style14(context).copyWith(
-            color: AppColors.textSecondaryLight,
-            fontWeight: FontWeight.bold,
+  // دالة عرض الوصف بأسلوب مميز
+  Widget _buildDescriptionText(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 16,
+            color: context.primary.withOpacity(0.7),
           ),
-        ),
-        if (tags.isNotEmpty && isEnrolled == false) ...[
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 35,
-            child: ClipRect(
-              child: Wrap(
-                spacing: 8,
-                children: tags.map((tag) => _CourseTag(label: tag)).toList(),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              course.description,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.bodySmall!.copyWith(
+                fontStyle: FontStyle.italic,
               ),
             ),
           ),
         ],
-      ],
+      ),
     );
   }
 
@@ -82,70 +135,150 @@ class BuildCourseDetails extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "${(progress * 100).toInt()}%",
-              style: Styles.style12(context).copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.primary,
+              "${(course.progressPercentage).toInt()}%",
+              style: context.textTheme.labelLarge!.copyWith(
+                color: context.primary,
               ),
             ),
             Text(
-              "$completedModules / $modulesCount مكتمل", // تم تعديل الترتيب ليكون منطقياً
-              style: Styles.style12(context).copyWith(color: Colors.grey),
+              "${course.completedLessons} / ${course.totalLessons} مكتمل", // تم تعديل الترتيب ليكون منطقياً
+              style: context.theme.textTheme.labelMedium,
             ),
           ],
         ),
         const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-
-          child: Directionality(
-            textDirection:
-                TextDirection.rtl, // لجعل التقدم يتجه من اليمين لليسار
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 6,
-              backgroundColor: colorScheme.primary.withOpacity(0.1),
-              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
-            ),
-          ),
-        ),
+        LinearProgress(progressPercentage: course.progressPercentage),
       ],
     );
   }
 
   // --- ودجت فرعي للزر ---
-  Widget _buildActionButton(ColorScheme colorScheme) {
+  Widget _buildActionButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: 45,
-      child: isEnrolled
+      child: course.isEnrolled
           ? TextButton(
-              onPressed: () {},
+              onPressed: () {
+                final context = navigatorKey.currentContext;
+                if (context != null) {
+                  GoRouter.of(
+                    context,
+                  ).push('/modulesList/${course.id}', extra: course);
+                }
+              },
               style: TextButton.styleFrom(
-                backgroundColor: AppColors.green.withOpacity(0.1),
+                backgroundColor: context.primary.withOpacity(0.1),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                foregroundColor: AppColors.primary,
+                foregroundColor: context.primary,
               ),
-              child: const Text(
+              child: Text(
                 "استمرار",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: context.textTheme.labelLarge!.copyWith(
+                  color: context.primary,
+                ),
               ),
             )
           : ElevatedButton(
-              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.primary,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                if (!course.isEnrolled) {
+                  AppDialog.showDynamicDialog(
+                    title: "ملاحظة",
+                    message: "هل تريد التسجيل في الدورة؟",
+                    content: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: context.primary.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: context.primary.withOpacity(0.1)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.person, size: 16, color: context.primary),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    "المدرب: ${course.teacher.user.name}",
+                                    style: context.textTheme.labelMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: context.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(height: 1, color: context.primary.withOpacity(0.1)),
+                            const SizedBox(height: 8),
+                            Text(
+                              course.description,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                height: 1.5,
+                                color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    onConfirm: () async {
+                      final context = navigatorKey.currentContext;
+                      if (context != null) {
+                        final authService = context.read<GetCoursesProvider>();
+                        await authService.enrollInCourse(courseId: course.id);
+                        if (authService.isSuccessEnroll) {
+                          AppDialog.showDynamicDialog(
+                            showCancelButton: false,
+                            confirmText: "استكشف الدورة",
+                            isError: false,
+                            title: "تم التسجيل",
+                            message: "تم تسجيلك في الدورة بنجاح!",
+                            onConfirm: () {
+                              GoRouter.of(context).push(
+                                '/modulesList/${course.id}',
+                                extra: course,
+                              );
+                            },
+                          );
+                        } else {
+                          AppDialog.showDynamicDialog(
+                            title: "خطأ",
+                            message:
+                                authService.errorMessage ??
+                                "حدث خطأ أثناء التسجيل. حاول مرة أخرى.",
+                            isError: true,
+                          );
+                        }
+                      }
+                    },
+                  );
+                }
+              },
               child: const Text("استكشف الدورة الآن"),
             ),
     );
   }
 }
 
-// فصل الـ Tag في Class مستقل واستخدام الـ Theme داخله
 class _CourseTag extends StatelessWidget {
   final String label;
-  const _CourseTag({required this.label});
+  final bool isMore;
+
+  const _CourseTag({required this.label, this.isMore = false});
 
   @override
   Widget build(BuildContext context) {
@@ -154,18 +287,22 @@ class _CourseTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color:
-            theme.colorScheme.surfaceVariant.withOpacity(0.5) ??
-            theme.colorScheme.surface,
+        color: isMore
+            ? theme.colorScheme.primary.withOpacity(0.1)
+            : theme.colorScheme.surfaceVariant.withOpacity(0.5),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+        border: Border.all(
+          color: isMore
+              ? theme.colorScheme.primary.withOpacity(0.2)
+              : theme.dividerColor.withOpacity(0.1),
+        ),
       ),
       child: Text(
         label,
-        style: Styles.style12(context).copyWith(
-          color: theme
-              .colorScheme
-              .onSurface, // لون النص التلقائي المتوافق مع الخلفية
+        style: context.textTheme.labelMedium?.copyWith(
+          // إذا كان "المزيد" نبرز النص بلون المنصة الأساسي
+          color: isMore ? theme.colorScheme.primary : null,
+          fontWeight: isMore ? FontWeight.bold : null,
         ),
       ),
     );

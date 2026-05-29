@@ -1,18 +1,21 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/errors/exception.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
 import 'package:algonaid_mobail_app/features/auth/data/models/auth_models.dart';
 
 abstract class AuthRemoteDatasourse {
-  Future<AuthResponse> signin({required String email, required String password});
+  Future<AuthResponse> signin({
+    required String email,
+    required String password,
+  });
   Future<AuthResponse> signup({
     required String username,
     required String email,
     required String password,
     required UserRole role,
   });
+  Future<void> logout(); // Added
 }
 
 class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
@@ -50,5 +53,10 @@ class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
     );
 
     return AuthResponse.fromJson(user);
+  }
+
+  @override
+  Future<void> logout() async {
+    await apiService.post(endpoint: EndPoint.logout, data: {});
   }
 }

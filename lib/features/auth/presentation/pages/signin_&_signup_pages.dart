@@ -1,14 +1,17 @@
 import 'package:algonaid_mobail_app/core/common/enums/password_strength.dart';
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/validations/app_validation.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobail_app/core/utils/functions/user_friendly_error.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/widgets/label.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 // Imports (المسارات الخاصة بمشروعك)
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:algonaid_mobail_app/core/widgets/buttons/custom_button.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/textform_field.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/widgets/auth_header.dart';
@@ -41,6 +44,8 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
   Widget build(BuildContext context) {
     final authService = context.watch<AuthServiceProvider>();
     return Scaffold(
+      backgroundColor: context.background,
+
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -68,7 +73,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                     CustomTextFormField(
                       controller: _nameController,
                       labelText: "ادخل اسمك الكامل",
-                      borderColor: AppColors.primary,
+                      borderColor: context.primary,
                       validator: (name) =>
                           Validator.length(name, min: 2, max: 50),
                     ),
@@ -84,7 +89,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                   CustomTextFormField(
                     controller: _emailController,
                     labelText: "ادخل عنوان البريد الإلكتروني",
-                    borderColor: AppColors.primary,
+                    borderColor: context.primary,
                     validator: (email) => Validator.email(email!),
                   ),
                   //=========================
@@ -98,10 +103,10 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                   CustomTextFormField(
                     controller: _passwordController,
                     labelText: "ادخل كلمة المرور",
-                    borderColor: AppColors.primary,
+                    borderColor: context.primary,
                     isPasswordVisible: authService.isPasswordVisible!,
                     isPassword: true,
-                    fillPercentage: authService.showPasswordStrength?? 0,
+                    fillPercentage: authService.showPasswordStrength ?? 0,
                     onChanged: (p0) {
                       authService.checkPassStrength(p0);
                     },
@@ -146,7 +151,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                     child: authService.isLoading
                         ? CircularProgressIndicator()
                         : CustomButton(
-                            color: AppColors.primary,
+                            color: context.primary,
                             onPressed: () async {
                               if (!_formKey.currentState!.validate()) return;
 
@@ -162,6 +167,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                     title: "تنبيه",
                                     message: "يرجى اختيار الدور",
                                     isError: true,
+                                    showCancelButton: false,
                                   );
                                   return;
                                 }
@@ -180,21 +186,27 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                   context: context,
                                   title: "Success",
                                   message: "Welcome Back!",
-                                  // onConfirm: () => context.go('/home'),
+                                  showCancelButton: false,
+                                  onConfirm: () =>
+                                      GoRouter.of(context).go(Routes.homePage),
                                 );
                               } else if (authService.errorMessage != null) {
                                 AppDialog.showDynamicDialog(
                                   context: context,
-                                  title: "Error",
-                                  message: authService.errorMessage!,
+                                  title: "تعذر تسجيل الدخول",
+                                  message: toUserFriendlyErrorMessage(
+                                    authService.errorMessage,
+                                  ),
                                   isError: true,
+                                  showCancelButton: false,
+                                  confirmText: "حاول مرة أخرى",
                                 );
                               }
                             },
                             text: authService.isLogin
                                 ? "تسجيل دخول"
                                 : "إنشاء حساب",
-                            textColor: AppColors.bgLight,
+                            textColor: Theme.of(context).colorScheme.onPrimary,
                           ),
                   ),
 

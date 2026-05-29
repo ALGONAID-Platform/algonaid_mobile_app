@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:algonaid_mobail_app/core/network/execute_request.dart';
 import 'package:algonaid_mobail_app/core/network/initial_dio.dart';
 import 'package:dio/dio.dart';
@@ -5,9 +6,8 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio;
 
-
   ApiService(this._dio) {
-    initialiseDio(this._dio);
+    initializeDio(_dio);
   }
 
   Future<dynamic> get({
@@ -30,6 +30,13 @@ class ApiService {
   }) async {
     return performRequest(_dio.put(endpoint, data: data));
   }
+    Future<dynamic> patch({
+    required String endpoint,
+    required Map<String, dynamic> data,
+  }) async {
+    return performRequest(_dio.patch(endpoint, data: data));
+  }
+
 
   Future<dynamic> delete({required String endpoint}) async {
     return performRequest(_dio.delete(endpoint));
@@ -40,13 +47,15 @@ class ApiService {
     required String path,
   }) async {
     return await _dio.download(
-        finalUrl,
-        path,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-             print("📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%");
-          }
-        },
-      );
+      finalUrl,
+      path,
+      onReceiveProgress: (received, total) {
+        if (total != -1) {
+          debugPrint(
+            "📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%",
+          );
+        }
+      },
+    );
   }
 }

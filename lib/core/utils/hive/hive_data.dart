@@ -3,14 +3,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 /// 1. دالة لحفظ قائمة كاملة (مع مسح القديم) - تستخدم للكاش (مثل Home Feed)
 Future<void> cacheList<T>(List<T> data, String boxName) async {
-  var box = Hive.isBoxOpen(boxName) ? Hive.box<T>(boxName) : await Hive.openBox<T>(boxName);
+  var box = Hive.isBoxOpen(boxName)
+      ? Hive.box<T>(boxName)
+      : await Hive.openBox<T>(boxName);
   await box.clear(); // ✅ صحيح هنا لأننا نريد استبدال القائمة
   await box.addAll(data);
 }
 
 /// 2. دالة لحفظ عنصر واحد فقط (تحديث أو إضافة) بدون مسح الباقي
 Future<void> saveSingleItem<T>(T item, String boxName, dynamic key) async {
-  var box = Hive.isBoxOpen(boxName) ? Hive.box<T>(boxName) : await Hive.openBox<T>(boxName);
+  var box = Hive.isBoxOpen(boxName)
+      ? Hive.box<T>(boxName)
+      : await Hive.openBox<T>(boxName);
   await box.put(key, item); // ✅ نستخدم put لتحديث مفتاح محدد
 }
 

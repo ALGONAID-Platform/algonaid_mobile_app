@@ -1,11 +1,18 @@
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/network/api_service.dart';
+import 'package:algonaid_mobail_app/features/courses/data/models/courseProgress_model.dart';
+import 'package:algonaid_mobail_app/features/courses/domain/entities/courseProgress_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
-
+import 'package:algonaid_mobail_app/features/courses/data/models/course_grades_model.dart';
+import 'package:algonaid_mobail_app/features/search/data/models/global_search_model.dart';
 abstract class CoursesRemoteDataSource {
   Future<List<CourseEntity>> fetchCourses();
   Future<List<CourseEntity>> fetchMyCourses();
+  Future<CourseProgressEntity> fetchCourseProgress({required int courseId});
+  Future<bool> enrollInCourse(int courseId);
+  Future<CourseGradesModel> getCourseGrades(int courseId);
+  Future<GlobalSearchModel> searchCourses(String query);
 }
 
 class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
@@ -29,8 +36,47 @@ class CoursesRemoteDataSourceImp extends CoursesRemoteDataSource {
     List<CourseModel> courses = (data as List).map((json) {
       return CourseModel.fromJson(json as Map<String, dynamic>);
     }).toList();
-    print(courses);
-    print("===================");
+
     return courses;
   }
+  
+  @override
+  Future<GlobalSearchModel> searchCourses(String query) async {
+    var data = await apiService.get(
+      endpoint: EndPoint.searchCourses,
+      query: {'q': query},
+    );
+    return GlobalSearchModel.fromJson(data as Map<String, dynamic>);
+  }
+  
+
+  @override
+  Future<CourseProgressEntity> fetchCourseProgress({
+    required int courseId,
+  }) async {
+    var data = await apiService.get(
+      endpoint: EndPoint.courseProgress(courseId),
+    );
+    return CourseProgressModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  @override
+  Future<bool> enrollInCourse(int courseId) async {
+    final response = await apiService.post(
+      endpoint: EndPoint.enrollment,
+      data: {'courseId': courseId},
+    );
+
+    return true;
+  }
+
+  @override
+  Future<CourseGradesModel> getCourseGrades(int courseId) async {
+    final response = await apiService.get(
+      endpoint: EndPoint.courseGrades(courseId),
+    );
+
+    return CourseGradesModel.fromJson(response as Map<String, dynamic>);
+  }
+
 }

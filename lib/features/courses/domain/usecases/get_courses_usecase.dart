@@ -11,6 +11,6 @@ class GetCoursesUsecase extends UseCase<List<CourseEntity>> {
 
   @override
   Future<Either<Failure, List<CourseEntity>>> call() {
-    return repository.getCourses();
+    return repository.getAllCourses();
   }
 }

@@ -15,12 +15,20 @@ abstract class AppConstants {
   //Hive box names
   static const String boxAuthTokenName = 'auth_token_box';
   static const String tokenKey = 'auth_token';
-  static const String boxFeaturedBooks = "featured_box";
-  static const String boxFeaturedNewsBox = "featured_news_box";
+  static const String boxCourses = "courses_box";
+  static const String boxMyCourses = "my_courses_box";
+  static const String boxCourseProgress = "course_progress_box";
+  static const String boxLastAccessedModule = "boxLastAccessedModule";
+  static const String boxLessons = "lessons_box";
+  static const String boxLessonDetails = "lesson_details_box";
+  static const String boxModules = "modules_box";
+  static const String boxExams = "exams_box";
+  static const String boxExamResults = "exam_results_box";
   static const String boxFeaturedTrendinBooks = "featured_trending_books";
   static const String boxFeaturedTopRatedBooks = "featured_top_rated_books";
   static const String boxFeaturedQuickReadBooks = "featured_quick_read_books";
   static const String boxReadingProgress = "reading_progress_box";
+  static const String boxLessonProgress = "lesson_progress_box";
 
   // shared preferences keys
   static const String token = 'TOKEN';
@@ -31,8 +39,20 @@ abstract class AppConstants {
   static const String userName = 'k_user_name';
   static const String userEmail = 'k_user_email';
   static const String userRole = 'k_user_role';
+  static const String userAvatar = 'k_user_avatar';
+  static const String userBackground = 'k_user_background';
+  static const String userAcademicId = 'k_user_academic_id';
+  static const String userGrade = 'k_user_grade';
+  static const String userAddress = 'k_user_address';
+  static const String userBirthDate = 'k_user_birth_date';
+  static const String userCreatedAt = 'k_user_created_at';
+  static const String userUpdatedAt = 'k_user_updated_at';
   static const String isFirstTime = 'k_is_first_time';
   static const String isDark = "isDark";
+  static const String cacheModuleGradesPrefix = 'module_grades_';
+  static const String cacheCourseGradesPrefix = 'course_grades_';
+  static const String cacheTotalPoints = 'cache_total_points';
+  static const String cacheExcellenceCourses = 'cache_excellence_courses';
 
   //validation
   static const int minPasswordLength = 6;
@@ -46,7 +66,7 @@ abstract class AppConstants {
   static const int maxPageSize = 100;
 
   // api timeouts
-  static const Duration apiConnectTimeout = Duration(seconds: 5);
+  static const Duration apiConnectTimeout = Duration(seconds: 15);
   static const Duration apiReceiveTimeout = Duration(seconds: 5);
   static const Duration apiSendTimeout = Duration(seconds: 5);
 
@@ -72,12 +92,15 @@ abstract class AppConstants {
   static const drawBarPageFlex = 2;
 
   // user data
-  static int userIdValue =
-      int.tryParse(CacheHelper.getString(key: AppConstants.userId)!)!;
-  static String userNameValue =
-      CacheHelper.getString(key: AppConstants.userName)!;
-  static String userEmailValue =
-      CacheHelper.getString(key: AppConstants.userEmail)!;
+  static int userIdValue = int.tryParse(
+    CacheHelper.getString(key: AppConstants.userId)!,
+  )!;
+  static String userNameValue = CacheHelper.getString(
+    key: AppConstants.userName,
+  )!;
+  static String userEmailValue = CacheHelper.getString(
+    key: AppConstants.userEmail,
+  )!;
 
   //color dark matrix for pdf viewer
   static const colorFilter = ColorFilter.matrix([

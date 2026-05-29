@@ -22,8 +22,6 @@ class MoveButtonWidgetAnimated extends StatefulWidget {
 }
 
 class _MoveButtonWidgetAnimatedState extends State<MoveButtonWidgetAnimated> {
- 
-
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -43,15 +41,14 @@ class _MoveButtonWidgetAnimatedState extends State<MoveButtonWidgetAnimated> {
               : (widget.isLastPage ? 190 : 60);
 
           return GestureDetector(
-            onTap: () =>      widget.onboardinValue.goToNextPage(),
+            onTap: () => widget.onboardinValue.goToNextPage(),
 
             child: Stack(
               alignment: Alignment.center,
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
-                  curve:
-                      Curves.easeInOut, 
+                  curve: Curves.easeInOut,
                   width: currentWidth,
                   height: 75,
                   child: CustomPaint(
@@ -120,7 +117,6 @@ class _MoveButtonWidgetAnimatedState extends State<MoveButtonWidgetAnimated> {
     );
   }
 }
-
 
 class _UnifiedProgressPainter extends CustomPainter {
   final double progress;

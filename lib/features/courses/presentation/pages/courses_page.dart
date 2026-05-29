@@ -1,17 +1,27 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/widgets/loading/continueLearningShimmer.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/all_courses_section.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
+
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildShimmerSection.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/widgets/courseHeader.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/my_courses_section.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/widgets/sliver_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/continue_learning_card.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid_mobail_app/features/profile/presentation/pages/profile_page.dart'; // Added
+import 'package:algonaid_mobail_app/features/downloads/presentation/pages/downloads_page.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/pages/competitions_page.dart';
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({Key? key}) : super(key: key);
@@ -24,24 +34,33 @@ class _CoursesPageState extends State<CoursesPage> {
   @override
   void initState() {
     super.initState();
-    // جلب البيانات عند تشغيل الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GetCoursesProvider>().refreshAll();
+      context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
     });
+    debugPrint('User Token on CoursesPage init: ${TokenStorage.getToken()}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: context.background,
       body: RefreshIndicator(
-        onRefresh: () => context.read<GetCoursesProvider>().refreshAll(),
+        elevation: 0.0,
+
+        onRefresh: () async {
+          await context.read<GetCoursesProvider>().refreshAll();
+          await context
+              .read<LastAccessedModuleProvider>()
+              .fetchLastAccessedModule();
+        },
         color: AppColors.primary,
         child: Consumer<GetCoursesProvider>(
           builder: (context, provider, child) {
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
+                SliverToBoxAdapter(child: SectionHeader(text: 'اخر باب')),
                 if (provider.isLoading)
                   SliverToBoxAdapter(
                     child: Column(
@@ -58,19 +77,13 @@ class _CoursesPageState extends State<CoursesPage> {
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
-                        const SizedBox(height: 20),
-
-                        if (provider.myCourses.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: ContinueLearningCard(),
-                          ),
+                        courseHeader(),
 
                         MyCoursesListSection(myCourses: provider.myCourses),
 
                         AllCoursesListSection(allCourses: provider.allCourses),
 
-                        const SizedBox(height: 50), // مسافة في النهاية
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
@@ -92,39 +105,88 @@ class CoursesHomePage extends StatefulWidget {
 }
 
 class _CoursesHomePageState extends State<CoursesHomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
-  final _pages = [
-    CoursesPage(), // الصفحة الرئيسية
-    Placeholder(), // الدورات
-    Placeholder(), // المحفوظات
-    Placeholder(), // الحساب
+  List<Widget> get _pages => const [
+    CoursesPage(key: ValueKey('home')), // الصفحة الرئيسية
+    CompetitionsPage(key: ValueKey('competitions')), // المسابقات
+    DownloadsPage(key: ValueKey('bookmarks')), // المحفوظات والتحميلات
+    ProfilePage(key: ValueKey('profile')), // الحساب
   ];
+
+  Future<void> _logout() async {
+    await context.read<AuthServiceProvider>().logout();
+    if (!mounted) {
+      return;
+    }
+    context.go(Routes.auth);
+  }
+
+  String _getAppBarTitle(int index) {
+    switch (index) {
+      case 0:
+        return 'الصفحة الرئيسية';
+      case 1:
+        return 'المسابقات والتحديات';
+      case 2:
+        return ' الدروس المحفوظة';
+      case 3:
+        return 'الملف الشخصي';
+      default:
+        return 'الرئيسية';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final userName =
+        CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم';
+    final userEmail = CacheHelper.getString(key: AppConstants.userEmail) ?? '';
+    final userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
+
     return Scaffold(
+      backgroundColor: context.background,
       appBar: CustomWhiteAppBar(
-        userName: CacheHelper.getString(key: AppConstants.userName) ?? "مستخدم",
-        userImageUrl: null,
+        userName: userName,
+        userImageUrl: userAvatar,
+        appBarTitle: _getAppBarTitle(_currentIndex),
         notificationCount: 4,
-        onProfilePressed: () {},
-        onNotificationPressed: () {
-         
+        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        onProfilePressed: () {
+          setState(() {
+            _currentIndex = 3;
+          });
         },
-        onSearchPressed: () {},
+        onNotificationPressed: () {
+          context.push(Routes.notificationsPage);
+        },
+        onSearchPressed: () {
+          context.push(Routes.searchPage);
+        },
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 350),
-        child: _pages[_currentIndex],
-        transitionBuilder: (child, animation) =>
-            FadeTransition(opacity: animation, child: child),
-      ),
-      extendBody: true, // مهم لكي يظهر البار عائم!
-      bottomNavigationBar: FancyFloatingNavBar(
-        selectedIndex: _currentIndex,
-        onItemSelected: (i) => setState(() => _currentIndex = i),
+      body: Stack(
+        children: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 350),
+            child: _pages[_currentIndex],
+            transitionBuilder: (child, animation) =>
+                FadeTransition(opacity: animation, child: child),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: FancyFloatingNavBar(
+              selectedIndex: _currentIndex,
+              onItemSelected: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

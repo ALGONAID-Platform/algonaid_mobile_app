@@ -1,0 +1,129 @@
+import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
+import 'package:algonaid_mobail_app/core/errors/failure.dart';
+import 'package:algonaid_mobail_app/core/network/check_internet.dart';
+import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/models/module_grades_model.dart';
+import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/entities/module_grades.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+
+class ModuleRepositoryImpl implements ModuleRepository {
+  final ModuleRemoteDataSource remoteDataSource;
+  final ModuleLocalDataSource localDataSource;
+
+  ModuleRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
+
+  @override
+  Future<Either<Failure, List<Module>>> getModulesByCourse(int courseId) async {
+    final localModules = localDataSource.getModules(courseId);
+    final isOffline = await hasNoInternet();
+
+    if (isOffline) {
+      if (localModules.isNotEmpty) {
+        return Right(localModules);
+      }
+      return Left(
+        ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد بيانات محفوظة لهذه الوحدة.'),
+      );
+    }
+
+    try {
+      final remoteModules = await remoteDataSource.getModulesByCourse(courseId);
+      await localDataSource.saveModules(
+        courseId,
+        remoteModules.map((e) => e as ModuleModel).toList(),
+      );
+      return Right(remoteModules);
+    } catch (e) {
+      if ((e is DioException || e is ServerException) && localModules.isNotEmpty) {
+        return Right(localModules);
+      }
+
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      return Left(
+        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, LastAccessedModuleEntity?>> getLastAccessedModule() async {
+    try {
+      final lastAccessedModuleModel = await remoteDataSource.getLastAccessedModule();
+      if (lastAccessedModuleModel != null) {
+        await localDataSource.cacheLastAccessedModule(lastAccessedModuleModel);
+      }
+      return Right(lastAccessedModuleModel);
+    } on ServerException catch (e) {
+      try {
+        final localModule = await localDataSource.getLastAccessedModule();
+        if (localModule != null) return Right(localModule);
+      } catch (_) {}
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      try {
+        final localModule = await localDataSource.getLastAccessedModule();
+        if (localModule != null) return Right(localModule);
+      } catch (_) {}
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, LastAccessedModuleEntity?>> getCachedLastAccessedModule() async {
+    try {
+      final localModule = await localDataSource.getLastAccessedModule();
+      return Right(localModule);
+    } catch (e) {
+      return Left(CacheFailure("Failed to load from cache: $e"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ModuleGrades>> getModuleGrades(int moduleId) async {
+    final isOffline = await hasNoInternet();
+
+    if (isOffline) {
+      try {
+        final localGrades = await localDataSource.getModuleGrades(moduleId);
+        if (localGrades != null) {
+          return Right(localGrades);
+        }
+      } catch (_) {}
+      return Left(ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد درجات محفوظة لهذه الوحدة.'));
+    }
+
+    try {
+      final grades = await remoteDataSource.getModuleGrades(moduleId);
+      await localDataSource.saveModuleGrades(moduleId, grades as ModuleGradesModel);
+      return Right(grades);
+    } catch (e) {
+      try {
+        final localGrades = await localDataSource.getModuleGrades(moduleId);
+        if (localGrades != null) {
+          return Right(localGrades);
+        }
+      } catch (_) {}
+
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+    }
+  }
+}
