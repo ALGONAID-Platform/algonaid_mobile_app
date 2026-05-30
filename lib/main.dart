@@ -1,20 +1,19 @@
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/core/routes/appRouters.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/theme.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/core/utils/hive/hive_setup.dart';
-import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobail_app/core/utils/providers/app_providers.dart';
+import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/global_video_state.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/native_pip_handler.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/floating_video_widget.dart';
 import 'package:video_player/video_player.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -25,6 +24,9 @@ void main() async {
 
   // Register adapters and open all Hive boxes used by the app.
   await HiveService.init();
+
+  // Initialize Notification Service
+  await NotificationService().init();
 
   // Initialize SharedPreferences or custom caching helper ssssfor general app data
   await CacheHelper.init();

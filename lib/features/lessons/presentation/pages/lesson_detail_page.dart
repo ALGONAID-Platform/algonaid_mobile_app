@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_pdf_viewer_page.dart';
@@ -154,6 +156,10 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
         final pdfUrl =
             _downloadController.resolvePdfUrl(lesson.pdfUrl) ?? lesson.pdfUrl;
 
+        final bool isVideoDownloaded = _downloadController.videoDownloadStatus == DownloadStatus.downloaded;
+        final bool isPdfDownloaded = _downloadController.pdfDownloadStatus == DownloadStatus.downloaded;
+        final bool isFullyDownloaded = isVideoDownloaded && (pdfUrl == null || pdfUrl.isEmpty || isPdfDownloaded);
+
         return Directionality(
           textDirection: TextDirection.rtl,
           child: PopScope(
@@ -192,12 +198,22 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
               opacity: _fabOpacity,
               duration: const Duration(milliseconds: 300),
               child: FloatingActionButton(
-                onPressed: () => _showDownloadDialog(context, lesson),
-                backgroundColor: context.colorScheme.error,
+                onPressed: isFullyDownloaded 
+                  ? () {
+                      AppSnackBar.show(
+                        context: context, 
+                        message: 'تم تحميل هذا الدرس بالكامل ومتاح للمشاهدة بدون إنترنت', 
+                        type: SnackBarType.info
+                      );
+                    } 
+                  : () => _showDownloadDialog(context, lesson),
+                backgroundColor: isFullyDownloaded ? Colors.green : context.colorScheme.error,
                 elevation: 0,
-                
                 shape: const CircleBorder(),
-                child: const Icon(Icons.download_rounded, color: Colors.white),
+                child: Icon(
+                  isFullyDownloaded ? Icons.download_done_rounded : Icons.download_rounded, 
+                  color: Colors.white
+                ),
               ),
             ),
             body: NotificationListener<ScrollNotification>(
@@ -224,11 +240,35 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                       );
                     },
                     // 2. عند الوصول لـ 90% (الإكمال)
-                    onProgressComplete: () {
-                      context.read<LessonDetailProvider>().updateProgress(
+                    onProgressComplete: () async {
+                      final isAlreadyCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ?? false;
+                      
+                      await context.read<LessonDetailProvider>().updateProgress(
                         lesson.id,
                         true,
                       );
+                      
+                      if (!isAlreadyCompleted) {
+                        await CacheHelper.saveData(key: 'lesson_completed_${lesson.id}', value: true);
+                        
+                        // Trigger local notification (which plays sound and saves to history)
+                        await NotificationService().showNotification(
+                          title: 'إنجاز جديد! 🎓',
+                          body: 'تهانينا! لقد أكملت مشاهدة درس "${lesson.title}" بنجاح.',
+                        );
+                        
+                        if (mounted) {
+                          AppSnackBar.show(
+                            context: context,
+                            message: 'أحسنت! لقد أكملت الدرس بنجاح.',
+                            type: SnackBarType.success,
+                            actionLabel: 'عرض الإشعارات',
+                            onActionPressed: () {
+                              context.push(Routes.notificationsPage);
+                            },
+                          );
+                        }
+                      }
                     },
                     // 3. عند انتهاء الفيديو (100%)
                     onVideoEnd: () {

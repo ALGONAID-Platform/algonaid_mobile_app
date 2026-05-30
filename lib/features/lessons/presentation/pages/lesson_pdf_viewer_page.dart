@@ -2,6 +2,7 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'dart:io'; // Import for File
+import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
 class LessonPdfViewerPage extends StatelessWidget {
   final String? pdfUrl; // Made nullable
@@ -38,13 +39,9 @@ class LessonPdfViewerPage extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        appBar: SharedAppBar(
+          title: title,
         ),
-        title: Text(title),
-      ),
       body: pdfViewer,
       ),
     );

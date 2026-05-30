@@ -261,7 +261,7 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
                               onPressed: () {
                                 AppBottomSheet.show(
                                   context: context,
-                                  title: 'تفاصيل الدرجات',
+                                  title: 'تفاصيل درجات اختبارات الوحدة',
                                   padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
                                   child: ModuleGradesWidget(moduleId: widget.moduleId),
                                 );

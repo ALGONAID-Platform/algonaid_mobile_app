@@ -4,6 +4,7 @@ import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
@@ -24,6 +25,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       provider.loadTotalPoints();
       provider.loadUserProfile();
+      provider.loadUserBadges();
     });
   }
 
@@ -208,7 +210,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   
           image: hasAvatar
               ? DecorationImage(
-                  image: NetworkImage(profile.avatar!),
+                  image: CachedNetworkImageProvider(profile.avatar!),
                   fit: BoxFit.cover,
                 )
               : null,
@@ -267,7 +269,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       shape: BoxShape.circle,
                       image: hasAvatar
                           ? DecorationImage(
-                              image: NetworkImage(profile.avatar!),
+                              image: CachedNetworkImageProvider( profile.avatar!),
                               fit: BoxFit.cover,
                             )
                           : null,

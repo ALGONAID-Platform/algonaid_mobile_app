@@ -71,7 +71,9 @@ class CourseProgressInfo extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Text("واصل التعلم", style: context.textTheme.labelMedium),
+                    Text("واصل التعلم", style: context.textTheme.labelMedium!.copyWith(
+                      color: context.onPrimary
+                    )),
                     SizedBox(width: 4),
                     Icon(Icons.play_arrow_rounded, size: 16),
                   ],

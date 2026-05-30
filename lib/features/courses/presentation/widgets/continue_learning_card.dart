@@ -55,13 +55,7 @@ class ContinueLearningCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      module.moduleDescription,
-                      style: context.textTheme.bodySmall,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  
                     const SizedBox(height: 16),
                     _ProgressBarSection(
                       progressPercentage: module.progressPercentage.toDouble(),
@@ -125,6 +119,20 @@ class _ProgressBarSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'نسبة الإنجاز',
+              style: theme.textTheme.labelSmall?.copyWith(color: theme.hintColor, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              '${progressPercentage.toInt()}%',
+              style: theme.textTheme.labelSmall?.copyWith(color: context.primary, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
         LinearProgress(progressPercentage: progressPercentage, hPadding: 0),
         const SizedBox(height: 6),
         Text(
@@ -147,6 +155,7 @@ class _ActionButtonsRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
+          flex: 3,
           child: ElevatedButton(
             onPressed: () {
               GoRouter.of(context).push(
@@ -169,18 +178,19 @@ class _ActionButtonsRow extends StatelessWidget {
               ),
             ),
             child: const Text(
-              'استمرار',
+              'مواصلة الوحدة',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
+          flex: 2,
           child: OutlinedButton(
             onPressed: () {
               AppBottomSheet.show(
                 context: context,
-                title: 'تفاصيل درجات الوحدة',
+                title: 'تفاصيل درجات اختبارات الوحدة',
                 padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
                 child: ModuleGradesWidget(moduleId: module.moduleId),
               );

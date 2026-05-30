@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
 import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
+import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
 
 /// State for exam loading
 enum ExamState { initial, loading, loaded, error }
@@ -274,6 +275,17 @@ class ExamProvider extends ChangeNotifier {
           fetchedResult.fold((_) {}, (latestResult) => _result = latestResult);
         } catch (_) {}
         await _saveProgressUseCase.call(_exam!.id, <int, int>{});
+
+        // Trigger local notification (which plays sound and saves to history)
+        try {
+          final percent = (examResult.correctAnswers / examResult.totalQuestions * 100).toStringAsFixed(0);
+          await NotificationService().showNotification(
+            title: 'تم إكمال الاختبار بنجاح! 📝',
+            body: 'لقد أكملت اختبار "${_exam?.title}" بنجاح وحصلت على درجة $percent% (${examResult.correctAnswers}/${examResult.totalQuestions}).',
+          );
+        } catch (e) {
+          debugPrint('Error triggering exam completion notification: $e');
+        }
       },
     );
     if (hasListeners) {

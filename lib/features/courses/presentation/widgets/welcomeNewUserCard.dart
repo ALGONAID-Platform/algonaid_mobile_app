@@ -7,6 +7,7 @@
 
 
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/features/settings/presentation/pages/about_page.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeCard extends StatelessWidget {
@@ -35,7 +36,7 @@ class WelcomeCard extends StatelessWidget {
               
               const SizedBox(height: 14),
               const Text(
-                "مرحباً بك في رحلتك التعليمية ",
+                "مرحباً بك في  منصة الجنيد ",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
@@ -70,7 +71,13 @@ class _StartButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const AboutPage(),
+          ),
+        );
+      },
       style: OutlinedButton.styleFrom(
         side: const BorderSide(
           color: Colors.white70,
@@ -87,7 +94,7 @@ class _StartButton extends StatelessWidget {
         backgroundColor: Colors.white.withOpacity(0.08), // 🔥 شفاف
       ),
       child: const Text(
-        "ابدأ التعلم الآن",
+        "  ما هي منصة الجنيد؟",
         style: TextStyle(
           fontWeight: FontWeight.w600,
         ),

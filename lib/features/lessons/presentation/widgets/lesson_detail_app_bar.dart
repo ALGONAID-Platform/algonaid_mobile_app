@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
 class LessonDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -12,12 +13,12 @@ class LessonDetailAppBar extends StatelessWidget implements PreferredSizeWidget 
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
+    return SharedAppBar(
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
         onPressed: onBack,
       ),
-      title: Text(
+      titleWidget: Text(
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,

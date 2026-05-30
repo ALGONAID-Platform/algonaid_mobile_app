@@ -12,14 +12,10 @@ class CourseHeaderSliver extends StatelessWidget {
   final String title;
   final int courseId;
   final String? imageUrl;
-  final VoidCallback? onBackTap;
-  final VoidCallback? onContinueTap;
 
   const CourseHeaderSliver({
     super.key,
     required this.title,
-    this.onBackTap,
-    this.onContinueTap,
     this.imageUrl,
     required this.courseId,
   });
@@ -30,7 +26,7 @@ class CourseHeaderSliver extends StatelessWidget {
 
     return SliverAppBar(
       expandedHeight: 220.0,
-      pinned: true,
+      pinned: false,
       stretch: true,
       backgroundColor: context.surfaceContainer,
       iconTheme: IconThemeData(color: Colors.white),

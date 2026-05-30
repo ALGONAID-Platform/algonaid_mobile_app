@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/controllers/global_video_state.dart';
@@ -106,7 +107,7 @@ class _FloatingVideoWidgetState extends State<FloatingVideoWidget> {
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.primary, width: 2),
+              border: Border.all(color: context.primary, width: 2),
             ),
             child: Stack(
               children: [

@@ -4,6 +4,7 @@ import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_p
 import 'package:algonaid_mobail_app/features/exams/presentation/widgets/exam_intro_content.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
 class ExamIntroPage extends StatefulWidget {
   final String examId;
@@ -38,14 +39,9 @@ class _ExamIntroPageState extends State<ExamIntroPage> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
-        title: const Text('تعليمات الاختبار'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        appBar: const SharedAppBar(
+          title: 'تعليمات الاختبار',
         ),
-      ),
       body: Consumer<ExamProvider>(
         builder: (context, examProvider, _) {
           if (examProvider.state == ExamState.loading ||

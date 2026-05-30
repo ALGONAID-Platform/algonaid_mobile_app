@@ -7,8 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class courseHeader extends StatelessWidget {
+  final bool hasEnrolledCourses;
+  
   const courseHeader({
     super.key,
+    required this.hasEnrolledCourses,
   });
 
   @override
@@ -18,7 +21,7 @@ class courseHeader extends StatelessWidget {
         if (moduleProvider.isLoading) {
           return const ContinueLearningShimmer();
         }
-        if (moduleProvider.lastAccessedModule != null) {
+        if (moduleProvider.lastAccessedModule != null && hasEnrolledCourses) {
           return Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -27,7 +30,7 @@ class courseHeader extends StatelessWidget {
               module: moduleProvider.lastAccessedModule!,
             ),
           );
-        }else {
+        } else {
           return WelcomeCard();
         }
       },

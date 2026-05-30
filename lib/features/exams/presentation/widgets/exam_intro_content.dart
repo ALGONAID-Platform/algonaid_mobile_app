@@ -1,4 +1,5 @@
 import 'package:algonaid_mobail_app/core/theme/borders.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/info_banner.dart';
 import 'package:flutter/material.dart';
 
 class ExamIntroContent extends StatelessWidget {
@@ -180,32 +181,19 @@ class ExamIntroWarningNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF2994A).withAlpha((0.1 * 255).round()) : const Color(0xFFFFF9F2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF2994A).withAlpha((0.2 * 255).round()) : const Color(0xFFFFEBD2)),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.warning_amber_rounded,
-            color: Color(0xFFF2994A),
-            size: 20,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'المؤقت سيبدأ مباشرة ولا يمكن إيقافه بعد البدء، تأكد من أنك مستعد.',
-              style: TextStyle(
-                fontSize: 12,
-                color: const Color(0xFFF2994A).withAlpha((0.9 * 255).round()),
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final warningColor = const Color(0xFFF2994A);
+
+    return InfoBanner(
+      message: 'المؤقت سيبدأ مباشرة ولا يمكن إيقافه بعد البدء، تأكد من أنك مستعد.',
+      icon: Icons.warning_amber_rounded,
+      backgroundColor: isDark ? warningColor.withOpacity(0.1) : const Color(0xFFFFF9F2),
+      borderColor: isDark ? warningColor.withOpacity(0.2) : const Color(0xFFFFEBD2),
+      iconColor: warningColor,
+      textStyle: TextStyle(
+        fontSize: 12,
+        color: warningColor.withOpacity(0.9),
+        height: 1.4,
       ),
     );
   }

@@ -2,17 +2,24 @@ import 'package:flutter/material.dart';
 import '../../domain/usecases/get_total_points_usecase.dart';
 import '../../domain/usecases/get_user_profile_usecase.dart';
 import '../../domain/usecases/update_user_profile_usecase.dart';
+import '../../domain/usecases/get_user_badges_usecase.dart';
 import '../../domain/entities/user_profile_entity.dart';
+import '../../domain/entities/user_badge_entity.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
+import 'package:algonaid_mobail_app/features/profile/presentation/utils/badges_helper.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final GetTotalPointsUseCase getTotalPointsUseCase;
   final GetUserProfileUseCase getUserProfileUseCase;
   final UpdateUserProfileUseCase updateUserProfileUseCase;
+  final GetUserBadgesUseCase getUserBadgesUseCase;
 
   ProfileProvider({
     required this.getTotalPointsUseCase,
     required this.getUserProfileUseCase,
     required this.updateUserProfileUseCase,
+    required this.getUserBadgesUseCase,
   });
 
   bool _isLoadingPoints = false;
@@ -29,6 +36,12 @@ class ProfileProvider extends ChangeNotifier {
 
   UserProfileEntity? _userProfile;
   UserProfileEntity? get userProfile => _userProfile;
+
+  bool _isLoadingBadges = false;
+  bool get isLoadingBadges => _isLoadingBadges;
+
+  List<UserBadgeEntity> _userBadges = [];
+  List<UserBadgeEntity> get userBadges => _userBadges;
 
   String? _error;
   String? get error => _error;
@@ -71,6 +84,48 @@ class ProfileProvider extends ChangeNotifier {
     );
 
     _isLoadingProfile = false;
+    notifyListeners();
+  }
+
+  Future<void> loadUserBadges() async {
+    _isLoadingBadges = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await getUserBadgesUseCase();
+    await result.fold(
+      (failure) async {
+        _error = failure.message;
+        debugPrint('Error loading badges: ${failure.message}');
+      },
+      (badges) async {
+        _userBadges = badges;
+
+        // Check for newly unlocked badges
+        final unlockedKeys = CacheHelper.getStringList(key: 'unlocked_badge_keys') ?? [];
+        final newUnlockedKeys = List<String>.from(unlockedKeys);
+        bool newlyUnlocked = false;
+
+        final badgeEntities = BadgesHelper.getBadges(badges);
+        for (final badge in badgeEntities) {
+          if (badge.isUnlocked && !unlockedKeys.contains(badge.key)) {
+            newUnlockedKeys.add(badge.key);
+            newlyUnlocked = true;
+            // Send local notification & play sound
+            await NotificationService().showNotification(
+              title: 'لقد حصلت على وسام جديد! 🏆',
+              body: 'تهانينا! لقد تم منحك "${badge.title}". ${badge.requirementText}',
+            );
+          }
+        }
+
+        if (newlyUnlocked) {
+          await CacheHelper.saveData(key: 'unlocked_badge_keys', value: newUnlockedKeys);
+        }
+      },
+    );
+
+    _isLoadingBadges = false;
     notifyListeners();
   }
 

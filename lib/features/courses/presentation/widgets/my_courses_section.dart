@@ -5,10 +5,14 @@ import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildC
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+
 class MyCoursesListSection extends StatelessWidget {
   final List<CourseEntity> myCourses;
+  final List<CourseEntity> allCourses;
 
-  const MyCoursesListSection({super.key, required this.myCourses});
+  const MyCoursesListSection({super.key, required this.myCourses, required this.allCourses});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,18 @@ class MyCoursesListSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionHeader(text: 'دوراتك الحالية'),
+          SectionHeader(
+            text: 'دوراتك الحالية',
+            onViewAllPressed: () {
+              context.push(
+                Routes.coursesViewAllPage,
+                extra: {
+                  'title': 'دوراتك الحالية',
+                  'courses': reversedCourses,
+                },
+              );
+            },
+          ),
           SizedBox(
             height: 345,
             child: ListView.builder(
@@ -82,7 +97,13 @@ class MyCoursesListSection extends StatelessWidget {
           // زر للانتقال لصفحة الكورسات
           ElevatedButton(
             onPressed: () {
-              // هنا تضع كود التنقل لصفحة استكشاف الكورسات
+              context.push(
+                Routes.coursesViewAllPage,
+                extra: {
+                  'title': 'جميع الدورات المتاحة',
+                  'courses': allCourses,
+                },
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: context.primary,

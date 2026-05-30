@@ -4,6 +4,7 @@ import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
 
 class LessonQuizCard extends StatelessWidget {
   final int? examId;
@@ -51,10 +52,10 @@ class LessonQuizCard extends StatelessWidget {
                   debugPrint(
                     'LessonQuizCard: exam page was not opened because examId is null',
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('الاختبار غير متاح لهذا الدرس حالياً'),
-                    ),
+                  AppSnackBar.show(
+                    context: context,
+                    message: 'الاختبار غير متاح لهذا الدرس حالياً',
+                    type: SnackBarType.info,
                   );
                   return;
                 }

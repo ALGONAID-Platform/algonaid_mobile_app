@@ -3,11 +3,12 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson_detail.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,8 +27,6 @@ class LessonDetailDownloadController extends ChangeNotifier {
   static const bool supportsOfflineDownloads = !kIsWeb;
 
   final YoutubeExplode _yt = YoutubeExplode();
-  final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
   ReceivePort? _port;
   SharedPreferences? _prefs;
@@ -62,7 +61,6 @@ class LessonDetailDownloadController extends ChangeNotifier {
 
     if (supportsOfflineDownloads) {
       if (!_isDownloaderInitialized) {
-        await _initializeNotifications();
         await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
         _isDownloaderInitialized = true;
       }
@@ -146,7 +144,7 @@ class LessonDetailDownloadController extends ChangeNotifier {
 
   Future<void> downloadVideo(BuildContext context, LessonDetail lesson) async {
     if (!supportsOfflineDownloads) {
-      _showSnackBar(context, 'تحميل الفيديو غير متاح على هذا الجهاز حالياً.');
+      _showSnackBar(context, 'تحميل الفيديو غير متاح على هذا الجهاز حالياً.', isError: true);
       return;
     }
 
@@ -154,7 +152,7 @@ class LessonDetailDownloadController extends ChangeNotifier {
 
     final videoUrl = await resolveDownloadableVideoUrl(lesson.videoUrl);
     if (videoUrl == null) {
-      _showSnackBar(context, 'لا يوجد فيديو متاح للتحميل.');
+      _showSnackBar(context, 'لا يوجد فيديو متاح للتحميل.', isError: true);
       return;
     }
 
@@ -182,13 +180,13 @@ class LessonDetailDownloadController extends ChangeNotifier {
       _showSnackBar(context, 'بدأ تحميل الفيديو.');
     } catch (_) {
       _setVideoDownloadStatus(DownloadStatus.failed);
-      _showSnackBar(context, 'تعذر بدء تحميل الفيديو.');
+      _showSnackBar(context, 'تعذر بدء تحميل الفيديو.', isError: true);
     }
   }
 
   Future<void> downloadPdf(BuildContext context, LessonDetail lesson) async {
     if (!supportsOfflineDownloads) {
-      _showSnackBar(context, 'تحميل المرفق غير متاح على هذا الجهاز حالياً.');
+      _showSnackBar(context, 'تحميل المرفق غير متاح على هذا الجهاز حالياً.', isError: true);
       return;
     }
 
@@ -196,7 +194,7 @@ class LessonDetailDownloadController extends ChangeNotifier {
 
     final pdfUrl = resolvePdfUrl(lesson.pdfUrl);
     if (pdfUrl == null) {
-      _showSnackBar(context, 'لا يوجد ملف متاح للتحميل.');
+      _showSnackBar(context, 'لا يوجد ملف متاح للتحميل.', isError: true);
       return;
     }
 
@@ -224,7 +222,7 @@ class LessonDetailDownloadController extends ChangeNotifier {
       _showSnackBar(context, 'بدأ تحميل الملف المرفق.');
     } catch (_) {
       _setPdfDownloadStatus(DownloadStatus.failed);
-      _showSnackBar(context, 'تعذر بدء تحميل الملف.');
+      _showSnackBar(context, 'تعذر بدء تحميل الملف.', isError: true);
     }
   }
 
@@ -261,7 +259,24 @@ class LessonDetailDownloadController extends ChangeNotifier {
       try {
         final videoId = VideoId(videoUrl);
         final manifest = await _yt.videos.streamsClient.getManifest(videoId);
-        final streamInfo = manifest.muxed.withHighestBitrate();
+        
+        final qualitySetting = CacheHelper.getString(key: 'downloadQuality') ?? 'متوسطة';
+        final muxedStreams = manifest.muxed.toList();
+        
+        if (muxedStreams.isEmpty) return null;
+        
+        muxedStreams.sort((a, b) => a.bitrate.compareTo(b.bitrate));
+        
+        MuxedStreamInfo streamInfo;
+        if (qualitySetting == 'منخفضة (توفير البيانات)') {
+          streamInfo = muxedStreams.first;
+        } else if (qualitySetting == 'عالية (HD)') {
+          streamInfo = muxedStreams.last;
+        } else {
+          int midIndex = muxedStreams.length ~/ 2;
+          streamInfo = muxedStreams[midIndex];
+        }
+        
         return streamInfo.url.toString();
       } catch (e) {
         debugPrint('Error getting YouTube video stream: $e');
@@ -292,12 +307,6 @@ class LessonDetailDownloadController extends ChangeNotifier {
     return '${EndPoint.uploadsBaseUrl}$pdfUrl';
   }
 
-  Future<void> _initializeNotifications() async {
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const ios = DarwinInitializationSettings();
-    const settings = InitializationSettings(android: android, iOS: ios);
-    await _notificationsPlugin.initialize(settings);
-  }
 
   Future<String> _prepareDownloadDirectory(int lessonId) async {
     final directory = await getApplicationDocumentsDirectory();
@@ -336,7 +345,6 @@ class LessonDetailDownloadController extends ChangeNotifier {
         } else if (status == DownloadTaskStatus.running) {
           _pdfDownloadStatus = DownloadStatus.downloading;
           _safeNotifyListeners();
-          _showNotification(_currentLessonId ?? 0, 'Downloading PDF', 'Progress: $progress%');
         }
       } else if (id == _videoDownloadId) {
         if (status == DownloadTaskStatus.running || status == DownloadTaskStatus.enqueued) {
@@ -350,28 +358,19 @@ class LessonDetailDownloadController extends ChangeNotifier {
         } else if (status == DownloadTaskStatus.running) {
           _videoDownloadStatus = DownloadStatus.downloading;
           _safeNotifyListeners();
-          _showNotification((_currentLessonId ?? 0) + 1000, 'Downloading Video', 'Progress: $progress%');
         }
       }
     });
   }
 
-  Future<void> _showNotification(int id, String title, String body) async {
-    const android = AndroidNotificationDetails(
-      'download_channel',
-      'Downloads',
-      showProgress: true,
-      maxProgress: 100,
-      progress: 0,
-    );
 
-    const details = NotificationDetails(android: android);
-    await _notificationsPlugin.show(id, title, body, details);
-  }
-
-  void _showSnackBar(BuildContext context, String message) {
+  void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    AppSnackBar.show(
+      context: context, 
+      message: message, 
+      type: isError ? SnackBarType.error : SnackBarType.success
+    );
   }
 
   bool _isDisposed = false;

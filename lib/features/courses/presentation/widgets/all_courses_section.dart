@@ -5,6 +5,8 @@ import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildC
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 
 class AllCoursesListSection extends StatelessWidget {
   final List<CourseEntity> allCourses;
@@ -21,7 +23,18 @@ class AllCoursesListSection extends StatelessWidget {
         crossAxisAlignment:
             CrossAxisAlignment.start, // تم التعديل لتتناسب مع اتجاه النص العربي
         children: [
-          const SectionHeader(text: 'كل الكورسات'),
+          SectionHeader(
+            text: 'كل الكورسات',
+            onViewAllPressed: reversedCourses.isEmpty ? null : () {
+              context.push(
+                Routes.coursesViewAllPage,
+                extra: {
+                  'title': 'كل الكورسات',
+                  'courses': reversedCourses,
+                },
+              );
+            },
+          ),
 
           if (allCourses.isEmpty)
             _buildAllEnrolledCard(context)

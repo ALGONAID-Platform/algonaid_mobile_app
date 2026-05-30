@@ -1,5 +1,7 @@
 import 'package:algonaid_mobail_app/features/modules/domain/entities/module_grades.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_module_grades.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
 import 'package:flutter/material.dart';
 
 class ModuleGradesState {
@@ -47,19 +49,33 @@ class ModuleGradesProvider extends ChangeNotifier {
 
     final result = await getModuleGrades(moduleId);
 
-    result.fold(
-      (failure) {
+    await result.fold(
+      (failure) async {
         _states[moduleId] = _states[moduleId]!.copyWith(
           isLoading: false,
           errorMessage: failure.message,
         );
       },
-      (grades) {
+      (grades) async {
         _states[moduleId] = _states[moduleId]!.copyWith(
           isLoading: false,
           grades: grades,
           errorMessage: null,
         );
+
+        // Check for module silver excellence badge
+        final isModuleUnlocked = grades.averagePercentage > 85;
+        if (isModuleUnlocked) {
+          final cacheKey = 'unlocked_module_silver_$moduleId';
+          final alreadyNotified = CacheHelper.getBool(key: cacheKey) ?? false;
+          if (!alreadyNotified) {
+            await CacheHelper.saveData(key: cacheKey, value: true);
+            await NotificationService().showNotification(
+              title: 'لقد حصلت على وسام البراعة الفضي! 🥈',
+              body: 'تهانينا! لقد أثبت براعتك واجتزت اختبارات هذه الوحدة بنجاح بمعدل ${grades.averagePercentage.toStringAsFixed(1)}%.',
+            );
+          }
+        }
       },
     );
 

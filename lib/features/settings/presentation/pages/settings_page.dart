@@ -3,6 +3,7 @@ import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:animated_theme_switcher/animated_theme_switcher.dart' hide ThemeProvider;
 import 'package:algonaid_mobail_app/core/theme/theme.dart';
 import 'package:algonaid_mobail_app/core/theme/theme_provider.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -53,14 +55,18 @@ class _SettingsPageState extends State<SettingsPage> {
         tempDir.deleteSync(recursive: true);
       }
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم مسح الذاكرة المؤقتة بنجاح')),
+        AppSnackBar.show(
+          context: context,
+          message: 'تم مسح الذاكرة المؤقتة بنجاح',
+          type: SnackBarType.success,
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ أثناء مسح الذاكرة المؤقتة: $e')),
+        AppSnackBar.show(
+          context: context,
+          message: 'حدث خطأ أثناء مسح الذاكرة المؤقتة: $e',
+          type: SnackBarType.error,
         );
       }
     }
@@ -93,14 +99,18 @@ class _SettingsPageState extends State<SettingsPage> {
           }
           
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('تم مسح جميع التنزيلات بنجاح')),
+            AppSnackBar.show(
+              context: context,
+              message: 'تم مسح جميع التنزيلات بنجاح',
+              type: SnackBarType.success,
             );
           }
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('حدث خطأ أثناء مسح التنزيلات: $e')),
+            AppSnackBar.show(
+              context: context,
+              message: 'حدث خطأ أثناء مسح التنزيلات: $e',
+              type: SnackBarType.error,
             );
           }
         }
@@ -113,16 +123,8 @@ class _SettingsPageState extends State<SettingsPage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () => context.pop(),
-          ),
-          title: Text(
-            'الإعدادات المتقدمة',
-            style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
+        appBar: const SharedAppBar(
+          title: 'الإعدادات المتقدمة',
         ),
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -226,7 +228,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: Text('السياسات والأحكام', style: context.textTheme.bodyLarge),
               trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
               onTap: () {
-                // TODO: الانتقال إلى صفحة السياسات
+                context.push(Routes.policiesPage);
               },
             ),
             const SizedBox(height: 24),

@@ -1,5 +1,6 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/lessonHeader.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/moduleTimelineList.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/widgets/textDivider.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
 import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 
 class LessonsListPage extends StatelessWidget {
   final int moduleId;
@@ -148,12 +150,21 @@ class _LessonsListView extends StatelessWidget {
                         return LessonTimelineItem(
                           lesson: lessonData,
                           isLast: index == lessons.length - 1,
-                          onTap: () {
+                          onTap: () async {
+                            await CacheHelper.saveData(key: 'last_lesson_module_$moduleId', value: lessonData.id);
+                            if (!context.mounted) return;
                             GoRouter.of(context).push(
                               '${Routes.lessonDetails}/${lessonData.id}',
-                              extra:
-                                  '${Routes.lessonsList}/$moduleId', // تمرير المسار السابق
-                            );
+                              extra: '${Routes.lessonsList}/$moduleId',
+                            ).then((_) {
+                              if (context.mounted) {
+                                context.read<LessonsListProvider>().loadLessons(moduleId);
+                                // Also tell GetCoursesProvider to refresh in background so home page updates
+                                try {
+                                  context.read<GetCoursesProvider>().refreshAll();
+                                } catch (_) {}
+                              }
+                            });
                           },
                         );
                       }, childCount: lessons.length),

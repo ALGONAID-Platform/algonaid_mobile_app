@@ -2,6 +2,7 @@ import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -14,21 +15,10 @@ class AboutPage extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: context.background,
-        appBar: AppBar(
-          elevation: 0,
+        appBar: const SharedAppBar(
+          title: 'حول المنصة',
           backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          title: Text(
-            'حول المنصة',
-            style: context.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          elevation: 0,
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

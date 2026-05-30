@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
 import 'package:lottie/lottie.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/presentation/widgets/excellence_modules_bottom_sheet.dart';
 
 class ExcellenceCoursesSection extends StatefulWidget {
   const ExcellenceCoursesSection({super.key});
@@ -55,7 +56,11 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SectionHeader(text: ' الأنجازات'),
+                      SectionHeader(
+                        text: '  اوسمةالأنجازات',
+                        subText: 'خاص بالاختبارات',
+                        iconColor: Colors.amber.shade700,
+                      ),
                       TextButton(
                         onPressed: () {
                           GoRouter.of(context).push(Routes.allExcellenceCourses);
@@ -81,31 +86,9 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                     itemBuilder: (context, index) {
                       final course = provider.courses[index];
                       return GestureDetector(
-                        onTap: course.isCompleted ? () {
-                          final dummyCourse = CourseEntity(
-                            id: course.courseId,
-                            title: course.courseTitle,
-                            description: '',
-                            thumbnail: course.courseImage,
-                            createdAt: DateTime.now(),
-                            updatedAt: DateTime.now(),
-                            instructorId: 0,
-                            teacher: TeacherEntity(
-                              id: 0,
-                              specialization: '',
-                              experience: 0,
-                              userId: 0,
-                              user: UserEntity(name: 'مدرس', email: ''),
-                            ),
-                            moduleTitles: [],
-                            modulesCount: 0,
-                            isEnrolled: true,
-                            totalLessons: 1,
-                            completedLessons: 1,
-                            progressPercentage: course.averagePercentage.toDouble(),
-                          );
-                          GoRouter.of(context).push('${Routes.modulesList}/${course.courseId}', extra: dummyCourse);
-                        } : null,
+                        onTap: () {
+                          ExcellenceModulesBottomSheet.show(context, course);
+                        },
                         child: Opacity(
                           opacity: course.isCompleted ? 1.0 : 0.6,
                           child: Container(

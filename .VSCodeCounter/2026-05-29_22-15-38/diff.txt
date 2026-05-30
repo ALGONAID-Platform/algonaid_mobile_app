@@ -1,0 +1,56 @@
+Date : 2026-05-29 22:15:38
+Directory : /home/bashar/Projects/algonaid_mobile_app/lib
+Total : 14 files,  617 codes, 1 comments, 28 blanks, all 646 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         14 |        617 |          1 |         28 |        646 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                           | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                              |         14 |        617 |          1 |         28 |        646 |
+| core                                                                                                           |          3 |         11 |          1 |          1 |         13 |
+| core/di                                                                                                        |          1 |          5 |          0 |          1 |          6 |
+| core/routes                                                                                                    |          2 |          6 |          1 |          0 |          7 |
+| features                                                                                                       |         11 |        606 |          0 |         27 |        633 |
+| features/profile                                                                                               |         11 |        606 |          0 |         27 |        633 |
+| features/profile/data                                                                                          |          3 |         47 |          1 |          6 |         54 |
+| features/profile/data/datasources                                                                              |          1 |         12 |          0 |          1 |         13 |
+| features/profile/data/models                                                                                   |          1 |         21 |          0 |          4 |         25 |
+| features/profile/data/repositories                                                                             |          1 |         14 |          1 |          1 |         16 |
+| features/profile/domain                                                                                        |          3 |         29 |          0 |          6 |         35 |
+| features/profile/domain/entities                                                                               |          1 |         16 |          0 |          2 |         18 |
+| features/profile/domain/repositories                                                                           |          1 |          2 |          0 |          0 |          2 |
+| features/profile/domain/usecases                                                                               |          1 |         11 |          0 |          4 |         15 |
+| features/profile/presentation                                                                                  |          5 |        530 |         -1 |         15 |        544 |
+| features/profile/presentation/pages                                                                            |          1 |        278 |          0 |          7 |        285 |
+| features/profile/presentation/providers                                                                        |          1 |         25 |          0 |          5 |         30 |
+| features/profile/presentation/utils                                                                            |          1 |        135 |          0 |          5 |        140 |
+| features/profile/presentation/widgets                                                                          |          2 |         92 |         -1 |         -2 |         89 |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                       | language | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/bashar/Projects/algonaid_mobile_app/lib/core/di/service_locator.dart                                     | Dart     |          5 |          0 |          1 |          6 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/core/routes/appRouters.dart                                      | Dart     |          5 |          1 |          0 |          6 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/core/routes/paths_routes.dart                                    | Dart     |          1 |          0 |          0 |          1 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/data/datasources/profile_remote_datasource.dart | Dart     |         12 |          0 |          1 |         13 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/data/models/user_badge_model.dart               | Dart     |         21 |          0 |          4 |         25 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/data/repositories/profile_repository_impl.dart  | Dart     |         14 |          1 |          1 |         16 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/domain/entities/user_badge_entity.dart          | Dart     |         16 |          0 |          2 |         18 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/domain/repositories/profile_repository.dart     | Dart     |          2 |          0 |          0 |          2 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/domain/usecases/get_user_badges_usecase.dart    | Dart     |         11 |          0 |          4 |         15 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/pages/all_badges_page.dart         | Dart     |        278 |          0 |          7 |        285 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/providers/profile_provider.dart    | Dart     |         25 |          0 |          5 |         30 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/utils/badges_helper.dart           | Dart     |        135 |          0 |          5 |        140 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/widgets/badges_section.dart        | Dart     |         91 |         -1 |         -2 |         88 |
+| /home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/widgets/profile_header.dart        | Dart     |          1 |          0 |          0 |          1 |
+| Total                                                                                                          |          |        617 |          1 |         28 |        646 |
++----------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

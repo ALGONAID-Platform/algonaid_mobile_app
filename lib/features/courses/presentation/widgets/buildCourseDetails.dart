@@ -1,5 +1,8 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
@@ -188,6 +191,22 @@ class BuildCourseDetails extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
+                final token = TokenStorage.getToken();
+                final isGuest = token == null || token.trim().isEmpty;
+                
+                if (isGuest) {
+                  final navContext = navigatorKey.currentContext;
+                  if (navContext != null) {
+                    GoRouter.of(navContext).push(Routes.auth);
+                    AppSnackBar.show(
+                      context: navContext,
+                      message: 'يرجى تسجيل الدخول للقيام بهذه العملية',
+                      type: SnackBarType.error,
+                    );
+                  }
+                  return;
+                }
+
                 if (!course.isEnrolled) {
                   AppDialog.showDynamicDialog(
                     title: "ملاحظة",

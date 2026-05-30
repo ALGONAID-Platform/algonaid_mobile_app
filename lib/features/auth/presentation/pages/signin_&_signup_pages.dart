@@ -133,15 +133,15 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                         )
                       : SizedBox.shrink(),
 
-                  //=========================
-                  // role field
-                  //=========================
-                  if (!authService.isLogin) ...[
-                    TextLabel(text: "الدور"),
-                    const SizedBox(height: 5),
-                    DropDownButton(auth: authService),
-                  ],
-                  const SizedBox(height: 32),
+                  // //=========================
+                  // // role field
+                  // //=========================
+                  // if (!authService.isLogin) ...[
+                  //   TextLabel(text: "الدور"),
+                  //   const SizedBox(height: 5),
+                  //   DropDownButton(auth: authService),
+                  // ],
+                  // const SizedBox(height: 32),
                   //=========================
 
                   //=========================
@@ -161,16 +161,16 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                   password: _passwordController.text.trim(),
                                 );
                               } else {
-                                if (authService.selectedRole == null) {
-                                  AppDialog.showDynamicDialog(
-                                    context: context,
-                                    title: "تنبيه",
-                                    message: "يرجى اختيار الدور",
-                                    isError: true,
-                                    showCancelButton: false,
-                                  );
-                                  return;
-                                }
+                                // if (authService.selectedRole == null) {
+                                //   AppDialog.showDynamicDialog(
+                                //     context: context,
+                                //     title: "تنبيه",
+                                //     message: "يرجى اختيار الدور",
+                                //     isError: true,
+                                //     showCancelButton: false,
+                                //   );
+                                //   return;
+                                // }
                                 await authService.signUp(
                                   username: _nameController.text.trim(),
                                   email: _emailController.text.trim(),
@@ -206,7 +206,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                             text: authService.isLogin
                                 ? "تسجيل دخول"
                                 : "إنشاء حساب",
-                            textColor: Theme.of(context).colorScheme.onPrimary,
+                            textColor:Colors.white,
                           ),
                   ),
 

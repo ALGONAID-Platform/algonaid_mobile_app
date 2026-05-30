@@ -12,5 +12,8 @@ abstract class Routes {
   static const String aboutPage = '/aboutPage';
   static const String developersPage = '/developersPage';
   static const String settingsPage = '/settingsPage';
+  static const String policiesPage = '/policiesPage';
   static const String allExcellenceCourses = '/allExcellenceCourses';
+  static const String coursesViewAllPage = '/coursesViewAllPage';
+  static const String allBadgesPage = '/allBadgesPage';
 }

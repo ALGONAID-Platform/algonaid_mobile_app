@@ -16,6 +16,7 @@ import 'package:algonaid_mobail_app/features/courses/domain/usecases/enroll_usec
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_progress.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobail_app/features/excellence_courses/domain/usecases/get_excellence_modules_usecase.dart';
 import 'package:algonaid_mobail_app/features/search/domain/usecases/search_courses_usecase.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_grades.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
@@ -65,6 +66,7 @@ import 'package:algonaid_mobail_app/features/profile/domain/repositories/profile
 import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_total_points_usecase.dart';
 import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:algonaid_mobail_app/features/profile/domain/usecases/update_user_profile_usecase.dart';
+import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_user_badges_usecase.dart';
 import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
 
 
@@ -237,6 +239,10 @@ void setupServiceLocator() {
     () => GetExcellenceCoursesUseCase(getIt()),
   );
 
+  getIt.registerLazySingleton<GetExcellenceModulesUseCase>(
+    () => GetExcellenceModulesUseCase(getIt()),
+  );
+
   getIt.registerLazySingleton<GetExamUseCase>(
     () => GetExamUseCase(getIt<ExamRepository>()),
   );
@@ -273,6 +279,10 @@ void setupServiceLocator() {
     () => UpdateUserProfileUseCase(getIt()),
   );
 
+  getIt.registerLazySingleton<GetUserBadgesUseCase>(
+    () => GetUserBadgesUseCase(getIt()),
+  );
+
   // ================= PROVIDERS =================
   getIt.registerFactory<AuthServiceProvider>(
     () => AuthServiceProvider(
@@ -304,6 +314,7 @@ void setupServiceLocator() {
   getIt.registerFactory<ExcellenceCoursesProvider>(
     () => ExcellenceCoursesProvider(
       getExcellenceCoursesUseCase: getIt(),
+      getExcellenceModulesUseCase: getIt(),
     ),
   );
 
@@ -333,6 +344,7 @@ void setupServiceLocator() {
       getTotalPointsUseCase: getIt(),
       getUserProfileUseCase: getIt(),
       updateUserProfileUseCase: getIt(),
+      getUserBadgesUseCase: getIt(),
     ),
   );
 

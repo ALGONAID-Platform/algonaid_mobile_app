@@ -123,7 +123,7 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
                             onPressed: () {
                               AppBottomSheet.show(
                                 context: context,
-                                title: 'تفاصيل درجات الكورس',
+                                title: "تفاصيل درجات اختبارات الكورس",
                                 padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
                                 child: CourseGradesWidget(courseId: widget.courseId),
                               );

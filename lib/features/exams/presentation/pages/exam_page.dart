@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/info_banner.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_intro_page.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/widgets/exam_widget.dart';
+import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/features/exams/presentation/pages/results_page.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
 class ExamPage extends StatefulWidget {
   final String examId;
@@ -56,8 +60,8 @@ class _ExamPageState extends State<ExamPage> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
+      appBar: SharedAppBar(
+        leading: const SizedBox.shrink(), // hide default back arrow
         actions: [
           IconButton(
             icon: const Icon(Icons.arrow_forward_ios, size: 20),
@@ -65,12 +69,18 @@ class _ExamPageState extends State<ExamPage> {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
-        title: Consumer<ExamProvider>(
+        titleWidget: Consumer<ExamProvider>(
           builder: (context, examProvider, child) {
             if (examProvider.exam != null) {
-              return Text(examProvider.exam!.title);
+              return Text(
+                examProvider.exam!.title,
+                style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              );
             }
-            return const Text('الاختبار');
+            return Text(
+              'الاختبار',
+              style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            );
           },
         ),
         centerTitle: true,
@@ -179,40 +189,13 @@ class _ExamPageState extends State<ExamPage> {
                         ),
                         const SizedBox(height: 24),
                         // Instructions
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primary.withOpacity(0.3),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'تأكد من مراجعة خطوات الحل بدقة قبل اختيار الإجابة. يمكنك تعديل إجاباتك في أي وقت.',
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        InfoBanner(
+                          message: 'تأكد من مراجعة خطوات الحل بدقة قبل اختيار الإجابة. يمكنك تعديل إجاباتك في أي وقت.',
+                          icon: Icons.info,
+                          iconColor: Theme.of(context).colorScheme.primary,
+                          textStyle: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
@@ -261,25 +244,19 @@ class _ExamPageState extends State<ExamPage> {
             onSubmit: () {
               if (examProvider.answeredQuestions !=
                   examProvider.totalQuestions) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'الرجاء الإجابة على جميع الأسئلة قبل التسليم.',
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
+                AppSnackBar.show(
+                  context: context,
+                  message: 'الرجاء الإجابة على جميع الأسئلة قبل التسليم.',
+                  type: SnackBarType.error,
                 );
                 return;
               }
 
               if ((examProvider.attemptId ?? 0) <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'لا يمكن تسليم الاختبار بدون اتصال بالإنترنت. يمكنك المتابعة والمراجعة ثم الإرسال عند عودة الاتصال.',
-                    ),
-                    backgroundColor: Colors.orange,
-                  ),
+                AppSnackBar.show(
+                  context: context,
+                  message: 'لا يمكن تسليم الاختبار بدون اتصال بالإنترنت. يمكنك المتابعة والمراجعة ثم الإرسال عند عودة الاتصال.',
+                  type: SnackBarType.error,
                 );
                 return;
               }

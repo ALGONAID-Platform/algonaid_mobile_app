@@ -7,6 +7,7 @@ import 'package:algonaid_mobail_app/core/widgets/shared/circular_reveal.dart';
 import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_page.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_view_all_page.dart';
 import 'package:algonaid_mobail_app/features/onboard/presentaion/pages/onboarding_screen.dart'; // New Import
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
@@ -20,6 +21,8 @@ import 'package:algonaid_mobail_app/features/settings/presentation/pages/about_p
 import 'package:algonaid_mobail_app/features/settings/presentation/pages/developers_page.dart';
 import 'package:algonaid_mobail_app/features/settings/presentation/pages/settings_page.dart';
 import 'package:algonaid_mobail_app/features/excellence_courses/presentation/pages/all_excellence_courses_page.dart';
+import 'package:algonaid_mobail_app/features/profile/presentation/pages/all_badges_page.dart';
+import 'package:algonaid_mobail_app/features/settings/presentation/pages/policies_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -170,6 +173,27 @@ abstract class AppRouters {
       GoRoute(
         path: Routes.allExcellenceCourses,
         builder: (context, state) => const AllExcellenceCoursesPage(),
+      ),
+      /// Policies page.
+      GoRoute(
+        path: Routes.policiesPage,
+        builder: (context, state) => const PoliciesPage(),
+      ),
+      /// View all courses page
+      GoRoute(
+        path: Routes.coursesViewAllPage,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>?;
+          return CoursesViewAllPage(
+            title: data?['title'] as String? ?? 'الدورات',
+            courses: data?['courses'] as List<CourseEntity>? ?? [],
+          );
+        },
+      ),
+      /// All badges page
+      GoRoute(
+        path: Routes.allBadgesPage,
+        builder: (context, state) => const AllBadgesPage(),
       ),
     ],
   );

@@ -20,6 +20,7 @@ class GetCoursesProvider extends ChangeNotifier {
   });
 
   bool _isLoading = false;
+  bool _isEnrolling = false;
   bool _isSuccessEnroll = false;
   String? _errorMessage;
 
@@ -33,6 +34,7 @@ class GetCoursesProvider extends ChangeNotifier {
   );
 
   bool get isLoading => _isLoading;
+  bool get isEnrolling => _isEnrolling;
   String? get errorMessage => _errorMessage;
   bool get isSuccessEnroll => _isSuccessEnroll;
 
@@ -88,7 +90,7 @@ class GetCoursesProvider extends ChangeNotifier {
   Future<void> enrollInCourse({int? courseId}) async {
     if (courseId == null) return;
 
-    _isLoading = true;
+    _isEnrolling = true;
     _isSuccessEnroll = false;
     _errorMessage = null;
     notifyListeners();
@@ -101,7 +103,7 @@ class GetCoursesProvider extends ChangeNotifier {
       (failure) {
         _errorMessage = failure.message;
         _isSuccessEnroll = false;
-        _isLoading = false;
+        _isEnrolling = false;
         notifyListeners();
       },
       (isSuccess) {
@@ -109,7 +111,7 @@ class GetCoursesProvider extends ChangeNotifier {
         _moveCourseToMyCourses(courseId);
 
         _isSuccessEnroll = true;
-        _isLoading = false;
+        _isEnrolling = false;
         _errorMessage = null;
 
         // notifyListeners هنا ستجعل القوائم في الواجهة تتحدث فوراً
@@ -150,11 +152,12 @@ class GetCoursesProvider extends ChangeNotifier {
         final CourseEntity originalCourse = allCourses[courseIndex];
 
         final updatedCourse = originalCourse.copyWith(isEnrolled: true);
-        originalCourse.copyWith(id: 55);
 
         allCourses.removeAt(courseIndex);
+        allCourses = List.from(allCourses); // Create new reference for UI rebuild
+        
         if (!myCourses.any((c) => c.id == courseId)) {
-          myCourses.add(updatedCourse);
+          myCourses = List.from(myCourses)..insert(0, updatedCourse); // Insert at the beginning and update reference
         }
 
         notifyListeners();

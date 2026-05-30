@@ -3,6 +3,9 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
 import 'package:algonaid_mobail_app/core/theme/borders.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/buildExpertBadge.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/progressInfo.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
@@ -11,8 +14,10 @@ import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/sliverListItemBuilder.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/widgets/modules_error_state.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
+import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:provider/provider.dart';
 
 class ModulesListPage extends StatelessWidget {
@@ -54,8 +59,6 @@ class _ModulesListView extends StatelessWidget {
                     title: course.title,
                     imageUrl: course.thumbnail,
                     courseId: course.id,
-                    onBackTap: () {},
-                    onContinueTap: () {},
                   ),
                   SliverPersistentHeader(
                     pinned: true,
@@ -92,6 +95,76 @@ class _ModulesListView extends StatelessWidget {
                                 totalCount: course.totalLessons,
                                 completedCount: course.completedLessons,
                                 progress: course.progressPercentage,
+                                onContinueTap: () {
+                                  if (modules.isEmpty) return;
+                                  
+                                  final lastModuleId = CacheHelper.getInt(key: 'last_module_course_${course.id}');
+                                  
+                                  if (lastModuleId != null) {
+                                    final lastLessonId = CacheHelper.getInt(key: 'last_lesson_module_$lastModuleId');
+                                    
+                                    if (lastLessonId != null) {
+                                      context.push(
+                                        '${Routes.lessonDetails}/$lastLessonId',
+                                        extra: '${Routes.lessonsList}/$lastModuleId',
+                                      ).then((_) {
+                                        if (context.mounted) {
+                                          try {
+                                            context.read<ModulesListProvider>().loadModules(course.id);
+                                            context.read<GetCoursesProvider>().refreshAll();
+                                          } catch (_) {}
+                                        }
+                                      });
+                                      return;
+                                    } else {
+                                      try {
+                                        final m = modules.firstWhere((m) => m.id == lastModuleId);
+                                        context.push(
+                                          '${Routes.lessonsList}/${m.id}',
+                                          extra: {
+                                            'moduleTitle': m.title,
+                                            'completedLessons': m.completedLessons,
+                                            'progressPercentage': m.progressPercentage,
+                                            'totalLessons': m.totalLessons,
+                                          },
+                                        ).then((_) {
+                                          if (context.mounted) {
+                                            try {
+                                              context.read<ModulesListProvider>().loadModules(course.id);
+                                              context.read<GetCoursesProvider>().refreshAll();
+                                            } catch (_) {}
+                                          }
+                                        });
+                                        return;
+                                      } catch (_) {}
+                                    }
+                                  }
+
+                                  // Fallback logic
+                                  Module? targetModule;
+                                  try {
+                                    targetModule = modules.firstWhere((m) => m.progressPercentage < 100);
+                                  } catch (_) {
+                                    targetModule = modules.last;
+                                  }
+                                  
+                                  context.push(
+                                    '${Routes.lessonsList}/${targetModule.id}',
+                                    extra: {
+                                      'moduleTitle': targetModule.title,
+                                      'completedLessons': targetModule.completedLessons,
+                                      'progressPercentage': targetModule.progressPercentage,
+                                      'totalLessons': targetModule.totalLessons,
+                                    },
+                                  ).then((_) {
+                                    if (context.mounted) {
+                                      try {
+                                        context.read<ModulesListProvider>().loadModules(course.id);
+                                        context.read<GetCoursesProvider>().refreshAll();
+                                      } catch (_) {}
+                                    }
+                                  });
+                                },
                               ),
                             ),
                           ),

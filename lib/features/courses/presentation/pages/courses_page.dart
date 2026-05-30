@@ -22,6 +22,8 @@ import 'package:algonaid_mobail_app/features/modules/presentation/providers/last
 import 'package:algonaid_mobail_app/features/profile/presentation/pages/profile_page.dart'; // Added
 import 'package:algonaid_mobail_app/features/downloads/presentation/pages/downloads_page.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/pages/competitions_page.dart';
+import 'dart:convert';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({Key? key}) : super(key: key);
@@ -77,9 +79,9 @@ class _CoursesPageState extends State<CoursesPage> {
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
-                        courseHeader(),
+                        courseHeader(hasEnrolledCourses: provider.myCourses.isNotEmpty),
 
-                        MyCoursesListSection(myCourses: provider.myCourses),
+                        MyCoursesListSection(myCourses: provider.myCourses, allCourses: provider.allCourses),
 
                         AllCoursesListSection(allCourses: provider.allCourses),
 
@@ -147,11 +149,10 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
 
     return Scaffold(
       backgroundColor: context.background,
-      appBar: CustomWhiteAppBar(
+      appBar: ReactiveAppBar(
         userName: userName,
         userImageUrl: userAvatar,
         appBarTitle: _getAppBarTitle(_currentIndex),
-        notificationCount: 4,
         onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
         onProfilePressed: () {
           setState(() {
@@ -190,4 +191,56 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
       ),
     );
   }
+}
+
+class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String userName;
+  final String? userImageUrl;
+  final String appBarTitle;
+  final VoidCallback onProfilePressed;
+  final VoidCallback onNotificationPressed;
+  final VoidCallback onSearchPressed;
+  final VoidCallback onMenuPressed;
+
+  const ReactiveAppBar({
+    super.key,
+    required this.userName,
+    required this.userImageUrl,
+    required this.appBarTitle,
+    required this.onProfilePressed,
+    required this.onNotificationPressed,
+    required this.onSearchPressed,
+    required this.onMenuPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<Box<String>>(
+      valueListenable: Hive.box<String>('local_notifications_box').listenable(),
+      builder: (context, box, _) {
+        final unreadCount = box.values.map((e) {
+          try {
+            final map = jsonDecode(e) as Map<String, dynamic>;
+            return map['isRead'] as bool? ?? false;
+          } catch (_) {
+            return true;
+          }
+        }).where((isRead) => !isRead).length;
+
+        return CustomWhiteAppBar(
+          userName: userName,
+          userImageUrl: userImageUrl,
+          appBarTitle: appBarTitle,
+          notificationCount: unreadCount,
+          onMenuPressed: onMenuPressed,
+          onProfilePressed: onProfilePressed,
+          onNotificationPressed: onNotificationPressed,
+          onSearchPressed: onSearchPressed,
+        );
+      },
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 12);
 }

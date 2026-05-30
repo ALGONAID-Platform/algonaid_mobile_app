@@ -3,6 +3,7 @@ import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
 class DeveloperInfo {
   final String name;
@@ -112,21 +113,10 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: context.background,
-        appBar: AppBar(
-          elevation: 0,
+        appBar: const SharedAppBar(
+          title: 'طاقم التطوير',
           backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          title: Text(
-            'طاقم التطوير',
-            style: context.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          elevation: 0,
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

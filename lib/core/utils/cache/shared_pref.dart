@@ -51,6 +51,10 @@ class CacheHelper {
     return _sharedPreferences.getDouble(key);
   }
 
+  static List<String>? getStringList({required String key}) {
+    return _sharedPreferences.getStringList(key);
+  }
+
   // ============================================================
   // 4️⃣ دوال الحذف والتنظيف
   // ============================================================

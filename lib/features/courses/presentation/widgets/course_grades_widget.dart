@@ -1,9 +1,11 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/di/service_locator.dart';
+import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class CourseGradesWidget extends StatefulWidget {
@@ -198,85 +200,116 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                   // Exams List
                   ...grades.examDetails.map((exam) {
                     final isPerfect = exam.percentage == 100;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: context.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isPerfect
-                              ? (isDark ? Colors.green.shade700 : Colors.green.withOpacity(0.5))
-                              : (isDark ? Colors.transparent : AppColors.grey200),
-                          width: isPerfect ? 2 : 1,
-                        ),
-                        boxShadow: [
-                          if (!isDark)
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            final targetRoute = '${Routes.examPage}/${exam.examId}';
+                            GoRouter.of(context).push(targetRoute, extra: Routes.coursesPage);
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Ink(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: context.surface,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isPerfect
+                                    ? (isDark ? Colors.green.shade700 : Colors.green.withOpacity(0.5))
+                                    : (isDark ? Colors.transparent : AppColors.grey200),
+                                width: isPerfect ? 2 : 1,
+                              ),
+                              boxShadow: [
+                                if (!isDark)
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.03),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                              ],
                             ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  exam.examTitle,
-                                  style: context.theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.assignment_outlined,
+                                            color: isPerfect ? Colors.green : context.primary,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              exam.examTitle,
+                                              style: context.theme.textTheme.titleSmall?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: isPerfect
+                                            ? (isDark ? Colors.green.withOpacity(0.2) : Colors.green.shade50)
+                                            : (isDark ? context.primary.withOpacity(0.2) : context.primary.withOpacity(0.1)),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${exam.highestScore} / ${exam.totalPoints}',
+                                        style: context.theme.textTheme.labelMedium?.copyWith(
+                                          color: isPerfect
+                                              ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
+                                              : (isDark ? context.primary : context.primary),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: Colors.grey.withOpacity(0.7),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: isPerfect
-                                      ? (isDark ? Colors.green.withOpacity(0.2) : Colors.green.shade50)
-                                      : (isDark ? context.primary.withOpacity(0.2) : context.primary.withOpacity(0.1)),
-                                  borderRadius: BorderRadius.circular(12),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: LinearProgress(
+                                        progressPercentage: exam.percentage,
+                                        minHieght: 8,
+                                        hPadding: 0,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      '${exam.percentage.toStringAsFixed(0)}%',
+                                      style: context.theme.textTheme.labelSmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: isPerfect ? Colors.green : Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                child: Text(
-                                  '${exam.highestScore} / ${exam.totalPoints}',
-                                  style: context.theme.textTheme.labelMedium?.copyWith(
-                                    color: isPerfect
-                                        ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
-                                        : (isDark ? context.primary : context.primary),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: LinearProgress(
-                                  progressPercentage: exam.percentage,
-                                  minHieght: 8,
-                                  hPadding: 0,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                '${exam.percentage.toStringAsFixed(0)}%',
-                                style: context.theme.textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: isPerfect ? Colors.green : Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
                     );
                   }),

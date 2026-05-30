@@ -55,7 +55,7 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SectionHeader(text: ' الكورسات المتميزة'),
+                      SectionHeader(text: '  الأنجازات'),
                       TextButton(
                         onPressed: () {
                           GoRouter.of(context).push(Routes.allExcellenceCourses);

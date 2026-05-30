@@ -52,6 +52,7 @@ abstract class AppConstants {
   static const String cacheModuleGradesPrefix = 'module_grades_';
   static const String cacheCourseGradesPrefix = 'course_grades_';
   static const String cacheTotalPoints = 'cache_total_points';
+  static const String cacheUserProfile = 'cache_user_profile';
   static const String cacheExcellenceCourses = 'cache_excellence_courses';
 
   //validation

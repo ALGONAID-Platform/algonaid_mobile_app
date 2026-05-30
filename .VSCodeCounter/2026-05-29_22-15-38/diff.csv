@@ -1,0 +1,16 @@
+"filename", "language", "Dart", "comment", "blank", "total"
+"/home/bashar/Projects/algonaid_mobile_app/lib/core/di/service_locator.dart", "Dart", 5, 0, 1, 6
+"/home/bashar/Projects/algonaid_mobile_app/lib/core/routes/appRouters.dart", "Dart", 5, 1, 0, 6
+"/home/bashar/Projects/algonaid_mobile_app/lib/core/routes/paths_routes.dart", "Dart", 1, 0, 0, 1
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/data/datasources/profile_remote_datasource.dart", "Dart", 12, 0, 1, 13
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/data/models/user_badge_model.dart", "Dart", 21, 0, 4, 25
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/data/repositories/profile_repository_impl.dart", "Dart", 14, 1, 1, 16
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/domain/entities/user_badge_entity.dart", "Dart", 16, 0, 2, 18
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/domain/repositories/profile_repository.dart", "Dart", 2, 0, 0, 2
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/domain/usecases/get_user_badges_usecase.dart", "Dart", 11, 0, 4, 15
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/pages/all_badges_page.dart", "Dart", 278, 0, 7, 285
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/providers/profile_provider.dart", "Dart", 25, 0, 5, 30
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/utils/badges_helper.dart", "Dart", 135, 0, 5, 140
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/widgets/badges_section.dart", "Dart", 91, -1, -2, 88
+"/home/bashar/Projects/algonaid_mobile_app/lib/features/profile/presentation/widgets/profile_header.dart", "Dart", 1, 0, 0, 1
+"Total", "-", 617, 1, 28, 646
