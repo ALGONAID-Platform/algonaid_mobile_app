@@ -6,7 +6,7 @@ import 'package:algonaid_mobail_app/features/excellence_courses/presentation/pro
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart'; // Added
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_lesson_progress.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart'; // Added
-import 'package:algonaid_mobail_app/features/onboard/presentaion/providers/onboarding_provider.dart';
+import 'package:algonaid_mobail_app/features/onboard/presentation/providers/onboarding_provider.dart';
 import 'package:algonaid_mobail_app/core/theme/theme_provider.dart'; // Added
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:algonaid_mobail_app/features/downloads/presentation/providers/downloads_provider.dart';

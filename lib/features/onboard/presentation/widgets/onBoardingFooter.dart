@@ -1,7 +1,7 @@
 import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:algonaid_mobail_app/features/onboard/data/models/onboarding_data.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentaion/providers/onboarding_provider.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentaion/widgets/moveButtonWidget.dart';
+import 'package:algonaid_mobail_app/features/onboard/presentation/providers/onboarding_provider.dart';
+import 'package:algonaid_mobail_app/features/onboard/presentation/widgets/moveButtonWidget.dart';
 import 'package:flutter/material.dart';
 
 class OnBoardingFooterAnimated extends StatelessWidget {

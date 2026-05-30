@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentaion/providers/onboarding_provider.dart';
+import 'package:algonaid_mobail_app/features/onboard/presentation/providers/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 
 class MoveButtonWidgetAnimated extends StatefulWidget {

@@ -8,7 +8,7 @@ import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_si
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_page.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_view_all_page.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentaion/pages/onboarding_screen.dart'; // New Import
+import 'package:algonaid_mobail_app/features/onboard/presentation/pages/onboarding_screen.dart'; // New Import
 import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lesson_detail_page.dart';
 import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
