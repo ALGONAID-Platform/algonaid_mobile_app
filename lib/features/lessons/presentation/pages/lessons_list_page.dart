@@ -14,13 +14,13 @@ import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
 import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 
-class LessonsListPage extends StatelessWidget {
+class LessonsListPage extends StatefulWidget {
   final int moduleId;
   final String moduleTitle;
   final int completedLessons;
   final double progressPercentage;
   final int totalLessons;
-  final String? previousRoute; // تم دمجها من فرع exams
+  final String? previousRoute;
 
   const LessonsListPage({
     super.key,
@@ -33,21 +33,29 @@ class LessonsListPage extends StatelessWidget {
   });
 
   @override
+  State<LessonsListPage> createState() => _LessonsListPageState();
+}
+
+class _LessonsListPageState extends State<LessonsListPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<LessonsListProvider>().loadLessons(widget.moduleId);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) {
-        final provider = LessonsListProvider(getIt<GetModuleLessons>());
-        provider.loadLessons(moduleId);
-        return provider;
-      },
-      child: _LessonsListView(
-        moduleId: moduleId,
-        moduleTitle: moduleTitle,
-        completedLessons: completedLessons,
-        progressPercentage: progressPercentage,
-        totalLessons: totalLessons,
-        previousRoute: previousRoute,
-      ),
+    return _LessonsListView(
+      moduleId: widget.moduleId,
+      moduleTitle: widget.moduleTitle,
+      completedLessons: widget.completedLessons,
+      progressPercentage: widget.progressPercentage,
+      totalLessons: widget.totalLessons,
+      previousRoute: widget.previousRoute,
     );
   }
 }
@@ -81,19 +89,35 @@ class _LessonsListView extends StatelessWidget {
             slivers: [
               // الهيدر الذي يحتوي على الإحصائيات وزر الرجوع
               SliverToBoxAdapter(
-                child: Stack(
-                  children: [
-                    ModuleHeaderStats(
-                      completedLessons: completedLessons,
-                      moduleId: moduleId,
-                      progressPercentage: progressPercentage,
-                      moduleTitle: moduleTitle,
-                      totalLessons: totalLessons,
-                      onBack: () => _handleBackNavigation(context),
-                    ),
-                    // زر الرجوع المدمج من فرع exams
-                   
-                  ],
+                child: Consumer<LessonsListProvider>(
+                  builder: (context, provider, child) {
+                    final lessons = provider.state.lessons;
+                    final currentTotal = lessons.isNotEmpty ? lessons.length : totalLessons;
+                    int currentCompleted = completedLessons;
+                    if (lessons.isNotEmpty) {
+                      currentCompleted = 0;
+                      for (var lesson in lessons) {
+                        final isCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}');
+                        if (isCompleted == true) {
+                          currentCompleted++;
+                        }
+                      }
+                    }
+                    final currentProgress = currentTotal > 0 ? (currentCompleted / currentTotal) * 100 : progressPercentage;
+                    
+                    return Stack(
+                      children: [
+                        ModuleHeaderStats(
+                          completedLessons: currentCompleted,
+                          moduleId: moduleId,
+                          progressPercentage: currentProgress,
+                          moduleTitle: moduleTitle,
+                          totalLessons: currentTotal,
+                          onBack: () => _handleBackNavigation(context),
+                        ),
+                      ],
+                    );
+                  }
                 ),
               ),
 

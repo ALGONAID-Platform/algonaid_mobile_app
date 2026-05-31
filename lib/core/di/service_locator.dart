@@ -18,6 +18,9 @@ import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
 import 'package:algonaid_mobail_app/features/excellence_courses/domain/usecases/get_excellence_modules_usecase.dart';
 import 'package:algonaid_mobail_app/features/search/domain/usecases/search_courses_usecase.dart';
+import 'package:algonaid_mobail_app/features/search/data/datasources/search_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/search/data/repositories/search_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/search/domain/repositories/search_repository.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_grades.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
@@ -43,9 +46,13 @@ import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_rem
 import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_local_data_source.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/repositories/lesson_repository_impl.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/repositories/lesson_repository.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_remote_data_source.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_local_data_source.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/data/repositories/lesson_detail_repository_impl.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/domain/repositories/lesson_detail_repository.dart';
 
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
@@ -116,6 +123,14 @@ void setupServiceLocator() {
     () => LessonLocalDataSourceImpl(),
   );
 
+  getIt.registerLazySingleton<LessonDetailRemoteDataSource>(
+    () => LessonDetailRemoteDataSourceImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton<LessonDetailLocalDataSource>(
+    () => LessonDetailLocalDataSourceImpl(),
+  );
+
   getIt.registerLazySingleton<ExamLocalDataSource>( // Updated
     () => ExamLocalDataSourceImpl(),
   );
@@ -132,7 +147,9 @@ void setupServiceLocator() {
     () => ProfileLocalDataSourceImpl(),
   );
 
-
+  getIt.registerLazySingleton<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(apiService: getIt()),
+  );
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepo>(
@@ -161,6 +178,13 @@ void setupServiceLocator() {
     ),
   );
 
+  getIt.registerLazySingleton<LessonDetailRepository>(
+    () => LessonDetailRepositoryImpl(
+      remoteDataSource: getIt<LessonDetailRemoteDataSource>(),
+      localDataSource: getIt<LessonDetailLocalDataSource>(),
+    ),
+  );
+
   getIt.registerLazySingleton<ExamRepository>( // Updated
     () => ExamRepositoryImpl(
       localDataSource: getIt<ExamLocalDataSource>(),
@@ -173,6 +197,10 @@ void setupServiceLocator() {
       remoteDataSource: getIt(),
       localDataSource: getIt(),
     ),
+  );
+
+  getIt.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(remoteDataSource: getIt()),
   );
   // ================= USE CASES =================
   getIt.registerLazySingleton<SigninUsecase>(
@@ -226,10 +254,10 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<GetLessonDetail>(
-    () => GetLessonDetail(getIt<LessonRepository>()),
+    () => GetLessonDetail(getIt<LessonDetailRepository>()),
   );
   getIt.registerLazySingleton<UpdateLessonProgress>(
-    () => UpdateLessonProgress(getIt<LessonRepository>()),
+    () => UpdateLessonProgress(getIt<LessonDetailRepository>()),
   );
   getIt.registerLazySingleton<GetCourseProgressUsecase>(
     () => GetCourseProgressUsecase(repository: getIt()),

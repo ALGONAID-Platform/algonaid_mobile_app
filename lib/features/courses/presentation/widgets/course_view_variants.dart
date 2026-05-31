@@ -9,6 +9,7 @@ import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildC
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 
 class CourseThinCard extends StatelessWidget {
   final CourseEntity course;
@@ -51,17 +52,27 @@ class CourseThinCard extends StatelessWidget {
                     children: [
                       AppHero(
                         tag: "course_image${course.id}_thin",
-                        child: CachedNetworkImage(
-                          imageUrl: course.thumbnail,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                            child: const Center(child: CircularProgressIndicator.adaptive()),
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            color: context.colorScheme.errorContainer,
-                            child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
-                          ),
+                        child: Builder(
+                          builder: (context) {
+                            String resolvedUrl = course.thumbnail;
+                            if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+                              resolvedUrl = resolvedUrl.startsWith('/')
+                                  ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
+                                  : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
+                            }
+                            return CachedNetworkImage(
+                              imageUrl: resolvedUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: context.colorScheme.surfaceVariant.withOpacity(0.5),
+                                child: const Center(child: CircularProgressIndicator.adaptive()),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: context.colorScheme.errorContainer,
+                                child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
+                              ),
+                            );
+                          }
                         ),
                       ),
                       Positioned.fill(
@@ -180,17 +191,27 @@ class CourseGridItem extends StatelessWidget {
                   children: [
                     AppHero(
                       tag: "course_image${course.id}_grid",
-                      child: CachedNetworkImage(
-                        imageUrl: course.thumbnail,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                          child: const Center(child: CircularProgressIndicator.adaptive()),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: context.colorScheme.errorContainer,
-                          child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
-                        ),
+                      child: Builder(
+                        builder: (context) {
+                          String resolvedUrl = course.thumbnail;
+                          if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+                            resolvedUrl = resolvedUrl.startsWith('/')
+                                ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
+                                : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
+                          }
+                          return CachedNetworkImage(
+                            imageUrl: resolvedUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: context.colorScheme.surfaceVariant.withOpacity(0.5),
+                              child: const Center(child: CircularProgressIndicator.adaptive()),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: context.colorScheme.errorContainer,
+                              child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
+                            ),
+                          );
+                        }
                       ),
                     ),
                     Positioned.fill(

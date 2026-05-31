@@ -3,15 +3,17 @@
 import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobail_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_lesson_detail.dart'; // Added
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/update_lesson_progress.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lesson_detail_provider.dart'; // Added
+import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart'; // Added
+import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/presentation/providers/lesson_detail_provider.dart'; // Added
 import 'package:algonaid_mobail_app/features/onboard/presentation/providers/onboarding_provider.dart';
 import 'package:algonaid_mobail_app/core/theme/theme_provider.dart'; // Added
 import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:algonaid_mobail_app/features/downloads/presentation/providers/downloads_provider.dart';
 import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
 import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -52,6 +54,12 @@ class AppProviders extends StatelessWidget {
             context.read<UpdateLessonProgress>(),
             getIt<GetModuleLessons>(),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ModulesListProvider(getIt()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LessonsListProvider(getIt()),
         ),
         ChangeNotifierProvider(create: (_) => DownloadsProvider()),
         ChangeNotifierProvider(create: (_) => getIt<ExcellenceCoursesProvider>()),

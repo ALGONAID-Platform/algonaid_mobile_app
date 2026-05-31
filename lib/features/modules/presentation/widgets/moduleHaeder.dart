@@ -7,6 +7,7 @@ import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 
 class CourseHeaderSliver extends StatelessWidget {
   final String title;
@@ -23,6 +24,12 @@ class CourseHeaderSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    String resolvedUrl = imageUrl ?? "";
+    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+      resolvedUrl = resolvedUrl.startsWith('/')
+          ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
+          : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
+    }
 
     return SliverAppBar(
       expandedHeight: 220.0,
@@ -76,7 +83,7 @@ class CourseHeaderSliver extends StatelessWidget {
             AppHero(
               tag: "course_image$courseId",
               child: CachedNetworkImage(
-                imageUrl: imageUrl ?? "",
+                imageUrl: resolvedUrl,
                 fit: BoxFit.cover,
                 errorWidget: (context, url, error) =>
                     Image.asset(Images.noImageFound, fit: BoxFit.cover),

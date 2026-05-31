@@ -1,27 +1,11 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid_mobail_app/features/settings/domain/entities/developer_info.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
-
-class DeveloperInfo {
-  final String name;
-  final String githubUrl;
-  final String linkedinUrl;
-  final String imagePath;
-  final IconData avatarIcon;
-  final Color themeColor;
-
-  const DeveloperInfo({
-    required this.name,
-    required this.githubUrl,
-    required this.linkedinUrl,
-    required this.imagePath,
-    required this.avatarIcon,
-    required this.themeColor,
-  });
-}
 
 class DevelopersPage extends StatefulWidget {
   const DevelopersPage({Key? key}) : super(key: key);
@@ -33,48 +17,7 @@ class DevelopersPage extends StatefulWidget {
 class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProviderStateMixin {
   late final AnimationController _fadeController;
   
-  final List<DeveloperInfo> _developers = const [
-    DeveloperInfo(
-      name: 'بشار الحميري',
-      githubUrl: 'https://github.com/bashar-himyari',
-      linkedinUrl: 'https://linkedin.com/in/bashar-himyari',
-      imagePath: 'assets/images/bashar.png',
-      avatarIcon: Icons.bolt_rounded,
-      themeColor: AppColors.primary,
-    ),
-    DeveloperInfo(
-      name: 'أيمن المليكي',
-      githubUrl: 'https://github.com/ayman-muliki',
-      linkedinUrl: 'https://linkedin.com/in/ayman-muliki',
-      imagePath: 'assets/images/ayman.png',
-      avatarIcon: Icons.storage_rounded,
-      themeColor: Colors.purple,
-    ),
-    DeveloperInfo(
-      name: 'خالد الشيباني',
-      githubUrl: 'https://github.com/khaled-shebani',
-      linkedinUrl: 'https://linkedin.com/in/khaled-shebani',
-      imagePath: 'assets/images/khaled.png',
-      avatarIcon: Icons.palette_rounded,
-      themeColor: AppColors.amber,
-    ),
-    DeveloperInfo(
-      name: 'حمزة عبد المطلب',
-      githubUrl: 'https://github.com/hamza-muttalib',
-      linkedinUrl: 'https://linkedin.com/in/hamza-muttalib',
-      imagePath: 'assets/images/hamza.png',
-      avatarIcon: Icons.code_rounded,
-      themeColor: Colors.teal,
-    ),
-    DeveloperInfo(
-      name: 'عبد الله عبد الرحمن',
-      githubUrl: 'https://github.com/abdullah-rahman',
-      linkedinUrl: 'https://linkedin.com/in/abdullah-rahman',
-      imagePath: 'assets/images/abdullah.png',
-      avatarIcon: Icons.verified_user_rounded,
-      themeColor: AppColors.green,
-    ),
-  ];
+  final List<DeveloperInfo> _developers = const SettingsStaticDataSourceImpl().getDevelopers();
 
   @override
   void initState() {
@@ -179,7 +122,6 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
-       
       ),
       child: Stack(
         children: [
@@ -246,12 +188,10 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
       decoration: BoxDecoration(
         color: context.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(14),
-        border: AppBorder.main_border
-       
+        border: AppBorder.main_border,
       ),
       child: Row(
         children: [
-          // صورة المطور مع دعم التحميل التلقائي أو Fallback بالاسم عند عدم وجود ملف
           ClipRRect(
             borderRadius: BorderRadius.circular(30),
             child: Image.asset(
@@ -280,7 +220,6 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
             ),
           ),
           const SizedBox(width: 16),
-          // تفاصيل المطور (الاسم فقط)
           Expanded(
             child: Text(
               dev.name,
@@ -289,7 +228,6 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
               ),
             ),
           ),
-          // أزرار التواصل كأيقونات دائرية لتفادي مشكلة الأبعاد (GitHub / LinkedIn)
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [

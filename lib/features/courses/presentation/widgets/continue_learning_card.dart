@@ -13,6 +13,7 @@ import 'package:algonaid_mobail_app/core/theme/styles.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
 import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 
 class ContinueLearningCard extends StatelessWidget {
   final LastAccessedModuleEntity module;
@@ -223,11 +224,18 @@ class _CourseImagePreview extends StatelessWidget {
     : super(key: key);
   @override
   Widget build(BuildContext context) {
+    String resolvedUrl = image_irl;
+    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+      resolvedUrl = resolvedUrl.startsWith('/')
+          ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
+          : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
+    }
+
     return Stack(
       fit: StackFit.expand,
       children: [
         CachedNetworkImage(
-          imageUrl: image_irl,
+          imageUrl: resolvedUrl,
           fit: BoxFit.cover,
           errorWidget: (context, url, error) => Image.asset(Images.onboarding1),
         ),

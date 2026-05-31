@@ -17,24 +17,34 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
 import 'package:provider/provider.dart';
+import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid_mobail_app/features/modules/data/models/last_accessed_module_model.dart';
+import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 
-class ModulesListPage extends StatelessWidget {
+class ModulesListPage extends StatefulWidget {
   const ModulesListPage({super.key, required this.course});
 
   final CourseEntity course;
 
   @override
+  State<ModulesListPage> createState() => _ModulesListPageState();
+}
+
+class _ModulesListPageState extends State<ModulesListPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ModulesListProvider>().loadModules(widget.course.id);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) {
-        final provider = ModulesListProvider(getIt());
-        provider.loadModules(course.id);
-        return provider;
-      },
-      child: _ModulesListView(course: course),
-    );
+    return _ModulesListView(course: widget.course);
   }
 }
 
@@ -91,82 +101,97 @@ class _ModulesListView extends StatelessWidget {
                           SliverToBoxAdapter(
                             child: Padding(
                               padding: const EdgeInsets.only(top: 8.0),
-                              child: CourseProgressInfo(
-                                totalCount: course.totalLessons,
-                                completedCount: course.completedLessons,
-                                progress: course.progressPercentage,
+                              child: Consumer<GetCoursesProvider>(
+                                builder: (context, coursesProvider, _) {
+                                  CourseEntity updatedCourse = course;
+                                  try {
+                                    updatedCourse = coursesProvider.myCourses.cast<CourseEntity>().firstWhere(
+                                      (c) => c.id == course.id,
+                                      orElse: () => coursesProvider.allCourses.cast<CourseEntity>().firstWhere(
+                                        (c) => c.id == course.id,
+                                        orElse: () => course,
+                                      ),
+                                    );
+                                  } catch (_) {}
+
+                                  return CourseProgressInfo(
+                                    totalCount: updatedCourse.totalLessons,
+                                    completedCount: updatedCourse.completedLessons,
+                                    progress: updatedCourse.progressPercentage,
                                 onContinueTap: () {
                                   if (modules.isEmpty) return;
                                   
                                   final lastModuleId = CacheHelper.getInt(key: 'last_module_course_${course.id}');
+                                  Module? targetModule;
                                   
                                   if (lastModuleId != null) {
-                                    final lastLessonId = CacheHelper.getInt(key: 'last_lesson_module_$lastModuleId');
-                                    
-                                    if (lastLessonId != null) {
-                                      context.push(
-                                        '${Routes.lessonDetails}/$lastLessonId',
-                                        extra: '${Routes.lessonsList}/$lastModuleId',
-                                      ).then((_) {
-                                        if (context.mounted) {
-                                          try {
-                                            context.read<ModulesListProvider>().loadModules(course.id);
-                                            context.read<GetCoursesProvider>().refreshAll();
-                                          } catch (_) {}
-                                        }
-                                      });
-                                      return;
-                                    } else {
-                                      try {
-                                        final m = modules.firstWhere((m) => m.id == lastModuleId);
-                                        context.push(
-                                          '${Routes.lessonsList}/${m.id}',
-                                          extra: {
-                                            'moduleTitle': m.title,
-                                            'completedLessons': m.completedLessons,
-                                            'progressPercentage': m.progressPercentage,
-                                            'totalLessons': m.totalLessons,
-                                          },
-                                        ).then((_) {
-                                          if (context.mounted) {
-                                            try {
-                                              context.read<ModulesListProvider>().loadModules(course.id);
-                                              context.read<GetCoursesProvider>().refreshAll();
-                                            } catch (_) {}
-                                          }
-                                        });
-                                        return;
-                                      } catch (_) {}
+                                    try {
+                                      targetModule = modules.firstWhere((m) => m.id == lastModuleId);
+                                    } catch (_) {}
+                                  }
+                                  
+                                  if (targetModule == null) {
+                                    try {
+                                      targetModule = modules.firstWhere((m) => m.progressPercentage < 100);
+                                    } catch (_) {
+                                      targetModule = modules.last;
                                     }
                                   }
 
-                                  // Fallback logic
-                                  Module? targetModule;
+                                  // Update cache and provider state
+                                  final lastAccessed = LastAccessedModuleModel(
+                                    moduleId: targetModule.id,
+                                    courseName: course.title,
+                                    moduleName: targetModule.title,
+                                    moduleDescription: targetModule.description,
+                                    totalLessons: targetModule.totalLessons,
+                                    completedLessons: targetModule.completedLessons,
+                                    progressPercentage: targetModule.progressPercentage,
+                                    image_url: course.thumbnail,
+                                  );
+
                                   try {
-                                    targetModule = modules.firstWhere((m) => m.progressPercentage < 100);
-                                  } catch (_) {
-                                    targetModule = modules.last;
-                                  }
+                                    getIt<ModuleLocalDataSource>().cacheLastAccessedModule(lastAccessed);
+                                    context.read<LastAccessedModuleProvider>().updateLastAccessedModule(lastAccessed);
+                                  } catch (_) {}
+
+                                  final lastLessonId = CacheHelper.getInt(key: 'last_lesson_module_${targetModule.id}');
                                   
-                                  context.push(
-                                    '${Routes.lessonsList}/${targetModule.id}',
-                                    extra: {
-                                      'moduleTitle': targetModule.title,
-                                      'completedLessons': targetModule.completedLessons,
-                                      'progressPercentage': targetModule.progressPercentage,
-                                      'totalLessons': targetModule.totalLessons,
-                                    },
-                                  ).then((_) {
-                                    if (context.mounted) {
-                                      try {
-                                        context.read<ModulesListProvider>().loadModules(course.id);
-                                        context.read<GetCoursesProvider>().refreshAll();
-                                      } catch (_) {}
-                                    }
-                                  });
+                                  if (lastLessonId != null) {
+                                    context.push(
+                                      '${Routes.lessonDetails}/$lastLessonId',
+                                      extra: '${Routes.lessonsList}/${targetModule.id}',
+                                    ).then((_) {
+                                      if (context.mounted) {
+                                        try {
+                                          context.read<ModulesListProvider>().loadModules(course.id);
+                                          context.read<GetCoursesProvider>().refreshAll();
+                                        } catch (_) {}
+                                      }
+                                    });
+                                  } else {
+                                    context.push(
+                                      '${Routes.lessonsList}/${targetModule.id}',
+                                      extra: {
+                                        'moduleTitle': targetModule.title,
+                                        'completedLessons': targetModule.completedLessons,
+                                        'progressPercentage': targetModule.progressPercentage,
+                                        'totalLessons': targetModule.totalLessons,
+                                      },
+                                    ).then((_) {
+                                      if (context.mounted) {
+                                        try {
+                                          context.read<ModulesListProvider>().loadModules(course.id);
+                                          context.read<GetCoursesProvider>().refreshAll();
+                                        } catch (_) {}
+                                      }
+                                    });
+                                  }
+                                },
+                              );
                                 },
                               ),
-                            ),
+                              )
                           ),
                           if (state.isLoading)
                             SliverFillRemaining(
@@ -199,7 +224,10 @@ class _ModulesListView extends StatelessWidget {
                           else
                             SliverPadding(
                               padding: const EdgeInsets.all(16),
-                              sliver: sliverListItemsBuilder(modules: modules),
+                              sliver: sliverListItemsBuilder(
+                                modules: modules,
+                                course: course,
+                              ),
                             ),
                         ],
                       ),

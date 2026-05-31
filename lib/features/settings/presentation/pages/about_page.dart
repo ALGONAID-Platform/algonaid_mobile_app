@@ -1,6 +1,8 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobail_app/core/theme/borders.dart';
 import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobail_app/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid_mobail_app/features/settings/domain/entities/platform_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
@@ -10,6 +12,8 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+    const dataSource = SettingsStaticDataSourceImpl();
+    final features = dataSource.getPlatformFeatures();
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -52,7 +56,7 @@ class AboutPage extends StatelessWidget {
                       iconColor: AppColors.amber,
                     ),
                     const SizedBox(height: 16),
-                    _buildFeaturesSection(context),
+                    _buildFeaturesSection(context, features),
                     const SizedBox(height: 32),
                     // رقم النسخة والحقوق
                     Center(
@@ -99,7 +103,6 @@ class AboutPage extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
-       
       ),
       child: Stack(
         children: [
@@ -182,8 +185,7 @@ class AboutPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border:AppBorder.main_border,
-       
+        border: AppBorder.main_border,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,15 +222,7 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturesSection(BuildContext context) {
-    final features = [
-      {'icon': Icons.video_library_rounded, 'title': 'شروحات مرئية تفصيلية ومرنة'},
-      {'icon': Icons.quiz_rounded, 'title': 'اختبارات تفاعلية تقيم مستواك فورياً'},
-      {'icon': Icons.file_download_outlined, 'title': 'إمكانية تحميل الفيديوهات للمشاهدة بدون إنترنت'},
-      {'icon': Icons.show_chart_rounded, 'title': 'إحصائيات متقدمة لمراقبة تقدمك الأكاديمي'},
-      {'icon': Icons.workspace_premium_rounded, 'title': 'أوسمة وتكريمات تشجيعية للطلاب الأوائل'},
-    ];
-
+  Widget _buildFeaturesSection(BuildContext context, List<PlatformFeature> features) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -283,7 +277,7 @@ class AboutPage extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      feature['title'] as String,
+                      feature.title,
                       style: context.textTheme.bodyMedium?.copyWith(
                         color: context.colorScheme.onBackground.withOpacity(0.85),
                       ),

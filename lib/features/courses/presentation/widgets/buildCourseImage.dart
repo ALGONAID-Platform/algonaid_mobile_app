@@ -1,3 +1,4 @@
+import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
 import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
@@ -12,6 +13,12 @@ class BuildCourseImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    String resolvedUrl = course.thumbnail;
+    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+      resolvedUrl = resolvedUrl.startsWith('/')
+          ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
+          : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
+    }
 
     return Stack(
       children: [
@@ -20,7 +27,7 @@ class BuildCourseImage extends StatelessWidget {
             tag: "course_image${course.id}",
 
             child: CachedNetworkImage(
-              imageUrl: course.thumbnail,
+              imageUrl: resolvedUrl,
               height: 160,
               width: double.infinity,
               fit: BoxFit.cover,

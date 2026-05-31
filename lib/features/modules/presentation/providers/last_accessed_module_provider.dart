@@ -57,4 +57,9 @@ class LastAccessedModuleProvider extends ChangeNotifier {
       },
     );
   }
+
+  Future<void> updateLastAccessedModule(LastAccessedModuleEntity module) async {
+    _lastAccessedModule = module;
+    notifyListeners();
+  }
 }

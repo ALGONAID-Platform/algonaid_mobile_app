@@ -59,14 +59,14 @@ class LastAccessedModuleModel extends LastAccessedModuleEntity {
 
   factory LastAccessedModuleModel.fromJson(Map<String, dynamic> json) {
     return LastAccessedModuleModel(
-      moduleId: json['moduleId'] ?? 0,
-      courseName: json['courseName']?.toString().trim() ?? '',
-      moduleName: json['moduleName'] ?? '',
-      moduleDescription: json['moduleDescription'] ?? '',
-      totalLessons: json['totalLessons'] ?? 0,
-      completedLessons: json['completedLessons'] ?? 0,
-      progressPercentage: json['progressPercentage'] ?? 0.0,
-      image_url: json['courseImage'] ?? 0.0,
+      moduleId: int.tryParse(json['moduleId']?.toString() ?? json['module_id']?.toString() ?? '0') ?? 0,
+      courseName: json['courseName']?.toString().trim() ?? json['course_name']?.toString().trim() ?? '',
+      moduleName: json['moduleName']?.toString() ?? json['module_name']?.toString() ?? '',
+      moduleDescription: json['moduleDescription']?.toString() ?? json['module_description']?.toString() ?? '',
+      totalLessons: int.tryParse(json['totalLessons']?.toString() ?? json['total_lessons']?.toString() ?? '0') ?? 0,
+      completedLessons: int.tryParse(json['completedLessons']?.toString() ?? json['completed_lessons']?.toString() ?? '0') ?? 0,
+      progressPercentage: double.tryParse(json['progressPercentage']?.toString() ?? json['progress_percentage']?.toString() ?? '0.0') ?? 0.0,
+      image_url: json['courseImage']?.toString() ?? json['course_image']?.toString() ?? json['imageUrl']?.toString() ?? json['image_url']?.toString() ?? json['thumbnail']?.toString() ?? '',
     );
   }
 

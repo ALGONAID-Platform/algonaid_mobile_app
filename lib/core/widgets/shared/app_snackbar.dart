@@ -13,6 +13,7 @@ class AppSnackBar {
     if (!context.mounted) return;
 
     final theme = Theme.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     
     Color backgroundColor;
     IconData icon;
@@ -50,6 +51,27 @@ class AppSnackBar {
                 ),
               ),
             ),
+            const SizedBox(width: 8),
+            TextButton(
+              onPressed: onActionPressed ?? () {
+                try {
+                  messenger.hideCurrentSnackBar();
+                } catch (_) {}
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                foregroundColor: Colors.white,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                actionLabel ?? 'حسناً',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -60,16 +82,9 @@ class AppSnackBar {
       ),
       margin: const EdgeInsets.all(16),
       duration: const Duration(seconds: 5),
-      action: SnackBarAction(
-        label: actionLabel ?? 'حسناً',
-        textColor: Colors.white,
-        onPressed: onActionPressed ?? () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-      ),
     );
 
-    ScaffoldMessenger.of(context)
+    messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(snackBar);
   }

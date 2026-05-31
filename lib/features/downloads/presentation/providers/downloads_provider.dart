@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_detail_model.dart';
+import 'package:algonaid_mobail_app/features/lesson_detail/data/models/lesson_detail_model.dart';
 import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
 import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
 import 'package:flutter/material.dart';

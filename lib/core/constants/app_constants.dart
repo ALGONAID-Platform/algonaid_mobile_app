@@ -55,6 +55,13 @@ abstract class AppConstants {
   static const String cacheUserProfile = 'cache_user_profile';
   static const String cacheExcellenceCourses = 'cache_excellence_courses';
 
+  static const String enableNotifications = 'enableNotifications';
+  static const String floatingVideo = 'floatingVideo';
+  static const String autoPlayNext = 'autoPlayNext';
+  static const String downloadQuality = 'downloadQuality';
+  static const String videoLocalPathPrefix = 'video_local_path_';
+  static const String pdfLocalPathPrefix = 'pdf_local_path_';
+
   //validation
   static const int minPasswordLength = 6;
   static const int maxPasswordLength = 20;

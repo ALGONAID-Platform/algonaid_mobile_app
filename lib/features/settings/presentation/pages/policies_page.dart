@@ -1,4 +1,6 @@
 import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobail_app/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid_mobail_app/features/settings/domain/entities/policy_item.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
 
@@ -7,6 +9,9 @@ class PoliciesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const dataSource = SettingsStaticDataSourceImpl();
+    final policies = dataSource.getPolicies();
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -16,36 +21,13 @@ class PoliciesPage extends StatelessWidget {
         body: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
-            _buildSection(
-              context,
-              title: '1. شروط الاستخدام',
-              content: 'مرحباً بك في منصة Algonaid التعليمية. باستخدامك لتطبيقنا، فإنك توافق على هذه الشروط والأحكام. تهدف المنصة إلى تقديم محتوى تعليمي هادف ويُمنع استخدامها لأي أغراض تجارية أو غير قانونية دون إذن مسبق.',
-            ),
-            _buildSection(
-              context,
-              title: '2. حقوق الملكية الفكرية',
-              content: 'جميع الحقوق المتعلقة بالمحتوى التعليمي (الفيديوهات، المستندات، الاختبارات) هي ملكية حصرية لمنصة Algonaid ومقدمي الدورات. يُمنع منعاً باتاً نسخ، توزيع، أو إعادة نشر أي محتوى متوفر في التطبيق دون الحصول على تصريح كتابي.',
-            ),
-            _buildSection(
-              context,
-              title: '3. سياسة الخصوصية وحماية البيانات',
-              content: 'نحن نأخذ خصوصيتك على محمل الجد. نقوم بجمع بعض البيانات الأساسية (مثل الاسم والبريد الإلكتروني ومسار التعلم) لغرض تحسين تجربتك التعليمية. لا يتم بيع أو مشاركة بياناتك مع أطراف خارجية لأغراض تسويقية.',
-            ),
-            _buildSection(
-              context,
-              title: '4. الاشتراكات والدفع',
-              content: 'في حال وجود دورات مدفوعة، يتم توضيح رسوم الدورة بشكل صريح قبل الشراء. عمليات الشراء نهائية ولا يتم استرداد الأموال إلا في الحالات الاستثنائية التي تقررها إدارة المنصة بعد مراجعة الطلب.',
-            ),
-            _buildSection(
-              context,
-              title: '5. سياسة التنزيل والاستخدام دون اتصال',
-              content: 'تتيح المنصة ميزة تنزيل الفيديوهات والملفات للوصول إليها بدون إنترنت كخدمة إضافية. هذه الملفات مخصصة للاستخدام الشخصي داخل التطبيق فقط ومحمية ولا يجوز نقلها لأجهزة أخرى.',
-            ),
-            _buildSection(
-              context,
-              title: '6. التعديل على السياسات',
-              content: 'تحتفظ إدارة Algonaid بالحق في تعديل هذه السياسات في أي وقت. سيتم إشعار المستخدمين بأي تغييرات جوهرية تطرأ على سياسات الخصوصية أو شروط الاستخدام.',
-            ),
+            ...policies.map((policy) {
+              return _buildSection(
+                context,
+                title: policy.title,
+                content: policy.content,
+              );
+            }).toList(),
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(16),
