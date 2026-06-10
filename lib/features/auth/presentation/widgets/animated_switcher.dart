@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedSwitcherCostum extends StatelessWidget {

@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
-import 'package:algonaid_mobail_app/features/auth/data/models/auth_models.dart';
+import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
+import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobile_app/core/network/api_service.dart';
+import 'package:algonaid_mobile_app/features/auth/data/models/auth_models.dart';
 
 abstract class AuthRemoteDatasourse {
   Future<AuthResponse> signin({
@@ -15,7 +15,13 @@ abstract class AuthRemoteDatasourse {
     required String password,
     required UserRole role,
   });
+  Future<AuthResponse> googleSignin({required String accessToken});
   Future<void> logout(); // Added
+  Future<Map<String, dynamic>> forgotPassword({required String email});
+  Future<Map<String, dynamic>> resetPassword({
+    required String token,
+    required String newPassword,
+  });
 }
 
 class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
@@ -56,7 +62,38 @@ class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
   }
 
   @override
+  Future<AuthResponse> googleSignin({required String accessToken}) async {
+    final user = await apiService.post(
+      endpoint: EndPoint.googleMobileAuth,
+      data: {'accessToken': accessToken},
+    );
+
+    return AuthResponse.fromJson(user);
+  }
+
+  @override
   Future<void> logout() async {
     await apiService.post(endpoint: EndPoint.logout, data: {});
+  }
+
+  @override
+  Future<Map<String, dynamic>> forgotPassword({required String email}) async {
+    final response = await apiService.post(
+      endpoint: EndPoint.forgotPassword,
+      data: {'email': email},
+    );
+    return Map<String, dynamic>.from(response);
+  }
+
+  @override
+  Future<Map<String, dynamic>> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    final response = await apiService.post(
+      endpoint: EndPoint.resetPassword,
+      data: {'token': token, 'newPassword': newPassword},
+    );
+    return Map<String, dynamic>.from(response);
   }
 }

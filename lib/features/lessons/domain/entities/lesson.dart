@@ -1,8 +1,8 @@
-import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lessonProgress_entity.dart';
+import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lessonProgress_entity.dart';
 import 'package:equatable/equatable.dart';
 // استيراد الـ Enum الخاص بك
-// import 'package:algonaid_mobail_app/core/enums/lesson_status.dart';
+// import 'package:algonaid_mobile_app/core/enums/lesson_status.dart';
 
 class Lesson extends Equatable {
   final int id;
@@ -13,7 +13,7 @@ class Lesson extends Equatable {
   final int moduleId;
   final int order;
   final List<LessonProgress>? lessonProgress;
-  final LessonStatus status; 
+  final LessonStatus status;
 
   const Lesson({
     required this.id,

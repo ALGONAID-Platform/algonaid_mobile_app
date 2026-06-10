@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,7 +34,10 @@ class ThemeApp {
     return availableColors[0];
   }
 
-  static TextTheme _buildTextTheme({required bool isDark, required String fontFamily}) {
+  static TextTheme _buildTextTheme({
+    required bool isDark,
+    required String fontFamily,
+  }) {
     final Color primaryText = isDark
         ? AppColors.textPrimaryDark.withOpacity(0.85)
         : AppColors.textPrimaryLight;
@@ -44,7 +47,9 @@ class ThemeApp {
     final Color tertiaryText = isDark
         ? AppColors.textSecondaryDark.withOpacity(0.45) // خافت جداً
         : AppColors.textSecondaryLight.withOpacity(0.70);
-    final TextTheme baseTextTheme = ThemeData.light().textTheme.apply(fontFamily: fontFamily);
+    final TextTheme baseTextTheme = ThemeData.light().textTheme.apply(
+      fontFamily: fontFamily,
+    );
 
     return baseTextTheme.copyWith(
       // --- عائلة الـ Display (للأرقام الكبيرة والترحيب) ---
@@ -150,74 +155,79 @@ class ThemeApp {
       primaryColor: primaryColor,
       scaffoldBackgroundColor: AppColors.bgLight,
 
-    // 1. Color Scheme (العمود الفقري للألوان)
-    colorScheme: ColorScheme.light(
-      primary: primaryColor,
-      secondary: AppColors.indigo,
-      surface: AppColors.surfaceLight,
-      background: AppColors.bgLight,
-      error: AppColors.red,
-      onPrimary: AppColors.white,
-      onSecondary: AppColors.textPrimaryLight,
-      surfaceContainer: AppColors.white,
+      // 1. Color Scheme (العمود الفقري للألوان)
+      colorScheme: ColorScheme.light(
+        primary: primaryColor,
+        secondary: AppColors.indigo,
+        surface: AppColors.surfaceLight,
+        background: AppColors.bgLight,
+        error: AppColors.red,
+        onPrimary: AppColors.white,
+        onSecondary: AppColors.textPrimaryLight,
+        surfaceContainer: AppColors.white,
 
-      onBackground: AppColors.textPrimaryLight,
-      onError: AppColors.white,
-    ),
-
-    // 2. AppBar Theme (الشريط العلوي)
-    appBarTheme:  AppBarTheme(
-      centerTitle: true,
-      backgroundColor: AppColors.bgLight,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      titleTextStyle: TextStyle(
-        fontFamily: appFontFamily,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimaryLight,
+        onBackground: AppColors.textPrimaryLight,
+        onError: AppColors.white,
       ),
-      iconTheme: IconThemeData(color: AppColors.textPrimaryLight),
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
-    ),
 
-    // 3. Button Theme (الأزرار)
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
-        foregroundColor: AppColors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // 2. AppBar Theme (الشريط العلوي)
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        backgroundColor: AppColors.bgLight,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        titleTextStyle: TextStyle(
+          fontFamily: appFontFamily,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimaryLight,
+        ),
+        iconTheme: IconThemeData(color: AppColors.textPrimaryLight),
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-    ),
 
-    // 4. Input Decoration Theme (حقول الإدخال)
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: AppColors.surfaceLight,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+      // 3. Button Theme (الأزرار)
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: AppColors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: primaryColor, width: 1.5),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.red),
-      ),
-      hintStyle: const TextStyle(color: AppColors.textSecondaryLight),
-    ),
 
-    // 5. Text Theme
-    textTheme: _buildTextTheme(isDark: false, fontFamily: appFontFamily),
+      // 4. Input Decoration Theme (حقول الإدخال)
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surfaceLight,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.red),
+        ),
+        hintStyle: const TextStyle(color: AppColors.textSecondaryLight),
+      ),
+
+      // 5. Text Theme
+      textTheme: _buildTextTheme(isDark: false, fontFamily: appFontFamily),
     );
   }
 
@@ -225,7 +235,7 @@ class ThemeApp {
   // 🌑 Dark Theme
   // ===========================================================================
   static ThemeData getDarkTheme({int colorIndex = 0, int fontIndex = 0}) {
-    final primaryColor = Colors.blue; // Always blue in dark mode
+    final primaryColor = getPrimaryColor(colorIndex);
     final appFontFamily = getAppFontFamily(fontIndex);
 
     return ThemeData(
@@ -233,69 +243,74 @@ class ThemeApp {
       brightness: Brightness.dark,
       fontFamily: appFontFamily,
       primaryColor: primaryColor,
-    scaffoldBackgroundColor: AppColors.bgDark,
+      scaffoldBackgroundColor: AppColors.bgDark,
 
-    colorScheme: ColorScheme.dark(
-      primary: primaryColor,
-      secondary: AppColors.indigo,
-      surface: AppColors.cardDark,
-      onSurface: AppColors.white,
-      background: AppColors.bgDark,
-      error: AppColors.red,
-      onPrimary: AppColors.white,
-      onSecondary: AppColors.white,
+      colorScheme: ColorScheme.dark(
+        primary: primaryColor,
+        secondary: AppColors.indigo,
+        surface: AppColors.cardDark,
+        onSurface: AppColors.white,
+        background: AppColors.bgDark,
+        error: AppColors.red,
+        onPrimary: AppColors.white,
+        onSecondary: AppColors.white,
 
-      surfaceContainer: Color(0xFF212E3E),
-      onBackground: AppColors.textPrimaryDark,
-      onError: AppColors.white,
-    ),
-
-    // AppBar Dark
-    appBarTheme: AppBarTheme(
-      centerTitle: true,
-      backgroundColor: AppColors.bgDark,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      titleTextStyle: TextStyle(
-        fontFamily: appFontFamily,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimaryDark,
+        surfaceContainer: Color(0xFF212E3E),
+        onBackground: AppColors.textPrimaryDark,
+        onError: AppColors.white,
       ),
-      iconTheme: const IconThemeData(color: AppColors.textPrimaryDark),
-      systemOverlayStyle: SystemUiOverlayStyle.light,
-    ),
 
-    // Button Dark
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
-        foregroundColor: AppColors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // AppBar Dark
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        backgroundColor: AppColors.bgDark,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        titleTextStyle: TextStyle(
+          fontFamily: appFontFamily,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimaryDark,
+        ),
+        iconTheme: const IconThemeData(color: AppColors.textPrimaryDark),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
-    ),
 
-    // Input Dark
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: AppColors.surfaceDark,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.indigoDark),
+      // Button Dark
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.indigoDark),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: primaryColor),
-      ),
-      hintStyle: const TextStyle(color: AppColors.textSecondaryDark),
-    ),
 
-    textTheme: _buildTextTheme(isDark: true, fontFamily: appFontFamily),
+      // Input Dark
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surfaceDark,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.indigoDark),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.indigoDark),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: primaryColor),
+        ),
+        hintStyle: const TextStyle(color: AppColors.textSecondaryDark),
+      ),
+
+      textTheme: _buildTextTheme(isDark: true, fontFamily: appFontFamily),
     );
   }
 }

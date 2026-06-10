@@ -1,5 +1,4 @@
-import 'package:algonaid_mobail_app/features/profile/domain/entities/user_badge_entity.dart';
-
+import 'package:algonaid_mobile_app/features/profile/domain/entities/user_badge_entity.dart';
 
 class UserBadgeModel extends UserBadgeEntity {
   UserBadgeModel({

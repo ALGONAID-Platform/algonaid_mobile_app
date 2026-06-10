@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/models/lessonProgress_model.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lessonProgress_entity.dart';
+import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/models/lessonProgress_model.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lessonProgress_entity.dart';
 import 'package:hive/hive.dart';
 
 part 'lesson_model.g.dart';
@@ -36,7 +36,13 @@ class LessonModel extends Lesson {
       description: json['description']?.toString() ?? '',
       videoUrl: json['videoUrl']?.toString() ?? json['video_url']?.toString(),
       pdfUrl: json['pdfUrl']?.toString() ?? json['pdf_url']?.toString(),
-      moduleId: int.tryParse(json['moduleId']?.toString() ?? json['module_id']?.toString() ?? '0') ?? 0,
+      moduleId:
+          int.tryParse(
+            json['moduleId']?.toString() ??
+                json['module_id']?.toString() ??
+                '0',
+          ) ??
+          0,
       order: int.tryParse(json['order']?.toString() ?? '0') ?? 0,
       lessonProgress: progressList,
       status: calculatedStatus,

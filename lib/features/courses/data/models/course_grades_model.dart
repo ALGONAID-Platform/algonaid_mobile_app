@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_grades.dart';
 
 class CourseGradesModel extends CourseGrades {
   const CourseGradesModel({
@@ -13,8 +13,12 @@ class CourseGradesModel extends CourseGrades {
       courseId: (json['courseId'] as num?)?.toInt() ?? 0,
       averagePercentage: (json['averagePercentage'] as num?)?.toDouble() ?? 0.0,
       examsCount: (json['examsCount'] as num?)?.toInt() ?? 0,
-      examDetails: (json['examDetails'] as List<dynamic>?)
-              ?.map((e) => CourseExamDetailModel.fromJson(e as Map<String, dynamic>))
+      examDetails:
+          (json['examDetails'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    CourseExamDetailModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           [],
     );
@@ -25,7 +29,9 @@ class CourseGradesModel extends CourseGrades {
       'courseId': courseId,
       'averagePercentage': averagePercentage,
       'examsCount': examsCount,
-      'examDetails': examDetails.map((e) => (e as CourseExamDetailModel).toJson()).toList(),
+      'examDetails': examDetails
+          .map((e) => (e as CourseExamDetailModel).toJson())
+          .toList(),
     };
   }
 }

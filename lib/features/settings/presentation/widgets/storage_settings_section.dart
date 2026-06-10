@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/settings_section_title.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section_title.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,7 +40,8 @@ class StorageSettingsSection extends StatelessWidget {
     AppDialog.showDynamicDialog(
       context: context,
       title: 'مسح التنزيلات',
-      message: 'هل أنت متأكد أنك تريد مسح جميع الفيديوهات والدروس التي قمت بتنزيلها؟ لا يمكن التراجع عن هذا الإجراء.',
+      message:
+          'هل أنت متأكد أنك تريد مسح جميع الفيديوهات والدروس التي قمت بتنزيلها؟ لا يمكن التراجع عن هذا الإجراء.',
       isError: true,
       confirmText: 'مسح',
       cancelText: 'إلغاء',
@@ -50,7 +51,8 @@ class StorageSettingsSection extends StatelessWidget {
           final keys = prefs.getKeys().toList();
 
           for (final key in keys) {
-            if (key.startsWith(AppConstants.videoLocalPathPrefix) || key.startsWith(AppConstants.pdfLocalPathPrefix)) {
+            if (key.startsWith(AppConstants.videoLocalPathPrefix) ||
+                key.startsWith(AppConstants.pdfLocalPathPrefix)) {
               final path = prefs.getString(key);
               if (path != null && path.isNotEmpty) {
                 final file = File(path);
@@ -93,8 +95,14 @@ class StorageSettingsSection extends StatelessWidget {
             icon: Icons.cleaning_services_rounded,
             color: Colors.teal,
           ),
-          title: Text('مسح الذاكرة المؤقتة', style: context.textTheme.bodyLarge),
-          subtitle: Text('تحرير المساحة من الملفات غير الضرورية', style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey)),
+          title: Text(
+            'مسح الذاكرة المؤقتة',
+            style: context.textTheme.bodyLarge,
+          ),
+          subtitle: Text(
+            'تحرير المساحة من الملفات غير الضرورية',
+            style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+          ),
           onTap: () => _clearCache(context),
         ),
         ListTile(
@@ -103,7 +111,10 @@ class StorageSettingsSection extends StatelessWidget {
             color: Colors.redAccent,
           ),
           title: Text('مسح التنزيلات', style: context.textTheme.bodyLarge),
-          subtitle: Text('حذف جميع الفيديوهات والدروس المحملة', style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey)),
+          subtitle: Text(
+            'حذف جميع الفيديوهات والدروس المحملة',
+            style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+          ),
           onTap: () => _clearDownloads(context),
         ),
       ],

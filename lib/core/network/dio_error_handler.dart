@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
 import 'package:dio/dio.dart';
 
 class DioErrorHandler {
@@ -8,13 +8,17 @@ class DioErrorHandler {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return ServerFailure('استغرق الاتصال وقتاً أطول من المتوقع. حاول مرة أخرى.');
+        return ServerFailure(
+          'استغرق الاتصال وقتاً أطول من المتوقع. حاول مرة أخرى.',
+        );
 
       case DioExceptionType.badResponse:
         return _handleBadResponse(e.response);
 
       case DioExceptionType.connectionError:
-        return ConnectionFailure('لا يوجد اتصال بالإنترنت. تأكد من الشبكة ثم حاول مرة أخرى.');
+        return ConnectionFailure(
+          'لا يوجد اتصال بالإنترنت. تأكد من الشبكة ثم حاول مرة أخرى.',
+        );
 
       case DioExceptionType.cancel:
         return ServerFailure('تم إيقاف الطلب. حاول مرة أخرى.');
@@ -36,14 +40,18 @@ class DioErrorHandler {
 
       // NestJS أحياناً يرسل قائمة أخطاء (List) وأحياناً نص (String)
       if (msg is List) {
-        return ServerFailure(msg.isNotEmpty ? msg.first.toString() : 'تعذر إكمال الطلب حالياً.');
+        return ServerFailure(
+          msg.isNotEmpty ? msg.first.toString() : 'تعذر إكمال الطلب حالياً.',
+        );
       }
       return ServerFailure(msg.toString());
     }
 
     // في حال لم نجد حقل message، نعتمد على الـ Status Code كخطة بديلة
     if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
-      return ServerFailure('تعذر إكمال الطلب. تحقق من البيانات ثم حاول مرة أخرى.');
+      return ServerFailure(
+        'تعذر إكمال الطلب. تحقق من البيانات ثم حاول مرة أخرى.',
+      );
     } else if (statusCode == 404) {
       return ServerFailure('المحتوى المطلوب غير متوفر حالياً.');
     } else if (statusCode == 500) {

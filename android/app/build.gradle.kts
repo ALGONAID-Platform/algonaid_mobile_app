@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.algonaid_mobail_app"
+    namespace = "com.example.algonaid_mobile_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "30.0.14904198"
 
@@ -22,7 +22,7 @@ isCoreLibraryDesugaringEnabled = true
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.algonaid_mobail_app"
+        applicationId = "com.example.algonaid_mobile_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

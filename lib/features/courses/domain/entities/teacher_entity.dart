@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/courses/domain/entities/user_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/user_entity.dart';
 
 class TeacherEntity {
   final int id;

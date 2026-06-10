@@ -1,23 +1,24 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/teacher_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/user_entity.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/teacher_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/user_entity.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
 import 'package:lottie/lottie.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/presentation/widgets/excellence_modules_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/presentation/widgets/excellence_modules_bottom_sheet.dart';
 
 class ExcellenceCoursesSection extends StatefulWidget {
   const ExcellenceCoursesSection({super.key});
 
   @override
-  State<ExcellenceCoursesSection> createState() => _ExcellenceCoursesSectionState();
+  State<ExcellenceCoursesSection> createState() =>
+      _ExcellenceCoursesSectionState();
 }
 
 class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
@@ -57,13 +58,15 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SectionHeader(
-                        text: '  اوسمةالأنجازات',
+                        text: '  اوسمةالإنجازات',
                         subText: 'خاص بالاختبارات',
                         iconColor: Colors.amber.shade700,
                       ),
                       TextButton(
                         onPressed: () {
-                          GoRouter.of(context).push(Routes.allExcellenceCourses);
+                          GoRouter.of(
+                            context,
+                          ).push(Routes.allExcellenceCourses);
                         },
                         child: Text(
                           'عرض الكل',
@@ -82,7 +85,9 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    itemCount: provider.courses.length > 3 ? 3 : provider.courses.length,
+                    itemCount: provider.courses.length > 3
+                        ? 3
+                        : provider.courses.length,
                     itemBuilder: (context, index) {
                       final course = provider.courses[index];
                       return GestureDetector(
@@ -97,7 +102,7 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                             decoration: BoxDecoration(
                               color: context.surface,
                               borderRadius: BorderRadius.circular(16),
-                              border: AppBorder.main_border
+                              border: AppBorder.main_border,
                             ),
                             child: Stack(
                               children: [
@@ -113,9 +118,11 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                         width: double.infinity,
                                         color: !course.isCompleted
                                             ? Colors.grey.withOpacity(0.2)
-                                            : (context.isDarkMode 
-                                                ? Colors.amber.withOpacity(0.1) 
-                                                : Colors.amber.shade50),
+                                            : (context.isDarkMode
+                                                  ? Colors.amber.withOpacity(
+                                                      0.1,
+                                                    )
+                                                  : Colors.amber.shade50),
                                         child: Center(
                                           child: course.isCompleted
                                               ? Lottie.asset(
@@ -125,12 +132,31 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                                   fit: BoxFit.contain,
                                                 )
                                               : ColorFiltered(
-                                                  colorFilter: const ColorFilter.matrix(<double>[
-                                                    0.2126, 0.7152, 0.0722, 0, 0,
-                                                    0.2126, 0.7152, 0.0722, 0, 0,
-                                                    0.2126, 0.7152, 0.0722, 0, 0,
-                                                    0, 0, 0, 1, 0,
-                                                  ]),
+                                                  colorFilter:
+                                                      const ColorFilter.matrix(
+                                                        <double>[
+                                                          0.2126,
+                                                          0.7152,
+                                                          0.0722,
+                                                          0,
+                                                          0,
+                                                          0.2126,
+                                                          0.7152,
+                                                          0.0722,
+                                                          0,
+                                                          0,
+                                                          0.2126,
+                                                          0.7152,
+                                                          0.0722,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                          1,
+                                                          0,
+                                                        ],
+                                                      ),
                                                   child: Lottie.asset(
                                                     AppLottie.goldMedal,
                                                     width: 95,
@@ -144,14 +170,18 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                     Padding(
                                       padding: const EdgeInsets.all(12.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             course.courseTitle,
-                                            style: context.titleMedium?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: !course.isCompleted ? Colors.grey : null,
-                                            ),
+                                            style: context.titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: !course.isCompleted
+                                                      ? Colors.grey
+                                                      : null,
+                                                ),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -159,19 +189,22 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                           if (course.isCompleted)
                                             Text(
                                               'المعدل: ${course.averagePercentage}%',
-                                              style: context.bodyMedium?.copyWith(
-                                                color: Colors.amber.shade700,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                              style: context.bodyMedium
+                                                  ?.copyWith(
+                                                    color:
+                                                        Colors.amber.shade700,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                             ),
                                         ],
                                       ),
                                     ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),)
+                        ),
                       );
                     },
                   ),

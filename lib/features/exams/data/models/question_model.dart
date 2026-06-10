@@ -1,6 +1,6 @@
-// algonaid_mobail_app/lib/features/exams/data/models/question_model.dart
-import 'package:algonaid_mobail_app/features/exams/data/models/option_model.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/question.dart';
+// algonaid_mobile_app/lib/features/exams/data/models/question_model.dart
+import 'package:algonaid_mobile_app/features/exams/data/models/option_model.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/question.dart';
 
 class QuestionModel extends Question {
   const QuestionModel({

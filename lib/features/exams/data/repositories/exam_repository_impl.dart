@@ -1,11 +1,11 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/network/check_internet.dart';
+import 'package:algonaid_mobile_app/features/exams/data/datasources/exam_local_data_source.dart';
+import 'package:algonaid_mobile_app/features/exams/data/datasources/exam_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/exams/data/models/exam_models.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/repositories/exam_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 

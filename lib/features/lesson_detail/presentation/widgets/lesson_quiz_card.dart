@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
 
 class LessonQuizCard extends StatelessWidget {
   final int? examId;

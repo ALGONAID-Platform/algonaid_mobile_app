@@ -1,8 +1,8 @@
-import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart'; // New Import
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart'; // New Import
-import 'package:algonaid_mobail_app/features/onboard/data/models/onboarding_data.dart';
+import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart'; // New Import
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart'; // New Import
+import 'package:algonaid_mobile_app/features/onboard/data/models/onboarding_data.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

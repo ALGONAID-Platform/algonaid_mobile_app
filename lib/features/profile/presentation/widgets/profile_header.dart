@@ -1,13 +1,13 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
 import 'edit_profile_dialog.dart';
 
 class ProfileHeader extends StatefulWidget {
@@ -53,13 +53,12 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             "user@example.com";
         final initials = _getInitials(userName);
 
-        final hasBackground =
-            false;
+        final hasBackground = false;
 
         // تحديد الألوان بذكاء بناءً على وجود خلفية مخصصة أو الاعتماد على ثيم التطبيق
         final textColor = context.textTheme.titleLarge?.color;
         final subTextColor = context.colorScheme.onSurface.withOpacity(0.6);
-        final cardColor =  context.colorScheme.surface;
+        final cardColor = context.colorScheme.surface;
 
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -70,8 +69,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               decoration: BoxDecoration(
                 color: cardColor,
                 borderRadius: BorderRadius.circular(24),
-                border: AppBorder.main_border
-              
+                border: AppBorder.main_border,
               ),
               child: Stack(
                 children: [
@@ -202,48 +200,52 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       onTap: () => _showFullScreenImage(context, profile, initials),
       child: Hero(
         tag: 'user_profile_avatar',
-      child: Container(
-        width: 78,
-        height: 78,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-  
-          image: hasAvatar
-              ? DecorationImage(
-                  image: CachedNetworkImageProvider(profile.avatar!),
-                  fit: BoxFit.cover,
-                )
-              : null,
-          gradient: !hasAvatar
-              ? LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.primary.withOpacity(0.75),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        child: Container(
+          width: 78,
+          height: 78,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+
+            image: hasAvatar
+                ? DecorationImage(
+                    image: CachedNetworkImageProvider(profile.avatar!),
+                    fit: BoxFit.cover,
+                  )
+                : null,
+            gradient: !hasAvatar
+                ? LinearGradient(
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withOpacity(0.75),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+          ),
+          child: !hasAvatar
+              ? Center(
+                  child: Text(
+                    initials,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 )
               : null,
         ),
-        child: !hasAvatar
-            ? Center(
-                child: Text(
-                  initials,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-              )
-            : null,
-      ),
       ),
     );
   }
 
-  void _showFullScreenImage(BuildContext context, dynamic profile, String initials) {
+  void _showFullScreenImage(
+    BuildContext context,
+    dynamic profile,
+    String initials,
+  ) {
     final hasAvatar = profile?.avatar != null && profile!.avatar!.isNotEmpty;
     Navigator.of(context).push(
       PageRouteBuilder(
@@ -269,7 +271,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       shape: BoxShape.circle,
                       image: hasAvatar
                           ? DecorationImage(
-                              image: CachedNetworkImageProvider( profile.avatar!),
+                              image: CachedNetworkImageProvider(
+                                profile.avatar!,
+                              ),
                               fit: BoxFit.cover,
                             )
                           : null,

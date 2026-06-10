@@ -1,8 +1,8 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/features/settings/data/datasources/settings_static_datasource.dart';
-import 'package:algonaid_mobail_app/features/settings/domain/entities/policy_item.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid_mobile_app/features/settings/domain/entities/policy_item.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
 
 class PoliciesPage extends StatelessWidget {
   const PoliciesPage({Key? key}) : super(key: key);
@@ -15,9 +15,7 @@ class PoliciesPage extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: const SharedAppBar(
-          title: 'السياسات والأحكام',
-        ),
+        appBar: const SharedAppBar(title: 'السياسات والأحكام'),
         body: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
@@ -58,7 +56,11 @@ class PoliciesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(BuildContext context, {required String title, required String content}) {
+  Widget _buildSection(
+    BuildContext context, {
+    required String title,
+    required String content,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
       child: Column(

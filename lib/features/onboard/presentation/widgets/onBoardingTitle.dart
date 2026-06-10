@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
-import 'package:algonaid_mobail_app/features/onboard/domain/entity/onboarding_entity.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/styles.dart';
+import 'package:algonaid_mobile_app/features/onboard/domain/entity/onboarding_entity.dart';
 import 'package:flutter/material.dart';
 
 class OnBoardingTitle extends StatelessWidget {

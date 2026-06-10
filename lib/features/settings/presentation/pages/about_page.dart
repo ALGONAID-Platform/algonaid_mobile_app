@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/settings/data/datasources/settings_static_datasource.dart';
-import 'package:algonaid_mobail_app/features/settings/domain/entities/platform_feature.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid_mobile_app/features/settings/domain/entities/platform_feature.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -66,14 +66,16 @@ class AboutPage extends StatelessWidget {
                             'منصة الجنيد التعليمية',
                             style: context.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: context.colorScheme.onBackground.withOpacity(0.6),
+                              color: context.colorScheme.onBackground
+                                  .withOpacity(0.6),
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'الإصدار 1.0.0',
                             style: context.textTheme.bodySmall?.copyWith(
-                              color: context.colorScheme.onBackground.withOpacity(0.4),
+                              color: context.colorScheme.onBackground
+                                  .withOpacity(0.4),
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -126,7 +128,10 @@ class AboutPage extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 32.0,
+              horizontal: 24.0,
+            ),
             child: Column(
               children: [
                 // لوجو دائري مبسط
@@ -222,16 +227,17 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturesSection(BuildContext context, List<PlatformFeature> features) {
+  Widget _buildFeaturesSection(
+    BuildContext context,
+    List<PlatformFeature> features,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.border.withOpacity(0.15),
-        ),
+        border: Border.all(color: AppColors.border.withOpacity(0.15)),
         boxShadow: [
           BoxShadow(
             color: context.colorScheme.shadow.withOpacity(0.02),
@@ -251,7 +257,11 @@ class AboutPage extends StatelessWidget {
                   color: AppColors.primary.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.star_rounded, color: AppColors.primary, size: 22),
+                child: const Icon(
+                  Icons.star_rounded,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -279,7 +289,9 @@ class AboutPage extends StatelessWidget {
                     child: Text(
                       feature.title,
                       style: context.textTheme.bodyMedium?.copyWith(
-                        color: context.colorScheme.onBackground.withOpacity(0.85),
+                        color: context.colorScheme.onBackground.withOpacity(
+                          0.85,
+                        ),
                       ),
                     ),
                   ),

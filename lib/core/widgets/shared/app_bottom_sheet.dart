@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 
 class AppBottomSheet extends StatelessWidget {
   final String title;
@@ -18,7 +18,11 @@ class AppBottomSheet extends StatelessWidget {
     required String title,
     required Widget child,
     bool isScrollControlled = true,
-    EdgeInsetsGeometry padding = const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+    EdgeInsetsGeometry padding = const EdgeInsets.only(
+      left: 24,
+      right: 24,
+      bottom: 24,
+    ),
   }) {
     return showModalBottomSheet<T>(
       context: context,
@@ -28,11 +32,7 @@ class AppBottomSheet extends StatelessWidget {
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
         ),
-        child: AppBottomSheet(
-          title: title,
-          padding: padding,
-          child: child,
-        ),
+        child: AppBottomSheet(title: title, padding: padding, child: child),
       ),
     );
   }
@@ -76,10 +76,7 @@ class AppBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Flexible(
-              child: Padding(
-                padding: padding,
-                child: child,
-              ),
+              child: Padding(padding: padding, child: child),
             ),
           ],
         ),

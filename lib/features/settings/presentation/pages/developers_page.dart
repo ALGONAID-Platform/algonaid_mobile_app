@@ -1,11 +1,11 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/settings/data/datasources/settings_static_datasource.dart';
-import 'package:algonaid_mobail_app/features/settings/domain/entities/developer_info.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid_mobile_app/features/settings/domain/entities/developer_info.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
 
 class DevelopersPage extends StatefulWidget {
   const DevelopersPage({Key? key}) : super(key: key);
@@ -14,10 +14,12 @@ class DevelopersPage extends StatefulWidget {
   State<DevelopersPage> createState() => _DevelopersPageState();
 }
 
-class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProviderStateMixin {
+class _DevelopersPageState extends State<DevelopersPage>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _fadeController;
-  
-  final List<DeveloperInfo> _developers = const SettingsStaticDataSourceImpl().getDevelopers();
+
+  final List<DeveloperInfo> _developers = const SettingsStaticDataSourceImpl()
+      .getDevelopers();
 
   @override
   void initState() {
@@ -76,7 +78,7 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                   itemCount: _developers.length,
                   itemBuilder: (context, index) {
                     final dev = _developers[index];
-                    
+
                     final delay = index * 0.15;
                     final start = delay;
                     final end = (delay + 0.4).clamp(0.0, 1.0);
@@ -135,7 +137,10 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 24.0,
+              horizontal: 20.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -210,11 +215,7 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                       end: Alignment.bottomRight,
                     ),
                   ),
-                  child: Icon(
-                    dev.avatarIcon,
-                    color: Colors.white,
-                    size: 28,
-                  ),
+                  child: Icon(dev.avatarIcon, color: Colors.white, size: 28),
                 );
               },
             ),
@@ -235,7 +236,9 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                 context,
                 icon: Icons.code_rounded,
                 tooltip: 'GitHub',
-                color: context.isDarkMode ? Colors.white.withOpacity(0.9) : AppColors.indigo,
+                color: context.isDarkMode
+                    ? Colors.white.withOpacity(0.9)
+                    : AppColors.indigo,
                 onPressed: () => _launchURL(dev.githubUrl),
               ),
               const SizedBox(width: 8),
@@ -271,11 +274,7 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
             color: color.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: color,
-          ),
+          child: Icon(icon, size: 20, color: color),
         ),
       ),
     );

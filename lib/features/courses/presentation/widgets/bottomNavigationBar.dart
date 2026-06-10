@@ -1,15 +1,17 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 
 class FancyFloatingNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemSelected;
+  final bool isGuest;
 
   const FancyFloatingNavBar({
     Key? key,
     required this.selectedIndex,
     required this.onItemSelected,
+    this.isGuest = false,
   }) : super(key: key);
 
   @override
@@ -18,18 +20,21 @@ class FancyFloatingNavBar extends StatefulWidget {
 
 class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
     with TickerProviderStateMixin {
-  late final List<IconData> icons = [
-    Icons.home_outlined,
-    Icons.emoji_events_rounded,
-    Icons.bookmark_rounded,
-    Icons.person_rounded,
-  ];
-  late final List<String> labels = [
-    'الرئيسية',
-    'المسابقات',
-    'المحفوظات',
-    'الحساب',
-  ];
+  late final List<IconData> icons = widget.isGuest
+      ? [
+          Icons.home_outlined,
+          Icons.emoji_events_rounded,
+          Icons.bookmark_rounded,
+        ]
+      : [
+          Icons.home_outlined,
+          Icons.emoji_events_rounded,
+          Icons.bookmark_rounded,
+          Icons.person_rounded,
+        ];
+  late final List<String> labels = widget.isGuest
+      ? ['الرئيسية', 'المسابقات', 'المحفوظات']
+      : ['الرئيسية', 'المسابقات', 'المحفوظات', 'الحساب'];
 
   late final List<AnimationController> _iconControllers;
 

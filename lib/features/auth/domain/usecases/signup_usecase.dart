@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/userCases/usecase.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/userCases/usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/entities/user_entity.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 
 class SignupUsecase extends UseCase<UserEntity, SignupParams> {

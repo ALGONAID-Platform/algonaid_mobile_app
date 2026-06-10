@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid_mobile_app/features/exams/data/models/exam_models.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
 
 class LessonDetailModel {
   final int id;

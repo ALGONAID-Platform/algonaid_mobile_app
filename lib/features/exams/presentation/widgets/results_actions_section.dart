@@ -1,8 +1,8 @@
-import 'package:algonaid_mobail_app/core/di/service_locator.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
+import 'package:algonaid_mobile_app/core/di/service_locator.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/pages/exam_page.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';

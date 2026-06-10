@@ -1,18 +1,16 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class AppShadows {
-  
-  
   static List<BoxShadow> get cardShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.05), 
-      blurRadius: 10,                       
-      spreadRadius: 0,                      
-      offset: const Offset(0, 2),            
+      color: Colors.black.withOpacity(0.05),
+      blurRadius: 10,
+      spreadRadius: 0,
+      offset: const Offset(0, 2),
     ),
   ];
-  
+
   static final BoxShadow soft = BoxShadow(
     color: AppColors.shadow.withOpacity(0.1),
     offset: const Offset(0, 4),

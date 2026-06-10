@@ -1,27 +1,27 @@
 import 'dart:async';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/providers/lessons_list_provider.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/providers/lesson_detail_provider.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_detail_app_bar.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_detail_bottom_bar.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/controllers/global_video_state.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid_mobile_app/features/lessons/presentation/providers/lessons_list_provider.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/providers/lesson_detail_provider.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_detail_app_bar.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_detail_bottom_bar.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/global_video_state.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -155,9 +155,14 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
         final pdfUrl =
             _downloadController.resolvePdfUrl(lesson.pdfUrl) ?? lesson.pdfUrl;
 
-        final bool isVideoDownloaded = _downloadController.videoDownloadStatus == DownloadStatus.downloaded;
-        final bool isPdfDownloaded = _downloadController.pdfDownloadStatus == DownloadStatus.downloaded;
-        final bool isFullyDownloaded = isVideoDownloaded && (pdfUrl == null || pdfUrl.isEmpty || isPdfDownloaded);
+        final bool isVideoDownloaded =
+            _downloadController.videoDownloadStatus ==
+            DownloadStatus.downloaded;
+        final bool isPdfDownloaded =
+            _downloadController.pdfDownloadStatus == DownloadStatus.downloaded;
+        final bool isFullyDownloaded =
+            isVideoDownloaded &&
+            (pdfUrl == null || pdfUrl.isEmpty || isPdfDownloaded);
 
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -174,44 +179,53 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                 onBack: () => _handleBackNavigation(lesson),
               ),
               bottomNavigationBar: LessonDetailBottomBar(
-                onNextLessonPressed: state.nextLessonId != null ? () {
-                  final globalState = GlobalVideoState();
-                  globalState.disposeControllers();
-                  
-                  context.pushReplacement(
-                    '${Routes.lessonDetails}/${state.nextLessonId}',
-                    extra: widget.previousRoute,
-                  );
-                } : null,
-                onPreviousLessonPressed: state.previousLessonId != null ? () {
-                  final globalState = GlobalVideoState();
-                  globalState.disposeControllers();
-                  
-                  context.pushReplacement(
-                    '${Routes.lessonDetails}/${state.previousLessonId}',
-                    extra: widget.previousRoute,
-                  );
-                } : null,
+                onNextLessonPressed: state.nextLessonId != null
+                    ? () {
+                        final globalState = GlobalVideoState();
+                        globalState.disposeControllers();
+
+                        context.pushReplacement(
+                          '${Routes.lessonDetails}/${state.nextLessonId}',
+                          extra: widget.previousRoute,
+                        );
+                      }
+                    : null,
+                onPreviousLessonPressed: state.previousLessonId != null
+                    ? () {
+                        final globalState = GlobalVideoState();
+                        globalState.disposeControllers();
+
+                        context.pushReplacement(
+                          '${Routes.lessonDetails}/${state.previousLessonId}',
+                          extra: widget.previousRoute,
+                        );
+                      }
+                    : null,
               ),
               floatingActionButton: AnimatedOpacity(
                 opacity: _fabOpacity,
                 duration: const Duration(milliseconds: 300),
                 child: FloatingActionButton(
-                  onPressed: isFullyDownloaded 
-                    ? () {
-                        AppSnackBar.show(
-                          context: context, 
-                          message: 'تم تحميل هذا الدرس بالكامل ومتاح للمشاهدة بدون إنترنت', 
-                          type: SnackBarType.info
-                        );
-                      } 
-                    : () => _showDownloadDialog(context, lesson),
-                  backgroundColor: isFullyDownloaded ? Colors.green : context.colorScheme.error,
+                  onPressed: isFullyDownloaded
+                      ? () {
+                          AppSnackBar.show(
+                            context: context,
+                            message:
+                                'تم تحميل هذا الدرس بالكامل ومتاح للمشاهدة بدون إنترنت',
+                            type: SnackBarType.info,
+                          );
+                        }
+                      : () => _showDownloadDialog(context, lesson),
+                  backgroundColor: isFullyDownloaded
+                      ? Colors.green
+                      : context.colorScheme.error,
                   elevation: 0,
                   shape: const CircleBorder(),
                   child: Icon(
-                    isFullyDownloaded ? Icons.download_done_rounded : Icons.download_rounded, 
-                    color: Colors.white
+                    isFullyDownloaded
+                        ? Icons.download_done_rounded
+                        : Icons.download_rounded,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -231,38 +245,61 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                         videoUrl: lesson.videoUrl,
                         localVideoPath: _downloadController.localVideoFilePath,
                         onVideoStart: () {
-                          final isAlreadyCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ?? false;
+                          final isAlreadyCompleted =
+                              CacheHelper.getBool(
+                                key: 'lesson_completed_${lesson.id}',
+                              ) ??
+                              false;
                           context.read<LessonDetailProvider>().updateProgress(
                             lesson.id,
                             isAlreadyCompleted,
                           );
                         },
                         onProgressComplete: () async {
-                          final isAlreadyCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ?? false;
-                          
-                          await context.read<LessonDetailProvider>().updateProgress(
-                            lesson.id,
-                            true,
-                          );
-                          
+                          final isAlreadyCompleted =
+                              CacheHelper.getBool(
+                                key: 'lesson_completed_${lesson.id}',
+                              ) ??
+                              false;
+
+                          await context
+                              .read<LessonDetailProvider>()
+                              .updateProgress(lesson.id, true);
+
                           if (!isAlreadyCompleted) {
-                            await CacheHelper.saveData(key: 'lesson_completed_${lesson.id}', value: true);
-                            
+                            await CacheHelper.saveData(
+                              key: 'lesson_completed_${lesson.id}',
+                              value: true,
+                            );
+
                             await NotificationService().showNotification(
                               title: 'إنجاز جديد! 🎓',
-                              body: 'تهانينا! لقد أكملت مشاهدة درس "${lesson.title}" بنجاح.',
+                              body:
+                                  'تهانينا! لقد أكملت مشاهدة درس "${lesson.title}" بنجاح.',
                             );
-                            
+
                             if (mounted) {
                               try {
                                 context.read<GetCoursesProvider>().refreshAll();
-                                final modulesListProvider = context.read<ModulesListProvider>();
-                                if (modulesListProvider.state.modules.isNotEmpty) {
-                                  modulesListProvider.loadModules(modulesListProvider.state.modules.first.courseId);
+                                final modulesListProvider = context
+                                    .read<ModulesListProvider>();
+                                if (modulesListProvider
+                                    .state
+                                    .modules
+                                    .isNotEmpty) {
+                                  modulesListProvider.loadModules(
+                                    modulesListProvider
+                                        .state
+                                        .modules
+                                        .first
+                                        .courseId,
+                                  );
                                 }
-                                context.read<LessonsListProvider>().loadLessons(lesson.moduleId);
+                                context.read<LessonsListProvider>().loadLessons(
+                                  lesson.moduleId,
+                                );
                               } catch (_) {}
-                              
+
                               AppSnackBar.show(
                                 context: context,
                                 message: 'أحسنت! لقد أكملت الدرس بنجاح.',
@@ -276,7 +313,11 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                           }
                         },
                         onVideoEnd: () {
-                          final autoPlayNext = CacheHelper.getBool(key: AppConstants.autoPlayNext) ?? false;
+                          final autoPlayNext =
+                              CacheHelper.getBool(
+                                key: AppConstants.autoPlayNext,
+                              ) ??
+                              false;
                           if (autoPlayNext) {
                             final nextId = provider.state.nextLessonId;
                             if (nextId != null) {
@@ -303,15 +344,19 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                       LessonPdfCard(
                         pdfUrl: pdfUrl,
                         downloadStatus: _downloadController.pdfDownloadStatus,
-                        downloadProgress: _downloadController.pdfDownloadProgress,
-                        onDownload: () => _downloadController.downloadPdf(context, lesson),
+                        downloadProgress:
+                            _downloadController.pdfDownloadProgress,
+                        onDownload: () =>
+                            _downloadController.downloadPdf(context, lesson),
                         onOpen: () {
-                          if (pdfUrl == null) return;
+                          if (lesson.pdfUrl == null || lesson.pdfUrl!.isEmpty)
+                            return;
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => LessonPdfViewerPage(
-                                pdfUrl: pdfUrl,
-                                localPdfPath: _downloadController.localPdfFilePath,
+                                pdfUrl: lesson.pdfUrl,
+                                localPdfPath:
+                                    _downloadController.localPdfFilePath,
                                 title: lesson.title,
                               ),
                             ),
@@ -321,7 +366,8 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                       const SizedBox(height: 16),
                       LessonQuizCard(
                         examId: lesson.exam?.id,
-                        previousRoute: '${Routes.lessonsList}/${lesson.moduleId}',
+                        previousRoute:
+                            '${Routes.lessonsList}/${lesson.moduleId}',
                       ),
                       const SizedBox(height: 30),
                     ],
@@ -336,10 +382,12 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
   }
 
   void _handleBackNavigation(LessonDetail lesson) {
-    final floatingVideo = CacheHelper.getBool(key: AppConstants.floatingVideo) ?? true;
+    final floatingVideo =
+        CacheHelper.getBool(key: AppConstants.floatingVideo) ?? true;
     final globalState = GlobalVideoState();
-    
-    if (floatingVideo && globalState.videoPlayerController != null && 
+
+    if (floatingVideo &&
+        globalState.videoPlayerController != null &&
         globalState.videoPlayerController!.value.isPlaying) {
       globalState.showFloatingVideo(
         context,
@@ -397,7 +445,9 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
               const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(statefulContext).colorScheme.primary,
+                  backgroundColor: Theme.of(
+                    statefulContext,
+                  ).colorScheme.primary,
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -412,7 +462,10 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                     _downloadController.downloadPdf(context, lesson);
                   }
                 },
-                child: const Text('بدء التحميل', style: TextStyle(color: Colors.white, fontSize: 16)),
+                child: const Text(
+                  'بدء التحميل',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
               ),
             ],
           );

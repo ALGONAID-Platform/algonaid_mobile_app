@@ -1,16 +1,22 @@
 const port = '3000';
-const ip = '10.32.48.22';
+const ip = '192.168.1.11';
 
 class EndPoint {
   // base url for app API
   static const String baseUrl = 'http://$ip:$port/api/v1';
   // base url for uploaded files
   static const String uploadsBaseUrl = 'http://$ip:$port/uploads/';
+  // Google OAuth entry points
+  static const String googleAuth = '$baseUrl/auth/google';
+  static const String googleCallback = '$baseUrl/auth/google/callback';
+  static const String googleMobileAuth = '$baseUrl/auth/google/mobile';
 
   // API endpoints
   static const String signin = '$baseUrl/auth/signin';
   static const String signup = '$baseUrl/auth/signup';
   static const String logout = '$baseUrl/auth/logout';
+  static const String forgotPassword = '$baseUrl/auth/forgot-password';
+  static const String resetPassword = '$baseUrl/auth/reset-password';
   static const String courses = '$baseUrl/courses';
   static const String myCourses = '$baseUrl/courses/my-courses';
   static const String enrollment = '$baseUrl/enrollment';

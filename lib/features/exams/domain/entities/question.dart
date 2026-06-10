@@ -1,8 +1,12 @@
-// algonaid_mobail_app/lib/features/exams/domain/entities/question.dart
-import 'package:algonaid_mobail_app/features/exams/domain/entities/option.dart';
+// algonaid_mobile_app/lib/features/exams/domain/entities/question.dart
+import 'package:algonaid_mobile_app/features/exams/domain/entities/option.dart';
 import 'package:equatable/equatable.dart';
 
-enum QuestionType { SINGLE_CHOICE, MULTIPLE_CHOICE, TRUE_FALSE } // Matches Prisma schema
+enum QuestionType {
+  SINGLE_CHOICE,
+  MULTIPLE_CHOICE,
+  TRUE_FALSE,
+} // Matches Prisma schema
 
 class Question extends Equatable {
   final int id;
@@ -20,11 +24,5 @@ class Question extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        id,
-        text,
-        type,
-        points,
-        options,
-      ];
+  List<Object?> get props => [id, text, type, points, options];
 }

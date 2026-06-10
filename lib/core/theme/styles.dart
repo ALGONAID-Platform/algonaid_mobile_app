@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 abstract class Styles {
@@ -97,9 +97,4 @@ abstract class Styles {
           : AppColors.textSecondaryLight,
     );
   }
-
-
-
-
-
 }

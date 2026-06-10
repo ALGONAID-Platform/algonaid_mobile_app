@@ -1,13 +1,13 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/models/excellence_course_model.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/entities/excellence_course_entity.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/entities/excellence_module_entity.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
+import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
+import 'package:algonaid_mobile_app/core/network/check_internet.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/data/models/excellence_course_model.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/entities/excellence_course_entity.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/entities/excellence_module_entity.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 

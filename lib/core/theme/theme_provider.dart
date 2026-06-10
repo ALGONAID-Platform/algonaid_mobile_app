@@ -1,11 +1,11 @@
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {
   static const String _themeKey = 'isDarkMode';
   static const String _colorKey = 'primaryColorIndex';
   static const String _fontKey = 'fontFamilyIndex';
-  
+
   ThemeMode _themeMode = ThemeMode.system;
   int _colorIndex = 0;
   int _fontIndex = 0;
@@ -54,4 +54,3 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

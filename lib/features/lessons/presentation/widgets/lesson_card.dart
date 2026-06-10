@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
 import 'package:flutter/material.dart';
 
 class LessonCard extends StatelessWidget {
@@ -27,7 +27,7 @@ class LessonCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(18),
-          boxShadow:AppShadows.cardShadow
+          boxShadow: AppShadows.cardShadow,
         ),
         child: Row(
           children: [
@@ -54,10 +54,10 @@ class LessonCard extends StatelessWidget {
                 children: [
                   Text(
                     lesson.title,
-                    style:context.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.indigo,
-                        ),
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.indigo,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -67,8 +67,8 @@ class LessonCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondaryLight,
-                        ),
+                      color: AppColors.textSecondaryLight,
+                    ),
                   ),
                 ],
               ),
@@ -90,8 +90,8 @@ class LessonCard extends StatelessWidget {
                   color: hasVideo
                       ? AppColors.primary
                       : Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.grey400,
+                      ? AppColors.textSecondaryDark
+                      : AppColors.grey400,
                 ),
               ),
             ),

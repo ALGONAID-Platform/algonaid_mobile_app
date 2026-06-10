@@ -1,14 +1,12 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/styles.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -191,22 +189,6 @@ class BuildCourseDetails extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                final token = TokenStorage.getToken();
-                final isGuest = token == null || token.trim().isEmpty;
-                
-                if (isGuest) {
-                  final navContext = navigatorKey.currentContext;
-                  if (navContext != null) {
-                    GoRouter.of(navContext).push(Routes.auth);
-                    AppSnackBar.show(
-                      context: navContext,
-                      message: 'يرجى تسجيل الدخول للقيام بهذه العملية',
-                      type: SnackBarType.error,
-                    );
-                  }
-                  return;
-                }
-
                 if (!course.isEnrolled) {
                   AppDialog.showDynamicDialog(
                     title: "ملاحظة",
@@ -218,28 +200,38 @@ class BuildCourseDetails extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: context.primary.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: context.primary.withOpacity(0.1)),
+                          border: Border.all(
+                            color: context.primary.withOpacity(0.1),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.person, size: 16, color: context.primary),
+                                Icon(
+                                  Icons.person,
+                                  size: 16,
+                                  color: context.primary,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     "المدرب: ${course.teacher.user.name}",
-                                    style: context.textTheme.labelMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: context.primary,
-                                    ),
+                                    style: context.textTheme.labelMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: context.primary,
+                                        ),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Divider(height: 1, color: context.primary.withOpacity(0.1)),
+                            Divider(
+                              height: 1,
+                              color: context.primary.withOpacity(0.1),
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               course.description,
@@ -247,7 +239,9 @@ class BuildCourseDetails extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: context.textTheme.bodySmall?.copyWith(
                                 height: 1.5,
-                                color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                                color: context.isDarkMode
+                                    ? Colors.grey[300]
+                                    : Colors.grey[800],
                               ),
                             ),
                           ],

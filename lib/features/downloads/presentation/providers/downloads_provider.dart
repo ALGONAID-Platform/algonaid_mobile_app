@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/models/lesson_detail_model.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
-import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/features/courses/data/models/course_model.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/models/lesson_detail_model.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid_mobile_app/features/modules/data/models/module_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DownloadedLessonItem {
@@ -89,9 +90,39 @@ class DownloadsProvider extends ChangeNotifier {
       final Map<int, String> courseThumbnails = {};
       final Map<int, String> moduleNames = {};
 
+      final docDir = await getApplicationDocumentsDirectory();
+
       for (final lessonId in downloadedLessonIds) {
-        final videoPath = prefs.getString('video_local_path_$lessonId') ?? '';
-        final pdfPath = prefs.getString('pdf_local_path_$lessonId');
+        String videoPath = '';
+        final videoFileName = prefs.getString('video_filename_$lessonId');
+        if (videoFileName != null) {
+          videoPath = '${docDir.path}/lesson_$lessonId/$videoFileName';
+        } else {
+          final storedPath = prefs.getString('video_local_path_$lessonId');
+          if (storedPath != null && storedPath.isNotEmpty) {
+            final name = storedPath.split('/').last;
+            videoPath = '${docDir.path}/lesson_$lessonId/$name';
+          }
+        }
+
+        String? pdfPath;
+        final pdfFileName = prefs.getString('pdf_filename_$lessonId');
+        if (pdfFileName != null) {
+          pdfPath = '${docDir.path}/lesson_$lessonId/$pdfFileName';
+        } else {
+          final storedPath = prefs.getString('pdf_local_path_$lessonId');
+          if (storedPath != null && storedPath.isNotEmpty) {
+            final name = storedPath.split('/').last;
+            pdfPath = '${docDir.path}/lesson_$lessonId/$name';
+          }
+        }
+
+        if (videoPath.isNotEmpty) {
+          await prefs.setString('video_local_path_$lessonId', videoPath);
+        }
+        if (pdfPath != null && pdfPath.isNotEmpty) {
+          await prefs.setString('pdf_local_path_$lessonId', pdfPath);
+        }
 
         String lessonTitle = 'درس غير معروف';
         int? moduleId;

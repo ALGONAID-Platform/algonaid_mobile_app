@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/entities/excellence_course_entity.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/entities/excellence_course_entity.dart';
 
 class ExcellenceCourseModel extends ExcellenceCourseEntity {
   const ExcellenceCourseModel({

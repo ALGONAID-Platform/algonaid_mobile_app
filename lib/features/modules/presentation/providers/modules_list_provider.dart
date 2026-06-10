@@ -1,7 +1,7 @@
-// algonaid_mobail_app/lib/features/modules/presentation/providers/modules_list_provider.dart
+// algonaid_mobile_app/lib/features/modules/presentation/providers/modules_list_provider.dart
 
-import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules_by_course.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/entities/module.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_modules_by_course.dart';
 import 'package:flutter/material.dart';
 
 class ModulesListState {

@@ -1,17 +1,17 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/expertBadge3D.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/expertBadge3D.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import 'package:algonaid_mobail_app/core/di/service_locator.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/course_grades_widget.dart';
+import 'package:algonaid_mobile_app/core/di/service_locator.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/course_grades_provider.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/course_grades_widget.dart';
 import 'package:provider/provider.dart';
 
 class BuildExpertBadge extends StatefulWidget {

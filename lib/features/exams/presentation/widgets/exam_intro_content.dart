@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/info_banner.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/info_banner.dart';
 import 'package:flutter/material.dart';
 
 class ExamIntroContent extends StatelessWidget {

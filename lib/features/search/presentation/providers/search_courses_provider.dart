@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/search/domain/entities/global_search_entity.dart';
-import 'package:algonaid_mobail_app/features/search/domain/usecases/search_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/search/domain/entities/global_search_entity.dart';
+import 'package:algonaid_mobile_app/features/search/domain/usecases/search_courses_usecase.dart';
 import 'dart:async';
 
 class SearchCoursesProvider extends ChangeNotifier {

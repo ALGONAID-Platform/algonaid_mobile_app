@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/entities/last_accessed_module_entity.dart';
 import 'package:hive/hive.dart';
 
 part 'last_accessed_module_model.g.dart';

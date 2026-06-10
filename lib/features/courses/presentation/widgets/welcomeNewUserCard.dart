@@ -1,13 +1,5 @@
-
-
-
-
-
-
-
-
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/pages/about_page.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/pages/about_page.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeCard extends StatelessWidget {
@@ -15,25 +7,20 @@ class WelcomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-           color: context.primary
+            color: context.primary,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              
               const SizedBox(height: 14),
               const Text(
                 "مرحباً بك في  منصة الجنيد ",
@@ -72,32 +59,20 @@ class _StartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const AboutPage(),
-          ),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (context) => const AboutPage()));
       },
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(
-          color: Colors.white70,
-          width: 1.2,
-        ),
+        side: const BorderSide(color: Colors.white70, width: 1.2),
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 22,
-          vertical: 12,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         backgroundColor: Colors.white.withOpacity(0.08), // 🔥 شفاف
       ),
       child: const Text(
         "  ما هي منصة الجنيد؟",
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(fontWeight: FontWeight.w600),
       ),
     );
   }

@@ -1,4 +1,4 @@
-package com.example.algonaid_mobail_app
+package com.example.algonaid_mobile_app
 
 import android.app.PictureInPictureParams
 import android.content.res.Configuration

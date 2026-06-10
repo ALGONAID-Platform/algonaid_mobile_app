@@ -1,19 +1,19 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_grades_widget.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/widgets/module_grades_widget.dart';
 
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobile_app/core/theme/styles.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/entities/last_accessed_module_entity.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
 
 class ContinueLearningCard extends StatelessWidget {
   final LastAccessedModuleEntity module;
@@ -28,7 +28,7 @@ class ContinueLearningCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.colorScheme.surface,
           borderRadius: BorderRadius.circular(15),
-          border : AppBorder.main_border
+          border: AppBorder.main_border,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
@@ -56,7 +56,7 @@ class ContinueLearningCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  
+
                     const SizedBox(height: 16),
                     _ProgressBarSection(
                       progressPercentage: module.progressPercentage.toDouble(),
@@ -125,11 +125,17 @@ class _ProgressBarSection extends StatelessWidget {
           children: [
             Text(
               'نسبة الإنجاز',
-              style: theme.textTheme.labelSmall?.copyWith(color: theme.hintColor, fontWeight: FontWeight.w600),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.hintColor,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             Text(
               '${progressPercentage.toInt()}%',
-              style: theme.textTheme.labelSmall?.copyWith(color: context.primary, fontWeight: FontWeight.bold),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: context.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

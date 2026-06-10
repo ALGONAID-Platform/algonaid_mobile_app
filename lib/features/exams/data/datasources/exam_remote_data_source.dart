@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
-import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
+import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
+import 'package:algonaid_mobile_app/core/network/api_service.dart';
+import 'package:algonaid_mobile_app/features/exams/data/models/exam_models.dart';
 
 abstract class ExamRemoteDataSource {
   Future<ExamModel> getExam(int examId);

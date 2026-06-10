@@ -1,9 +1,9 @@
 import 'dart:core';
 
-import 'package:algonaid_mobail_app/core/common/enums/password_strength.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/constants/app_strings.dart';
-import 'package:algonaid_mobail_app/core/utils/validations/validation_pattern.dart';
+import 'package:algonaid_mobile_app/core/common/enums/password_strength.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/constants/app_strings.dart';
+import 'package:algonaid_mobile_app/core/utils/validations/validation_pattern.dart';
 
 class Validator {
   /// 1. Required Field Validator

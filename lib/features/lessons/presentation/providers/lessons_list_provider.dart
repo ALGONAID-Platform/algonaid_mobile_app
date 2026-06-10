@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_module_lessons.dart';
 import 'package:flutter/foundation.dart';
 
 class LessonsListState {
@@ -60,9 +60,15 @@ class LessonsListProvider extends ChangeNotifier {
       (lessons) {
         for (var lesson in lessons) {
           if (lesson.status == LessonStatus.completed) {
-            CacheHelper.saveData(key: 'lesson_completed_${lesson.id}', value: true);
+            CacheHelper.saveData(
+              key: 'lesson_completed_${lesson.id}',
+              value: true,
+            );
           } else {
-            CacheHelper.saveData(key: 'lesson_completed_${lesson.id}', value: false);
+            CacheHelper.saveData(
+              key: 'lesson_completed_${lesson.id}',
+              value: false,
+            );
           }
         }
         _state = _state.copyWith(

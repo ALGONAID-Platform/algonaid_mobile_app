@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
 import 'package:dartz/dartz.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
+import 'package:algonaid_mobile_app/core/network/check_internet.dart';
 import '../../domain/entities/total_points_entity.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/entities/user_badge_entity.dart';
@@ -31,7 +31,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
           return Right(localPoints);
         }
       } catch (_) {}
-      return Left(ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد نقاط محفوظة.'));
+      return Left(
+        ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد نقاط محفوظة.'),
+      );
     }
 
     try {
@@ -52,7 +54,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, UserProfileEntity>> getUserProfile() async {
     final isOffline = await hasNoInternet();
-    
+
     if (isOffline) {
       try {
         final localProfile = await localDataSource.getUserProfile();
@@ -60,15 +62,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
           return Right(localProfile);
         }
       } catch (_) {}
-      return Left(ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد بيانات محفوظة.'));
+      return Left(
+        ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد بيانات محفوظة.'),
+      );
     }
 
     try {
       final result = await remoteDataSource.getUserProfile();
       try {
         // Here we attempt to cache the data
-          await localDataSource.saveUserProfile(result);
-       
+        await localDataSource.saveUserProfile(result);
       } catch (e) {
         debugPrint('Failed to save profile locally: $e');
       }
@@ -85,13 +88,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, UserProfileEntity>> updateUserProfile(Map<String, dynamic> data) async {
+  Future<Either<Failure, UserProfileEntity>> updateUserProfile(
+    Map<String, dynamic> data,
+  ) async {
     final isOffline = await hasNoInternet();
     if (isOffline) {
       return Left(ServerFailure('لا يوجد اتصال بالإنترنت.'));
     }
     try {
       final result = await remoteDataSource.updateUserProfile(data);
+      try {
+        await localDataSource.saveUserProfile(result as UserProfileModel);
+      } catch (e) {
+        debugPrint('Failed to save updated profile locally: $e');
+      }
       return Right(result);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

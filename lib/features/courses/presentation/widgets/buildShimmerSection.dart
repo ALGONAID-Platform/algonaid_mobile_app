@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/widgets/loading/courseCardShimmer.dart';
+import 'package:algonaid_mobile_app/core/widgets/loading/courseCardShimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

@@ -1,12 +1,12 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseCard.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildCourseCard.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/core/theme/styles.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 
 class AllCoursesListSection extends StatelessWidget {
   final List<CourseEntity> allCourses;
@@ -25,15 +25,17 @@ class AllCoursesListSection extends StatelessWidget {
         children: [
           SectionHeader(
             text: 'كل الكورسات',
-            onViewAllPressed: reversedCourses.isEmpty ? null : () {
-              context.push(
-                Routes.coursesViewAllPage,
-                extra: {
-                  'title': 'كل الكورسات',
-                  'courses': reversedCourses,
-                },
-              );
-            },
+            onViewAllPressed: reversedCourses.isEmpty
+                ? null
+                : () {
+                    context.push(
+                      Routes.coursesViewAllPage,
+                      extra: {
+                        'title': 'كل الكورسات',
+                        'courses': reversedCourses,
+                      },
+                    );
+                  },
           ),
 
           if (allCourses.isEmpty)

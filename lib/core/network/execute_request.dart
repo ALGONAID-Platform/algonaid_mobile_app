@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
+import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
+import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
 import 'package:dio/dio.dart';
 
 Future<dynamic> performRequest(Future<Response> requestFunc) async {

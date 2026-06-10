@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 /// 1. دالة لحفظ قائمة كاملة (مع مسح القديم) - تستخدم للكاش (مثل Home Feed)

@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/models/lesson_detail_model.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/repositories/lesson_detail_repository.dart';
+import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/network/check_internet.dart';
+import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/datasources/lesson_detail_local_data_source.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/datasources/lesson_detail_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/models/lesson_detail_model.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/repositories/lesson_detail_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 

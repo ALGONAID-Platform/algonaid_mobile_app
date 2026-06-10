@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
 import 'package:flutter/material.dart';
 
 class AuthHeader extends StatelessWidget {

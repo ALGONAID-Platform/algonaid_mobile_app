@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/repositories/exam_repository.dart';
 import 'package:dartz/dartz.dart';
 
 class GetExamUseCase {

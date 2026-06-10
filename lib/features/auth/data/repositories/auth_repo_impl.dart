@@ -1,12 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
+import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
 import 'package:dartz/dartz.dart';
-import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/features/auth/data/datasources/auth_remote_datasourse.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
-import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/features/auth/data/datasources/auth_remote_datasourse.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/entities/user_entity.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepoImpl extends AuthRepo {
@@ -96,10 +96,85 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   @override
+  Future<Either<Failure, UserEntity>> googleSignin({
+    required String accessToken,
+  }) async {
+    try {
+      final authResponse = await authRemotDataSource.googleSignin(
+        accessToken: accessToken,
+      );
+      await TokenStorage.saveToken(authResponse.accessToken);
+
+      return Right(
+        UserEntity(
+          id: authResponse.user.id,
+          username: authResponse.user.name,
+          email: authResponse.user.email,
+          role: authResponse.user.role,
+          message: authResponse.message,
+          token: authResponse.accessToken,
+          avatar: authResponse.user.avatar,
+          background: authResponse.user.background,
+          academicId: authResponse.user.academicId,
+          grade: authResponse.user.grade,
+          birthDate: authResponse.user.birthDate,
+          address: authResponse.user.address,
+          createdAt: authResponse.user.createdAt,
+          updatedAt: authResponse.user.updatedAt,
+        ),
+      );
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> logout() async {
     try {
       await authRemotDataSource.logout();
       return const Right(null);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> forgotPassword({
+    required String email,
+  }) async {
+    try {
+      final response = await authRemotDataSource.forgotPassword(email: email);
+      final message =
+          response['message'] as String? ??
+          'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني';
+      return Right(message);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await authRemotDataSource.resetPassword(
+        token: token,
+        newPassword: newPassword,
+      );
+      final message =
+          response['message'] as String? ?? 'تم إعادة تعيين كلمة المرور بنجاح';
+      return Right(message);
     } catch (e) {
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));

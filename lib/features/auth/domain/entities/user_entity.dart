@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
+import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
 
 class UserEntity {
   int id;

@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
+import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
 
 class AuthResponse {
   final String message;
@@ -15,7 +15,8 @@ class AuthResponse {
     return AuthResponse(
       message: json['message'] ?? "",
       user: UserModel.fromJson(json['user']),
-      accessToken: json['access_token'] ?? "",
+      accessToken:
+          json['access_token'] ?? json['accessToken'] ?? json['token'] ?? "",
     );
   }
 }

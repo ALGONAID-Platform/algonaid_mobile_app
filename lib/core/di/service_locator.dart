@@ -1,81 +1,83 @@
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
+import 'package:algonaid_mobile_app/core/network/api_service.dart';
 
-import 'package:algonaid_mobail_app/features/auth/data/datasources/auth_remote_datasourse.dart';
-import 'package:algonaid_mobail_app/features/auth/data/repositories/auth_repo_impl.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/usecases/signin_usecase.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/usecases/signup_usecase.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobile_app/features/auth/data/datasources/auth_remote_datasourse.dart';
+import 'package:algonaid_mobile_app/features/auth/data/repositories/auth_repo_impl.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/signin_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/google_signin_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/forgot_password_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/reset_password_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
 
-import 'package:algonaid_mobail_app/features/courses/data/datasources/course_local_stroage.dart';
-import 'package:algonaid_mobail_app/features/courses/data/datasources/courses_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/courses/data/repositories/courses_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/enroll_usecase.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_progress.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/usecases/get_excellence_modules_usecase.dart';
-import 'package:algonaid_mobail_app/features/search/domain/usecases/search_courses_usecase.dart';
-import 'package:algonaid_mobail_app/features/search/data/datasources/search_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/search/data/repositories/search_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/search/domain/repositories/search_repository.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_grades.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/providers/search_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/usecases/get_excellence_courses_usecase.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/repositories/excellence_courses_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
-import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid_mobile_app/features/courses/data/datasources/course_local_stroage.dart';
+import 'package:algonaid_mobile_app/features/courses/data/datasources/courses_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/courses/data/repositories/courses_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/repositories/courses_repository.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/enroll_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_progress.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_excellence_modules_usecase.dart';
+import 'package:algonaid_mobile_app/features/search/domain/usecases/search_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/search/data/datasources/search_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/search/data/repositories/search_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/search/domain/repositories/search_repository.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_grades.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/course_grades_provider.dart';
+import 'package:algonaid_mobile_app/features/search/presentation/providers/search_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_excellence_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/data/repositories/excellence_courses_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
+import 'package:algonaid_mobile_app/features/modules/data/datasources/module_local_datasource.dart';
 
-import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
-import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
-import 'package:algonaid_mobail_app/features/modules/data/repositories/module_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_modules_by_course.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_module_grades.dart';
+import 'package:algonaid_mobile_app/features/modules/data/datasources/module_remote_datasource.dart';
+import 'package:algonaid_mobile_app/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid_mobile_app/features/modules/data/repositories/module_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/repositories/module_repository.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_modules_by_course.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_module_grades.dart';
 
-import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/datasources/lesson_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/repositories/lesson_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/repositories/lesson_repository.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/repositories/lesson_detail_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/repositories/lesson_detail_repository.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/datasources/lesson_local_data_source.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/repositories/lesson_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/repositories/lesson_repository.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/datasources/lesson_detail_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/datasources/lesson_detail_local_data_source.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/repositories/lesson_detail_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/repositories/lesson_detail_repository.dart';
 
-import 'package:algonaid_mobail_app/features/modules/presentation/providers/modules_list_provider.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/providers/module_grades_provider.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/providers/module_grades_provider.dart';
 
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart'; // New Import
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart'; // New Import
+import 'package:algonaid_mobile_app/features/exams/data/datasources/exam_remote_data_source.dart'; // New Import
+import 'package:algonaid_mobile_app/features/exams/data/datasources/exam_local_data_source.dart'; // New Import
 
-import 'package:algonaid_mobail_app/features/exams/data/repositories/exam_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
+import 'package:algonaid_mobile_app/features/exams/data/repositories/exam_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/usecases/exam_usecases.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/providers/exam_provider.dart';
 
-import 'package:algonaid_mobail_app/features/profile/data/datasources/profile_remote_datasource.dart';
-import 'package:algonaid_mobail_app/features/profile/data/datasources/profile_local_datasource.dart';
-import 'package:algonaid_mobail_app/features/profile/data/repositories/profile_repository_impl.dart';
-import 'package:algonaid_mobail_app/features/profile/domain/repositories/profile_repository.dart';
-import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_total_points_usecase.dart';
-import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_user_profile_usecase.dart';
-import 'package:algonaid_mobail_app/features/profile/domain/usecases/update_user_profile_usecase.dart';
-import 'package:algonaid_mobail_app/features/profile/domain/usecases/get_user_badges_usecase.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
-
+import 'package:algonaid_mobile_app/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:algonaid_mobile_app/features/profile/data/datasources/profile_local_datasource.dart';
+import 'package:algonaid_mobile_app/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/repositories/profile_repository.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_total_points_usecase.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_user_profile_usecase.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/usecases/update_user_profile_usecase.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_user_badges_usecase.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -131,7 +133,8 @@ void setupServiceLocator() {
     () => LessonDetailLocalDataSourceImpl(),
   );
 
-  getIt.registerLazySingleton<ExamLocalDataSource>( // Updated
+  getIt.registerLazySingleton<ExamLocalDataSource>(
+    // Updated
     () => ExamLocalDataSourceImpl(),
   );
 
@@ -185,7 +188,8 @@ void setupServiceLocator() {
     ),
   );
 
-  getIt.registerLazySingleton<ExamRepository>( // Updated
+  getIt.registerLazySingleton<ExamRepository>(
+    // Updated
     () => ExamRepositoryImpl(
       localDataSource: getIt<ExamLocalDataSource>(),
       remoteDataSource: getIt<ExamRemoteDataSource>(),
@@ -207,12 +211,24 @@ void setupServiceLocator() {
     () => SigninUsecase(authRepo: getIt()),
   );
 
+  getIt.registerLazySingleton<GoogleSigninUsecase>(
+    () => GoogleSigninUsecase(authRepo: getIt()),
+  );
+
   getIt.registerLazySingleton<SignupUsecase>(
     () => SignupUsecase(authRepo: getIt()),
   );
 
   getIt.registerLazySingleton<LogoutUsecase>(
     () => LogoutUsecase(authRepo: getIt()),
+  );
+
+  getIt.registerLazySingleton<ForgotPasswordUsecase>(
+    () => ForgotPasswordUsecase(authRepo: getIt()),
+  );
+
+  getIt.registerLazySingleton<ResetPasswordUsecase>(
+    () => ResetPasswordUsecase(authRepo: getIt()),
   );
 
   getIt.registerLazySingleton<GetCoursesUsecase>(
@@ -226,9 +242,7 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<GetMycoureseUsecase>(
     () => GetMycoureseUsecase(repository: getIt()),
   );
-  getIt.registerLazySingleton<GetCourseGrades>(
-    () => GetCourseGrades(getIt()),
-  );
+  getIt.registerLazySingleton<GetCourseGrades>(() => GetCourseGrades(getIt()));
   getIt.registerLazySingleton<EnrollUsecase>(
     () => EnrollUsecase(repository: getIt()),
   );
@@ -242,7 +256,9 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<GetCachedLastAccessedModuleUseCase>(
-    () => GetCachedLastAccessedModuleUseCase(repository: getIt<ModuleRepository>()),
+    () => GetCachedLastAccessedModuleUseCase(
+      repository: getIt<ModuleRepository>(),
+    ),
   );
 
   getIt.registerLazySingleton<GetModuleGrades>(
@@ -315,8 +331,11 @@ void setupServiceLocator() {
   getIt.registerFactory<AuthServiceProvider>(
     () => AuthServiceProvider(
       signInUseCase: getIt(),
+      googleSignInUseCase: getIt(),
       signUpUseCase: getIt(),
       logoutUseCase: getIt(), // Added
+      forgotPasswordUseCase: getIt(),
+      resetPasswordUseCase: getIt(),
     ),
   );
 
@@ -330,9 +349,7 @@ void setupServiceLocator() {
   );
 
   getIt.registerFactory<SearchCoursesProvider>(
-    () => SearchCoursesProvider(
-      searchCoursesUseCase: getIt(),
-    ),
+    () => SearchCoursesProvider(searchCoursesUseCase: getIt()),
   );
 
   getIt.registerLazySingleton<CourseGradesProvider>(
@@ -346,8 +363,6 @@ void setupServiceLocator() {
     ),
   );
 
-
-
   getIt.registerFactory<ModulesListProvider>(
     () => ModulesListProvider(getIt<GetModulesByCourse>()),
   );
@@ -355,17 +370,16 @@ void setupServiceLocator() {
   getIt.registerFactory<LastAccessedModuleProvider>(
     () => LastAccessedModuleProvider(
       getLastAccessedModuleUseCase: getIt<GetLastAccessedModuleUseCase>(),
-      getCachedLastAccessedModuleUseCase: getIt<GetCachedLastAccessedModuleUseCase>(),
+      getCachedLastAccessedModuleUseCase:
+          getIt<GetCachedLastAccessedModuleUseCase>(),
     ),
   );
-  
+
   getIt.registerLazySingleton<ModuleGradesProvider>(
     () => ModuleGradesProvider(getModuleGrades: getIt()),
   );
 
-  getIt.registerLazySingleton<ExamProvider>(
-    () => ExamProvider(),
-  );
+  getIt.registerLazySingleton<ExamProvider>(() => ExamProvider());
 
   getIt.registerFactory<ProfileProvider>(
     () => ProfileProvider(
@@ -375,5 +389,4 @@ void setupServiceLocator() {
       getUserBadgesUseCase: getIt(),
     ),
   );
-
 }

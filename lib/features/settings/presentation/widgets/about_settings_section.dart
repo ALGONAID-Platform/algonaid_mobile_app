@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/settings_section_title.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section_title.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,7 +30,7 @@ class AboutSettingsSection extends StatelessWidget {
             icon: Icons.code_rounded,
             color: Colors.purple,
           ),
-          title: Text('حول المطورون', style: context.textTheme.bodyLarge),
+          title: Text('حول المطورين', style: context.textTheme.bodyLarge),
           trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
           onTap: () {
             context.push(Routes.developersPage);

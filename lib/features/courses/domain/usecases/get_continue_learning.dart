@@ -1,5 +1,5 @@
-// import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-// import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
+// import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+// import 'package:algonaid_mobile_app/features/courses/domain/repositories/courses_repository.dart';
 
 // class GetContinueLearning {
 //   const GetContinueLearning(this._repository);

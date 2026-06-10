@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart'; // 🌟 إضافة هايف
-import 'package:algonaid_mobail_app/features/courses/data/models/user_model.dart';
-import 'package:algonaid_mobail_app/features/courses/data/models/teacher_model.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/data/models/user_model.dart';
+import 'package:algonaid_mobile_app/features/courses/data/models/teacher_model.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
 
 part 'course_model.g.dart'; // 🌟 ضروري لتوليد ملف الـ Adapter
 
@@ -65,21 +65,21 @@ class CourseModel extends CourseEntity {
     required this.completedLessons,
     required this.progressPercentage,
   }) : super(
-          id: id,
-          title: title,
-          description: description,
-          thumbnail: thumbnail,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          instructorId: instructorId,
-          teacher: teacher,
-          moduleTitles: moduleTitles,
-          modulesCount: modulesCount,
-          isEnrolled: isEnrolled,
-          totalLessons: totalLessons,
-          completedLessons: completedLessons,
-          progressPercentage: progressPercentage,
-        );
+         id: id,
+         title: title,
+         description: description,
+         thumbnail: thumbnail,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+         instructorId: instructorId,
+         teacher: teacher,
+         moduleTitles: moduleTitles,
+         modulesCount: modulesCount,
+         isEnrolled: isEnrolled,
+         totalLessons: totalLessons,
+         completedLessons: completedLessons,
+         progressPercentage: progressPercentage,
+       );
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
     return CourseModel(
@@ -87,25 +87,65 @@ class CourseModel extends CourseEntity {
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       thumbnail: json['thumbnail']?.toString() ?? '',
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now() : DateTime.now(),
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) ?? DateTime.now() : DateTime.now(),
-      instructorId: int.tryParse(json['instructorId']?.toString() ?? json['instructor_id']?.toString() ?? '0') ?? 0,
-      teacher: json['teacher'] != null 
-          ? TeacherModel.fromJson(json['teacher']) 
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      instructorId:
+          int.tryParse(
+            json['instructorId']?.toString() ??
+                json['instructor_id']?.toString() ??
+                '0',
+          ) ??
+          0,
+      teacher: json['teacher'] != null
+          ? TeacherModel.fromJson(json['teacher'])
           : TeacherModel(
-              id: 0, 
-              specialization: '', 
-              experience: 0, 
-              userId: 0, 
+              id: 0,
+              specialization: '',
+              experience: 0,
+              userId: 0,
               user: UserModel(name: 'غير معروف', email: ''),
             ),
-      moduleTitles: (json['moduleTitles'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? 
-                    (json['module_titles'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      modulesCount: int.tryParse(json['modulesCount']?.toString() ?? json['modules_count']?.toString() ?? '0') ?? 0,
+      moduleTitles:
+          (json['moduleTitles'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          (json['module_titles'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      modulesCount:
+          int.tryParse(
+            json['modulesCount']?.toString() ??
+                json['modules_count']?.toString() ??
+                '0',
+          ) ??
+          0,
       isEnrolled: json['isEnrolled'] == true || json['is_enrolled'] == true,
-      totalLessons: int.tryParse(json['totalLessons']?.toString() ?? json['total_lessons']?.toString() ?? '0') ?? 0,
-      completedLessons: int.tryParse(json['completedLessons']?.toString() ?? json['completed_lessons']?.toString() ?? '0') ?? 0,
-      progressPercentage: double.tryParse(json['progressPercentage']?.toString() ?? json['progress_percentage']?.toString() ?? '0.0') ?? 0.0,
+      totalLessons:
+          int.tryParse(
+            json['totalLessons']?.toString() ??
+                json['total_lessons']?.toString() ??
+                '0',
+          ) ??
+          0,
+      completedLessons:
+          int.tryParse(
+            json['completedLessons']?.toString() ??
+                json['completed_lessons']?.toString() ??
+                '0',
+          ) ??
+          0,
+      progressPercentage:
+          double.tryParse(
+            json['progressPercentage']?.toString() ??
+                json['progress_percentage']?.toString() ??
+                '0.0',
+          ) ??
+          0.0,
     );
   }
 

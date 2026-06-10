@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_grades.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_grades.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_grades.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
 import 'package:flutter/material.dart';
 
 class CourseGradesState {
@@ -9,11 +9,7 @@ class CourseGradesState {
   final String? errorMessage;
   final CourseGrades? grades;
 
-  CourseGradesState({
-    this.isLoading = false,
-    this.errorMessage,
-    this.grades,
-  });
+  CourseGradesState({this.isLoading = false, this.errorMessage, this.grades});
 
   CourseGradesState copyWith({
     bool? isLoading,
@@ -42,7 +38,10 @@ class CourseGradesProvider extends ChangeNotifier {
     final currentState = getState(courseId);
     if (currentState.isLoading) return;
 
-    _states[courseId] = currentState.copyWith(isLoading: true, errorMessage: null);
+    _states[courseId] = currentState.copyWith(
+      isLoading: true,
+      errorMessage: null,
+    );
     notifyListeners();
 
     final result = await getCourseGrades(courseId);
@@ -70,7 +69,8 @@ class CourseGradesProvider extends ChangeNotifier {
             await CacheHelper.saveData(key: cacheKey, value: true);
             await NotificationService().showNotification(
               title: 'لقد حصلت على وسام التفوق الذهبي! 🏆',
-              body: 'تهانينا! لقد اجتزت جميع تحديات الكورس بنجاح بمعدل ${grades.averagePercentage.toStringAsFixed(1)}%.',
+              body:
+                  'تهانينا! لقد اجتزت جميع تحديات الكورس بنجاح بمعدل ${grades.averagePercentage.toStringAsFixed(1)}%.',
             );
           }
         }

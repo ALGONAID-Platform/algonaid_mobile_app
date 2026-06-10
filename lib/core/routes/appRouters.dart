@@ -1,28 +1,28 @@
-import 'package:algonaid_mobail_app/auth_gate.dart';
-import 'package:algonaid_mobail_app/core/di/service_locator.dart'; // Import service_locator
-import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/circular_reveal.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_page.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/pages/courses_view_all_page.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/pages/onboarding_screen.dart'; // New Import
-import 'package:algonaid_mobail_app/features/modules/presentation/pages/modules_list_page.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/pages/lesson_detail_page.dart';
-import 'package:algonaid_mobail_app/features/lessons/presentation/pages/lessons_list_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_intro_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/pages/search_page.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/providers/search_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/notifications/presentation/pages/notifications_page.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/pages/about_page.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/pages/developers_page.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/pages/settings_page.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/presentation/pages/all_excellence_courses_page.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/pages/all_badges_page.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/pages/policies_page.dart';
+import 'package:algonaid_mobile_app/auth_gate.dart';
+import 'package:algonaid_mobile_app/core/di/service_locator.dart'; // Import service_locator
+import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/circular_reveal.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/pages/courses_page.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/pages/courses_view_all_page.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/pages/guest_courses_page.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/pages/modules_list_page.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/pages/lesson_detail_page.dart';
+import 'package:algonaid_mobile_app/features/lessons/presentation/pages/lessons_list_page.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/pages/exam_intro_page.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/providers/exam_provider.dart';
+import 'package:algonaid_mobile_app/features/search/presentation/pages/search_page.dart';
+import 'package:algonaid_mobile_app/features/search/presentation/providers/search_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/notifications/presentation/pages/notifications_page.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/pages/about_page.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/pages/developers_page.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/pages/settings_page.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/presentation/pages/all_excellence_courses_page.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/pages/all_badges_page.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/pages/policies_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,19 +37,19 @@ abstract class AppRouters {
       /// Root route that acts as an authentication and initial load gatekeeper.
       /// Directs the user to the appropriate screen (e.g., Auth, Home, or Onboarding).
       GoRoute(path: '/', builder: (context, state) => AuthGate()),
-      
-      /// Onboarding route displayed to new users to introduce app features.
-      GoRoute(
-        path: Routes.onboarding, // New route
-        builder: (context, state) => OnboardingScreen(),
-      ),
-      
+
       /// Main landing page containing the dashboard or user's courses.
       GoRoute(
         path: Routes.homePage,
         builder: (context, state) => const CoursesHomePage(),
       ),
-      
+
+      /// Guest landing page containing the courses in grid view without login.
+      GoRoute(
+        path: Routes.guestHome,
+        builder: (context, state) => const GuestHomePage(),
+      ),
+
       /// Alternate path explicitly pointing to the courses page.
       GoRoute(
         path: Routes.coursesPage,
@@ -64,13 +64,13 @@ abstract class AppRouters {
           child: const SearchPage(),
         ),
       ),
-      
+
       /// Notifications page.
       GoRoute(
         path: Routes.notificationsPage,
         builder: (context, state) => const NotificationsPage(),
       ),
-      
+
       /// Authentication route (Sign In & Sign Up).
       /// Uses a custom [GreenRevealPage] page builder for a circular reveal transition effect.
       GoRoute(
@@ -85,7 +85,7 @@ abstract class AppRouters {
           );
         },
       ),
-      
+
       /// Displays a list of modules for a specific course.
       /// Expects a [CourseEntity] object to be passed as `state.extra`.
       GoRoute(
@@ -96,7 +96,7 @@ abstract class AppRouters {
           return ModulesListPage(course: data);
         },
       ),
-      
+
       /// Displays a list of lessons within a specific module.
       /// Extracts `moduleId` from path parameters and optional metadata from `state.extra`.
       GoRoute(
@@ -115,7 +115,7 @@ abstract class AppRouters {
           );
         },
       ),
-      
+
       /// Displays the details and content of a specific lesson (e.g., Video, PDF).
       /// Extracts `lessonId` from path parameters and an optional previous route from `state.extra`.
       GoRoute(
@@ -131,7 +131,7 @@ abstract class AppRouters {
           );
         },
       ),
-      
+
       /// Displays the introduction or starting page for a specific exam.
       /// Injects the [ExamProvider] so that the exam context is available to the widget tree.
       GoRoute(
@@ -150,35 +150,37 @@ abstract class AppRouters {
           );
         },
       ),
-      
+
       /// About the platform page.
       GoRoute(
         path: Routes.aboutPage,
         builder: (context, state) => const AboutPage(),
       ),
-      
+
       /// About the developers page.
       GoRoute(
         path: Routes.developersPage,
         builder: (context, state) => const DevelopersPage(),
       ),
-      
+
       /// Settings page.
       GoRoute(
         path: Routes.settingsPage,
         builder: (context, state) => const SettingsPage(),
       ),
-      
+
       /// All Excellence Courses page.
       GoRoute(
         path: Routes.allExcellenceCourses,
         builder: (context, state) => const AllExcellenceCoursesPage(),
       ),
+
       /// Policies page.
       GoRoute(
         path: Routes.policiesPage,
         builder: (context, state) => const PoliciesPage(),
       ),
+
       /// View all courses page
       GoRoute(
         path: Routes.coursesViewAllPage,
@@ -190,6 +192,7 @@ abstract class AppRouters {
           );
         },
       ),
+
       /// All badges page
       GoRoute(
         path: Routes.allBadgesPage,

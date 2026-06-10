@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
@@ -25,20 +25,23 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     super.initState();
     final provider = Provider.of<ProfileProvider>(context, listen: false);
     final profile = provider.userProfile;
-    
+
     String formattedBirthDate = profile?.birthDate ?? '';
     if (formattedBirthDate.isNotEmpty) {
       try {
         final parsed = DateTime.parse(formattedBirthDate);
-        formattedBirthDate = "${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}";
+        formattedBirthDate =
+            "${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}";
       } catch (e) {
         // keep as is
       }
     }
-    
+
     _nameController = TextEditingController(text: profile?.name ?? '');
     _avatarController = TextEditingController(text: profile?.avatar ?? '');
-    _backgroundController = TextEditingController(text: profile?.background ?? '');
+    _backgroundController = TextEditingController(
+      text: profile?.background ?? '',
+    );
     _gradeController = TextEditingController(text: profile?.grade ?? '');
     _birthDateController = TextEditingController(text: formattedBirthDate);
     _addressController = TextEditingController(text: profile?.address ?? '');
@@ -83,7 +86,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     );
 
     if (picked != null) {
-      final formattedDate = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      final formattedDate =
+          "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       setState(() {
         _birthDateController.text = formattedDate;
       });
@@ -95,12 +99,15 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       final data = {
         if (_nameController.text.isNotEmpty) 'name': _nameController.text,
         if (_avatarController.text.isNotEmpty) 'avatar': _avatarController.text,
-        if (_backgroundController.text.isNotEmpty) 'background': _backgroundController.text,
+        if (_backgroundController.text.isNotEmpty)
+          'background': _backgroundController.text,
         if (_gradeController.text.isNotEmpty) 'grade': _gradeController.text,
-        if (_birthDateController.text.isNotEmpty) 'birthDate': _birthDateController.text,
-        if (_addressController.text.isNotEmpty) 'address': _addressController.text,
+        if (_birthDateController.text.isNotEmpty)
+          'birthDate': _birthDateController.text,
+        if (_addressController.text.isNotEmpty)
+          'address': _addressController.text,
       };
-      
+
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       final success = await provider.updateUserProfile(data);
       if (success) {
@@ -120,92 +127,96 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-              
-              Flexible(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      _buildTextField(
-                        context,
-                        controller: _nameController,
-                        label: 'الاسم الكامل',
-                        icon: Icons.person_rounded,
-                        validator: (value) => value == null || value.isEmpty ? 'الاسم مطلوب' : null,
-                      ),
-                      const SizedBox(height: 14),
-                      _buildTextField(
-                        context,
-                        controller: _gradeController,
-                        label: 'الصف الدراسي',
-                        icon: Icons.school_rounded,
-                      ),
-                      const SizedBox(height: 14),
-                      _buildTextField(
-                        context,
-                        controller: _birthDateController,
-                        label: 'تاريخ الميلاد',
-                        icon: Icons.cake_rounded,
-                        readOnly: true,
-                        onTap: () => _selectDate(context),
-                      ),
-                      const SizedBox(height: 14),
-                      _buildTextField(
-                        context,
-                        controller: _addressController,
-                        label: 'العنوان الحالي',
-                        icon: Icons.location_on_rounded,
-                      ),
-                      const SizedBox(height: 14),
-                      _buildTextField(
-                        context,
-                        controller: _avatarController,
-                        label: 'رابط الصورة الشخصية (URL)',
-                        icon: Icons.link_rounded,
-                      ),
-                     
-                      const SizedBox(height: 8),
-                    ],
-                  ),
+            Flexible(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildTextField(
+                      context,
+                      controller: _nameController,
+                      label: 'الاسم الكامل',
+                      icon: Icons.person_rounded,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'الاسم مطلوب' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildTextField(
+                      context,
+                      controller: _gradeController,
+                      label: 'الصف الدراسي',
+                      icon: Icons.school_rounded,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildTextField(
+                      context,
+                      controller: _birthDateController,
+                      label: 'تاريخ الميلاد',
+                      icon: Icons.cake_rounded,
+                      readOnly: true,
+                      onTap: () => _selectDate(context),
+                    ),
+                    const SizedBox(height: 14),
+                    _buildTextField(
+                      context,
+                      controller: _addressController,
+                      label: 'العنوان الحالي',
+                      icon: Icons.location_on_rounded,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildTextField(
+                      context,
+                      controller: _avatarController,
+                      label: 'رابط الصورة الشخصية (URL)',
+                      icon: Icons.link_rounded,
+                    ),
+
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              
-              // زر الحفظ الاحترافي المتجاوب مع حالة التحميل
-              Consumer<ProfileProvider>(
-                builder: (context, provider, child) {
-                  return SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.colorScheme.primary,
-                        foregroundColor: context.colorScheme.onPrimary,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+            ),
+            const SizedBox(height: 20),
+
+            // زر الحفظ الاحترافي المتجاوب مع حالة التحميل
+            Consumer<ProfileProvider>(
+              builder: (context, provider, child) {
+                return SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.colorScheme.primary,
+                      foregroundColor: context.colorScheme.onPrimary,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      onPressed: provider.isUpdatingProfile ? null : _saveProfile,
-                      child: provider.isUpdatingProfile
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : const Text(
-                              'حفظ التعديلات',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
                     ),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-        ])
+                    onPressed: provider.isUpdatingProfile ? null : _saveProfile,
+                    child: provider.isUpdatingProfile
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : const Text(
+                            'حفظ التعديلات',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -231,21 +242,34 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
         labelStyle: context.textTheme.bodyMedium?.copyWith(
           color: context.colorScheme.onSurface.withOpacity(0.5),
         ),
-        prefixIcon: Icon(icon, size: 22, color: context.colorScheme.primary.withOpacity(0.7)),
+        prefixIcon: Icon(
+          icon,
+          size: 22,
+          color: context.colorScheme.primary.withOpacity(0.7),
+        ),
         filled: true,
         fillColor: context.colorScheme.surfaceContainerLow.withOpacity(0.5),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none, // إخفاء الحواف التقليدية الباهتة
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: context.colorScheme.onSurface.withOpacity(0.06), width: 1),
+          borderSide: BorderSide(
+            color: context.colorScheme.onSurface.withOpacity(0.06),
+            width: 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: context.colorScheme.primary, width: 1.5),
+          borderSide: BorderSide(
+            color: context.colorScheme.primary,
+            width: 1.5,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 
 class AppEmptyState extends StatelessWidget {
@@ -21,11 +21,7 @@ class AppEmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 100,
-              color: context.primary.withOpacity(0.5),
-            ),
+            Icon(icon, size: 100, color: context.primary.withOpacity(0.5)),
             const SizedBox(height: 24),
             Text(
               title,
@@ -39,9 +35,7 @@ class AppEmptyState extends StatelessWidget {
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: context.textTheme.bodyMedium?.copyWith(
-                color: Colors.grey,
-              ),
+              style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),
             ),
           ],
         ),

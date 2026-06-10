@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -41,10 +41,7 @@ class ShimmerLoading extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
-        decoration: ShapeDecoration(
-          color: Colors.white,
-          shape: shapeBorder,
-        ),
+        decoration: ShapeDecoration(color: Colors.white, shape: shapeBorder),
       ),
     );
   }

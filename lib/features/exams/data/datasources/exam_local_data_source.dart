@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/features/exams/data/models/exam_models.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class ExamLocalDataSource {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/di/service_locator.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
-import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
+import 'package:algonaid_mobile_app/core/di/service_locator.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/usecases/exam_usecases.dart';
+import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
 
 /// State for exam loading
 enum ExamState { initial, loading, loaded, error }

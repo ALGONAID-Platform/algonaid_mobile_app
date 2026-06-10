@@ -1,9 +1,9 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'dart:ui' as ui;
-import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
-import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
 import 'package:intl/intl.dart';
 
 class NotificationsPage extends StatefulWidget {

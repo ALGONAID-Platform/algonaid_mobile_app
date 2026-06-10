@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
 import 'package:flutter/foundation.dart';
 
 class LessonDetailState {
@@ -50,8 +50,12 @@ class LessonDetailState {
       errorMessage: errorMessage,
       lesson: lesson ?? this.lesson,
       exam: exam ?? this.exam,
-      nextLessonId: clearNextLesson ? null : (nextLessonId ?? this.nextLessonId),
-      previousLessonId: clearPreviousLesson ? null : (previousLessonId ?? this.previousLessonId),
+      nextLessonId: clearNextLesson
+          ? null
+          : (nextLessonId ?? this.nextLessonId),
+      previousLessonId: clearPreviousLesson
+          ? null
+          : (previousLessonId ?? this.previousLessonId),
     );
   }
 }
@@ -62,7 +66,11 @@ class LessonDetailProvider extends ChangeNotifier {
   final GetModuleLessons _getModuleLessons;
   LessonDetailState _state = LessonDetailState.initial();
 
-  LessonDetailProvider(this._getLessonDetail, this._updateLessonProgress, this._getModuleLessons);
+  LessonDetailProvider(
+    this._getLessonDetail,
+    this._updateLessonProgress,
+    this._getModuleLessons,
+  );
 
   LessonDetailState get state => _state;
 
@@ -109,25 +117,40 @@ class LessonDetailProvider extends ChangeNotifier {
         final lessonsResult = await _getModuleLessons(lesson.moduleId);
         lessonsResult.fold(
           (_) {
-            final isAlreadyCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ?? false;
+            final isAlreadyCompleted =
+                CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ??
+                false;
             updateProgress(lesson.id, isAlreadyCompleted);
-          }, 
+          },
           (lessons) {
-            final currentIndex = lessons.indexWhere((l) => l.id == lesson.id);
+            final sortedLessons = [...lessons]
+              ..sort((a, b) {
+                final orderCompare = a.order.compareTo(b.order);
+                if (orderCompare != 0) return orderCompare;
+                return a.id.compareTo(b.id);
+              });
+
+            final currentIndex = sortedLessons.indexWhere(
+              (l) => l.id == lesson.id,
+            );
             bool isCompleted = false;
             if (currentIndex != -1) {
-              isCompleted = lessons[currentIndex].status == LessonStatus.completed;
+              isCompleted =
+                  sortedLessons[currentIndex].status == LessonStatus.completed;
               if (isCompleted) {
-                CacheHelper.saveData(key: 'lesson_completed_${lesson.id}', value: true);
+                CacheHelper.saveData(
+                  key: 'lesson_completed_${lesson.id}',
+                  value: true,
+                );
               }
-              
+
               int? nextId;
               int? previousId;
-              if (currentIndex < lessons.length - 1) {
-                nextId = lessons[currentIndex + 1].id;
+              if (currentIndex < sortedLessons.length - 1) {
+                nextId = sortedLessons[currentIndex + 1].id;
               }
               if (currentIndex > 0) {
-                previousId = lessons[currentIndex - 1].id;
+                previousId = sortedLessons[currentIndex - 1].id;
               }
               _state = _state.copyWith(
                 nextLessonId: nextId,
@@ -135,10 +158,12 @@ class LessonDetailProvider extends ChangeNotifier {
               );
               notifyListeners();
             } else {
-              isCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ?? false;
+              isCompleted =
+                  CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ??
+                  false;
             }
             updateProgress(lesson.id, isCompleted);
-          }
+          },
         );
       },
     );

@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart'; // استيراد ملف الألوان الخاص بك
+import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart'; // استيراد ملف الألوان الخاص بك
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';

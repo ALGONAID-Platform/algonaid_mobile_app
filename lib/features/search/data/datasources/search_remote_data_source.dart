@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
-import 'package:algonaid_mobail_app/features/search/data/models/global_search_model.dart';
+import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobile_app/core/network/api_service.dart';
+import 'package:algonaid_mobile_app/features/search/data/models/global_search_model.dart';
 
 abstract class SearchRemoteDataSource {
   Future<GlobalSearchModel> searchCourses(String query);

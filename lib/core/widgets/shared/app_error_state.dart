@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/utils/functions/user_friendly_error.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/utils/functions/user_friendly_error.dart';
 import 'package:flutter/material.dart';
 
 class AppErrorState extends StatelessWidget {

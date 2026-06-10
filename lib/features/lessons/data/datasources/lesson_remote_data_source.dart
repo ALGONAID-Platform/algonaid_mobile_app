@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobile_app/core/network/api_service.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
 
 abstract class LessonRemoteDataSource {
   Future<List<LessonModel>> fetchLessonsByModule(int moduleId);

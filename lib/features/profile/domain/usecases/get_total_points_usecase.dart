@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
 import 'package:dartz/dartz.dart';
 import '../entities/total_points_entity.dart';
 import '../repositories/profile_repository.dart';

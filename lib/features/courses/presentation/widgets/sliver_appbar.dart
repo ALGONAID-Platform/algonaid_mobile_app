@@ -1,8 +1,12 @@
 import 'dart:ui';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/styles.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
 
 class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String userName;
@@ -13,6 +17,7 @@ class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onProfilePressed;
   final int notificationCount;
   final String? appBarTitle;
+  final bool isGuest;
 
   const CustomWhiteAppBar({
     super.key,
@@ -24,6 +29,7 @@ class CustomWhiteAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.onProfilePressed,
     this.notificationCount = 0,
     this.appBarTitle,
+    this.isGuest = false,
   });
 
   @override
@@ -101,7 +107,98 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
                 titleSpacing: 16,
                 title: Row(
                   children: [
-                    if (widget.appBarTitle == null) ...[
+                    if (widget.isGuest) ...[
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final screenWidth = MediaQuery.of(context).size.width;
+                          if (screenWidth > 380) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    context
+                                        .read<AuthServiceProvider>()
+                                        .setAuthMode(true);
+                                    context.push(Routes.auth);
+                                  },
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: context.primary,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'تسجيل الدخول',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    context
+                                        .read<AuthServiceProvider>()
+                                        .setAuthMode(false);
+                                    context.push(Routes.auth);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: context.primary,
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'إنشاء حساب',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return ElevatedButton(
+                              onPressed: () {
+                                context.read<AuthServiceProvider>().setAuthMode(
+                                  true,
+                                );
+                                context.push(Routes.auth);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: context.primary,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Text(
+                                'تسجيل الدخول',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ] else if (widget.appBarTitle == null) ...[
                       GestureDetector(
                         onTap: _onAvatarTap,
                         child: Hero(
@@ -130,10 +227,12 @@ class _CustomWhiteAppBarState extends State<CustomWhiteAppBar>
                     onPressed: widget.onSearchPressed,
                     color: context.onBackground,
                   ),
-                  _buildAnimatedNotificationIcon(
-                    context.theme,
-                    context.onBackground,
-                  ),
+                  if (!widget.isGuest) ...[
+                    _buildAnimatedNotificationIcon(
+                      context.theme,
+                      context.onBackground,
+                    ),
+                  ],
                   const SizedBox(width: 12),
                 ],
               ),

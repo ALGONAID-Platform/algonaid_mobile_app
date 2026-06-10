@@ -1,9 +1,9 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/di/service_locator.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/di/service_locator.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/course_grades_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +50,9 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
               child: Center(
                 child: Text(
                   state.errorMessage!,
-                  style: context.theme.textTheme.bodyMedium?.copyWith(color: Colors.red),
+                  style: context.theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.red,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -103,9 +105,15 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
               ? [context.surfaceContainer, context.surface]
               : [AppColors.grey200, AppColors.grey50];
 
-          final unlockedTextColor = isDark ? Colors.amber.shade200 : Colors.amber.shade900;
-          final lockedTextColor = isDark ? AppColors.grey300 : Colors.grey[800]!;
-          final lockedSubTextColor = isDark ? AppColors.grey400 : Colors.grey[700]!;
+          final unlockedTextColor = isDark
+              ? Colors.amber.shade200
+              : Colors.amber.shade900;
+          final lockedTextColor = isDark
+              ? AppColors.grey300
+              : Colors.grey[800]!;
+          final lockedSubTextColor = isDark
+              ? AppColors.grey400
+              : Colors.grey[700]!;
 
           return Directionality(
             textDirection: TextDirection.rtl,
@@ -116,7 +124,6 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Header Title
-                  
                   const SizedBox(height: 24),
 
                   // Average & Cup Summary Card
@@ -143,11 +150,15 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: isUnlocked ? Colors.amber.shade400 : AppColors.grey400,
+                            color: isUnlocked
+                                ? Colors.amber.shade400
+                                : AppColors.grey400,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            isUnlocked ? Icons.emoji_events : Icons.lock_outline,
+                            isUnlocked
+                                ? Icons.emoji_events
+                                : Icons.lock_outline,
                             color: Colors.white,
                             size: 32,
                           ),
@@ -160,17 +171,25 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                             children: [
                               Text(
                                 'المعدل العام',
-                                style: context.theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: isUnlocked ? unlockedTextColor : lockedTextColor,
-                                ),
+                                style: context.theme.textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: isUnlocked
+                                          ? unlockedTextColor
+                                          : lockedTextColor,
+                                    ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                isUnlocked ? 'رائع! لقد تم فك قفل وسام التفوق الذهبي.' : 'تحتاج إلى أكثر من 90% لفتح الوسام.',
-                                style: context.theme.textTheme.bodySmall?.copyWith(
-                                  color: isUnlocked ? unlockedTextColor : lockedSubTextColor,
-                                ),
+                                isUnlocked
+                                    ? 'رائع! لقد تم فك قفل وسام التفوق الذهبي.'
+                                    : 'تحتاج إلى أكثر من 90% لفتح الوسام.',
+                                style: context.theme.textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: isUnlocked
+                                          ? unlockedTextColor
+                                          : lockedSubTextColor,
+                                    ),
                               ),
                             ],
                           ),
@@ -178,10 +197,13 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                         // Percentage
                         Text(
                           '${grades.averagePercentage.toStringAsFixed(1)}%',
-                          style: context.theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: isUnlocked ? unlockedTextColor : lockedTextColor,
-                          ),
+                          style: context.theme.textTheme.headlineMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isUnlocked
+                                    ? unlockedTextColor
+                                    : lockedTextColor,
+                              ),
                         ),
                       ],
                     ),
@@ -207,8 +229,11 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                         child: InkWell(
                           onTap: () {
                             Navigator.of(context).pop();
-                            final targetRoute = '${Routes.examPage}/${exam.examId}';
-                            GoRouter.of(context).push(targetRoute, extra: Routes.coursesPage);
+                            final targetRoute =
+                                '${Routes.examPage}/${exam.examId}';
+                            GoRouter.of(
+                              context,
+                            ).push(targetRoute, extra: Routes.coursesPage);
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Ink(
@@ -218,8 +243,12 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: isPerfect
-                                    ? (isDark ? Colors.green.shade700 : Colors.green.withOpacity(0.5))
-                                    : (isDark ? Colors.transparent : AppColors.grey200),
+                                    ? (isDark
+                                          ? Colors.green.shade700
+                                          : Colors.green.withOpacity(0.5))
+                                    : (isDark
+                                          ? Colors.transparent
+                                          : AppColors.grey200),
                                 width: isPerfect ? 2 : 1,
                               ),
                               boxShadow: [
@@ -235,23 +264,30 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Row(
                                         children: [
                                           Icon(
                                             Icons.assignment_outlined,
-                                            color: isPerfect ? Colors.green : context.primary,
+                                            color: isPerfect
+                                                ? Colors.green
+                                                : context.primary,
                                             size: 20,
                                           ),
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
                                               exam.examTitle,
-                                              style: context.theme.textTheme.titleSmall?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                              style: context
+                                                  .theme
+                                                  .textTheme
+                                                  .titleSmall
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                             ),
@@ -261,21 +297,42 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                                     ),
                                     const SizedBox(width: 8),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: isPerfect
-                                            ? (isDark ? Colors.green.withOpacity(0.2) : Colors.green.shade50)
-                                            : (isDark ? context.primary.withOpacity(0.2) : context.primary.withOpacity(0.1)),
+                                            ? (isDark
+                                                  ? Colors.green.withOpacity(
+                                                      0.2,
+                                                    )
+                                                  : Colors.green.shade50)
+                                            : (isDark
+                                                  ? context.primary.withOpacity(
+                                                      0.2,
+                                                    )
+                                                  : context.primary.withOpacity(
+                                                      0.1,
+                                                    )),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
                                         '${exam.highestScore} / ${exam.totalPoints}',
-                                        style: context.theme.textTheme.labelMedium?.copyWith(
-                                          color: isPerfect
-                                              ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
-                                              : (isDark ? context.primary : context.primary),
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: context
+                                            .theme
+                                            .textTheme
+                                            .labelMedium
+                                            ?.copyWith(
+                                              color: isPerfect
+                                                  ? (isDark
+                                                        ? Colors.green.shade300
+                                                        : Colors.green.shade700)
+                                                  : (isDark
+                                                        ? context.primary
+                                                        : context.primary),
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -299,10 +356,13 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                                     const SizedBox(width: 12),
                                     Text(
                                       '${exam.percentage.toStringAsFixed(0)}%',
-                                      style: context.theme.textTheme.labelSmall?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: isPerfect ? Colors.green : Colors.grey[600],
-                                      ),
+                                      style: context.theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: isPerfect
+                                                ? Colors.green
+                                                : Colors.grey[600],
+                                          ),
                                     ),
                                   ],
                                 ),

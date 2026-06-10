@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/features/courses/domain/entities/courseProgress_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/enroll_usecase.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_course_progress.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgress_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/enroll_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_progress.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_courses_usecase.dart';
 
 class GetCoursesProvider extends ChangeNotifier {
   final GetCoursesUsecase coursesUsecase;
@@ -81,7 +81,9 @@ class GetCoursesProvider extends ChangeNotifier {
       },
       (fetchedCourses) {
         myCourses = fetchedCourses;
-        debugPrint('getMyCourses: myCourses loaded. Count: ${myCourses.length}');
+        debugPrint(
+          'getMyCourses: myCourses loaded. Count: ${myCourses.length}',
+        );
         notifyListeners();
       },
     );
@@ -154,10 +156,16 @@ class GetCoursesProvider extends ChangeNotifier {
         final updatedCourse = originalCourse.copyWith(isEnrolled: true);
 
         allCourses.removeAt(courseIndex);
-        allCourses = List.from(allCourses); // Create new reference for UI rebuild
-        
+        allCourses = List.from(
+          allCourses,
+        ); // Create new reference for UI rebuild
+
         if (!myCourses.any((c) => c.id == courseId)) {
-          myCourses = List.from(myCourses)..insert(0, updatedCourse); // Insert at the beginning and update reference
+          myCourses = List.from(myCourses)
+            ..insert(
+              0,
+              updatedCourse,
+            ); // Insert at the beginning and update reference
         }
 
         notifyListeners();
@@ -169,10 +177,15 @@ class GetCoursesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> refreshAll() async {
+  Future<void> refreshAll({bool isGuest = false}) async {
     _isLoading = true;
     notifyListeners();
-    await Future.wait([getCourses(), getMyCourses()]);
+    if (isGuest) {
+      await getCourses();
+      myCourses = [];
+    } else {
+      await Future.wait([getCourses(), getMyCourses()]);
+    }
 
     _isLoading = false;
     notifyListeners();

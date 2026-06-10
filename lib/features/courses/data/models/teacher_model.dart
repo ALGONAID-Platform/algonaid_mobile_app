@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart'; // 🌟
-import 'package:algonaid_mobail_app/features/courses/data/models/user_model.dart'
+import 'package:algonaid_mobile_app/features/courses/data/models/user_model.dart'
     show UserModel;
-import 'package:algonaid_mobail_app/features/courses/domain/entities/teacher_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/teacher_entity.dart';
 
 part 'teacher_model.g.dart'; // 🌟
 
@@ -43,8 +43,8 @@ class TeacherModel extends TeacherEntity {
       bio: json['bio'] as String?,
       experience: json['experience'] as int? ?? 0,
       userId: json['userId'] as int? ?? 0,
-      user: json['user'] != null 
-          ? UserModel.fromJson(json['user']) 
+      user: json['user'] != null
+          ? UserModel.fromJson(json['user'])
           : UserModel(name: json['name'] as String? ?? 'غير معروف', email: ''),
     );
   }

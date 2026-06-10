@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/features/profile/data/models/total_points_model.dart';
-import 'package:algonaid_mobail_app/features/profile/data/models/user_profile_model.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/features/profile/data/models/total_points_model.dart';
+import 'package:algonaid_mobile_app/features/profile/data/models/user_profile_model.dart';
+
 abstract class ProfileLocalDataSource {
   Future<void> saveTotalPoints(TotalPointsModel points);
   Future<TotalPointsModel?> getTotalPoints();
@@ -21,7 +22,9 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
 
   @override
   Future<TotalPointsModel?> getTotalPoints() async {
-    final jsonString = CacheHelper.getString(key: AppConstants.cacheTotalPoints);
+    final jsonString = CacheHelper.getString(
+      key: AppConstants.cacheTotalPoints,
+    );
     if (jsonString != null) {
       try {
         final decoded = jsonDecode(jsonString);
@@ -43,7 +46,9 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
 
   @override
   Future<UserProfileModel?> getUserProfile() async {
-    final jsonString = CacheHelper.getString(key: AppConstants.cacheUserProfile);
+    final jsonString = CacheHelper.getString(
+      key: AppConstants.cacheUserProfile,
+    );
     if (jsonString != null) {
       try {
         final decoded = jsonDecode(jsonString);

@@ -1,6 +1,6 @@
-// algonaid_mobail_app/lib/features/modules/domain/entities/module.dart
+// algonaid_mobile_app/lib/features/modules/domain/entities/module.dart
 
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
 import 'package:equatable/equatable.dart';
 
 class Module extends Equatable {

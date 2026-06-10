@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
 
 class LessonDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

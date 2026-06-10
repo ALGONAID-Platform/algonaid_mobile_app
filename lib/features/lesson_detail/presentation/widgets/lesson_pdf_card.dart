@@ -1,7 +1,6 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:flutter/material.dart';
 
 class LessonPdfCard extends StatelessWidget {
@@ -12,8 +11,8 @@ class LessonPdfCard extends StatelessWidget {
   final VoidCallback onDownload;
 
   const LessonPdfCard({
-    super.key, 
-    required this.pdfUrl, 
+    super.key,
+    required this.pdfUrl,
     required this.onOpen,
     required this.downloadStatus,
     required this.downloadProgress,
@@ -35,14 +34,14 @@ class LessonPdfCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.surface,
           borderRadius: BorderRadius.circular(18),
-          border: AppBorder.main_border
+          border: AppBorder.main_border,
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: context.primary.withOpacity(isDark ? 0.20 : 0.12),
+                color: context.primary.withValues(alpha: isDark ? 0.20 : 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -57,7 +56,7 @@ class LessonPdfCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'ملخص الدرس',
+                    'ملف الدرس',
                     style: context.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface,
@@ -65,9 +64,11 @@ class LessonPdfCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    hasPdf ? 'عرض ملف PDF' : 'لا يوجد ملف مرفق',
+                    hasPdf ? 'عرض الملف المرفق' : 'لا يوجد ملف مرفق',
                     style: context.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.72),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.72,
+                      ),
                     ),
                   ),
                 ],
@@ -82,25 +83,24 @@ class LessonPdfCard extends StatelessWidget {
                       width: 24,
                       height: 24,
                       child: CircularProgressIndicator(
-                        value: downloadProgress > 0 ? downloadProgress / 100 : null,
+                        value: downloadProgress > 0
+                            ? downloadProgress / 100
+                            : null,
                         strokeWidth: 2.5,
                         color: context.primary,
                       ),
                     )
                   else if (downloadStatus == DownloadStatus.downloaded)
                     Icon(Icons.check_circle_rounded, color: context.primary),
-                    
+
                   const SizedBox(width: 8),
-                  Icon(
-                    Icons.chevron_right,
-                    color: context.primary,
-                  ),
+                  Icon(Icons.chevron_right, color: context.primary),
                 ],
               )
             else
               Icon(
                 Icons.chevron_left,
-                color: theme.colorScheme.onSurface.withOpacity(0.35),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
               ),
           ],
         ),

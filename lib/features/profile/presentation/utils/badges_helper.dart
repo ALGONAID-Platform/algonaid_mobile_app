@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/user_badge_entity.dart';
 
@@ -88,7 +88,8 @@ class BadgesHelper {
       'title': 'وسام عصفور الصباح',
       'icon': Icons.wb_sunny_rounded,
       'color': Colors.orangeAccent,
-      'requirementText': 'يُمنح للطلاب الذين يكملون الدروس بين الساعة 5 صباحاً و 9 صباحاً.',
+      'requirementText':
+          'يُمنح للطلاب الذين يكملون الدروس بين الساعة 5 صباحاً و 9 صباحاً.',
     },
     'reviewer': {
       'title': 'وسام المُراجع الدقيق',
@@ -116,12 +117,14 @@ class BadgesHelper {
       }).toList();
     }
     return userBadges.map((badge) {
-      final meta = _badgeMeta[badge.key] ?? {
-        'title': 'وسام غير معروف',
-        'icon': Icons.star,
-        'color': Colors.grey,
-        'requirementText': '',
-      };
+      final meta =
+          _badgeMeta[badge.key] ??
+          {
+            'title': 'وسام غير معروف',
+            'icon': Icons.star,
+            'color': Colors.grey,
+            'requirementText': '',
+          };
       return BadgeEntity(
         id: badge.id,
         key: badge.key,

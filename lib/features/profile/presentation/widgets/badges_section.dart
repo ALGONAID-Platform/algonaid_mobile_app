@@ -1,12 +1,12 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/utils/badges_helper.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/utils/badges_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
 
 class BadgesSection extends StatelessWidget {
   const BadgesSection({Key? key}) : super(key: key);
@@ -22,7 +22,10 @@ class BadgesSection extends StatelessWidget {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -60,24 +63,40 @@ class BadgesSection extends StatelessWidget {
                                               : Colors.grey.withOpacity(0.1),
                                         ),
                                         child: Icon(
-                                          badge.isUnlocked ? badge.icon : Icons.lock_outline_rounded,
-                                          color: badge.isUnlocked ? badge.color : Colors.grey,
+                                          badge.isUnlocked
+                                              ? badge.icon
+                                              : Icons.lock_outline_rounded,
+                                          color: badge.isUnlocked
+                                              ? badge.color
+                                              : Colors.grey,
                                           size: 40,
                                         ),
                                       ),
-                                      if (badge.isUnlocked && badge.tier != 'STANDARD')
+                                      if (badge.isUnlocked &&
+                                          badge.tier != 'STANDARD')
                                         Positioned(
                                           bottom: 0,
                                           right: 0,
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color: badge.tier == 'PRO_MAX' ? Colors.amber : Colors.blue,
-                                              borderRadius: BorderRadius.circular(8),
-                                              border: Border.all(color: Colors.white, width: 2),
+                                              color: badge.tier == 'PRO_MAX'
+                                                  ? Colors.amber
+                                                  : Colors.blue,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 2,
+                                              ),
                                             ),
                                             child: Text(
-                                              badge.tier == 'PRO_MAX' ? 'محترف' : 'متقدم',
+                                              badge.tier == 'PRO_MAX'
+                                                  ? 'محترف'
+                                                  : 'متقدم',
                                               style: const TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.bold,
@@ -91,22 +110,23 @@ class BadgesSection extends StatelessWidget {
                                   const SizedBox(height: 16),
                                   Text(
                                     badge.title,
-                                    style: context.textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: context.textTheme.titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
                                     badge.requirementText,
-                                    style: context.textTheme.bodyMedium?.copyWith(
-                                      height: 1.5,
-                                    ),
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(height: 1.5),
                                     textAlign: TextAlign.center,
                                   ),
                                   if (!badge.isUnlocked) ...[
                                     const SizedBox(height: 24),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.red.withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(12),
@@ -114,14 +134,19 @@ class BadgesSection extends StatelessWidget {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(Icons.info_outline, color: Colors.red, size: 20),
+                                          const Icon(
+                                            Icons.info_outline,
+                                            color: Colors.red,
+                                            size: 20,
+                                          ),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'هذا الوسام غير مقفل بعد',
-                                            style: context.textTheme.labelMedium?.copyWith(
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            'هذا الوسام غير مفتوح بعد',
+                                            style: context.textTheme.labelMedium
+                                                ?.copyWith(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -135,9 +160,13 @@ class BadgesSection extends StatelessWidget {
                         },
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 4),
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 2),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: context.colorScheme.surfaceContainer.withOpacity(0.7),
+                            color: context.colorScheme.surfaceContainer
+                                .withOpacity(0.7),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: badge.isUnlocked
@@ -174,7 +203,8 @@ class BadgesSection extends StatelessWidget {
                                         boxShadow: badge.isUnlocked
                                             ? [
                                                 BoxShadow(
-                                                  color: badge.color.withOpacity(0.2),
+                                                  color: badge.color
+                                                      .withOpacity(0.2),
                                                   blurRadius: 15,
                                                   spreadRadius: 2,
                                                 ),
@@ -183,22 +213,36 @@ class BadgesSection extends StatelessWidget {
                                       ),
                                     ),
                                     Icon(
-                                      badge.isUnlocked ? badge.icon : Icons.lock_outline_rounded,
-                                      color: badge.isUnlocked ? badge.color : Colors.grey,
+                                      badge.isUnlocked
+                                          ? badge.icon
+                                          : Icons.lock_outline_rounded,
+                                      color: badge.isUnlocked
+                                          ? badge.color
+                                          : Colors.grey,
                                       size: 24,
                                     ),
-                                    if (badge.isUnlocked && badge.tier != 'STANDARD')
+                                    if (badge.isUnlocked &&
+                                        badge.tier != 'STANDARD')
                                       Positioned(
                                         bottom: -2,
                                         right: -2,
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 2,
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: badge.tier == 'PRO_MAX' ? Colors.amber : Colors.blue,
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: badge.tier == 'PRO_MAX'
+                                                ? Colors.amber
+                                                : Colors.blue,
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                           ),
                                           child: Text(
-                                            badge.tier == 'PRO_MAX' ? 'محترف' : 'متقدم',
+                                            badge.tier == 'PRO_MAX'
+                                                ? 'محترف'
+                                                : 'متقدم',
                                             style: const TextStyle(
                                               fontSize: 6,
                                               fontWeight: FontWeight.bold,
@@ -214,7 +258,9 @@ class BadgesSection extends StatelessWidget {
                                   badge.title,
                                   style: context.textTheme.labelSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: badge.isUnlocked ? context.colorScheme.onSurface : Colors.grey,
+                                    color: badge.isUnlocked
+                                        ? context.colorScheme.onSurface
+                                        : Colors.grey,
                                     fontSize: 10,
                                   ),
                                   textAlign: TextAlign.center,

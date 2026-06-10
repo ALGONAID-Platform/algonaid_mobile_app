@@ -1,7 +1,7 @@
 // // lib/core/utils/routes/router_auth_guard.dart
 
-// import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-// import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
+// import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+// import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 // import 'package:flutter/material.dart';
 // import 'package:go_router/go_router.dart';
 

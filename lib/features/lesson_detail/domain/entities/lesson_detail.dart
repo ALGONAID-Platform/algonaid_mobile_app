@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
 import 'package:equatable/equatable.dart';
 
 class LessonDetail extends Equatable {

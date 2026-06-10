@@ -1,13 +1,13 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/about_settings_section.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/appearance_settings_section.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/logout_settings_button.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/notifications_settings_section.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/storage_settings_section.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/video_settings_section.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/about_settings_section.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/appearance_settings_section.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/logout_settings_button.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/notifications_settings_section.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/storage_settings_section.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/video_settings_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,10 +32,14 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _loadSettings() {
     setState(() {
-      _enableNotifications = CacheHelper.getBool(key: AppConstants.enableNotifications) ?? true;
-      _floatingVideo = CacheHelper.getBool(key: AppConstants.floatingVideo) ?? true;
-      _autoPlayNext = CacheHelper.getBool(key: AppConstants.autoPlayNext) ?? false;
-      _downloadQuality = CacheHelper.getString(key: AppConstants.downloadQuality) ?? 'متوسطة';
+      _enableNotifications =
+          CacheHelper.getBool(key: AppConstants.enableNotifications) ?? true;
+      _floatingVideo =
+          CacheHelper.getBool(key: AppConstants.floatingVideo) ?? true;
+      _autoPlayNext =
+          CacheHelper.getBool(key: AppConstants.autoPlayNext) ?? false;
+      _downloadQuality =
+          CacheHelper.getString(key: AppConstants.downloadQuality) ?? 'متوسطة';
     });
   }
 
@@ -48,9 +52,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: const SharedAppBar(
-          title: 'الإعدادات المتقدمة',
-        ),
+        appBar: const SharedAppBar(title: 'الإعدادات المتقدمة'),
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           children: [
@@ -106,7 +108,9 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Text(
                   'اختر جودة التحميل',
-                  style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: context.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _buildQualityOption('عالية (HD)', context),
@@ -123,7 +127,9 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildQualityOption(String quality, BuildContext context) {
     return ListTile(
       title: Text(quality),
-      trailing: _downloadQuality == quality ? Icon(Icons.check_circle, color: context.primary) : null,
+      trailing: _downloadQuality == quality
+          ? Icon(Icons.check_circle, color: context.primary)
+          : null,
       onTap: () {
         setState(() => _downloadQuality = quality);
         _saveSetting(AppConstants.downloadQuality, quality);

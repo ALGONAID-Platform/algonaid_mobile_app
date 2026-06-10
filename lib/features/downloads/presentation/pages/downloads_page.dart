@@ -1,12 +1,13 @@
 import 'dart:io';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/features/downloads/presentation/providers/downloads_provider.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobile_app/features/downloads/presentation/providers/downloads_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
 
 class DownloadsPage extends StatefulWidget {
   const DownloadsPage({Key? key}) : super(key: key);
@@ -26,39 +27,49 @@ class _DownloadsPageState extends State<DownloadsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final token = TokenStorage.getToken();
+    final isGuest = token == null || token.trim().isEmpty;
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: context.background,
-        body: Consumer<DownloadsProvider>(
-          builder: (context, provider, _) {
-            if (provider.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 3),
-              );
-            }
+        body: Column(
+          children: [
+            if (isGuest) _buildGuestBanner(context),
+            Expanded(
+              child: Consumer<DownloadsProvider>(
+                builder: (context, provider, _) {
+                  if (provider.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 3),
+                    );
+                  }
 
-            if (provider.downloadedCourses.isEmpty) {
-              return _buildEmptyState(context);
-            }
+                  if (provider.downloadedCourses.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
 
-            return RefreshIndicator(
-              onRefresh: provider.fetchDownloadedLessons,
-              color: context.primary,
-              child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 100, top: 16, left: 16, right: 16),
-                physics: const BouncingScrollPhysics(),
-                itemCount: provider.downloadedCourses.length,
-                itemBuilder: (context, index) {
-                  final course = provider.downloadedCourses[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: _CourseCard(course: course),
+                  return RefreshIndicator(
+                    onRefresh: provider.fetchDownloadedLessons,
+                    color: context.primary,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 100, top: 16, left: 16, right: 16),
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: provider.downloadedCourses.length,
+                      itemBuilder: (context, index) {
+                        final course = provider.downloadedCourses[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: _CourseCard(course: course),
+                        );
+                      },
+                    ),
                   );
                 },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -70,6 +81,44 @@ class _DownloadsPageState extends State<DownloadsPage> {
       icon: Icons.cloud_download_outlined,
       title: 'لا توجد دروس محملة حالياً',
       subtitle: 'الدروس التي تقوم بتحميلها ستظهر هنا للوصول إليها بدون إنترنت',
+    );
+  }
+
+  Widget _buildGuestBanner(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: context.primary.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.primary.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, color: context.primary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'سجل دخولك لتتمكن من تحميل الدروس ومشاهدتها بدون إنترنت.',
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () => context.push(Routes.auth),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text('سجل الآن'),
+          ),
+        ],
+      ),
     );
   }
 }

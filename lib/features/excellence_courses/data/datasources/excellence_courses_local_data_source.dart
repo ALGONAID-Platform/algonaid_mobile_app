@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/models/excellence_course_model.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/data/models/excellence_course_model.dart';
 import 'dart:convert';
 
 abstract class ExcellenceCoursesLocalDataSource {

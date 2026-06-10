@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class LessonLocalDataSource {
@@ -12,7 +12,15 @@ class LessonLocalDataSourceImpl implements LessonLocalDataSource {
   @override
   List<LessonModel> getLessons(int moduleId) {
     final box = Hive.box<LessonModel>(AppConstants.boxLessons);
-    return box.values.where((lesson) => lesson.moduleId == moduleId).toList();
+    final lessons = box.values
+        .where((lesson) => lesson.moduleId == moduleId)
+        .toList();
+    lessons.sort((a, b) {
+      final orderCompare = a.order.compareTo(b.order);
+      if (orderCompare != 0) return orderCompare;
+      return a.id.compareTo(b.id);
+    });
+    return lessons;
   }
 
   @override

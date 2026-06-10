@@ -1,11 +1,11 @@
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:flutter/material.dart';
 
 class LessonDetailContent extends StatelessWidget {
@@ -13,10 +13,10 @@ class LessonDetailContent extends StatelessWidget {
   final String? localVideoPath;
   final String? localPdfPath;
   final String? Function(String? pdfUrl) resolvePdfUrl;
-  
+
   final VoidCallback? onVideoStart;
   final VoidCallback? onProgressComplete;
-  
+
   final DownloadStatus pdfDownloadStatus;
   final int pdfDownloadProgress;
   final VoidCallback onPdfDownload;
@@ -58,14 +58,16 @@ class LessonDetailContent extends StatelessWidget {
             downloadProgress: pdfDownloadProgress,
             onDownload: onPdfDownload,
             onOpen: () {
-              final pdfUrl = localPdfPath ?? resolvePdfUrl(lesson.pdfUrl);
-              if (pdfUrl == null) return;
+              final hasSource =
+                  lesson.pdfUrl != null && lesson.pdfUrl!.isNotEmpty;
+              if (!hasSource) return;
 
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => LessonPdfViewerPage(
-                    pdfUrl: pdfUrl,
+                    pdfUrl: lesson.pdfUrl,
+                    localPdfPath: localPdfPath,
                     title: lesson.title,
                   ),
                 ),
@@ -73,10 +75,7 @@ class LessonDetailContent extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
-          LessonTabs(
-            description: lesson.description,
-            content: lesson.content,
-          ),
+          LessonTabs(description: lesson.description, content: lesson.content),
           const SizedBox(height: 16),
           LessonQuizCard(examId: actualExamId),
           const SizedBox(height: 16),

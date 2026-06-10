@@ -1,13 +1,10 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 
 class SettingsSectionTitle extends StatelessWidget {
   final String title;
 
-  const SettingsSectionTitle({
-    super.key,
-    required this.title,
-  });
+  const SettingsSectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

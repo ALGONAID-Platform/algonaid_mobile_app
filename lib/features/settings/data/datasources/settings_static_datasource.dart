@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/settings/domain/entities/developer_info.dart';
-import 'package:algonaid_mobail_app/features/settings/domain/entities/platform_feature.dart';
-import 'package:algonaid_mobail_app/features/settings/domain/entities/policy_item.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/features/settings/domain/entities/developer_info.dart';
+import 'package:algonaid_mobile_app/features/settings/domain/entities/platform_feature.dart';
+import 'package:algonaid_mobile_app/features/settings/domain/entities/policy_item.dart';
 import 'package:flutter/material.dart';
 
 abstract class SettingsStaticDataSource {
@@ -16,11 +16,26 @@ class SettingsStaticDataSourceImpl implements SettingsStaticDataSource {
   @override
   List<PlatformFeature> getPlatformFeatures() {
     return const [
-      PlatformFeature(icon: Icons.video_library_rounded, title: 'شروحات مرئية تفصيلية ومرنة'),
-      PlatformFeature(icon: Icons.quiz_rounded, title: 'اختبارات تفاعلية تقيم مستواك فورياً'),
-      PlatformFeature(icon: Icons.file_download_outlined, title: 'إمكانية تحميل الفيديوهات للمشاهدة بدون إنترنت'),
-      PlatformFeature(icon: Icons.show_chart_rounded, title: 'إحصائيات متقدمة لمراقبة تقدمك الأكاديمي'),
-      PlatformFeature(icon: Icons.workspace_premium_rounded, title: 'أوسمة وتكريمات تشجيعية للطلاب الأوائل'),
+      PlatformFeature(
+        icon: Icons.video_library_rounded,
+        title: 'شروحات مرئية تفصيلية ومرنة',
+      ),
+      PlatformFeature(
+        icon: Icons.quiz_rounded,
+        title: 'اختبارات تفاعلية تقيم مستواك فورياً',
+      ),
+      PlatformFeature(
+        icon: Icons.file_download_outlined,
+        title: 'إمكانية تحميل الفيديوهات للمشاهدة بدون إنترنت',
+      ),
+      PlatformFeature(
+        icon: Icons.show_chart_rounded,
+        title: 'إحصائيات متقدمة لمراقبة تقدمك الأكاديمي',
+      ),
+      PlatformFeature(
+        icon: Icons.workspace_premium_rounded,
+        title: 'أوسمة وتكريمات تشجيعية للطلاب الأوائل',
+      ),
     ];
   }
 
@@ -75,27 +90,33 @@ class SettingsStaticDataSourceImpl implements SettingsStaticDataSource {
     return const [
       PolicyItem(
         title: '1. شروط الاستخدام',
-        content: 'مرحباً بك في منصة Algonaid التعليمية. باستخدامك لتطبيقنا، فإنك توافق على هذه الشروط والأحكام. تهدف المنصة إلى تقديم محتوى تعليمي هادف ويُمنع استخدامها لأي أغراض تجارية أو غير قانونية دون إذن مسبق.',
+        content:
+            'مرحباً بك في منصة Algonaid التعليمية. باستخدامك لتطبيقنا، فإنك توافق على هذه الشروط والأحكام. تهدف المنصة إلى تقديم محتوى تعليمي هادف ويُمنع استخدامها لأي أغراض تجارية أو غير قانونية دون إذن مسبق.',
       ),
       PolicyItem(
         title: '2. حقوق الملكية الفكرية',
-        content: 'جميع الحقوق المتعلقة بالمحتوى التعليمي (الفيديوهات، المستندات، الاختبارات) هي ملكية حصرية لمنصة Algonaid ومقدمي الدورات. يُمنع منعاً باتاً نسخ، توزيع، أو إعادة نشر أي محتوى متوفر في التطبيق دون الحصول على تصريح كتابي.',
+        content:
+            'جميع الحقوق المتعلقة بالمحتوى التعليمي (الفيديوهات، المستندات، الاختبارات) هي ملكية حصرية لمنصة Algonaid ومقدمي الدورات. يُمنع منعاً باتاً نسخ، توزيع، أو إعادة نشر أي محتوى متوفر في التطبيق دون الحصول على تصريح كتابي.',
       ),
       PolicyItem(
         title: '3. سياسة الخصوصية وحماية البيانات',
-        content: 'نحن نأخذ خصوصيتك على محمل الجد. نقوم بجمع بعض البيانات الأساسية (مثل الاسم والبريد الإلكتروني ومسار التعلم) لغرض تحسين تجربتك التعليمية. لا يتم بيع أو مشاركة بياناتك مع أطراف خارجية لأغراض تسويقية.',
+        content:
+            'نحن نأخذ خصوصيتك على محمل الجد. نقوم بجمع بعض البيانات الأساسية (مثل الاسم والبريد الإلكتروني ومسار التعلم) لغرض تحسين تجربتك التعليمية. لا يتم بيع أو مشاركة بياناتك مع أطراف خارجية لأغراض تسويقية.',
       ),
       PolicyItem(
         title: '4. الاشتراكات والدفع',
-        content: 'في حال وجود دورات مدفوعة، يتم توضيح رسوم الدورة بشكل صريح قبل الشراء. عمليات الشراء نهائية ولا يتم استرداد الأموال إلا في الحالات الاستثنائية التي تقررها إدارة المنصة بعد مراجعة الطلب.',
+        content:
+            'في حال وجود دورات مدفوعة، يتم توضيح رسوم الدورة بشكل صريح قبل الشراء. عمليات الشراء نهائية ولا يتم استرداد الأموال إلا في الحالات الاستثنائية التي تقررها إدارة المنصة بعد مراجعة الطلب.',
       ),
       PolicyItem(
         title: '5. سياسة التنزيل والاستخدام دون اتصال',
-        content: 'تتيح المنصة ميزة تنزيل الفيديوهات والملفات للوصول إليها بدون إنترنت كخدمة إضافية. هذه الملفات مخصصة للاستخدام الشخصي داخل التطبيق فقط ومحمية ولا يجوز نقلها لأجهزة أخرى.',
+        content:
+            'تتيح المنصة ميزة تنزيل الفيديوهات والملفات للوصول إليها بدون إنترنت كخدمة إضافية. هذه الملفات مخصصة للاستخدام الشخصي داخل التطبيق فقط ومحمية ولا يجوز نقلها لأجهزة أخرى.',
       ),
       PolicyItem(
         title: '6. التعديل على السياسات',
-        content: 'تحتفظ إدارة Algonaid بالحق في تعديل هذه السياسات في أي وقت. سيتم إشعار المستخدمين بأي تغييرات جوهرية تطرأ على سياسات الخصوصية أو شروط الاستخدام.',
+        content:
+            'تحتفظ إدارة Algonaid بالحق في تعديل هذه السياسات في أي وقت. سيتم إشعار المستخدمين بأي تغييرات جوهرية تطرأ على سياسات الخصوصية أو شروط الاستخدام.',
       ),
     ];
   }

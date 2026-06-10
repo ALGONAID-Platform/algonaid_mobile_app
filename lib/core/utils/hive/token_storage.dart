@@ -1,8 +1,12 @@
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
 
 class TokenStorage {
   static String? _token; // In-memory token storage
+
+  static Future<void> init() async {
+    _token ??= CacheHelper.getString(key: AppConstants.tokenKey);
+  }
 
   static Future<void> saveToken(String token) async {
     _token = token;

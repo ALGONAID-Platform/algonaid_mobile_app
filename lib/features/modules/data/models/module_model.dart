@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/entities/module.dart';
 import 'package:hive/hive.dart';
 
 part 'module_model.g.dart';

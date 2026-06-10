@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
-import 'package:algonaid_mobail_app/features/settings/presentation/widgets/settings_section_title.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section_title.dart';
 import 'package:flutter/material.dart';
 
 class VideoSettingsSection extends StatelessWidget {
@@ -33,7 +33,9 @@ class VideoSettingsSection extends StatelessWidget {
           onChanged: onFloatingVideoChanged,
           title: Text(
             'تشغيل الفيديو كنافذة عائمة',
-            style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
           ),
           subtitle: Text(
             'السماح بعرض الفيديو خارج التطبيق (Picture-in-Picture)',
@@ -50,7 +52,9 @@ class VideoSettingsSection extends StatelessWidget {
           onChanged: onAutoPlayNextChanged,
           title: Text(
             'التشغيل التلقائي',
-            style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
           ),
           subtitle: Text(
             'تشغيل الدرس التالي تلقائياً عند انتهاء الدرس الحالي',

@@ -1,11 +1,11 @@
 import 'dart:ui';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/utils/badges_helper.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/utils/badges_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
 
 class AllBadgesPage extends StatelessWidget {
   const AllBadgesPage({Key? key}) : super(key: key);
@@ -19,14 +19,14 @@ class AllBadgesPage extends StatelessWidget {
         appBar: SharedAppBar(
           title: 'جميع الأوسمة',
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded ),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
         body: Consumer<ProfileProvider>(
           builder: (context, provider, child) {
             final allBadges = BadgesHelper.getBadges(provider.userBadges);
-      
+
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Column(
@@ -59,12 +59,13 @@ class AllBadgesPage extends StatelessWidget {
                     child: GridView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       physics: const BouncingScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 0.9,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 0.9,
+                          ),
                       itemCount: allBadges.length,
                       itemBuilder: (context, index) {
                         final badge = allBadges[index];
@@ -111,7 +112,9 @@ class _BadgeCard extends StatelessWidget {
                             : Colors.grey.withOpacity(0.1),
                       ),
                       child: Icon(
-                        badge.isUnlocked ? badge.icon : Icons.lock_outline_rounded,
+                        badge.isUnlocked
+                            ? badge.icon
+                            : Icons.lock_outline_rounded,
                         color: badge.isUnlocked ? badge.color : Colors.grey,
                         size: 40,
                       ),
@@ -121,9 +124,14 @@ class _BadgeCard extends StatelessWidget {
                         bottom: 0,
                         right: 0,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: badge.tier == 'PRO_MAX' ? Colors.amber : Colors.blue,
+                            color: badge.tier == 'PRO_MAX'
+                                ? Colors.amber
+                                : Colors.blue,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.white, width: 2),
                           ),
@@ -149,15 +157,16 @@ class _BadgeCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   badge.requirementText,
-                  style: context.textTheme.bodyMedium?.copyWith(
-                    height: 1.5,
-                  ),
+                  style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
                   textAlign: TextAlign.center,
                 ),
                 if (!badge.isUnlocked) ...[
                   const SizedBox(height: 24),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -165,10 +174,14 @@ class _BadgeCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.info_outline, color: Colors.red, size: 20),
+                        const Icon(
+                          Icons.info_outline,
+                          color: Colors.red,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
-                          'هذا الوسام غير مقفل بعد',
+                          'هذا الوسام غير مفتوح بعد',
                           style: context.textTheme.labelMedium?.copyWith(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
@@ -241,9 +254,14 @@ class _BadgeCard extends StatelessWidget {
                       bottom: 0,
                       right: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: badge.tier == 'PRO_MAX' ? Colors.amber : Colors.blue,
+                          color: badge.tier == 'PRO_MAX'
+                              ? Colors.amber
+                              : Colors.blue,
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(color: Colors.white, width: 2),
                         ),

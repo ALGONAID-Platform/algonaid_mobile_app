@@ -1,9 +1,9 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobail_app/features/search/data/datasources/search_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/search/domain/entities/global_search_entity.dart';
-import 'package:algonaid_mobail_app/features/search/domain/repositories/search_repository.dart';
+import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
+import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
+import 'package:algonaid_mobile_app/features/search/data/datasources/search_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/search/domain/entities/global_search_entity.dart';
+import 'package:algonaid_mobile_app/features/search/domain/repositories/search_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 

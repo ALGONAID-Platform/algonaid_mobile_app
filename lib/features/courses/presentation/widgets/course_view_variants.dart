@@ -1,15 +1,15 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseDetails.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildCourseDetails.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
 
 class CourseThinCard extends StatelessWidget {
   final CourseEntity course;
@@ -55,7 +55,8 @@ class CourseThinCard extends StatelessWidget {
                         child: Builder(
                           builder: (context) {
                             String resolvedUrl = course.thumbnail;
-                            if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+                            if (resolvedUrl.isNotEmpty &&
+                                !resolvedUrl.startsWith('http')) {
                               resolvedUrl = resolvedUrl.startsWith('/')
                                   ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
                                   : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
@@ -64,15 +65,21 @@ class CourseThinCard extends StatelessWidget {
                               imageUrl: resolvedUrl,
                               fit: BoxFit.cover,
                               placeholder: (context, url) => Container(
-                                color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                                child: const Center(child: CircularProgressIndicator.adaptive()),
+                                color: context.colorScheme.surfaceVariant
+                                    .withOpacity(0.5),
+                                child: const Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                ),
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: context.colorScheme.errorContainer,
-                                child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
+                                child: Image.asset(
+                                  Images.noImageFound,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             );
-                          }
+                          },
                         ),
                       ),
                       Positioned.fill(
@@ -81,7 +88,10 @@ class CourseThinCard extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment.centerRight,
                               end: Alignment.centerLeft,
-                              colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                              colors: [
+                                Colors.black.withOpacity(0.6),
+                                Colors.transparent,
+                              ],
                             ),
                           ),
                         ),
@@ -131,13 +141,17 @@ class CourseThinCard extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          LinearProgress(progressPercentage: course.progressPercentage),
+                          LinearProgress(
+                            progressPercentage: course.progressPercentage,
+                          ),
                         ] else
                           Text(
                             course.description,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodySmall?.copyWith(fontSize: 10),
+                            style: context.textTheme.bodySmall?.copyWith(
+                              fontSize: 10,
+                            ),
                           ),
                       ],
                     ),
@@ -194,7 +208,8 @@ class CourseGridItem extends StatelessWidget {
                       child: Builder(
                         builder: (context) {
                           String resolvedUrl = course.thumbnail;
-                          if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+                          if (resolvedUrl.isNotEmpty &&
+                              !resolvedUrl.startsWith('http')) {
                             resolvedUrl = resolvedUrl.startsWith('/')
                                 ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
                                 : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
@@ -203,15 +218,21 @@ class CourseGridItem extends StatelessWidget {
                             imageUrl: resolvedUrl,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                              child: const Center(child: CircularProgressIndicator.adaptive()),
+                              color: context.colorScheme.surfaceVariant
+                                  .withOpacity(0.5),
+                              child: const Center(
+                                child: CircularProgressIndicator.adaptive(),
+                              ),
                             ),
                             errorWidget: (context, url, error) => Container(
                               color: context.colorScheme.errorContainer,
-                              child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
+                              child: Image.asset(
+                                Images.noImageFound,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           );
-                        }
+                        },
                       ),
                     ),
                     Positioned.fill(
@@ -220,7 +241,10 @@ class CourseGridItem extends StatelessWidget {
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.8),
+                            ],
                           ),
                         ),
                       ),
@@ -269,7 +293,9 @@ class CourseGridItem extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            LinearProgress(progressPercentage: course.progressPercentage),
+                            LinearProgress(
+                              progressPercentage: course.progressPercentage,
+                            ),
                           ],
                         ),
                       ] else

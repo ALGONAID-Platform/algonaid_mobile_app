@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/theme/styles.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
 import 'package:flutter/material.dart';
 
 class TextDivider extends StatelessWidget {

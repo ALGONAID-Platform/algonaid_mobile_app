@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
-import 'package:algonaid_mobail_app/features/search/domain/entities/global_search_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/data/models/course_model.dart';
+import 'package:algonaid_mobile_app/features/search/domain/entities/global_search_entity.dart';
 
 class GlobalSearchModel extends GlobalSearchEntity {
   GlobalSearchModel({

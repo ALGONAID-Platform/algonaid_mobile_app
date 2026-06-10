@@ -5,9 +5,10 @@ import '../../domain/usecases/update_user_profile_usecase.dart';
 import '../../domain/usecases/get_user_badges_usecase.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/entities/user_badge_entity.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/utils/badges_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/utils/badges_helper.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final GetTotalPointsUseCase getTotalPointsUseCase;
@@ -80,6 +81,38 @@ class ProfileProvider extends ChangeNotifier {
       },
       (profile) {
         _userProfile = profile;
+        // Keep AppConstants cache in sync
+        CacheHelper.saveData(key: AppConstants.userName, value: profile.name);
+        if (profile.avatar != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userAvatar,
+            value: profile.avatar!,
+          );
+        }
+        if (profile.background != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userBackground,
+            value: profile.background!,
+          );
+        }
+        if (profile.grade != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userGrade,
+            value: profile.grade!,
+          );
+        }
+        if (profile.address != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userAddress,
+            value: profile.address!,
+          );
+        }
+        if (profile.birthDate != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userBirthDate,
+            value: profile.birthDate!,
+          );
+        }
       },
     );
 
@@ -102,7 +135,8 @@ class ProfileProvider extends ChangeNotifier {
         _userBadges = badges;
 
         // Check for newly unlocked badges
-        final unlockedKeys = CacheHelper.getStringList(key: 'unlocked_badge_keys') ?? [];
+        final unlockedKeys =
+            CacheHelper.getStringList(key: 'unlocked_badge_keys') ?? [];
         final newUnlockedKeys = List<String>.from(unlockedKeys);
         bool newlyUnlocked = false;
 
@@ -114,13 +148,17 @@ class ProfileProvider extends ChangeNotifier {
             // Send local notification & play sound
             await NotificationService().showNotification(
               title: 'لقد حصلت على وسام جديد! 🏆',
-              body: 'تهانينا! لقد تم منحك "${badge.title}". ${badge.requirementText}',
+              body:
+                  'تهانينا! لقد تم منحك "${badge.title}". ${badge.requirementText}',
             );
           }
         }
 
         if (newlyUnlocked) {
-          await CacheHelper.saveData(key: 'unlocked_badge_keys', value: newUnlockedKeys);
+          await CacheHelper.saveData(
+            key: 'unlocked_badge_keys',
+            value: newUnlockedKeys,
+          );
         }
       },
     );
@@ -144,6 +182,38 @@ class ProfileProvider extends ChangeNotifier {
       (profile) {
         _userProfile = profile;
         success = true;
+        // Keep AppConstants cache in sync
+        CacheHelper.saveData(key: AppConstants.userName, value: profile.name);
+        if (profile.avatar != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userAvatar,
+            value: profile.avatar!,
+          );
+        }
+        if (profile.background != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userBackground,
+            value: profile.background!,
+          );
+        }
+        if (profile.grade != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userGrade,
+            value: profile.grade!,
+          );
+        }
+        if (profile.address != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userAddress,
+            value: profile.address!,
+          );
+        }
+        if (profile.birthDate != null) {
+          CacheHelper.saveData(
+            key: AppConstants.userBirthDate,
+            value: profile.birthDate!,
+          );
+        }
       },
     );
 

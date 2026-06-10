@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
 
 class LastAccessedModuleProvider extends ChangeNotifier {
   final GetLastAccessedModuleUseCase getLastAccessedModuleUseCase;

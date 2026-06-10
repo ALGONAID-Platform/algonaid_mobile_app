@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/features/search/domain/entities/global_search_entity.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/features/search/domain/entities/global_search_entity.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

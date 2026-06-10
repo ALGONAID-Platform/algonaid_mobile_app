@@ -1,32 +1,30 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobail_app/core/widgets/loading/continueLearningShimmer.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/all_courses_section.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
-
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildShimmerSection.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/courseHeader.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/my_courses_section.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/sliver_appbar.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobile_app/core/widgets/loading/continueLearningShimmer.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/all_courses_section.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildShimmerSection.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/courseHeader.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/my_courses_section.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sliver_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/pages/profile_page.dart'; // Added
-import 'package:algonaid_mobail_app/features/downloads/presentation/pages/downloads_page.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/pages/competitions_page.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/pages/profile_page.dart';
+import 'package:algonaid_mobile_app/features/downloads/presentation/pages/downloads_page.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/pages/competitions_page.dart';
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class CoursesPage extends StatefulWidget {
-  const CoursesPage({Key? key}) : super(key: key);
+  const CoursesPage({super.key});
 
   @override
   State<CoursesPage> createState() => _CoursesPageState();
@@ -36,8 +34,9 @@ class _CoursesPageState extends State<CoursesPage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GetCoursesProvider>().refreshAll();
+      context.read<GetCoursesProvider>().refreshAll(isGuest: false);
       context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
     });
     debugPrint('User Token on CoursesPage init: ${TokenStorage.getToken()}');
@@ -49,12 +48,13 @@ class _CoursesPageState extends State<CoursesPage> {
       backgroundColor: context.background,
       body: RefreshIndicator(
         elevation: 0.0,
-
         onRefresh: () async {
-          await context.read<GetCoursesProvider>().refreshAll();
-          await context
-              .read<LastAccessedModuleProvider>()
-              .fetchLastAccessedModule();
+          final coursesProvider = context.read<GetCoursesProvider>();
+          final lastAccessedProvider = context
+              .read<LastAccessedModuleProvider>();
+
+          await coursesProvider.refreshAll(isGuest: false);
+          await lastAccessedProvider.fetchLastAccessedModule();
         },
         color: AppColors.primary,
         child: Consumer<GetCoursesProvider>(
@@ -79,12 +79,14 @@ class _CoursesPageState extends State<CoursesPage> {
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
-                        courseHeader(hasEnrolledCourses: provider.myCourses.isNotEmpty),
-
-                        MyCoursesListSection(myCourses: provider.myCourses, allCourses: provider.allCourses),
-
+                        courseHeader(
+                          hasEnrolledCourses: provider.myCourses.isNotEmpty,
+                        ),
+                        MyCoursesListSection(
+                          myCourses: provider.myCourses,
+                          allCourses: provider.allCourses,
+                        ),
                         AllCoursesListSection(allCourses: provider.allCourses),
-
                         const SizedBox(height: 100),
                       ],
                     ),
@@ -100,7 +102,7 @@ class _CoursesPageState extends State<CoursesPage> {
 }
 
 class CoursesHomePage extends StatefulWidget {
-  const CoursesHomePage({Key? key}) : super(key: key);
+  const CoursesHomePage({super.key});
 
   @override
   State<CoursesHomePage> createState() => _CoursesHomePageState();
@@ -110,25 +112,19 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
-  List<Widget> get _pages => const [
-    CoursesPage(key: ValueKey('home')), // الصفحة الرئيسية
-    CompetitionsPage(key: ValueKey('competitions')), // المسابقات
-    DownloadsPage(key: ValueKey('bookmarks')), // المحفوظات والتحميلات
-    ProfilePage(key: ValueKey('profile')), // الحساب
-  ];
-
-  Future<void> _logout() async {
-    await context.read<AuthServiceProvider>().logout();
-    if (!mounted) {
-      return;
-    }
-    context.go(Routes.auth);
+  List<Widget> get _pages {
+    return [
+      const CoursesPage(key: ValueKey('home')), // الصفحة الرئيسية
+      const CompetitionsPage(key: ValueKey('competitions')), // المسابقات
+      const DownloadsPage(key: ValueKey('bookmarks')), // المحفوظات والتحميلات
+      const ProfilePage(key: ValueKey('profile')), // الحساب
+    ];
   }
 
-  String _getAppBarTitle(int index) {
+  String? _getAppBarTitle(int index) {
     switch (index) {
       case 0:
-        return 'الصفحة الرئيسية';
+        return null;
       case 1:
         return 'المسابقات والتحديات';
       case 2:
@@ -136,7 +132,7 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
       case 3:
         return 'الملف الشخصي';
       default:
-        return 'الرئيسية';
+        return null;
     }
   }
 
@@ -144,7 +140,6 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
   Widget build(BuildContext context) {
     final userName =
         CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم';
-    final userEmail = CacheHelper.getString(key: AppConstants.userEmail) ?? '';
     final userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
 
     return Scaffold(
@@ -153,6 +148,7 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
         userName: userName,
         userImageUrl: userAvatar,
         appBarTitle: _getAppBarTitle(_currentIndex),
+        isGuest: false,
         onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
         onProfilePressed: () {
           setState(() {
@@ -196,21 +192,23 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
 class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
   final String? userImageUrl;
-  final String appBarTitle;
+  final String? appBarTitle;
   final VoidCallback onProfilePressed;
   final VoidCallback onNotificationPressed;
   final VoidCallback onSearchPressed;
   final VoidCallback onMenuPressed;
+  final bool isGuest;
 
   const ReactiveAppBar({
     super.key,
     required this.userName,
     required this.userImageUrl,
-    required this.appBarTitle,
+    this.appBarTitle,
     required this.onProfilePressed,
     required this.onNotificationPressed,
     required this.onSearchPressed,
     required this.onMenuPressed,
+    this.isGuest = false,
   });
 
   @override
@@ -218,14 +216,17 @@ class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
     return ValueListenableBuilder<Box<String>>(
       valueListenable: Hive.box<String>('local_notifications_box').listenable(),
       builder: (context, box, _) {
-        final unreadCount = box.values.map((e) {
-          try {
-            final map = jsonDecode(e) as Map<String, dynamic>;
-            return map['isRead'] as bool? ?? false;
-          } catch (_) {
-            return true;
-          }
-        }).where((isRead) => !isRead).length;
+        final unreadCount = box.values
+            .map((e) {
+              try {
+                final map = jsonDecode(e) as Map<String, dynamic>;
+                return map['isRead'] as bool? ?? false;
+              } catch (_) {
+                return true;
+              }
+            })
+            .where((isRead) => !isRead)
+            .length;
 
         return CustomWhiteAppBar(
           userName: userName,
@@ -236,6 +237,7 @@ class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
           onProfilePressed: onProfilePressed,
           onNotificationPressed: onNotificationPressed,
           onSearchPressed: onSearchPressed,
+          isGuest: isGuest,
         );
       },
     );

@@ -1,8 +1,8 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/widgets/floating_video_widget.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/floating_video_widget.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
 
 class GlobalVideoState {
   static final GlobalVideoState _instance = GlobalVideoState._internal();

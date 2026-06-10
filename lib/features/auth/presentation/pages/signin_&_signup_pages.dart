@@ -1,23 +1,23 @@
-import 'package:algonaid_mobail_app/core/common/enums/password_strength.dart';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/validations/app_validation.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
-import 'package:algonaid_mobail_app/core/utils/functions/user_friendly_error.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/widgets/label.dart';
+import 'package:algonaid_mobile_app/core/common/enums/password_strength.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/utils/validations/app_validation.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobile_app/core/utils/functions/user_friendly_error.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/widgets/label.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 // Imports (المسارات الخاصة بمشروعك)
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/buttons/custom_button.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/textform_field.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/widgets/auth_header.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/widgets/drop_down_bottun.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/widgets/signin_with_google.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/widgets/swap_bottons.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/widgets/buttons/custom_button.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/textform_field.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/widgets/auth_header.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/widgets/drop_down_bottun.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/widgets/signin_with_google.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/widgets/swap_bottons.dart';
 
 class SigninAndSignupPage extends StatefulWidget {
   const SigninAndSignupPage({super.key});
@@ -128,7 +128,10 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             child: Text("نسيت كلمة السر؟"),
-                            onPressed: () {},
+                            onPressed: () => _showForgotPasswordBottomSheet(
+                              context,
+                              authService,
+                            ),
                           ),
                         )
                       : SizedBox.shrink(),
@@ -182,14 +185,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                               if (!context.mounted) return;
 
                               if (authService.user != null) {
-                                AppDialog.showDynamicDialog(
-                                  context: context,
-                                  title: "Success",
-                                  message: "Welcome Back!",
-                                  showCancelButton: false,
-                                  onConfirm: () =>
-                                      GoRouter.of(context).go(Routes.homePage),
-                                );
+                                GoRouter.of(context).go(Routes.homePage);
                               } else if (authService.errorMessage != null) {
                                 AppDialog.showDynamicDialog(
                                   context: context,
@@ -206,7 +202,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                             text: authService.isLogin
                                 ? "تسجيل دخول"
                                 : "إنشاء حساب",
-                            textColor:Colors.white,
+                            textColor: Colors.white,
                           ),
                   ),
 
@@ -218,6 +214,240 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showForgotPasswordBottomSheet(
+    BuildContext context,
+    AuthServiceProvider authService,
+  ) {
+    final emailSheetController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.surfaceContainer,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+            left: 24,
+            right: 24,
+            top: 24,
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: context.colorScheme.onSecondary.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    "استعادة كلمة المرور",
+                    style: context.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextLabel(text: "البريد الإلكتروني"),
+                const SizedBox(height: 5),
+                CustomTextFormField(
+                  controller: emailSheetController,
+                  labelText: "ادخل عنوان البريد الإلكتروني الخاص بك",
+                  borderColor: context.primary,
+                  validator: (email) => Validator.email(email!),
+                ),
+                const SizedBox(height: 24),
+                Center(
+                  child: CustomButton(
+                    color: context.primary,
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      if (!formKey.currentState!.validate()) return;
+                      final email = emailSheetController.text.trim();
+
+                      Navigator.pop(sheetContext); // Close email sheet
+
+                      final successMsg = await authService.forgotPassword(
+                        email: email,
+                      );
+
+                      if (!context.mounted) return;
+
+                      if (successMsg != null) {
+                        // Success: Show the reset password sheet
+                        _showResetPasswordBottomSheet(context, authService);
+                      } else {
+                        // Error
+                        AppDialog.showDynamicDialog(
+                          context: context,
+                          title: "خطأ",
+                          message: toUserFriendlyErrorMessage(
+                            authService.errorMessage,
+                          ),
+                          isError: true,
+                          showCancelButton: false,
+                        );
+                      }
+                    },
+                    text: "إرسال رمز إعادة التعيين",
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(sheetContext);
+                      _showResetPasswordBottomSheet(context, authService);
+                    },
+                    child: const Text(
+                      "لديك رمز إعادة التعيين بالفعل؟ أدخله هنا",
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showResetPasswordBottomSheet(
+    BuildContext context,
+    AuthServiceProvider authService,
+  ) {
+    final tokenController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.surfaceContainer,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+            left: 24,
+            right: 24,
+            top: 24,
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: context.colorScheme.onSecondary.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    "تعيين كلمة المرور الجديدة",
+                    style: context.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextLabel(text: "رمز إعادة التعيين (Token)"),
+                const SizedBox(height: 5),
+                CustomTextFormField(
+                  controller: tokenController,
+                  labelText: "ادخل الرمز المرسل إليك",
+                  borderColor: context.primary,
+                  validator: (value) => value == null || value.isEmpty
+                      ? "يرجى إدخال الرمز"
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                TextLabel(text: "كلمة المرور الجديدة"),
+                const SizedBox(height: 5),
+                CustomTextFormField(
+                  controller: newPasswordController,
+                  labelText: "ادخل كلمة المرور الجديدة",
+                  borderColor: context.primary,
+                  isPassword: true,
+                  validator: (password) => Validator.password(
+                    password,
+                    strength: PasswordStrength.strong,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Center(
+                  child: CustomButton(
+                    color: context.primary,
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      if (!formKey.currentState!.validate()) return;
+                      final token = tokenController.text.trim();
+                      final newPassword = newPasswordController.text.trim();
+
+                      Navigator.pop(sheetContext); // Close reset sheet
+
+                      final successMsg = await authService.resetPassword(
+                        token: token,
+                        newPassword: newPassword,
+                      );
+
+                      if (!context.mounted) return;
+
+                      if (successMsg != null) {
+                        AppDialog.showDynamicDialog(
+                          context: context,
+                          title: "نجاح",
+                          message: successMsg,
+                          isError: false,
+                          showCancelButton: false,
+                        );
+                      } else {
+                        AppDialog.showDynamicDialog(
+                          context: context,
+                          title: "خطأ",
+                          message: toUserFriendlyErrorMessage(
+                            authService.errorMessage,
+                          ),
+                          isError: true,
+                          showCancelButton: false,
+                        );
+                      }
+                    },
+                    text: "تأكيد تغيير كلمة المرور",
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

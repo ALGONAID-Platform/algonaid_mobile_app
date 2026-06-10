@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/widgets/results_actions_section.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/widgets/results_questions_review_section.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/widgets/results_statistics_section.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/widgets/results_summary_card.dart';
+import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/widgets/results_actions_section.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/widgets/results_questions_review_section.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/widgets/results_statistics_section.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/widgets/results_summary_card.dart';
 
 class ResultsPage extends StatefulWidget {
   final ExamResult result;

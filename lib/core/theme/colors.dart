@@ -6,8 +6,8 @@ class AppColors {
   static const Color white = Color(0xFFFFFFFF);
 
   // Primary Brand Colors
-  static const Color primary = Color(0xFF49BBBD); // Teal (Primary)
-  static const Color primaryLight = Color(0xFF60C3C5); // Lighter Teal
+  static const Color primary = Color(0xFF4A9F8A); // Logo Teal (Primary)
+  static const Color primaryLight = Color(0xFF62B29E); // Lighter Logo Teal
   static const Color indigo = Color(0xFF252641); // Deep Navy (Secondary)
   static const Color indigoDark = Color(0xFF1F2138); // Darker Navy
 
@@ -41,7 +41,7 @@ class AppColors {
 
   static const Color divider = Color(0xFFE5EDF4);
 
-  static const Color border = Color(0xFF92D6D6);
+  static const Color border = Color(0xFF92CAC1);
 
   static const Color shadow = Color(0x1F000000);
 

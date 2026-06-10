@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/models/lesson_detail_model.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/features/lesson_detail/data/models/lesson_detail_model.dart';
+import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class LessonDetailLocalDataSource {

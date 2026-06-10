@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/settings/domain/entities/developer_info.dart';
+import 'package:algonaid_mobile_app/features/settings/domain/entities/developer_info.dart';
 import 'package:flutter/material.dart';
 
 class DeveloperModel extends DeveloperInfo {
@@ -10,13 +10,13 @@ class DeveloperModel extends DeveloperInfo {
     required IconData avatarIcon,
     required Color themeColor,
   }) : super(
-          name: name,
-          githubUrl: githubUrl,
-          linkedinUrl: linkedinUrl,
-          imagePath: imagePath,
-          avatarIcon: avatarIcon,
-          themeColor: themeColor,
-        );
+         name: name,
+         githubUrl: githubUrl,
+         linkedinUrl: linkedinUrl,
+         imagePath: imagePath,
+         avatarIcon: avatarIcon,
+         themeColor: themeColor,
+       );
 
   factory DeveloperModel.fromEntity(DeveloperInfo entity) {
     return DeveloperModel(

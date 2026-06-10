@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/features/onboard/domain/entity/onboarding_entity.dart';
+import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
+import 'package:algonaid_mobile_app/features/onboard/domain/entity/onboarding_entity.dart';
 
 class OnboardingData {
   static List<OnboardingEntity> get items => [

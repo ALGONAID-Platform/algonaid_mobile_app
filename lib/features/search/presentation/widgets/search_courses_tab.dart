@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseCard.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildCourseCard.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
 import 'package:flutter/material.dart';
 
 class SearchCoursesTab extends StatelessWidget {

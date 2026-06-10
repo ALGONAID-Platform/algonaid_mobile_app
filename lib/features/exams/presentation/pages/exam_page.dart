@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/info_banner.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/show_dialog.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_intro_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/widgets/exam_widget.dart';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/results_page.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/info_banner.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/pages/exam_intro_page.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/providers/exam_provider.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/widgets/exam_widget.dart';
+import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/features/exams/presentation/pages/results_page.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
 
 class ExamPage extends StatefulWidget {
   final String examId;

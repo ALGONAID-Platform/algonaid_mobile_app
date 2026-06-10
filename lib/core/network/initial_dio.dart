@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid_mobile_app/core/network/check_internet.dart';
+import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,16 +19,17 @@ void initializeDio(Dio dio) {
     ..headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ${TokenStorage.getToken() ?? ''}', // Reintroduced initial Authorization header setup
     };
 
-    dio.interceptors.add(
+  dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
         debugPrint('Dio Interceptor: Checking internet connection...');
         // فحص النت
         if (await hasNoInternet()) {
-          debugPrint('Dio Interceptor: No internet connection detected. Rejecting request.');
+          debugPrint(
+            'Dio Interceptor: No internet connection detected. Rejecting request.',
+          );
           return handler.reject(
             DioException(
               requestOptions: options,
@@ -52,20 +53,22 @@ void initializeDio(Dio dio) {
           debugPrint('Dio Interceptor: Received 401 Unauthorized.');
           final token = TokenStorage.getToken();
           final isGuest = token == null || token.trim().isEmpty;
-          
+
           await TokenStorage.deleteToken();
-          
+
           final context = navigatorKey.currentContext;
           if (context != null) {
             GoRouter.of(context).go(Routes.auth);
             AppSnackBar.show(
               context: context,
-              message: isGuest ? 'يرجى تسجيل الدخول للقيام بهذه العملية' : 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً',
+              message: isGuest
+                  ? 'يرجى تسجيل الدخول للقيام بهذه العملية'
+                  : 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً',
               type: SnackBarType.error,
             );
           }
         }
-        
+
         // 2. مهم جداً: تمرير الخطأ لباقي التطبيق (الريبو) مهما كان نوعه!
         // بدون هذا السطر، أي خطأ غير 401 سيجعل التطبيق يعلق للأبد
         return handler.next(e);

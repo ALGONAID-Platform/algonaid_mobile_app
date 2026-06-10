@@ -1,8 +1,8 @@
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/features/modules/data/models/last_accessed_module_model.dart';
-import 'package:algonaid_mobail_app/features/modules/data/models/module_grades_model.dart';
-import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
+import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/features/modules/data/models/last_accessed_module_model.dart';
+import 'package:algonaid_mobile_app/features/modules/data/models/module_grades_model.dart';
+import 'package:algonaid_mobile_app/features/modules/data/models/module_model.dart';
 import 'dart:convert';
 import 'package:hive/hive.dart';
 
