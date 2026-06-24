@@ -72,4 +72,17 @@ class ExcellenceCoursesRepositoryImpl implements ExcellenceCoursesRepository {
       return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
     }
   }
+
+  @override
+  Either<Failure, List<ExcellenceCourseEntity>> getCachedExcellenceCourses() {
+    try {
+      final cached = local.getExcellenceCoursesSync();
+      if (cached != null) {
+        return Right(cached);
+      }
+      return const Right([]);
+    } catch (e) {
+      return Left(CacheFailure("حدث خطأ أثناء تحميل الكورسات المميزة المخزنة مؤقتاً"));
+    }
+  }
 }

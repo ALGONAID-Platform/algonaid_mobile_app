@@ -15,6 +15,7 @@ import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
 
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class LessonsListPage extends StatefulWidget {
   final int moduleId;
@@ -106,7 +107,7 @@ class _LessonsListView extends StatelessWidget {
           backgroundColor: context.background,
           body: Stack(
             children: [
-              RefreshIndicator(
+              CustomThresholdRefreshIndicator(
                 elevation: 0.0,
                 color: Colors.transparent,
                 backgroundColor: Colors.transparent,

@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class ProfilePage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            RefreshIndicator(
+            CustomThresholdRefreshIndicator(
               elevation: 0.0,
               color: Colors.transparent,
               backgroundColor: Colors.transparent,

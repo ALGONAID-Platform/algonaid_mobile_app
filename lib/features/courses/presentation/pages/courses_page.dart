@@ -26,6 +26,7 @@ import 'package:algonaid_mobile_app/features/courses/presentation/pages/competit
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:math' as math;
+import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 
 class CoursesPage extends StatefulWidget {
@@ -36,6 +37,8 @@ class CoursesPage extends StatefulWidget {
 }
 
 class _CoursesPageState extends State<CoursesPage> {
+  bool _isBackgroundRefreshing = false;
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +64,7 @@ class _CoursesPageState extends State<CoursesPage> {
               ),
             ),
           ),
-          RefreshIndicator(
+          CustomThresholdRefreshIndicator(
             elevation: 0.0,
             color: Colors.transparent,
             backgroundColor: Colors.transparent,
@@ -70,12 +73,16 @@ class _CoursesPageState extends State<CoursesPage> {
               return defaultScrollNotificationPredicate(notification) && notification.metrics.pixels <= 0;
             },
             onRefresh: () async {
+              setState(() => _isBackgroundRefreshing = true);
               final coursesProvider = context.read<GetCoursesProvider>();
               final lastAccessedProvider = context
                   .read<LastAccessedModuleProvider>();
 
-              await coursesProvider.refreshAll(isGuest: false);
-              await lastAccessedProvider.fetchLastAccessedModule();
+              await Future.wait([
+                coursesProvider.refreshAll(isGuest: false),
+                lastAccessedProvider.fetchLastAccessedModule(),
+              ]);
+              if (mounted) setState(() => _isBackgroundRefreshing = false);
             },
             child: Consumer<GetCoursesProvider>(
               builder: (context, provider, child) {
@@ -124,7 +131,7 @@ class _CoursesPageState extends State<CoursesPage> {
             child: Consumer<GetCoursesProvider>(
               builder: (context, provider, child) {
                 return SyncStatusIndicator(
-                  isUpdating: provider.isBackgroundUpdating,
+                  isUpdating: _isBackgroundRefreshing || provider.isBackgroundUpdating,
                   errorMessage: provider.errorMessage,
                 );
               },

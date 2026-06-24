@@ -36,6 +36,7 @@ import 'package:algonaid_mobile_app/features/courses/presentation/providers/cour
 import 'package:algonaid_mobile_app/features/search/presentation/providers/search_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_excellence_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_cached_excellence_courses_usecase.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/data/repositories/excellence_courses_repository_impl.dart';
@@ -43,7 +44,6 @@ import 'package:algonaid_mobile_app/features/excellence_courses/domain/repositor
 import 'package:algonaid_mobile_app/features/modules/data/datasources/module_local_datasource.dart';
 
 import 'package:algonaid_mobile_app/features/modules/data/datasources/module_remote_datasource.dart';
-import 'package:algonaid_mobile_app/features/modules/data/datasources/module_local_datasource.dart';
 import 'package:algonaid_mobile_app/features/modules/data/repositories/module_repository_impl.dart';
 import 'package:algonaid_mobile_app/features/modules/domain/repositories/module_repository.dart';
 import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
@@ -306,6 +306,10 @@ void setupServiceLocator() {
     () => GetExcellenceModulesUseCase(getIt()),
   );
 
+  getIt.registerLazySingleton<GetCachedExcellenceCoursesUseCase>(
+    () => GetCachedExcellenceCoursesUseCase(getIt()),
+  );
+
   getIt.registerLazySingleton<GetExamUseCase>(
     () => GetExamUseCase(getIt<ExamRepository>()),
   );
@@ -390,6 +394,7 @@ void setupServiceLocator() {
     () => ExcellenceCoursesProvider(
       getExcellenceCoursesUseCase: getIt(),
       getExcellenceModulesUseCase: getIt(),
+      getCachedExcellenceCoursesUseCase: getIt(),
     ),
   );
 

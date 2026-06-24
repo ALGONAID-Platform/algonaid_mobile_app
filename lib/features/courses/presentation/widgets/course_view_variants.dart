@@ -6,7 +6,7 @@ import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildCourseDetails.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
@@ -55,30 +55,23 @@ class CourseThinCard extends StatelessWidget {
                         tag: "course_image${course.id}_thin",
                         child: Builder(
                           builder: (context) {
+                            final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
                             String resolvedUrl = course.thumbnail;
-                            if (resolvedUrl.isNotEmpty &&
-                                !resolvedUrl.startsWith('http')) {
+                            if (!hasNoImage && !resolvedUrl.startsWith('http')) {
                               resolvedUrl = resolvedUrl.startsWith('/')
                                   ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
                                   : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
                             }
-                            return CachedNetworkImage(
+                            final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+                            if (hasNoImage || isResolvedInvalid) {
+                              return Image.asset(
+                                Images.noImageFound,
+                                fit: BoxFit.cover,
+                              );
+                            }
+                            return TimeoutImageWrapper(
                               imageUrl: resolvedUrl,
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                color: context.colorScheme.surfaceVariant
-                                    .withOpacity(0.5),
-                                child: const Center(
-                                  child: CircularProgressIndicator.adaptive(),
-                                ),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                color: context.colorScheme.errorContainer,
-                                child: Image.asset(
-                                  Images.noImageFound,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
                             );
                           },
                         ),
@@ -235,30 +228,23 @@ class CourseGridItem extends StatelessWidget {
                       tag: "course_image${course.id}_grid",
                       child: Builder(
                         builder: (context) {
+                          final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
                           String resolvedUrl = course.thumbnail;
-                          if (resolvedUrl.isNotEmpty &&
-                              !resolvedUrl.startsWith('http')) {
+                          if (!hasNoImage && !resolvedUrl.startsWith('http')) {
                             resolvedUrl = resolvedUrl.startsWith('/')
                                 ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
                                 : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
                           }
-                          return CachedNetworkImage(
+                          final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+                          if (hasNoImage || isResolvedInvalid) {
+                            return Image.asset(
+                              Images.noImageFound,
+                              fit: BoxFit.cover,
+                            );
+                          }
+                          return TimeoutImageWrapper(
                             imageUrl: resolvedUrl,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: context.colorScheme.surfaceVariant
-                                  .withOpacity(0.5),
-                              child: const Center(
-                                child: CircularProgressIndicator.adaptive(),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: context.colorScheme.errorContainer,
-                              child: Image.asset(
-                                Images.noImageFound,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
                           );
                         },
                       ),

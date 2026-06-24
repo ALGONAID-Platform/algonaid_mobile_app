@@ -1,9 +1,6 @@
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/teacher_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/user_entity.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -34,14 +31,13 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
   Widget build(BuildContext context) {
     return Consumer<ExcellenceCoursesProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24.0),
-            child: Center(child: CircularProgressIndicator()),
-          );
+        // إذا لم يكن هناك بيانات أصلاً (لا كاش ولا محملة) → نعرض شيمر خفيف
+        if (provider.isLoading && provider.courses.isEmpty) {
+          return const _ExcellenceSectionSkeleton();
         }
 
-        if (provider.courses.isEmpty) {
+        // إذا انتهى التحميل ولم توجد بيانات
+        if (!provider.isLoading && provider.courses.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -204,6 +200,107 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                               ],
                             ),
                           ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// شيمر بسيط يظهر فقط عند أول تحميل بدون كاش
+class _ExcellenceSectionSkeleton extends StatefulWidget {
+  const _ExcellenceSectionSkeleton();
+
+  @override
+  State<_ExcellenceSectionSkeleton> createState() =>
+      _ExcellenceSectionSkeletonState();
+}
+
+class _ExcellenceSectionSkeletonState
+    extends State<_ExcellenceSectionSkeleton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.3, end: 0.7).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0);
+
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // عنوان وهمي
+                      Container(
+                        width: 140,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: baseColor.withOpacity(_animation.value),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      Container(
+                        width: 60,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: baseColor.withOpacity(_animation.value * 0.7),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 195,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        width: 160,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          color: baseColor.withOpacity(_animation.value),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       );
                     },

@@ -8,7 +8,7 @@ import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/guest_login_dialog.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +16,7 @@ import 'package:algonaid_mobile_app/features/courses/presentation/widgets/bottom
 import 'package:algonaid_mobile_app/features/courses/presentation/pages/competitions_page.dart';
 import 'package:algonaid_mobile_app/features/downloads/presentation/pages/downloads_page.dart';
 import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class GuestCoursesPage extends StatefulWidget {
   const GuestCoursesPage({super.key});
@@ -46,7 +47,7 @@ class _GuestCoursesPageState extends State<GuestCoursesPage> {
         builder: (context, provider, child) {
           return Stack(
             children: [
-              RefreshIndicator(
+              CustomThresholdRefreshIndicator(
                 color: AppColors.primary,
                 onRefresh: _refreshCourses,
                 child: AnimatedSwitcher(
@@ -294,12 +295,14 @@ class _GuestCourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasNoImage = Images.isInvalidImage(course.thumbnail as String?);
     String resolvedUrl = course.thumbnail as String? ?? '';
-    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+    if (!hasNoImage && !resolvedUrl.startsWith('http')) {
       resolvedUrl = resolvedUrl.startsWith('/')
           ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
+    final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -331,27 +334,15 @@ class _GuestCourseCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    CachedNetworkImage(
-                      imageUrl: resolvedUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: context.colorScheme.surfaceVariant.withOpacity(
-                          0.45,
-                        ),
-                        child: const Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: context.colorScheme.surfaceVariant.withOpacity(
-                          0.45,
-                        ),
-                        child: Image.asset(
-                          Images.noImageFound,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                    (hasNoImage || isResolvedInvalid)
+                        ? Image.asset(
+                            Images.noImageFound,
+                            fit: BoxFit.cover,
+                          )
+                        : TimeoutImageWrapper(
+                            imageUrl: resolvedUrl,
+                            fit: BoxFit.cover,
+                          ),
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(

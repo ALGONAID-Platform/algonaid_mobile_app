@@ -10,7 +10,23 @@ class LastAccessedModuleProvider extends ChangeNotifier {
   LastAccessedModuleProvider({
     required this.getLastAccessedModuleUseCase,
     required this.getCachedLastAccessedModuleUseCase,
-  });
+  }) {
+    _loadCachedData();
+  }
+
+  void _loadCachedData() {
+    getCachedLastAccessedModuleUseCase().then((cachedResult) {
+      cachedResult.fold(
+        (failure) {},
+        (module) {
+          if (module != null) {
+            _lastAccessedModule = module;
+            notifyListeners();
+          }
+        },
+      );
+    });
+  }
 
   bool _isLoading = false;
   String? _errorMessage;

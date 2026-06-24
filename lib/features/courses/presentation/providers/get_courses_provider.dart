@@ -23,7 +23,9 @@ class GetCoursesProvider extends ChangeNotifier {
     required this.getCachedMyCoursesUsecase,
     required this.enrollmentUseCase,
     required this.courseProgressUsecase,
-  });
+  }) {
+    loadCachedData(isGuest: false);
+  }
 
   bool _isLoading = false;
   bool _isBackgroundUpdating = false;
@@ -227,7 +229,7 @@ class GetCoursesProvider extends ChangeNotifier {
 
     // 2. إذا كان الكاش فارغاً تماماً، نُظهر الشيمر الرئيسي
     // وإلا، نعتمد على الكاش ونقوم بالتحديث في الخلفية بهدوء
-    final hasCache = allCourses.isNotEmpty && (isGuest || myCourses.isNotEmpty);
+    final hasCache = allCourses.isNotEmpty || myCourses.isNotEmpty;
     if (!hasCache) {
       _isLoading = true;
       _isBackgroundUpdating = false;

@@ -2,7 +2,7 @@ import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -14,35 +14,34 @@ class BuildCourseImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
     String resolvedUrl = course.thumbnail;
-    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+    if (!hasNoImage && !resolvedUrl.startsWith('http')) {
       resolvedUrl = resolvedUrl.startsWith('/')
           ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
+
+    final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
 
     return Stack(
       children: [
         ClipRRect(
           child: AppHero(
             tag: "course_image${course.id}",
-
-            child: CachedNetworkImage(
-              imageUrl: resolvedUrl,
-              height: 160,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
-                child: const Center(
-                  child: CircularProgressIndicator.adaptive(),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: theme.colorScheme.errorContainer,
-                child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
-              ),
-            ),
+            child: (hasNoImage || isResolvedInvalid)
+                ? Image.asset(
+                    Images.noImageFound,
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : TimeoutImageWrapper(
+                    imageUrl: resolvedUrl,
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
           ),
         ),
 

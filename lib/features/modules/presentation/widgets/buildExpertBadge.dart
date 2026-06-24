@@ -29,9 +29,8 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
   void initState() {
     super.initState();
     _gradesProvider = getIt<CourseGradesProvider>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _gradesProvider.fetchGrades(widget.courseId);
-    });
+    // Do NOT fetch here — fetching happens inside CourseGradesWidget
+    // when the user presses the button to view grade details.
   }
 
   @override
@@ -114,9 +113,7 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      if (state.isLoading)
-                        const CircularProgressIndicator()
-                      else
+                      // الزر يظهر دائماً — التحميل يحدث فقط داخل الـ bottom sheet
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(

@@ -24,6 +24,7 @@ import 'package:algonaid_mobile_app/features/modules/data/models/last_accessed_m
 import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 
@@ -102,7 +103,7 @@ class _ModulesListView extends StatelessWidget {
                 backgroundColor: context.background,
                 body: Stack(
                   children: [
-                    RefreshIndicator(
+                    CustomThresholdRefreshIndicator(
                       elevation: 0.0,
                       color: Colors.transparent,
                       backgroundColor: Colors.transparent,

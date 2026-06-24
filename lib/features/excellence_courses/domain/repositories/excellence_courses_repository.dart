@@ -6,4 +6,5 @@ import 'package:dartz/dartz.dart';
 abstract class ExcellenceCoursesRepository {
   Future<Either<Failure, List<ExcellenceCourseEntity>>> getExcellenceCourses();
   Future<Either<Failure, List<ExcellenceModuleEntity>>> getExcellenceModules(int courseId);
+  Either<Failure, List<ExcellenceCourseEntity>> getCachedExcellenceCourses();
 }

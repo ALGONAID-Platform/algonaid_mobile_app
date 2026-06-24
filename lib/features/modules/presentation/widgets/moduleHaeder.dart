@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -26,12 +26,14 @@ class CourseHeaderSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
     String resolvedUrl = course.thumbnail ?? "";
-    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+    if (!hasNoImage && !resolvedUrl.startsWith('http')) {
       resolvedUrl = resolvedUrl.startsWith('/')
           ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
+    final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
 
     return SliverAppBar(
       expandedHeight: 220.0,
@@ -146,12 +148,12 @@ class CourseHeaderSliver extends StatelessWidget {
             // الصورة الأساسية
             AppHero(
               tag: "course_image${course.id}",
-              child: CachedNetworkImage(
-                imageUrl: resolvedUrl,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) =>
-                    Image.asset(Images.noImageFound, fit: BoxFit.cover),
-              ),
+              child: (hasNoImage || isResolvedInvalid)
+                  ? Image.asset(Images.noImageFound, fit: BoxFit.cover)
+                  : TimeoutImageWrapper(
+                      imageUrl: resolvedUrl,
+                      fit: BoxFit.cover,
+                    ),
             ),
             // تدرج لوني ذكي (Gradient Scrim)
             // في الوضع الفاتح نزيد التعتيم، وفي الداكن نتركه يندمج مع اللون الأصلي

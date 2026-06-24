@@ -12,6 +12,7 @@ import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobile_app/core/theme/styles.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
 import 'package:algonaid_mobile_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
 
@@ -228,23 +229,32 @@ class _CourseImagePreview extends StatelessWidget {
   final String image_irl;
   const _CourseImagePreview({Key? key, required this.image_irl})
     : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final bool hasNoImage = Images.isInvalidImage(image_irl);
+
     String resolvedUrl = image_irl;
-    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+    if (!hasNoImage && !resolvedUrl.startsWith('http')) {
       resolvedUrl = resolvedUrl.startsWith('/')
           ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
 
+    final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(
-          imageUrl: resolvedUrl,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => Image.asset(Images.onboarding1),
-        ),
+        (hasNoImage || isResolvedInvalid)
+            ? Image.asset(
+                Images.noImageFound,
+                fit: BoxFit.cover,
+              )
+            : TimeoutImageWrapper(
+                imageUrl: resolvedUrl,
+                fit: BoxFit.cover,
+              ),
         Container(color: Colors.black12),
         const Center(
           child: Icon(Icons.play_circle_fill, color: Colors.white, size: 45),

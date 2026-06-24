@@ -6,6 +6,7 @@ import 'dart:convert';
 abstract class ExcellenceCoursesLocalDataSource {
   Future<void> saveExcellenceCourses(List<ExcellenceCourseModel> courses);
   Future<List<ExcellenceCourseModel>?> getExcellenceCourses();
+  List<ExcellenceCourseModel>? getExcellenceCoursesSync();
 }
 
 class ExcellenceCoursesLocalDataSourceImp implements ExcellenceCoursesLocalDataSource {
@@ -20,6 +21,20 @@ class ExcellenceCoursesLocalDataSourceImp implements ExcellenceCoursesLocalDataS
 
   @override
   Future<List<ExcellenceCourseModel>?> getExcellenceCourses() async {
+    final jsonString = CacheHelper.getString(key: AppConstants.cacheExcellenceCourses);
+    if (jsonString != null) {
+      try {
+        final List<dynamic> decoded = jsonDecode(jsonString);
+        return decoded.map((e) => ExcellenceCourseModel.fromJson(e as Map<String, dynamic>)).toList();
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @override
+  List<ExcellenceCourseModel>? getExcellenceCoursesSync() {
     final jsonString = CacheHelper.getString(key: AppConstants.cacheExcellenceCourses);
     if (jsonString != null) {
       try {

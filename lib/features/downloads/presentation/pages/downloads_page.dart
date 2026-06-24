@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class DownloadsPage extends StatefulWidget {
   const DownloadsPage({Key? key}) : super(key: key);
@@ -114,7 +115,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
                     return _buildEmptyState(context);
                   }
 
-                  return RefreshIndicator(
+                  return CustomThresholdRefreshIndicator(
                     onRefresh: provider.fetchDownloadedLessons,
                     color: context.primary,
                     notificationPredicate: (ScrollNotification notification) {

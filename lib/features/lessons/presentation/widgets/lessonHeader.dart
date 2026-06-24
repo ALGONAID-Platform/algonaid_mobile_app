@@ -1,6 +1,5 @@
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/expertBadge3D.dart';
@@ -43,10 +42,9 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
   @override
   void initState() {
     super.initState();
+    // We obtain the provider but do NOT fetch here.
+    // Fetching happens inside ModuleGradesWidget when the user presses the button.
     _gradesProvider = getIt<ModuleGradesProvider>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _gradesProvider.fetchGrades(widget.moduleId);
-    });
   }
 
   @override
@@ -55,6 +53,7 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
       value: _gradesProvider,
       child: Consumer<ModuleGradesProvider>(
         builder: (context, provider, child) {
+          // Read cached state if available — no fetch triggered here.
           final state = provider.getState(widget.moduleId);
           final isUnlocked = (state.grades?.averagePercentage ?? 0.0) > 85;
 
@@ -267,38 +266,34 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 16),
-                                if (state.isLoading)
-                                  const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                else
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      AppBottomSheet.show(
-                                        context: context,
-                                        title: 'تفاصيل درجات اختبارات الوحدة',
-                                        padding: const EdgeInsets.only(
-                                          left: 16,
-                                          right: 16,
-                                          bottom: 24,
-                                        ),
-                                        child: ModuleGradesWidget(
-                                          moduleId: widget.moduleId,
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: context.primary,
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                // الزر يظهر دائماً — التحميل يحدث فقط داخل الـ bottom sheet
+                                ElevatedButton(
+                                  onPressed: () {
+                                    AppBottomSheet.show(
+                                      context: context,
+                                      title: 'تفاصيل درجات اختبارات الوحدة',
+                                      padding: const EdgeInsets.only(
+                                        left: 16,
+                                        right: 16,
+                                        bottom: 24,
                                       ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
+                                      child: ModuleGradesWidget(
+                                        moduleId: widget.moduleId,
                                       ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: context.primary,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: const Text("عرض تفاصيل الدرجات"),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
                                   ),
+                                  child: const Text("عرض تفاصيل الدرجات"),
+                                ),
                               ],
                             ),
                           ),
