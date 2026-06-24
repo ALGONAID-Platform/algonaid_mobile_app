@@ -7,6 +7,7 @@ import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_error_state.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid_mobile_app/core/utils/share_helper.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
@@ -14,6 +15,7 @@ import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_
 import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:algonaid_mobile_app/features/lessons/presentation/providers/lessons_list_provider.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/providers/lesson_detail_provider.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_detail_app_bar.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_detail_bottom_bar.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
@@ -177,6 +179,9 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
               appBar: LessonDetailAppBar(
                 title: lesson.title,
                 onBack: () => _handleBackNavigation(lesson),
+                onShare: () {
+                  ShareHelper.shareLesson(lesson);
+                },
               ),
               bottomNavigationBar: LessonDetailBottomBar(
                 onNextLessonPressed: state.nextLessonId != null
@@ -298,6 +303,7 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                                 context.read<LessonsListProvider>().loadLessons(
                                   lesson.moduleId,
                                 );
+                                context.read<ProfileProvider>().loadUserBadges();
                               } catch (_) {}
 
                               AppSnackBar.show(

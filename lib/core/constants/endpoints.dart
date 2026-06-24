@@ -1,11 +1,13 @@
 const port = '3000';
-const ip = '192.168.1.11';
+const ip = '10.12.149.22';
 
 class EndPoint {
   // base url for app API
-  static const String baseUrl = 'http://$ip:$port/api/v1';
+   static const String baseUrl = 'https://algonaid-api.onrender.com/api/v1';
+    //  static const String baseUrl = 'http://$ip:$port/api/v1';
+
   // base url for uploaded files
-  static const String uploadsBaseUrl = 'http://$ip:$port/uploads/';
+  static const String uploadsBaseUrl = 'https://algonaid-api.onrender.com/uploads/';
   // Google OAuth entry points
   static const String googleAuth = '$baseUrl/auth/google';
   static const String googleCallback = '$baseUrl/auth/google/callback';

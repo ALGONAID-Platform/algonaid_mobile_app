@@ -38,6 +38,26 @@ class CoursesRepositoryImpl implements CoursesRepository {
   }
 
   @override
+  Either<Failure, List<CourseEntity>> getCachedAllCourses() {
+    try {
+      final cached = local.getAllCourses();
+      return Right(cached);
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة الكورسات المخزنة مؤقتاً"));
+    }
+  }
+
+  @override
+  Either<Failure, List<CourseEntity>> getCachedMyCourses() {
+    try {
+      final cached = local.getMyCourses();
+      return Right(cached);
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة كورساتي المخزنة مؤقتاً"));
+    }
+  }
+
+  @override
   Future<Either<Failure, CourseProgressEntity>> getCourseProgress(
     int courseId,
   ) async {
@@ -74,7 +94,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
         return Left(ServerFailure(e.message));
       }
 
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
     }
   }
 
@@ -124,7 +144,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
         return Left(ServerFailure(e.message));
       }
 
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+      return Left(const ServerFailure("حدث خطأ غير متوقع أثناء تحميل تقدم الدورة"));
     }
   }
 
@@ -163,9 +183,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(
-        ServerFailure('An unexpected error occurred: ${e.toString()}'),
-      );
+      return Left(const ServerFailure("حدث خطأ غير متوقع أثناء تحميل درجات الدورة"));
     }
   }
 

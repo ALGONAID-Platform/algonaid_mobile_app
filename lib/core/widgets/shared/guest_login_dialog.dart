@@ -1,4 +1,5 @@
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
 import 'package:flutter/material.dart';
 
 class GuestAccessPrompt {
@@ -140,11 +141,13 @@ void showGuestLoginDialog(
   VoidCallback? onLogin,
   VoidCallback? onGuest,
 }) {
-  GuestAccessPrompt.show(
-    context,
-    title: title,
-    message: message,
-    onLogin: onLogin,
-    onGuest: onGuest,
+  AppDialog.showDynamicDialog(
+    context: context,
+    title: title ?? 'الوصول محدود للضيوف',
+    message: message ??
+        'يمكنك تسجيل الدخول للوصول الكامل، أو المتابعة كضيف لعرض النسخة المحدودة.',
+    confirmText: 'تسجيل الدخول',
+    cancelText: 'المتابعة كضيف',
+    onConfirm: onLogin,
   );
 }

@@ -62,9 +62,6 @@ class SettingsSection extends StatelessWidget {
                               .read<app_theme.ThemeProvider>();
                           final isNewModeDark = !context.isDarkMode;
 
-                          // Update provider state and cache
-                          themeProv.toggleTheme(isNewModeDark);
-
                           // Trigger theme switch animation with preserved color/font settings
                           ThemeSwitcher.of(context).changeTheme(
                             theme: isNewModeDark
@@ -77,6 +74,10 @@ class SettingsSection extends StatelessWidget {
                                     fontIndex: themeProv.fontIndex,
                                   ),
                             isReversed: context.isDarkMode,
+                            onAnimationFinish: () {
+                              // Update provider state and cache after animation finishes
+                              themeProv.toggleTheme(isNewModeDark);
+                            },
                           );
                         },
                       );

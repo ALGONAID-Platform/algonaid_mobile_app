@@ -5,7 +5,10 @@ import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/circular_reveal.dart';
 import 'package:algonaid_mobile_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/teacher_entity.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/entities/user_entity.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/pages/courses_page.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/pages/courses_view_all_page.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/pages/guest_courses_page.dart';
@@ -23,6 +26,7 @@ import 'package:algonaid_mobile_app/features/settings/presentation/pages/setting
 import 'package:algonaid_mobile_app/features/excellence_courses/presentation/pages/all_excellence_courses_page.dart';
 import 'package:algonaid_mobile_app/features/profile/presentation/pages/all_badges_page.dart';
 import 'package:algonaid_mobile_app/features/settings/presentation/pages/policies_page.dart';
+import 'package:algonaid_mobile_app/features/onboard/presentation/pages/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +41,12 @@ abstract class AppRouters {
       /// Root route that acts as an authentication and initial load gatekeeper.
       /// Directs the user to the appropriate screen (e.g., Auth, Home, or Onboarding).
       GoRoute(path: '/', builder: (context, state) => AuthGate()),
+
+      /// Onboarding page
+      GoRoute(
+        path: Routes.onboarding,
+        builder: (context, state) => OnboardingScreen(),
+      ),
 
       /// Main landing page containing the dashboard or user's courses.
       GoRoute(
@@ -59,10 +69,7 @@ abstract class AppRouters {
       /// Search page for courses.
       GoRoute(
         path: Routes.searchPage,
-        builder: (context, state) => ChangeNotifierProvider.value(
-          value: getIt<SearchCoursesProvider>(),
-          child: const SearchPage(),
-        ),
+        builder: (context, state) => const SearchPage(),
       ),
 
       /// Notifications page.
@@ -87,11 +94,45 @@ abstract class AppRouters {
       ),
 
       /// Displays a list of modules for a specific course.
-      /// Expects a [CourseEntity] object to be passed as `state.extra`.
+      /// Expects a [CourseEntity] object to be passed as `state.extra` (optional fallback to ID lookup).
       GoRoute(
         path: '${Routes.modulesList}/:courseId',
         builder: (context, state) {
-          final data = state.extra as CourseEntity;
+          final courseId = int.parse(state.pathParameters['courseId']!);
+          CourseEntity? data = state.extra as CourseEntity?;
+
+          if (data == null) {
+            try {
+              final provider = Provider.of<GetCoursesProvider>(context, listen: false);
+              data = provider.myCourses.firstWhere(
+                (c) => c.id == courseId,
+                orElse: () => provider.allCourses.firstWhere((c) => c.id == courseId),
+              );
+            } catch (_) {}
+          }
+
+          data ??= CourseEntity(
+              id: courseId,
+              title: 'جاري تحميل الدورة...',
+              description: '',
+              thumbnail: '',
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+              instructorId: 0,
+              moduleTitles: [],
+              modulesCount: 0,
+              isEnrolled: true,
+              totalLessons: 0,
+              completedLessons: 0,
+              progressPercentage: 0.0,
+              teacher: TeacherEntity(
+                id: 0,
+                specialization: '',
+                experience: 0,
+                userId: 0,
+                user: UserEntity(name: '', email: ''),
+              ),
+            );
 
           return ModulesListPage(course: data);
         },
@@ -112,6 +153,7 @@ abstract class AppRouters {
             progressPercentage:
                 (data?['progressPercentage'] as num?)?.toDouble() ?? 0.0,
             totalLessons: (data?['totalLessons'] as num?)?.toInt() ?? 0,
+            courseId: (data?['courseId'] as num?)?.toInt(),
           );
         },
       ),

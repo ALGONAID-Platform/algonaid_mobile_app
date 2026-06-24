@@ -2,6 +2,8 @@ import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgr
 import 'package:algonaid_mobile_app/features/courses/domain/usecases/enroll_usecase.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_progress.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_cached_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_cached_mycourses_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_courses_usecase.dart';
@@ -9,17 +11,22 @@ import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_courses
 class GetCoursesProvider extends ChangeNotifier {
   final GetCoursesUsecase coursesUsecase;
   final GetMycoureseUsecase myCoursesUsecase;
+  final GetCachedCoursesUsecase getCachedCoursesUsecase;
+  final GetCachedMyCoursesUsecase getCachedMyCoursesUsecase;
   final EnrollUsecase enrollmentUseCase;
   final GetCourseProgressUsecase courseProgressUsecase;
 
   GetCoursesProvider({
     required this.coursesUsecase,
     required this.myCoursesUsecase,
+    required this.getCachedCoursesUsecase,
+    required this.getCachedMyCoursesUsecase,
     required this.enrollmentUseCase,
     required this.courseProgressUsecase,
   });
 
   bool _isLoading = false;
+  bool _isBackgroundUpdating = false;
   bool _isEnrolling = false;
   bool _isSuccessEnroll = false;
   String? _errorMessage;
@@ -34,52 +41,89 @@ class GetCoursesProvider extends ChangeNotifier {
   );
 
   bool get isLoading => _isLoading;
+  bool get isBackgroundUpdating => _isBackgroundUpdating;
   bool get isEnrolling => _isEnrolling;
   String? get errorMessage => _errorMessage;
   bool get isSuccessEnroll => _isSuccessEnroll;
 
-  // جلب الكورسات العامة (الاكتشاف)
-  Future<void> getCourses() async {
-    _isLoading = true;
-    _errorMessage = null;
+  // تحميل الكاش محلياً بشكل متزامن
+  void loadCachedData({bool isGuest = false}) {
+    final cachedResult = getCachedCoursesUsecase();
+    cachedResult.fold(
+      (failure) => debugPrint('Error loading cached courses: ${failure.message}'),
+      (courses) {
+        allCourses = courses;
+      },
+    );
+
+    if (!isGuest) {
+      final cachedMyResult = getCachedMyCoursesUsecase();
+      cachedMyResult.fold(
+        (failure) => debugPrint('Error loading cached myCourses: ${failure.message}'),
+        (courses) {
+          myCourses = courses;
+        },
+      );
+    } else {
+      myCourses = [];
+    }
     notifyListeners();
-    debugPrint('getCourses: isLoading set to true');
+  }
+
+  // جلب الكورسات العامة (الاكتشاف)
+  Future<void> getCourses({bool showLoading = false}) async {
+    if (showLoading) {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+      debugPrint('getCourses: isLoading set to true');
+    }
 
     final result = await coursesUsecase();
 
     result.fold(
       (failure) {
-        _isLoading = false;
+        if (showLoading) {
+          _isLoading = false;
+        }
         _errorMessage = failure.message;
         notifyListeners();
         debugPrint('getCourses: Failed with error: $_errorMessage');
-        debugPrint('getCourses: isLoading set to false');
       },
       (fetchedCourses) {
-        _isLoading = false;
+        if (showLoading) {
+          _isLoading = false;
+        }
         allCourses = fetchedCourses;
-        print(allCourses);
-
         notifyListeners();
       },
     );
   }
 
   // جلب الكورسات التي سجل بها المستخدم (تابع التعلم)
-  Future<void> getMyCourses() async {
-    // نلاحظ هنا: لا نجعل الـ Loading يغطي الشاشة كاملة لضمان تجربة أسلس
-    _errorMessage = null;
+  Future<void> getMyCourses({bool showLoading = false}) async {
+    if (showLoading) {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+    }
     debugPrint('getMyCourses: started');
 
     final result = await myCoursesUsecase();
 
     result.fold(
       (failure) {
+        if (showLoading) {
+          _isLoading = false;
+        }
         _errorMessage = failure.message;
         notifyListeners();
         debugPrint('getMyCourses: Failed with error: $_errorMessage');
       },
       (fetchedCourses) {
+        if (showLoading) {
+          _isLoading = false;
+        }
         myCourses = fetchedCourses;
         debugPrint(
           'getMyCourses: myCourses loaded. Count: ${myCourses.length}',
@@ -178,17 +222,40 @@ class GetCoursesProvider extends ChangeNotifier {
   }
 
   Future<void> refreshAll({bool isGuest = false}) async {
-    _isLoading = true;
-    notifyListeners();
-    if (isGuest) {
-      await getCourses();
-      myCourses = [];
-    } else {
-      await Future.wait([getCourses(), getMyCourses()]);
-    }
+    // 1. قراءة البيانات المخزنة مؤقتاً فوراً لمنع الوميض
+    loadCachedData(isGuest: isGuest);
 
-    _isLoading = false;
+    // 2. إذا كان الكاش فارغاً تماماً، نُظهر الشيمر الرئيسي
+    // وإلا، نعتمد على الكاش ونقوم بالتحديث في الخلفية بهدوء
+    final hasCache = allCourses.isNotEmpty && (isGuest || myCourses.isNotEmpty);
+    if (!hasCache) {
+      _isLoading = true;
+      _isBackgroundUpdating = false;
+    } else {
+      _isLoading = false;
+      _isBackgroundUpdating = true;
+    }
+    _errorMessage = null;
     notifyListeners();
-    debugPrint('refreshAll: isLoading set to false');
+
+    // 3. بدء عملية جلب البيانات الجديدة في الخلفية
+    try {
+      if (isGuest) {
+        await getCourses(showLoading: !hasCache);
+        myCourses = [];
+      } else {
+        await Future.wait([
+          getCourses(showLoading: !hasCache),
+          getMyCourses(showLoading: !hasCache),
+        ]);
+      }
+    } catch (e) {
+      debugPrint('Error refreshing data: $e');
+    } finally {
+      _isLoading = false;
+      _isBackgroundUpdating = false;
+      notifyListeners();
+      debugPrint('refreshAll completed: background sync complete');
+    }
   }
 }

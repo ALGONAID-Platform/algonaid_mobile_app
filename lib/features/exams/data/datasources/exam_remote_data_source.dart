@@ -76,6 +76,6 @@ class ExamRemoteDataSourceImpl implements ExamRemoteDataSource {
       return response;
     }
 
-    throw ServerException('Invalid response for $context: $response');
+    throw ServerException('بيانات الاستجابة المستلمة من الخادم غير صالحة.');
   }
 }

@@ -43,6 +43,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     return Consumer<ProfileProvider>(
       builder: (context, provider, child) {
         final profile = provider.userProfile;
+        final grade = profile?.grade;
+        final birthDate = profile?.birthDate;
+        final address = profile?.address;
 
         final userName = profile?.name != null && profile!.name.isNotEmpty
             ? profile.name
@@ -53,8 +56,13 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             "user@example.com";
         final initials = _getInitials(userName);
 
-        final hasBackground = false;
-
+        String? userAvatar = profile?.avatar;
+        if (userAvatar == null || userAvatar.isEmpty) {
+          userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
+        }
+        if (userAvatar != null && userAvatar.isEmpty) {
+          userAvatar = null;
+        }
         // تحديد الألوان بذكاء بناءً على وجود خلفية مخصصة أو الاعتماد على ثيم التطبيق
         final textColor = context.textTheme.titleLarge?.color;
         final subTextColor = context.colorScheme.onSurface.withOpacity(0.6);
@@ -80,7 +88,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         // القسم الأول: الصورة الشخصية والاسم والنقاط
                         Row(
                           children: [
-                            _buildAvatar(profile, initials),
+                            _buildAvatar(profile, initials, userAvatar),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
@@ -123,9 +131,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                 context,
                                 Icons.school_rounded,
                                 'الصف الدراسي',
-                                (profile?.grade != null &&
-                                        profile!.grade!.isNotEmpty)
-                                    ? profile.grade!
+                                (grade != null && grade.isNotEmpty)
+                                    ? grade
                                     : 'غير محدد',
                                 textColor,
                                 subTextColor,
@@ -137,9 +144,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                 context,
                                 Icons.cake_rounded,
                                 'تاريخ الميلاد',
-                                (profile?.birthDate != null &&
-                                        profile!.birthDate!.isNotEmpty)
-                                    ? _formatHeaderDate(profile!.birthDate!)
+                                (birthDate != null && birthDate.isNotEmpty)
+                                    ? _formatHeaderDate(birthDate)
                                     : 'غير محدد',
                                 textColor,
                                 subTextColor,
@@ -151,9 +157,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                 context,
                                 Icons.location_on_rounded,
                                 'العنوان',
-                                (profile?.address != null &&
-                                        profile!.address!.isNotEmpty)
-                                    ? profile.address!
+                                (address != null && address.isNotEmpty)
+                                    ? address
                                     : 'غير محدد',
                                 textColor,
                                 subTextColor,
@@ -194,10 +199,10 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   }
 
   // ويدجت بناء الصورة الشخصية بدقة عالية وظلال ناعمة
-  Widget _buildAvatar(dynamic profile, String initials) {
-    final hasAvatar = profile?.avatar != null && profile!.avatar!.isNotEmpty;
+  Widget _buildAvatar(dynamic profile, String initials, String? avatarUrl) {
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
     return GestureDetector(
-      onTap: () => _showFullScreenImage(context, profile, initials),
+      onTap: () => _showFullScreenImage(context, profile, initials, avatarUrl),
       child: Hero(
         tag: 'user_profile_avatar',
         child: Container(
@@ -208,7 +213,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
             image: hasAvatar
                 ? DecorationImage(
-                    image: CachedNetworkImageProvider(profile.avatar!),
+                    image: CachedNetworkImageProvider(avatarUrl!),
                     fit: BoxFit.cover,
                   )
                 : null,
@@ -245,8 +250,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     BuildContext context,
     dynamic profile,
     String initials,
+    String? avatarUrl,
   ) {
-    final hasAvatar = profile?.avatar != null && profile!.avatar!.isNotEmpty;
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
@@ -272,7 +278,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       image: hasAvatar
                           ? DecorationImage(
                               image: CachedNetworkImageProvider(
-                                profile.avatar!,
+                                avatarUrl!,
                               ),
                               fit: BoxFit.cover,
                             )

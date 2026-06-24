@@ -15,7 +15,7 @@ abstract class AuthRepo {
     required UserRole role,
   });
   Future<Either<Failure, UserEntity>> googleSignin({
-    required String accessToken,
+    required String idToken,
   });
   Future<Either<Failure, void>> logout(); // Added
   Future<Either<Failure, String>> forgotPassword({required String email});

@@ -59,7 +59,7 @@ class LessonRepositoryImpl implements LessonRepository {
         return Left(ServerFailure(e.message));
       }
       return Left(
-        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+        const ServerFailure('حدث خطأ غير متوقع أثناء تحميل الدروس'),
       );
     }
   }
@@ -72,5 +72,18 @@ class LessonRepositoryImpl implements LessonRepository {
       return a.id.compareTo(b.id);
     });
     return sortedLessons;
+  }
+
+  @override
+  Either<Failure, List<Lesson>> getCachedModuleLessons(int moduleId) {
+    try {
+      final localModels = localDataSource.getLessons(moduleId);
+      if (localModels.isNotEmpty) {
+        return Right(_sortLessons(localModels));
+      }
+      return const Right([]);
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة الدروس المخزنة مؤقتاً"));
+    }
   }
 }

@@ -5,12 +5,14 @@ class SearchTextField extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
+  final FocusNode focusNode;
 
   const SearchTextField({
     super.key,
     required this.controller,
     required this.onChanged,
     required this.onClear,
+    required this.focusNode,
   });
 
   @override
@@ -22,8 +24,14 @@ class SearchTextField extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: TextField(
+        focusNode: focusNode,
         controller: controller,
         autofocus: true,
+        onTap: () {
+          if (!focusNode.hasFocus) {
+            FocusScope.of(context).requestFocus(focusNode);
+          }
+        },
         style: context.textTheme.bodyLarge?.copyWith(
           color: context.colorScheme.onSurface,
           fontWeight: FontWeight.w500,

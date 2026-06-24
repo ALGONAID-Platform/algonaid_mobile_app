@@ -4,6 +4,7 @@ import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/di/service_locator.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
 import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/modules/presentation/widgets/buildExpertBadge.dart';
@@ -22,6 +23,10 @@ import 'package:algonaid_mobile_app/features/modules/data/datasources/module_loc
 import 'package:algonaid_mobile_app/features/modules/data/models/last_accessed_module_model.dart';
 import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
+
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+
 class ModulesListPage extends StatefulWidget {
   const ModulesListPage({super.key, required this.course});
 
@@ -32,226 +37,232 @@ class ModulesListPage extends StatefulWidget {
 }
 
 class _ModulesListPageState extends State<ModulesListPage> {
+  bool _isBackgroundRefreshing = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<ModulesListProvider>().loadModules(widget.course.id);
+        if (widget.course.title == 'جاري تحميل الدورة...') {
+          final isGuest = TokenStorage.getToken() == null;
+          context.read<GetCoursesProvider>().refreshAll(isGuest: isGuest);
+        }
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _ModulesListView(course: widget.course);
+    return _ModulesListView(
+      course: widget.course,
+      isBackgroundRefreshing: _isBackgroundRefreshing,
+      onRefresh: () async {
+        setState(() => _isBackgroundRefreshing = true);
+        await context.read<ModulesListProvider>().loadModules(widget.course.id);
+        await context.read<GetCoursesProvider>().refreshAll(isGuest: false);
+        if (mounted) setState(() => _isBackgroundRefreshing = false);
+      },
+    );
   }
 }
 
 class _ModulesListView extends StatelessWidget {
-  const _ModulesListView({required this.course});
+  const _ModulesListView({
+    required this.course,
+    required this.isBackgroundRefreshing,
+    required this.onRefresh,
+  });
   final CourseEntity course;
+  final bool isBackgroundRefreshing;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            backgroundColor: context.background,
-            body: NestedScrollView(
-              physics: const BouncingScrollPhysics(),
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  CourseHeaderSliver(
-                    title: course.title,
-                    imageUrl: course.thumbnail,
-                    courseId: course.id,
-                  ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _SliverAppBarDelegate(
-                      TabBar(
-                        labelColor: context.primary,
-                        unselectedLabelColor: Colors.grey,
-                        indicatorColor: context.primary,
-                        indicatorWeight: 3,
-                        tabs: const [
-                          Tab(text: "محتوى الدورة"),
-                          Tab(text: "التفاصيل"),
-                        ],
-                      ),
-                    ),
-                  ),
-                ];
-              },
-              body: Consumer<ModulesListProvider>(
-                builder: (context, provider, _) {
-                  final state = provider.state;
-                  final modules = state.modules;
+    return Consumer<GetCoursesProvider>(
+      builder: (context, coursesProvider, _) {
+        CourseEntity updatedCourse = course;
+        try {
+          updatedCourse = coursesProvider.myCourses.cast<CourseEntity>().firstWhere(
+            (c) => c.id == course.id,
+            orElse: () => coursesProvider.allCourses.cast<CourseEntity>().firstWhere(
+              (c) => c.id == course.id,
+              orElse: () => course,
+            ),
+          );
+        } catch (_) {}
 
-                  return TabBarView(
-                    children: [
-                      // Tab 1: Modules List & Progress
-                      CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Consumer<GetCoursesProvider>(
-                                builder: (context, coursesProvider, _) {
-                                  CourseEntity updatedCourse = course;
-                                  try {
-                                    updatedCourse = coursesProvider.myCourses.cast<CourseEntity>().firstWhere(
-                                      (c) => c.id == course.id,
-                                      orElse: () => coursesProvider.allCourses.cast<CourseEntity>().firstWhere(
-                                        (c) => c.id == course.id,
-                                        orElse: () => course,
-                                      ),
-                                    );
-                                  } catch (_) {}
-
-                                  return CourseProgressInfo(
-                                    totalCount: updatedCourse.totalLessons,
-                                    completedCount: updatedCourse.completedLessons,
-                                    progress: updatedCourse.progressPercentage,
-                                onContinueTap: () {
-                                  if (modules.isEmpty) return;
-                                  
-                                  final lastModuleId = CacheHelper.getInt(key: 'last_module_course_${course.id}');
-                                  Module? targetModule;
-                                  
-                                  if (lastModuleId != null) {
-                                    try {
-                                      targetModule = modules.firstWhere((m) => m.id == lastModuleId);
-                                    } catch (_) {}
-                                  }
-                                  
-                                  if (targetModule == null) {
-                                    try {
-                                      targetModule = modules.firstWhere((m) => m.progressPercentage < 100);
-                                    } catch (_) {
-                                      targetModule = modules.last;
-                                    }
-                                  }
-
-                                  // Update cache and provider state
-                                  final lastAccessed = LastAccessedModuleModel(
-                                    moduleId: targetModule.id,
-                                    courseName: course.title,
-                                    moduleName: targetModule.title,
-                                    moduleDescription: targetModule.description,
-                                    totalLessons: targetModule.totalLessons,
-                                    completedLessons: targetModule.completedLessons,
-                                    progressPercentage: targetModule.progressPercentage,
-                                    image_url: course.thumbnail,
-                                  );
-
-                                  try {
-                                    getIt<ModuleLocalDataSource>().cacheLastAccessedModule(lastAccessed);
-                                    context.read<LastAccessedModuleProvider>().updateLastAccessedModule(lastAccessed);
-                                  } catch (_) {}
-
-                                  final lastLessonId = CacheHelper.getInt(key: 'last_lesson_module_${targetModule.id}');
-                                  
-                                  if (lastLessonId != null) {
-                                    context.push(
-                                      '${Routes.lessonDetails}/$lastLessonId',
-                                      extra: '${Routes.lessonsList}/${targetModule.id}',
-                                    ).then((_) {
-                                      if (context.mounted) {
-                                        try {
-                                          context.read<ModulesListProvider>().loadModules(course.id);
-                                          context.read<GetCoursesProvider>().refreshAll();
-                                        } catch (_) {}
-                                      }
-                                    });
-                                  } else {
-                                    context.push(
-                                      '${Routes.lessonsList}/${targetModule.id}',
-                                      extra: {
-                                        'moduleTitle': targetModule.title,
-                                        'completedLessons': targetModule.completedLessons,
-                                        'progressPercentage': targetModule.progressPercentage,
-                                        'totalLessons': targetModule.totalLessons,
-                                      },
-                                    ).then((_) {
-                                      if (context.mounted) {
-                                        try {
-                                          context.read<ModulesListProvider>().loadModules(course.id);
-                                          context.read<GetCoursesProvider>().refreshAll();
-                                        } catch (_) {}
-                                      }
-                                    });
-                                  }
-                                },
-                              );
-                                },
-                              ),
-                              )
-                          ),
-                          if (state.isLoading)
-                            SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: context.primary,
+        return SafeArea(
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: DefaultTabController(
+              length: 2,
+              child: Scaffold(
+                backgroundColor: context.background,
+                body: Stack(
+                  children: [
+                    RefreshIndicator(
+                      elevation: 0.0,
+                      color: Colors.transparent,
+                      backgroundColor: Colors.transparent,
+                      strokeWidth: 0,
+                      notificationPredicate: (ScrollNotification notification) {
+                        return defaultScrollNotificationPredicate(notification) && notification.metrics.pixels <= 0;
+                      },
+                      onRefresh: onRefresh,
+                      child: NestedScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
+                        headerSliverBuilder: (context, innerBoxIsScrolled) {
+                          return [
+                            CourseHeaderSliver(
+                              course: updatedCourse,
+                            ),
+                            SliverPersistentHeader(
+                              pinned: true,
+                              delegate: _SliverAppBarDelegate(
+                                TabBar(
+                                  labelColor: context.primary,
+                                  unselectedLabelColor: Colors.grey,
+                                  indicatorColor: context.primary,
+                                  indicatorWeight: 3,
+                                  tabs: const [
+                                    Tab(text: "محتوى الدورة"),
+                                    Tab(text: "التفاصيل"),
+                                  ],
                                 ),
-                              ),
-                            )
-                          else if (state.errorMessage != null)
-                            SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: Center(
-                                child: ModulesErrorState(
-                                  message: state.errorMessage!,
-                                  onRetry: () => provider.loadModules(course.id),
-                                ),
-                              ),
-                            )
-                          else if (modules.isEmpty)
-                            const SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: AppEmptyState(
-                                icon: Icons.folder_open_rounded,
-                                title: 'لا توجد وحدات',
-                                subtitle: 'لا توجد وحدات حالياً',
-                              ),
-                            )
-                          else
-                            SliverPadding(
-                              padding: const EdgeInsets.all(16),
-                              sliver: sliverListItemsBuilder(
-                                modules: modules,
-                                course: course,
                               ),
                             ),
-                        ],
-                      ),
+                          ];
+                        },
+                        body: Consumer<ModulesListProvider>(
+                          builder: (context, provider, _) {
+                            final state = provider.state;
+                            final modules = state.modules;
 
-                      // Tab 2: Course Details & Expert Badge
-                      CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: _CourseDetailsSection(course: course),
-                          ),
-                          SliverToBoxAdapter(
-                            child: BuildExpertBadge(courseId: course.id),
-                          ),
-                        ],
+                            return TabBarView(
+                              children: [
+                                // Tab 1: Modules List & Progress
+                                CustomScrollView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  slivers: [
+                                    SliverToBoxAdapter(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 8.0),
+                                        child: CourseProgressInfo(
+                                          totalCount: updatedCourse.totalLessons,
+                                          completedCount: updatedCourse.completedLessons,
+                                          progress: updatedCourse.progressPercentage,
+                                          onContinueTap: () {
+                                            if (modules.isEmpty) return;
+
+                                            final lastLessonId = CacheHelper.getInt(key: 'last_lesson_course_${updatedCourse.id}');
+                                            final lastModuleId = CacheHelper.getInt(key: 'last_module_course_${updatedCourse.id}');
+
+                                            if (lastLessonId != null) {
+                                              context.push(
+                                                '${Routes.lessonDetails}/$lastLessonId',
+                                                extra: lastModuleId != null
+                                                    ? '${Routes.lessonsList}/$lastModuleId'
+                                                    : '${Routes.coursesPage}',
+                                              ).then((_) {
+                                                if (context.mounted) {
+                                                  context.read<ModulesListProvider>().loadModules(updatedCourse.id);
+                                                  try {
+                                                    context.read<GetCoursesProvider>().refreshAll();
+                                                  } catch (_) {}
+                                                }
+                                              });
+                                            } else {
+                                              AppSnackBar.show(
+                                                context: context,
+                                                message: 'لم تبدأ بمشاهدة أي درس في هذه الدورة بعد. اختر أحد الدروس من القائمة أدناه للبدء بالتعلم! 📚',
+                                                type: SnackBarType.info,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    if (state.isLoading)
+                                      SliverFillRemaining(
+                                        hasScrollBody: false,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: context.primary,
+                                          ),
+                                        ),
+                                      )
+                                    else if (state.errorMessage != null)
+                                      SliverFillRemaining(
+                                        hasScrollBody: false,
+                                        child: Center(
+                                          child: ModulesErrorState(
+                                            message: state.errorMessage!,
+                                            onRetry: () => provider.loadModules(updatedCourse.id),
+                                          ),
+                                        ),
+                                      )
+                                    else if (modules.isEmpty)
+                                      const SliverFillRemaining(
+                                        hasScrollBody: false,
+                                        child: AppEmptyState(
+                                          icon: Icons.folder_open_rounded,
+                                          title: 'لا توجد وحدات',
+                                          subtitle: 'لا توجد وحدات حالياً',
+                                        ),
+                                      )
+                                    else
+                                      SliverPadding(
+                                        padding: const EdgeInsets.all(16),
+                                        sliver: sliverListItemsBuilder(
+                                          modules: modules,
+                                          course: updatedCourse,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+
+                                // Tab 2: Course Details & Expert Badge
+                                CustomScrollView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  slivers: [
+                                    SliverToBoxAdapter(
+                                      child: _CourseDetailsSection(course: updatedCourse),
+                                    ),
+                                    SliverToBoxAdapter(
+                                      child: BuildExpertBadge(courseId: updatedCourse.id),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                    ],
-                  );
-                },
+                    ),
+                    Positioned(
+                      top: 12,
+                      left: 0,
+                      right: 0,
+                      child: Consumer<ModulesListProvider>(
+                        builder: (context, provider, child) {
+                          return SyncStatusIndicator(
+                            isUpdating: isBackgroundRefreshing || provider.state.isBackgroundUpdating,
+                            errorMessage: provider.state.errorMessage,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

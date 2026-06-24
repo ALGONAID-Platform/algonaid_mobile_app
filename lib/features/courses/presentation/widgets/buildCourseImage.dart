@@ -4,6 +4,7 @@ import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class BuildCourseImage extends StatelessWidget {
   const BuildCourseImage({super.key, required this.course});
@@ -76,6 +77,34 @@ class BuildCourseImage extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
+        ),
+
+        ValueListenableBuilder<Box<String>>(
+          valueListenable: Hive.box<String>('course_reminders_box').listenable(),
+          builder: (context, box, _) {
+            final hasReminder = box.containsKey(course.id.toString());
+            if (!hasReminder) return const SizedBox.shrink();
+            return Positioned(
+              top: 12,
+              left: 12,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.55),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.greenAccent.withOpacity(0.4),
+                    width: 1,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.alarm_on_rounded,
+                  color: Colors.greenAccent,
+                  size: 16,
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

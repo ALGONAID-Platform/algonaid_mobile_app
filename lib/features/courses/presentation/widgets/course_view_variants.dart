@@ -10,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class CourseThinCard extends StatelessWidget {
   final CourseEntity course;
@@ -95,6 +96,33 @@ class CourseThinCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ),
+                      ValueListenableBuilder<Box<String>>(
+                        valueListenable: Hive.box<String>('course_reminders_box').listenable(),
+                        builder: (context, box, _) {
+                          final hasReminder = box.containsKey(course.id.toString());
+                          if (!hasReminder) return const SizedBox.shrink();
+                          return Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.55),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.greenAccent.withOpacity(0.4),
+                                  width: 1,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.alarm_on_rounded,
+                                color: Colors.greenAccent,
+                                size: 12,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -248,6 +276,32 @@ class CourseGridItem extends StatelessWidget {
                           ),
                         ),
                       ),
+                    ),
+                    ValueListenableBuilder<Box<String>>(
+                      valueListenable: Hive.box<String>('course_reminders_box').listenable(),
+                      builder: (context, box, _) {
+                        final hasReminder = box.containsKey(course.id.toString());
+                        if (!hasReminder) return const SizedBox.shrink();
+                        return Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.55),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.greenAccent.withOpacity(0.4),
+                                  width: 1),
+                            ),
+                            child: const Icon(
+                              Icons.alarm_on_rounded,
+                              color: Colors.greenAccent,
+                              size: 12,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     Positioned(
                       bottom: 8,

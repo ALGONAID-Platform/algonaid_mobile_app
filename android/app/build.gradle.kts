@@ -1,3 +1,12 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,13 +15,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.algonaid_mobile_app"
+    namespace = "com.algonaid.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "30.0.14904198"
 
     compileOptions {
-isCoreLibraryDesugaringEnabled = true  
-       sourceCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true  
+        sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
@@ -22,7 +31,7 @@ isCoreLibraryDesugaringEnabled = true
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.algonaid_mobile_app"
+        applicationId = "com.algonaid.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -31,11 +40,21 @@ isCoreLibraryDesugaringEnabled = true
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            val storeFileProp = keystoreProperties.getProperty("storeFile")
+            if (storeFileProp != null) {
+                storeFile = file(storeFileProp)
+            }
+            storePassword = keystoreProperties.getProperty("storePassword")
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -43,6 +62,7 @@ isCoreLibraryDesugaringEnabled = true
 flutter {
     source = "../.."
 }
+
 dependencies {
-coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    }
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+}

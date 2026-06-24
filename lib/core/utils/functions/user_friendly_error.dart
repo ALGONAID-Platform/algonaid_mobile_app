@@ -6,6 +6,14 @@ String toUserFriendlyErrorMessage(String? rawMessage) {
 
   final normalized = message.toLowerCase();
 
+  // Google Sign-in specific exceptions
+  if (normalized.contains('sign_in_failed') ||
+      normalized.contains('apiexception') ||
+      normalized.contains('google_sign_in') ||
+      normalized.contains('google')) {
+    return 'فشل تسجيل الدخول باستخدام جوجل.\nتفاصيل الخطأ: $message\n\nتنبيه: تأكد من تسجيل بصمة SHA-1 لجهازك (مفتاح الـ Debug) وحزمة التطبيق (com.example.algonaid_mobile_app) في مشروع Google Console أو Firebase المرتبط بالسيرفر.';
+  }
+
   if (normalized.contains('internet') ||
       normalized.contains('network') ||
       normalized.contains('socket') ||

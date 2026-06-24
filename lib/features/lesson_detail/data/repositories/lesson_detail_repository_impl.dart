@@ -43,16 +43,16 @@ class LessonDetailRepositoryImpl implements LessonDetailRepository {
       final entity = model.toEntity();
 
       return Right(entity);
-    } on ServerException catch (e) {
+    } catch (e) {
       if (localModel != null) {
         return Right(localModel.toEntity());
       }
-      return Left(ServerFailure(e.message));
-    } on DioException catch (e) {
-      if (localModel != null) {
-        return Right(localModel.toEntity());
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
       }
-      return Left(DioErrorHandler.handle(e));
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحميل تفاصيل الدرس.'));
     }
   }
 
@@ -61,10 +61,13 @@ class LessonDetailRepositoryImpl implements LessonDetailRepository {
     try {
       await remoteDataSource.updateLessonProgress(lessonId, isCompleted);
       return const Right(null);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } on DioException catch (e) {
-      return Left(DioErrorHandler.handle(e));
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحديث تقدم الدرس.'));
     }
   }
 }

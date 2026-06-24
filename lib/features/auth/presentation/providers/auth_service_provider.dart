@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
 import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
@@ -161,7 +162,7 @@ class AuthServiceProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = "حدث خطأ غير متوقع أثناء معالجة تسجيل الدخول بجوجل";
       _isLoading = false;
       notifyListeners();
     }
@@ -171,8 +172,11 @@ class AuthServiceProvider extends ChangeNotifier {
     _prepareForRequest();
     try {
       final googleSignIn = GoogleSignIn(
-        clientId:
-            '891038928378-o7m1sealgkogiaolpuaisspg22g2c1i5.apps.googleusercontent.com',
+        clientId: Platform.isIOS
+            ? '891038928378-o7m1sealgkogiaolpuaisspg22g2c1i5.apps.googleusercontent.com'
+            : null,
+        serverClientId:
+            '292600777770-chig09sldsl4up6t5vqhr7lvgmqk4glg.apps.googleusercontent.com',
         scopes: ['email', 'profile'],
       );
       final account = await googleSignIn.signIn();
@@ -184,13 +188,13 @@ class AuthServiceProvider extends ChangeNotifier {
       }
 
       final auth = await account.authentication;
-      final accessToken = auth.accessToken;
-      if (accessToken == null || accessToken.trim().isEmpty) {
-        throw Exception('Google access token is missing.');
+      final idToken = auth.idToken;
+      if (idToken == null || idToken.trim().isEmpty) {
+        throw Exception('Google ID token is missing.');
       }
 
       final result = await googleSignInUseCase(
-        GoogleSigninParams(accessToken: accessToken),
+        GoogleSigninParams(idToken: idToken),
       );
 
       result.fold(
@@ -200,15 +204,36 @@ class AuthServiceProvider extends ChangeNotifier {
           notifyListeners();
         },
         (userEntity) async {
-          _user = userEntity;
-          await cacheUserData(userEntity);
+          final avatarUrl = (userEntity.avatar != null && userEntity.avatar!.isNotEmpty) 
+              ? userEntity.avatar 
+              : account.photoUrl;
+              
+          final updatedUserEntity = UserEntity(
+            id: userEntity.id,
+            username: userEntity.username,
+            email: userEntity.email,
+            role: userEntity.role,
+            message: userEntity.message,
+            token: userEntity.token,
+            avatar: avatarUrl,
+            background: userEntity.background,
+            academicId: userEntity.academicId,
+            grade: userEntity.grade,
+            birthDate: userEntity.birthDate,
+            address: userEntity.address,
+            createdAt: userEntity.createdAt,
+            updatedAt: userEntity.updatedAt,
+          );
+          
+          _user = updatedUserEntity;
+          await cacheUserData(updatedUserEntity);
           _errorMessage = null;
           _isLoading = false;
           notifyListeners();
         },
       );
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = "حدث خطأ غير متوقع أثناء تسجيل الدخول بجوجل";
       _isLoading = false;
       notifyListeners();
     }
@@ -426,6 +451,9 @@ class AuthServiceProvider extends ChangeNotifier {
         notifyListeners();
       },
       (_) async {
+        try {
+          await GoogleSignIn().signOut();
+        } catch (_) {}
         await _clearCachedSession();
         _errorMessage = null;
         _isLoading = false;

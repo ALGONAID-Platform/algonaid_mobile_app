@@ -89,7 +89,7 @@ class BadgesHelper {
       'icon': Icons.wb_sunny_rounded,
       'color': Colors.orangeAccent,
       'requirementText':
-          'يُمنح للطلاب الذين يكملون الدروس بين الساعة 5 صباحاً و 9 صباحاً.',
+          'يُمنح عند مشاهدة الدروس في الصباح لمدة 3 أيام متتالية.',
     },
     'reviewer': {
       'title': 'وسام المُراجع الدقيق',

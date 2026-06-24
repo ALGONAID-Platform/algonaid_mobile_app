@@ -68,7 +68,7 @@ class _LessonPdfViewerPageState extends State<LessonPdfViewerPage> {
       await _setLocalFile(cachedFile, sourceUrl: sourceUrl);
     } catch (e) {
       if (!mounted) return;
-      _setError('تعذر فتح الملف', details: e.toString());
+      _setError('تعذر فتح الملف', details: 'تأكد من اتصالك بالإنترنت وصلاحية رابط المستند.');
     }
   }
 
@@ -276,7 +276,7 @@ class _LessonPdfViewerPageState extends State<LessonPdfViewerPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('خطأ: $e')));
+        ).showSnackBar(const SnackBar(content: Text('تعذر إتمام العملية حالياً')));
       }
     }
   }
@@ -357,7 +357,7 @@ class _LessonPdfViewerPageState extends State<LessonPdfViewerPage> {
       onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
         setState(() {
           _hasError = true;
-          _errorDetails = details.description;
+          _errorDetails = 'فشل تحميل مستند PDF. قد يكون الملف تالفاً أو الرابط غير صالح.';
         });
       },
     );

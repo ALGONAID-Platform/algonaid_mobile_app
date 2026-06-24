@@ -11,11 +11,11 @@ class GoogleSigninUsecase extends UseCase<UserEntity, GoogleSigninParams> {
 
   @override
   Future<Either<Failure, UserEntity>> call(GoogleSigninParams params) {
-    return authRepo.googleSignin(accessToken: params.accessToken);
+    return authRepo.googleSignin(idToken: params.idToken);
   }
 }
 
 class GoogleSigninParams {
-  final String accessToken;
-  GoogleSigninParams({required this.accessToken});
+  final String idToken;
+  GoogleSigninParams({required this.idToken});
 }

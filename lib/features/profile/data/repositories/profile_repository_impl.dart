@@ -47,7 +47,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
           return Right(localPoints);
         }
       } catch (_) {}
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحميل النقاط'));
     }
   }
 
@@ -83,7 +83,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
           return Right(localProfile);
         }
       } catch (_) {}
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحميل الملف الشخصي'));
     }
   }
 
@@ -104,7 +104,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       }
       return Right(result);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحديث الملف الشخصي'));
     }
   }
 
@@ -112,14 +112,71 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<Failure, List<UserBadgeEntity>>> getUserBadges() async {
     final isOffline = await hasNoInternet();
     if (isOffline) {
-      return Left(ServerFailure('لا يوجد اتصال بالإنترنت.'));
+      try {
+        final localBadges = localDataSource.getUserBadgesSync();
+        if (localBadges != null && localBadges.isNotEmpty) {
+          return Right(localBadges);
+        }
+      } catch (_) {}
+      return Left(
+        ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد أوسمة محفوظة.'),
+      );
     }
     try {
       final result = await remoteDataSource.getUserBadges();
-      // Ensure the list is typed as List<UserBadgeEntity>
+      try {
+        await localDataSource.saveUserBadges(result);
+      } catch (e) {
+        debugPrint('Failed to save badges locally: $e');
+      }
       return Right(result.map((e) => e as UserBadgeEntity).toList());
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      try {
+        final localBadges = localDataSource.getUserBadgesSync();
+        if (localBadges != null && localBadges.isNotEmpty) {
+          return Right(localBadges);
+        }
+      } catch (_) {}
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحميل الأوسمة'));
+    }
+  }
+
+  @override
+  Either<Failure, List<UserBadgeEntity>> getCachedUserBadges() {
+    try {
+      final cached = localDataSource.getUserBadgesSync();
+      if (cached != null) {
+        return Right(cached);
+      }
+      return const Right([]);
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة الأوسمة المخزنة مؤقتاً"));
+    }
+  }
+
+  @override
+  Either<Failure, UserProfileEntity> getCachedUserProfile() {
+    try {
+      final cached = localDataSource.getUserProfileSync();
+      if (cached != null) {
+        return Right(cached);
+      }
+      return Left(CacheFailure("لا يوجد ملف شخصي مخزن مؤقتاً"));
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة الملف الشخصي المخزن مؤقتاً"));
+    }
+  }
+
+  @override
+  Either<Failure, TotalPointsEntity> getCachedTotalPoints() {
+    try {
+      final cached = localDataSource.getTotalPointsSync();
+      if (cached != null) {
+        return Right(cached);
+      }
+      return Left(CacheFailure("لا توجد نقاط مخزنة مؤقتاً"));
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة النقاط المخزنة مؤقتاً"));
     }
   }
 }

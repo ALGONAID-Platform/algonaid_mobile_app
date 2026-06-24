@@ -4,8 +4,10 @@ import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/guest_login_dialog.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -42,27 +44,42 @@ class _GuestCoursesPageState extends State<GuestCoursesPage> {
       backgroundColor: context.background,
       body: Consumer<GetCoursesProvider>(
         builder: (context, provider, child) {
-          return RefreshIndicator(
-            color: AppColors.primary,
-            onRefresh: _refreshCourses,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              child: provider.isLoading
-                  ? const _GuestGridShimmer()
-                  : _GuestCoursesGrid(
-                      courses: provider.allCourses,
-                      onCourseTap: (course) {
-                        showGuestLoginDialog(
-                          context,
-                          title: 'هذا الكورس يحتاج تسجيل دخول',
-                          message:
-                              'يمكنك تسجيل الدخول لفتح تفاصيل الكورس والتسجيل فيه، أو المتابعة في تصفح الكورسات.',
-                          onLogin: () => context.push(Routes.auth),
-                          onGuest: () {},
-                        );
-                      },
-                    ),
-            ),
+          return Stack(
+            children: [
+              RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: _refreshCourses,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: provider.isLoading
+                      ? const _GuestGridShimmer()
+                      : _GuestCoursesGrid(
+                          courses: provider.allCourses,
+                          onCourseTap: (course) {
+                            showGuestLoginDialog(
+                              context,
+                              title: 'هذا الكورس يحتاج تسجيل دخول',
+                              message:
+                                  'يمكنك تسجيل الدخول لفتح تفاصيل الكورس والتسجيل فيه، أو المتابعة في تصفح الكورسات كضيف.',
+                              onLogin: () {
+                                context.read<AuthServiceProvider>().setAuthMode(true);
+                                context.push(Routes.auth);
+                              },
+                            );
+                          },
+                        ),
+                ),
+              ),
+              Positioned(
+                top: 12,
+                left: 0,
+                right: 0,
+                child: SyncStatusIndicator(
+                  isUpdating: provider.isBackgroundUpdating,
+                  errorMessage: provider.errorMessage,
+                ),
+              ),
+            ],
           );
         },
       ),
@@ -105,23 +122,166 @@ class _GuestCoursesGrid extends StatelessWidget {
       );
     }
 
-    return GridView.builder(
+    return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.45,
-      ),
-      itemCount: courses.length,
+      itemCount: courses.length + 1,
       itemBuilder: (context, index) {
-        final course = courses[index];
-        return _GuestCourseCard(
-          course: course,
-          onTap: () => onCourseTap(course),
+        if (index == 0) {
+          return const Padding(
+            padding: EdgeInsets.only(bottom: 20),
+            child: _GuestWelcomeCard(),
+          );
+        }
+
+        final course = courses[index - 1];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: AspectRatio(
+            aspectRatio: 1.32,
+            child: _GuestCourseCard(
+              course: course,
+              onTap: () => onCourseTap(course),
+            ),
+          ),
         );
       },
+    );
+  }
+}
+
+class _GuestWelcomeCard extends StatelessWidget {
+  const _GuestWelcomeCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = context.isDarkMode;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [AppColors.indigoDark.withOpacity(0.85), AppColors.indigo]
+              : [context.primary.withOpacity(0.9), context.primary.withOpacity(0.7)],
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: context.primary.withOpacity(0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            left: -24,
+            top: -24,
+            child: Icon(
+              Icons.school_outlined,
+              size: 140,
+              color: Colors.white.withOpacity(0.08),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.waving_hand_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'أهلاً بك في منصة الجنيد!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'أنشئ حسابك الآن مجاناً لتسجيل حضورك وحفظ تقدمك الدراسي، بالإضافة إلى خوض المسابقات والتحديات المميزة مع زملائك.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.95),
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<AuthServiceProvider>().setAuthMode(false);
+                        context.push(Routes.auth);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: context.primary,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'ابدأ الآن مجاناً',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    TextButton(
+                      onPressed: () {
+                        context.read<AuthServiceProvider>().setAuthMode(true);
+                        context.push(Routes.auth);
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                      ),
+                      child: const Text(
+                        'لدي حساب بالفعل',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -141,10 +301,12 @@ class _GuestCourseCard extends StatelessWidget {
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
         decoration: BoxDecoration(
           color: context.surface,
           borderRadius: BorderRadius.circular(18),
@@ -205,16 +367,17 @@ class _GuestCourseCard extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      left: 10,
-                      right: 10,
-                      bottom: 10,
+                      left: 16,
+                      right: 16,
+                      bottom: 16,
                       child: Text(
                         course.title as String? ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.titleSmall?.copyWith(
+                        textAlign: TextAlign.right,
+                        style: context.textTheme.titleLarge?.copyWith(
                           color: Colors.white,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -224,48 +387,62 @@ class _GuestCourseCard extends StatelessWidget {
             ),
             Expanded(
               flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      course.teacher.user.name as String? ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.labelMedium?.copyWith(
-                        color: context.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'الوحدات: ${course.modulesCount}',
-                          style: context.textTheme.labelMedium?.copyWith(
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 13,
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "المدرب: ${course.teacher.user.name}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.labelMedium?.copyWith(
                           color: context.primary,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Text(
+                        course.description as String? ?? '',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.colorScheme.onSurfaceVariant.withOpacity(0.8),
+                          fontSize: 11,
+                          height: 1.3,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'عدد الوحدات: ${course.modulesCount}',
+                            style: context.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_back_ios_new,
+                            size: 14,
+                            color: context.primary,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -274,70 +451,98 @@ class _GuestGridShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.45,
-      ),
       itemCount: 6,
       itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: context.surface,
-            borderRadius: BorderRadius.circular(18),
-            border: AppBorder.main_border,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                flex: 4,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: context.colorScheme.surfaceVariant.withOpacity(0.35),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(18),
+        if (index == 0) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            height: 160,
+            decoration: BoxDecoration(
+              color: context.colorScheme.surfaceVariant.withOpacity(0.35),
+              borderRadius: BorderRadius.circular(20),
+            ),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: AspectRatio(
+            aspectRatio: 1.32,
+            child: Container(
+              decoration: BoxDecoration(
+                color: context.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: AppBorder.main_border,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surfaceVariant.withOpacity(0.35),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(18),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: 14,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: context.colorScheme.surfaceVariant.withOpacity(
-                            0.5,
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 12,
+                            width: 120,
+                            decoration: BoxDecoration(
+                              color: context.colorScheme.surfaceVariant.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                      ),
-                      Container(
-                        height: 12,
-                        width: 90,
-                        decoration: BoxDecoration(
-                          color: context.colorScheme.surfaceVariant.withOpacity(
-                            0.35,
+                          Container(
+                            height: 10,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: context.colorScheme.surfaceVariant.withOpacity(0.35),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: 14,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                  color: context.colorScheme.surfaceVariant.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                              ),
+                              Container(
+                                height: 14,
+                                width: 14,
+                                decoration: BoxDecoration(
+                                  color: context.colorScheme.surfaceVariant.withOpacity(0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -383,55 +588,42 @@ class _GuestHomePageState extends State<GuestHomePage> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        titleSpacing: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final screenWidth = MediaQuery.of(context).size.width;
-
-                if (screenWidth > 380) {
-                  return Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          context.read<AuthServiceProvider>().setAuthMode(true);
-                          context.push(Routes.auth);
-                        },
-                        child: const Text('تسجيل الدخول'),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthServiceProvider>().setAuthMode(
-                            false,
-                          );
-                          context.push(Routes.auth);
-                        },
-                        child: const Text('إنشاء حساب'),
-                      ),
-                    ],
-                  );
-                }
-
-                return ElevatedButton(
-                  onPressed: () {
-                    context.read<AuthServiceProvider>().setAuthMode(true);
-                    context.push(Routes.auth);
-                  },
-                  child: const Text('تسجيل الدخول'),
-                );
-              },
-            ),
-
-            Text(
-              _getAppBarTitle(_currentIndex),
-              style: context.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
+        titleSpacing: 16,
+        title: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _getAppBarTitle(_currentIndex),
+                style: context.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
-          ],
+              OutlinedButton(
+                onPressed: () {
+                  context.read<AuthServiceProvider>().setAuthMode(true);
+                  context.push(Routes.auth);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: context.primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  minimumSize: const Size(0, 36),
+                ),
+                child: Text(
+                  'تسجيل الدخول',
+                  style: TextStyle(
+                    color: context.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       body: Stack(

@@ -164,9 +164,6 @@ class AppearanceSettingsSection extends StatelessWidget {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Update our custom provider (persists the change)
-                              themeProvider.changeColor(tempSelectedColorIndex);
-
                               // Trigger animated theme switch on the root theme switcher using parentContext
                               switcher.changeTheme(
                                 theme: themeProvider.isDarkMode
@@ -178,6 +175,10 @@ class AppearanceSettingsSection extends StatelessWidget {
                                         colorIndex: tempSelectedColorIndex,
                                         fontIndex: themeProvider.fontIndex,
                                       ),
+                                onAnimationFinish: () {
+                                  // Update our custom provider (persists the change) after animation finishes
+                                  themeProvider.changeColor(tempSelectedColorIndex);
+                                },
                               );
 
                               // Close the bottom sheet
@@ -252,14 +253,15 @@ class AppearanceSettingsSection extends StatelessWidget {
                         ? Icon(Icons.check_circle, color: sheetContext.primary)
                         : null,
                     onTap: () {
-                      // Update our custom provider (persists the change)
-                      themeProvider.changeFont(index);
-
                       // Trigger animated theme switch on the root theme switcher using parentContext
                       switcher.changeTheme(
                         theme: themeProvider.isDarkMode
                             ? ThemeApp.getDarkTheme(colorIndex: themeProvider.colorIndex, fontIndex: index)
                             : ThemeApp.getLightTheme(colorIndex: themeProvider.colorIndex, fontIndex: index),
+                        onAnimationFinish: () {
+                          // Update our custom provider (persists the change) after animation finishes
+                          themeProvider.changeFont(index);
+                        },
                       );
 
                       // Close the bottom sheet

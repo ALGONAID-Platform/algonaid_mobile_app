@@ -50,11 +50,7 @@ class ApiService {
       finalUrl,
       path,
       onReceiveProgress: (received, total) {
-        if (total != -1) {
-          debugPrint(
-            "📥 جاري التحميل: ${(received / total * 100).toStringAsFixed(0)}%",
-          );
-        }
+       
       },
     );
   }

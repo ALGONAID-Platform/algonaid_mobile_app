@@ -20,4 +20,15 @@ class UserBadgeModel extends UserBadgeEntity {
       tier: json['tier'] as String? ?? 'STANDARD',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'key': key,
+      'isUnlocked': isUnlocked,
+      'progress': progress,
+      'target': target,
+      'tier': tier,
+    };
+  }
 }

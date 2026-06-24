@@ -46,7 +46,7 @@ class AuthRepoImpl extends AuthRepo {
       if (e is DioException) {
         return left(DioErrorHandler.handle(e));
       }
-      return left(ServerFailure(e.toString()));
+      return left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
     }
   }
 
@@ -97,11 +97,11 @@ class AuthRepoImpl extends AuthRepo {
 
   @override
   Future<Either<Failure, UserEntity>> googleSignin({
-    required String accessToken,
+    required String idToken,
   }) async {
     try {
       final authResponse = await authRemotDataSource.googleSignin(
-        accessToken: accessToken,
+        idToken: idToken,
       );
       await TokenStorage.saveToken(authResponse.accessToken);
 
@@ -127,7 +127,7 @@ class AuthRepoImpl extends AuthRepo {
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure("حدث خطأ غير متوقع أثناء تسجيل الدخول بجوجل"));
     }
   }
 
@@ -140,7 +140,7 @@ class AuthRepoImpl extends AuthRepo {
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure("حدث خطأ غير متوقع أثناء تسجيل الخروج"));
     }
   }
 
@@ -158,7 +158,7 @@ class AuthRepoImpl extends AuthRepo {
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
     }
   }
 
@@ -179,7 +179,7 @@ class AuthRepoImpl extends AuthRepo {
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
     }
   }
 }

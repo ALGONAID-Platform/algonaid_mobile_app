@@ -23,7 +23,7 @@ class SearchRepositoryImpl implements SearchRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+      return Left(const ServerFailure("حدث خطأ غير متوقع أثناء عملية البحث"));
     }
   }
 }

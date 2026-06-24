@@ -62,4 +62,10 @@ class LastAccessedModuleProvider extends ChangeNotifier {
     _lastAccessedModule = module;
     notifyListeners();
   }
+
+  void clearData() {
+    _lastAccessedModule = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
 }

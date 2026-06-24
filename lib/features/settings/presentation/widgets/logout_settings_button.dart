@@ -6,6 +6,8 @@ import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_se
 import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:provider/provider.dart';
 
 class LogoutSettingsButton extends StatelessWidget {
@@ -46,6 +48,8 @@ class LogoutSettingsButton extends StatelessWidget {
             confirmText: 'موافق',
             cancelText: 'إلغاء',
             onConfirm: () async {
+              context.read<ProfileProvider>().clearProfileData();
+              context.read<LastAccessedModuleProvider>().clearData();
               await context.read<AuthServiceProvider>().logout();
               if (context.mounted) {
                 context.go(Routes.auth);

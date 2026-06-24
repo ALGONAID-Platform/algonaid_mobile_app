@@ -9,6 +9,7 @@ import 'package:dartz/dartz.dart';
 
 abstract class ModuleRepository {
   Future<Either<Failure, List<Module>>> getModulesByCourse(int courseId);
+  Either<Failure, List<Module>> getCachedModulesByCourse(int courseId);
   Future<Either<Failure, LastAccessedModuleEntity?>> getLastAccessedModule();
   Future<Either<Failure, LastAccessedModuleEntity?>> getCachedLastAccessedModule();
   Future<Either<Failure, ModuleGrades>> getModuleGrades(int moduleId);

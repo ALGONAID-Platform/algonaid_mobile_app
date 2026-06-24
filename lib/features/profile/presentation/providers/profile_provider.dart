@@ -3,6 +3,9 @@ import '../../domain/usecases/get_total_points_usecase.dart';
 import '../../domain/usecases/get_user_profile_usecase.dart';
 import '../../domain/usecases/update_user_profile_usecase.dart';
 import '../../domain/usecases/get_user_badges_usecase.dart';
+import '../../domain/usecases/get_cached_user_badges_usecase.dart';
+import '../../domain/usecases/get_cached_user_profile_usecase.dart';
+import '../../domain/usecases/get_cached_total_points_usecase.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/entities/user_badge_entity.dart';
 import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
@@ -15,12 +18,18 @@ class ProfileProvider extends ChangeNotifier {
   final GetUserProfileUseCase getUserProfileUseCase;
   final UpdateUserProfileUseCase updateUserProfileUseCase;
   final GetUserBadgesUseCase getUserBadgesUseCase;
+  final GetCachedUserBadgesUseCase getCachedUserBadgesUseCase;
+  final GetCachedUserProfileUsecase getCachedUserProfileUsecase;
+  final GetCachedTotalPointsUsecase getCachedTotalPointsUsecase;
 
   ProfileProvider({
     required this.getTotalPointsUseCase,
     required this.getUserProfileUseCase,
     required this.updateUserProfileUseCase,
     required this.getUserBadgesUseCase,
+    required this.getCachedUserBadgesUseCase,
+    required this.getCachedUserProfileUsecase,
+    required this.getCachedTotalPointsUsecase,
   });
 
   bool _isLoadingPoints = false;
@@ -41,6 +50,9 @@ class ProfileProvider extends ChangeNotifier {
   bool _isLoadingBadges = false;
   bool get isLoadingBadges => _isLoadingBadges;
 
+  bool _isBackgroundUpdating = false;
+  bool get isBackgroundUpdating => _isBackgroundUpdating;
+
   List<UserBadgeEntity> _userBadges = [];
   List<UserBadgeEntity> get userBadges => _userBadges;
 
@@ -48,15 +60,32 @@ class ProfileProvider extends ChangeNotifier {
   String? get error => _error;
 
   Future<void> loadTotalPoints() async {
-    _isLoadingPoints = true;
-    _error = null;
-    notifyListeners();
+    // 1. Load from cache first
+    final cachedResult = getCachedTotalPointsUsecase();
+    cachedResult.fold(
+      (failure) {},
+      (data) {
+        _totalPoints = data.totalPoints;
+        notifyListeners();
+      },
+    );
+
+    // 2. Fetch from remote if cache is empty
+    if (_totalPoints == 0) {
+      _isLoadingPoints = true;
+      _isBackgroundUpdating = false;
+      _error = null;
+      notifyListeners();
+    } else {
+      _isBackgroundUpdating = true;
+      notifyListeners();
+    }
 
     final result = await getTotalPointsUseCase();
 
     result.fold(
       (failure) {
-        _error = failure.message;
+        _error = _totalPoints == 0 ? failure.message : null;
         debugPrint('Error loading points: ${failure.message}');
       },
       (data) {
@@ -65,18 +94,36 @@ class ProfileProvider extends ChangeNotifier {
     );
 
     _isLoadingPoints = false;
+    _isBackgroundUpdating = false;
     notifyListeners();
   }
 
   Future<void> loadUserProfile() async {
-    _isLoadingProfile = true;
-    _error = null;
-    notifyListeners();
+    // 1. Load from cache first
+    final cachedResult = getCachedUserProfileUsecase();
+    cachedResult.fold(
+      (failure) {},
+      (profile) {
+        _userProfile = profile;
+        notifyListeners();
+      },
+    );
+
+    // 2. Load from remote if cache is empty
+    if (_userProfile == null) {
+      _isLoadingProfile = true;
+      _isBackgroundUpdating = false;
+      _error = null;
+      notifyListeners();
+    } else {
+      _isBackgroundUpdating = true;
+      notifyListeners();
+    }
 
     final result = await getUserProfileUseCase();
     result.fold(
       (failure) {
-        _error = failure.message;
+        _error = _userProfile == null ? failure.message : null;
         debugPrint('Error loading profile: ${failure.message}');
       },
       (profile) {
@@ -117,13 +164,42 @@ class ProfileProvider extends ChangeNotifier {
     );
 
     _isLoadingProfile = false;
+    _isBackgroundUpdating = false;
     notifyListeners();
   }
 
-  Future<void> loadUserBadges() async {
-    _isLoadingBadges = true;
-    _error = null;
-    notifyListeners();
+  Future<void> loadUserBadges({bool forceRefresh = false}) async {
+    // 1. تحميل الكاش فوراً لتجنب مؤشر التحميل إذا كانت البيانات موجودة
+    final cachedResult = getCachedUserBadgesUseCase();
+    cachedResult.fold(
+      (failure) => debugPrint('Error loading cached badges: ${failure.message}'),
+      (badges) {
+        if (badges.isNotEmpty) {
+          _userBadges = badges;
+        }
+      },
+    );
+
+    // 2. تفعيل مؤشر التحميل فقط إذا لم تكن هناك أوسمة في الكاش
+    final hasCache = _userBadges.isNotEmpty;
+
+    // إذا كان هناك كاش ولم يُطلب تحديث إجباري، نعرض الكاش فقط دون جلب من السيرفر
+    if (hasCache && !forceRefresh) {
+      _isLoadingBadges = false;
+      _isBackgroundUpdating = false;
+      notifyListeners();
+      return;
+    }
+
+    if (!hasCache) {
+      _isLoadingBadges = true;
+      _isBackgroundUpdating = false;
+      _error = null;
+      notifyListeners();
+    } else {
+      _isBackgroundUpdating = true;
+      notifyListeners();
+    }
 
     final result = await getUserBadgesUseCase();
     await result.fold(
@@ -164,6 +240,7 @@ class ProfileProvider extends ChangeNotifier {
     );
 
     _isLoadingBadges = false;
+    _isBackgroundUpdating = false;
     notifyListeners();
   }
 
@@ -220,5 +297,13 @@ class ProfileProvider extends ChangeNotifier {
     _isUpdatingProfile = false;
     notifyListeners();
     return success;
+  }
+
+  void clearProfileData() {
+    _userProfile = null;
+    _totalPoints = 0;
+    _userBadges = [];
+    _error = null;
+    notifyListeners();
   }
 }

@@ -4,4 +4,5 @@ import 'package:dartz/dartz.dart';
 
 abstract class LessonRepository {
   Future<Either<Failure, List<Lesson>>> getModuleLessons(int moduleId);
+  Either<Failure, List<Lesson>> getCachedModuleLessons(int moduleId);
 }

@@ -15,7 +15,7 @@ abstract class AuthRemoteDatasourse {
     required String password,
     required UserRole role,
   });
-  Future<AuthResponse> googleSignin({required String accessToken});
+  Future<AuthResponse> googleSignin({required String idToken});
   Future<void> logout(); // Added
   Future<Map<String, dynamic>> forgotPassword({required String email});
   Future<Map<String, dynamic>> resetPassword({
@@ -47,7 +47,6 @@ class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
     required String password,
     required UserRole role,
   }) async {
-    print(role.code);
     var user = await apiService.post(
       endpoint: EndPoint.signup,
       data: {
@@ -62,10 +61,10 @@ class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
   }
 
   @override
-  Future<AuthResponse> googleSignin({required String accessToken}) async {
+  Future<AuthResponse> googleSignin({required String idToken}) async {
     final user = await apiService.post(
       endpoint: EndPoint.googleMobileAuth,
-      data: {'accessToken': accessToken},
+      data: {'idToken': idToken},
     );
 
     return AuthResponse.fromJson(user);

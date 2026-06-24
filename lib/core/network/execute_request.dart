@@ -18,7 +18,7 @@ Future<dynamic> performRequest(Future<Response> requestFunc) async {
     // 2. 🛑 التعديل الأهم: نرميها كـ Exception وليس Failure
     throw ServerException(failure.message);
   } catch (e) {
-    // التقاط أخطاء الكود (مثل null check operator)
-    throw ServerException(e.toString());
+    // التقاط أخطاء الكود (مثل null check operator) دون تسريبها للمستخدم
+    throw ServerException('حدث خطأ غير متوقع أثناء معالجة الطلب.');
   }
 }

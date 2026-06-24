@@ -19,7 +19,13 @@ import 'package:algonaid_mobile_app/features/courses/domain/usecases/enroll_usec
 import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_progress.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_cached_courses_usecase.dart';
+import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_cached_mycourses_usecase.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_excellence_modules_usecase.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_cached_lessons_usecase.dart';
+import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_cached_modules_usecase.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_cached_total_points_usecase.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_cached_user_profile_usecase.dart' show GetCachedUserProfileUsecase;
 import 'package:algonaid_mobile_app/features/search/domain/usecases/search_courses_usecase.dart';
 import 'package:algonaid_mobile_app/features/search/data/datasources/search_remote_data_source.dart';
 import 'package:algonaid_mobile_app/features/search/data/repositories/search_repository_impl.dart';
@@ -77,6 +83,7 @@ import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_total_p
 import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:algonaid_mobile_app/features/profile/domain/usecases/update_user_profile_usecase.dart';
 import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_user_badges_usecase.dart';
+import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_cached_user_badges_usecase.dart';
 import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
 
 import 'package:dio/dio.dart';
@@ -242,6 +249,12 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<GetMycoureseUsecase>(
     () => GetMycoureseUsecase(repository: getIt()),
   );
+  getIt.registerLazySingleton<GetCachedCoursesUsecase>(
+    () => GetCachedCoursesUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetCachedMyCoursesUsecase>(
+    () => GetCachedMyCoursesUsecase(repository: getIt()),
+  );
   getIt.registerLazySingleton<GetCourseGrades>(() => GetCourseGrades(getIt()));
   getIt.registerLazySingleton<EnrollUsecase>(
     () => EnrollUsecase(repository: getIt()),
@@ -249,6 +262,9 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<GetModulesByCourse>(
     () => GetModulesByCourse(getIt<ModuleRepository>()),
+  );
+  getIt.registerLazySingleton<GetCachedModulesUsecase>(
+    () => GetCachedModulesUsecase(getIt<ModuleRepository>()),
   );
 
   getIt.registerLazySingleton<GetLastAccessedModuleUseCase>(
@@ -267,6 +283,9 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<GetModuleLessons>(
     () => GetModuleLessons(getIt<LessonRepository>()),
+  );
+  getIt.registerLazySingleton<GetCachedLessonsUsecase>(
+    () => GetCachedLessonsUsecase(getIt<LessonRepository>()),
   );
 
   getIt.registerLazySingleton<GetLessonDetail>(
@@ -318,6 +337,12 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<GetUserProfileUseCase>(
     () => GetUserProfileUseCase(getIt()),
   );
+  getIt.registerLazySingleton<GetCachedUserProfileUsecase>(
+    () => GetCachedUserProfileUsecase(getIt()),
+  );
+  getIt.registerLazySingleton<GetCachedTotalPointsUsecase>(
+    () => GetCachedTotalPointsUsecase(getIt()),
+  );
 
   getIt.registerLazySingleton<UpdateUserProfileUseCase>(
     () => UpdateUserProfileUseCase(getIt()),
@@ -325,6 +350,9 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<GetUserBadgesUseCase>(
     () => GetUserBadgesUseCase(getIt()),
+  );
+  getIt.registerLazySingleton<GetCachedUserBadgesUseCase>(
+    () => GetCachedUserBadgesUseCase(getIt()),
   );
 
   // ================= PROVIDERS =================
@@ -344,6 +372,8 @@ void setupServiceLocator() {
       enrollmentUseCase: getIt(),
       coursesUsecase: getIt(),
       myCoursesUsecase: getIt(),
+      getCachedCoursesUsecase: getIt(),
+      getCachedMyCoursesUsecase: getIt(),
       courseProgressUsecase: getIt(),
     ),
   );
@@ -364,7 +394,7 @@ void setupServiceLocator() {
   );
 
   getIt.registerFactory<ModulesListProvider>(
-    () => ModulesListProvider(getIt<GetModulesByCourse>()),
+    () => ModulesListProvider(getIt<GetModulesByCourse>(), getIt<GetCachedModulesUsecase>()),
   );
 
   getIt.registerFactory<LastAccessedModuleProvider>(
@@ -387,6 +417,9 @@ void setupServiceLocator() {
       getUserProfileUseCase: getIt(),
       updateUserProfileUseCase: getIt(),
       getUserBadgesUseCase: getIt(),
+      getCachedUserBadgesUseCase: getIt(),
+      getCachedUserProfileUsecase: getIt(),
+      getCachedTotalPointsUsecase: getIt(),
     ),
   );
 }

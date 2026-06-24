@@ -11,4 +11,7 @@ abstract class ProfileRepository {
     Map<String, dynamic> data,
   );
   Future<Either<Failure, List<UserBadgeEntity>>> getUserBadges();
+  Either<Failure, List<UserBadgeEntity>> getCachedUserBadges();
+  Either<Failure, UserProfileEntity> getCachedUserProfile();
+  Either<Failure, TotalPointsEntity> getCachedTotalPoints();
 }

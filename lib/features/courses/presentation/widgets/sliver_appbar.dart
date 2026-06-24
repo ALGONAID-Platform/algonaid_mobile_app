@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/core/theme/styles.dart';
 import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';

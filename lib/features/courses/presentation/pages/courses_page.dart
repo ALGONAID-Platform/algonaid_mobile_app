@@ -11,17 +11,22 @@ import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildS
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/courseHeader.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/my_courses_section.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sliver_appbar.dart';
+import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
 import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
 import 'package:algonaid_mobile_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:algonaid_mobile_app/features/downloads/presentation/pages/downloads_page.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/pages/competitions_page.dart';
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:math' as math;
+
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
@@ -39,63 +44,93 @@ class _CoursesPageState extends State<CoursesPage> {
       context.read<GetCoursesProvider>().refreshAll(isGuest: false);
       context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
     });
-    debugPrint('User Token on CoursesPage init: ${TokenStorage.getToken()}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.background,
-      body: RefreshIndicator(
-        elevation: 0.0,
-        onRefresh: () async {
-          final coursesProvider = context.read<GetCoursesProvider>();
-          final lastAccessedProvider = context
-              .read<LastAccessedModuleProvider>();
+      body: Stack(
+        children: [
+          // Premium Subtle Geometric Background Pattern
+          Positioned.fill(
+            child: CustomPaint(
+              painter: MainBackgroundPainter(
+                isDark: context.isDarkMode,
+                primaryColor: context.primary,
+              ),
+            ),
+          ),
+          RefreshIndicator(
+            elevation: 0.0,
+            color: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            strokeWidth: 0, // Make it invisible
+            notificationPredicate: (ScrollNotification notification) {
+              return defaultScrollNotificationPredicate(notification) && notification.metrics.pixels <= 0;
+            },
+            onRefresh: () async {
+              final coursesProvider = context.read<GetCoursesProvider>();
+              final lastAccessedProvider = context
+                  .read<LastAccessedModuleProvider>();
 
-          await coursesProvider.refreshAll(isGuest: false);
-          await lastAccessedProvider.fetchLastAccessedModule();
-        },
-        color: AppColors.primary,
-        child: Consumer<GetCoursesProvider>(
-          builder: (context, provider, child) {
-            return CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(child: SectionHeader(text: 'اخر باب')),
-                if (provider.isLoading)
-                  SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        const ContinueLearningShimmer(),
-                        const SizedBox(height: 20),
-                        CoursesSectionShimmer(),
-                        const SizedBox(height: 20),
-                        CoursesSectionShimmer(),
-                      ],
-                    ),
-                  )
-                else ...[
-                  SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        courseHeader(
-                          hasEnrolledCourses: provider.myCourses.isNotEmpty,
+              await coursesProvider.refreshAll(isGuest: false);
+              await lastAccessedProvider.fetchLastAccessedModule();
+            },
+            child: Consumer<GetCoursesProvider>(
+              builder: (context, provider, child) {
+                return CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(child: SectionHeader(text: 'اخر وحده دخلتها')),
+                    if (provider.isLoading)
+                      SliverToBoxAdapter(
+                        child: Column(
+                          children: [
+                            const ContinueLearningShimmer(),
+                            const SizedBox(height: 20),
+                            CoursesSectionShimmer(),
+                            const SizedBox(height: 20),
+                            CoursesSectionShimmer(),
+                          ],
                         ),
-                        MyCoursesListSection(
-                          myCourses: provider.myCourses,
-                          allCourses: provider.allCourses,
+                      )
+                    else ...[
+                      SliverToBoxAdapter(
+                        child: Column(
+                          children: [
+                            courseHeader(
+                              hasEnrolledCourses: provider.myCourses.isNotEmpty,
+                            ),
+                            MyCoursesListSection(
+                              myCourses: provider.myCourses,
+                              allCourses: provider.allCourses,
+                            ),
+                            AllCoursesListSection(allCourses: provider.allCourses),
+                            const SizedBox(height: 100),
+                          ],
                         ),
-                        AllCoursesListSection(allCourses: provider.allCourses),
-                        const SizedBox(height: 100),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            );
-          },
-        ),
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
+          ),
+          Positioned(
+            top: 12,
+            left: 0,
+            right: 0,
+            child: Consumer<GetCoursesProvider>(
+              builder: (context, provider, child) {
+                return SyncStatusIndicator(
+                  isUpdating: provider.isBackgroundUpdating,
+                  errorMessage: provider.errorMessage,
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -138,10 +173,20 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userName =
-        CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم';
-    final userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
+    final authProvider = context.watch<AuthServiceProvider>();
+    final profileProvider = context.watch<ProfileProvider>();
 
+    final userName = (profileProvider.userProfile?.name != null && profileProvider.userProfile!.name.isNotEmpty) ? profileProvider.userProfile!.name : 
+        ((authProvider.user?.username != null && authProvider.user!.username.isNotEmpty) ? authProvider.user!.username : 
+        (CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم'));
+        
+    String? userAvatar = profileProvider.userProfile?.avatar;
+    if (userAvatar == null || userAvatar.isEmpty) {
+      userAvatar = authProvider.user?.avatar;
+    }
+    if (userAvatar == null || userAvatar.isEmpty) {
+      userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
+    }
     return Scaffold(
       backgroundColor: context.background,
       appBar: ReactiveAppBar(
@@ -216,16 +261,20 @@ class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
     return ValueListenableBuilder<Box<String>>(
       valueListenable: Hive.box<String>('local_notifications_box').listenable(),
       builder: (context, box, _) {
+        final currentUserId = CacheHelper.getString(key: AppConstants.userId) ?? '0';
         final unreadCount = box.values
             .map((e) {
               try {
-                final map = jsonDecode(e) as Map<String, dynamic>;
-                return map['isRead'] as bool? ?? false;
+                return jsonDecode(e) as Map<String, dynamic>;
               } catch (_) {
-                return true;
+                return <String, dynamic>{};
               }
             })
-            .where((isRead) => !isRead)
+            .where((map) {
+              final isRead = map['isRead'] as bool? ?? false;
+              final notifUserId = map['userId'] as String?;
+              return !isRead && (notifUserId == currentUserId || notifUserId == null);
+            })
             .length;
 
         return CustomWhiteAppBar(
@@ -246,3 +295,72 @@ class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight + 12);
 }
+
+// Custom painter to draw premium, lightweight geometric hexagons and dot grids in the background
+class MainBackgroundPainter extends CustomPainter {
+  final bool isDark;
+  final Color primaryColor;
+
+  MainBackgroundPainter({required this.isDark, required this.primaryColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = primaryColor.withOpacity(isDark ? 0.06 : 0.09)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+
+    // 1. Draw subtle concentric hexagons in the top-right corner
+    _drawHexagon(canvas, Offset(size.width * 0.9, size.height * 0.15), 60.0, paint);
+    _drawHexagon(canvas, Offset(size.width * 0.9, size.height * 0.15), 40.0, paint);
+
+    // 2. Draw subtle concentric hexagons in the middle-left area
+    _drawHexagon(canvas, Offset(size.width * 0.1, size.height * 0.45), 80.0, paint);
+    _drawHexagon(canvas, Offset(size.width * 0.1, size.height * 0.45), 50.0, paint);
+
+    // 3. Draw subtle concentric hexagons in the bottom-right area
+    _drawHexagon(canvas, Offset(size.width * 0.85, size.height * 0.75), 100.0, paint);
+    _drawHexagon(canvas, Offset(size.width * 0.85, size.height * 0.75), 70.0, paint);
+
+    // 4. Draw a faint dot grid in the top-left area
+    final dotPaint = Paint()
+      ..color = primaryColor.withOpacity(isDark ? 0.08 : 0.12)
+      ..style = PaintingStyle.fill;
+    
+    final startX = size.width * 0.05;
+    final startY = size.height * 0.1;
+    final spacing = 16.0;
+    final rows = 8;
+    final cols = 8;
+
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < cols; c++) {
+        canvas.drawCircle(
+          Offset(startX + c * spacing, startY + r * spacing),
+          1.2,
+          dotPaint,
+        );
+      }
+    }
+  }
+
+  void _drawHexagon(Canvas canvas, Offset center, double radius, Paint paint) {
+    final path = Path();
+    for (int i = 0; i < 6; i++) {
+      double angle = (i * 60) * (math.pi / 180.0);
+      double x = center.dx + radius * math.cos(angle);
+      double y = center.dy + radius * math.sin(angle);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+

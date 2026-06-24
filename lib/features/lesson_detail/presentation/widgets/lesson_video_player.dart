@@ -319,10 +319,13 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
       final percentage = position.inSeconds / duration.inSeconds;
       if (percentage >= 0.90) {
         _isProgressReported = true;
+        
+        final isAlreadyCompleted = CacheHelper.getBool(key: 'lesson_completed_${widget.lessonId}') ?? false;
+        
         widget.onProgressComplete?.call();
         
         final autoPlayNext = CacheHelper.getBool(key: 'autoPlayNext') ?? false;
-        if (!autoPlayNext && mounted) {
+        if (!autoPlayNext && !isAlreadyCompleted && mounted) {
           _showSuccessSheet(context);
         }
       }

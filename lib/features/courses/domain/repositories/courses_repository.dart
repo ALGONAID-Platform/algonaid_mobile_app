@@ -8,6 +8,8 @@ import 'package:dartz/dartz.dart';
 abstract class CoursesRepository {
   Future<Either<Failure, List<CourseEntity>>> getAllCourses();
   Future<Either<Failure, List<CourseEntity>>> getMyCourses();
+  Either<Failure, List<CourseEntity>> getCachedAllCourses();
+  Either<Failure, List<CourseEntity>> getCachedMyCourses();
   Future<Either<Failure, CourseProgressEntity>> getCourseProgress(int courseId);
   Future<Either<Failure, bool>> enrollInCourse(int courseId);
   Future<Either<Failure, CourseGrades>> getCourseGrades(int courseId);

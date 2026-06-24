@@ -52,7 +52,7 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
             title: "وسام التفوق الذهبي",
             description: isUnlocked
                 ? "عمل رائع وإنجاز استثنائي! لقد اجتزت جميع التحديات بجدارة واستحقاق، وحصلت على وسام التفوق الذهبي. أنت بالفعل بطل هذه المادة!"
-                : "كن بطل هذه المادة! ستتوج بـ وسام التفوق الذهبي عند إتمامك لجميع وحدات الكورس بنجاح واجتياز كافة الاختبارات بمعدل لا يقل عن %90. استمر، العظمة بانتظارك!",
+                : "كن بطل هذه المادة! ستتوج بـ وسام التفوق الذهبي عند اجتيازك لكافة اختبارات هذا الكورس بمعدل لا يقل عن 90%. استمر، العظمة بانتظارك!",
             lottie: AppLottie.goldMedal,
             gradientColors: [
               const Color.fromARGB(255, 255, 255, 255),
@@ -90,7 +90,7 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "أكمل 100% من الوحدة بمتوسط 90%",
+                        "اجتياز كافة اختبارات الكورس بمعدل 90% فأكثر",
                         style: context.textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),

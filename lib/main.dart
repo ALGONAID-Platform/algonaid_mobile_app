@@ -10,6 +10,7 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/core/theme/theme_provider.dart'
     as app_theme;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -20,6 +21,11 @@ import 'package:video_player/video_player.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // إيقاف طباعة السجلات والـ Debug Logs تلقائياً في نسخة المتجر النهائية لحماية البيانات وتحسين الأداء
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
 
   await Hive.initFlutter();
 
@@ -83,7 +89,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           title: 'Algonaid Lessons',
           debugShowCheckedModeBanner: false,
-          theme: currentTheme, // يتم إدارة السمة بالكامل بواسطة ThemeProvider
+          theme: myTheme, // يتم إدارة السمة بالكامل بواسطة ThemeProvider
           routerConfig: AppRouters.routers,
           // إضافة Builder هنا مهمة جداً لضمان عمل الـ ThemeSwitcher في الصفحات الداخلية
           builder: (context, child) {

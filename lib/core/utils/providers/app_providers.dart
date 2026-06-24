@@ -36,7 +36,7 @@ class AppProviders extends StatelessWidget {
             enrollmentUseCase: getIt(),
             coursesUsecase: getIt(),
             myCoursesUsecase: getIt(),
-            courseProgressUsecase: getIt(),
+            courseProgressUsecase: getIt(), getCachedCoursesUsecase:getIt() , getCachedMyCoursesUsecase: getIt(),
           ),
         ),
         ChangeNotifierProvider(
@@ -58,8 +58,8 @@ class AppProviders extends StatelessWidget {
             getIt<GetModuleLessons>(),
           ),
         ),
-        ChangeNotifierProvider(create: (_) => ModulesListProvider(getIt())),
-        ChangeNotifierProvider(create: (_) => LessonsListProvider(getIt())),
+        ChangeNotifierProvider(create: (_) => ModulesListProvider(getIt(), getIt())),
+        ChangeNotifierProvider(create: (_) => LessonsListProvider(getIt(), getIt())),
         ChangeNotifierProvider(create: (_) => DownloadsProvider()),
         ChangeNotifierProvider(
           create: (_) => getIt<ExcellenceCoursesProvider>(),
