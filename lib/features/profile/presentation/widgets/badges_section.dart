@@ -120,6 +120,73 @@ class BadgesSection extends StatelessWidget {
                                         ?.copyWith(height: 1.5),
                                     textAlign: TextAlign.center,
                                   ),
+                                  
+                                  // ── تاريخ الاكتساب (يظهر فقط للأوسمة المفتوحة) ──
+                                  if (badge.isUnlocked && badge.earnedAt != null) ...[
+                                    const SizedBox(height: 16),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: badge.color.withOpacity(0.08),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: badge.color.withOpacity(0.25),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.emoji_events_rounded,
+                                            color: badge.color,
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'حصلت عليه في ${BadgesHelper.formatEarnedDate(badge.earnedAt!)}',
+                                            style: context.textTheme.labelMedium?.copyWith(
+                                              color: badge.color,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                  
+                                  // ── إشعار "إضافة محتوى جديد" ──
+                                  if (badge.isUnlocked && badge.progress < badge.target) ...[
+                                    const SizedBox(height: 16),
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Icon(Icons.info_outline, color: Colors.orange),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              'تمت إضافة محتوى جديد! أكمل ${badge.target - badge.progress} إضافية للحفاظ على إنجازك بنسبة 100%.',
+                                              style: context.textTheme.labelMedium?.copyWith(
+                                                color: Colors.orange[800],
+                                                height: 1.5,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                  
                                   if (!badge.isUnlocked) ...[
                                     const SizedBox(height: 24),
                                     Container(
@@ -267,6 +334,25 @@ class BadgesSection extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
+                                // ── عرض "محتوى جديد" في القسم المصغر ──
+                                if (badge.isUnlocked && badge.progress < badge.target) ...[
+                                  const SizedBox(height: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'محتوى جديد',
+                                      style: TextStyle(
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),

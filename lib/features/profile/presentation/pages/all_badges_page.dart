@@ -6,6 +6,7 @@ import 'package:algonaid_mobile_app/features/profile/presentation/utils/badges_h
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/info_banner.dart';
 
 class AllBadgesPage extends StatelessWidget {
   const AllBadgesPage({Key? key}) : super(key: key);
@@ -31,28 +32,13 @@ class AllBadgesPage extends StatelessWidget {
               textDirection: TextDirection.rtl,
               child: Column(
                 children: [
-                  Container(
-                    margin: const EdgeInsets.all(16.0),
+                  Padding(
                     padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.info_outline, color: Colors.blue),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'هذه الأوسمة خاصة بمشاهدة الدروس، يتم حسابها بناءً على الدروس التي تمت مشاهدتها وليس لها علاقة بالاختبارات.',
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: Colors.blue[800],
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: InfoBanner(
+                      message:
+                          'هذه الأوسمة خاصة بمشاهدة الدروس، يتم حسابها بناءً على الدروس التي تمت مشاهدتها وليس لها علاقة بالاختبارات.',
+                      padding: const EdgeInsets.all(16.0),
+                      textStyle: context.textTheme.bodyMedium?.copyWith(height: 1.5),
                     ),
                   ),
                   Expanded(
@@ -160,6 +146,71 @@ class _BadgeCard extends StatelessWidget {
                   style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
                   textAlign: TextAlign.center,
                 ),
+                // ── تاريخ الاكتساب (يظهر فقط للأوسمة المفتوحة) ──
+                if (badge.isUnlocked && badge.earnedAt != null) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: badge.color.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: badge.color.withOpacity(0.25),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.emoji_events_rounded,
+                          color: badge.color,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'حصلت عليه في ${BadgesHelper.formatEarnedDate(badge.earnedAt!)}',
+                          style: context.textTheme.labelMedium?.copyWith(
+                            color: badge.color,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                
+                // ── إشعار "إضافة محتوى جديد" ──
+                if (badge.isUnlocked && badge.progress < badge.target) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.info_outline, color: Colors.orange),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'تمت إضافة محتوى جديد! أكمل ${badge.target - badge.progress} إضافية للحفاظ على إنجازك بنسبة 100%.',
+                            style: context.textTheme.labelMedium?.copyWith(
+                              color: Colors.orange[800],
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (!badge.isUnlocked) ...[
                   const SizedBox(height: 24),
                   Container(
@@ -293,6 +344,49 @@ class _BadgeCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              // ── عرض "مكتسب ✓" مع تاريخ مختصر في بطاقة الشبكة ──
+              if (badge.isUnlocked && badge.earnedAt != null) ...[
+                const SizedBox(height: 4),
+                if (badge.progress < badge.target)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.warning_amber_rounded, size: 12, color: Colors.orange),
+                        SizedBox(width: 4),
+                        Text(
+                          'محتوى جديد',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: badge.color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '✓ ${badge.earnedAt!.year}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: badge.color,
+                      ),
+                    ),
+                  ),
+              ],
             ],
           ),
         ),
