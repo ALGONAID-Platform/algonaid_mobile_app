@@ -1,6 +1,6 @@
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
+import 'package:algonaid_mobile_app/features/downloads/presentation/providers/active_downloads_provider.dart';
 import 'package:flutter/material.dart';
 
 class LessonPdfCard extends StatelessWidget {
@@ -29,7 +29,7 @@ class LessonPdfCard extends StatelessWidget {
       onTap: hasPdf ? onOpen : null,
       borderRadius: BorderRadius.circular(18),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surface,

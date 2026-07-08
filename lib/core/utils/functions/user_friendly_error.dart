@@ -11,7 +11,7 @@ String toUserFriendlyErrorMessage(String? rawMessage) {
       normalized.contains('apiexception') ||
       normalized.contains('google_sign_in') ||
       normalized.contains('google')) {
-    return 'فشل تسجيل الدخول باستخدام جوجل.\nتفاصيل الخطأ: $message\n\nتنبيه: تأكد من تسجيل بصمة SHA-1 لجهازك (مفتاح الـ Debug) وحزمة التطبيق (com.example.algonaid_mobile_app) في مشروع Google Console أو Firebase المرتبط بالسيرفر.';
+    return 'فشل تسجيل الدخول باستخدام جوجل.\nتفاصيل الخطأ:nتنبيه: تأكد من تسجيل بصمة SHA-1 لجهازك (مفتاح الـ Debug) وحزمة التطبيق (com.example.algonaid_mobile_app) في مشروع Google Console أو Firebase المرتبط بالسيرفر.';
   }
 
   if (normalized.contains('internet') ||
@@ -29,14 +29,37 @@ String toUserFriendlyErrorMessage(String? rawMessage) {
 
   if (normalized.contains('unauthorized') ||
       normalized.contains('forbidden') ||
-      normalized.contains('token') ||
-      message.contains('صلاحية') ||
-      message.contains('تسجيل الدخول')) {
+      normalized.contains('session expired') ||
+      normalized.contains('token expired') ||
+      normalized.contains('invalid token') ||
+      message.contains('صلاحية الجلسة') ||
+      message.contains('انتهت الجلسة')) {
     return 'انتهت صلاحية الجلسة أو لا يمكن إتمام الطلب حالياً. حاول تسجيل الدخول مرة أخرى.';
   }
 
   if (normalized.contains('not found') || message.contains('غير موجود')) {
+    if (message.contains('الحساب') || message.contains('account')) {
+      return 'هذا الحساب غير موجود. يرجى إنشاء حساب جديد أولاً.';
+    }
+    if (message.contains('البريد الإلكتروني') || message.contains('email')) {
+      return 'البريد الإلكتروني الذي أدخلته غير مسجل لدينا. يرجى إنشاء حساب جديد.';
+    }
     return 'المحتوى المطلوب غير متوفر حالياً.';
+  }
+
+  if (message.contains('بيانات الدخول غير صحيحة') || normalized.contains('invalid credentials')) {
+    return 'البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.';
+  }
+
+  if (normalized.contains('exist') ||
+      normalized.contains('already') ||
+      normalized.contains('taken') ||
+      normalized.contains('duplicate') ||
+      normalized.contains('unique') ||
+      message.contains('موجود مسبقاً') ||
+      message.contains('مستخدم بالفعل') ||
+      message.contains('مسجل')) {
+    return 'هذا البريد الإلكتروني مسجل مسبقاً. يرجى محاولة تسجيل الدخول بدلاً من إنشاء حساب جديد، أو استخدام بريد إلكتروني آخر.';
   }
 
   if (normalized.contains('server') ||

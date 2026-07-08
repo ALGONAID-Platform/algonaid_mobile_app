@@ -3,6 +3,8 @@
 import 'package:algonaid_mobile_app/features/modules/domain/entities/module.dart';
 import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_modules_by_course.dart';
 import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_cached_modules_usecase.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
 import 'package:flutter/material.dart';
 
 class ModulesListState {
@@ -81,5 +83,45 @@ class ModulesListProvider extends ChangeNotifier {
     if (hasListeners) {
       notifyListeners();
     }
+  }
+
+  void updateModuleProgressLocally({required int moduleId, required int lessonId}) {
+    final updatedModules = _state.modules.map((module) {
+      if (module.id == moduleId) {
+        bool alreadyCompleted = false;
+        for (var l in module.lessons) {
+          if (l.id == lessonId && l.status == LessonStatus.completed) {
+            alreadyCompleted = true;
+          }
+        }
+        if (alreadyCompleted) return module;
+
+        final updatedLessons = module.lessons.map((lesson) {
+          if (lesson.id == lessonId) {
+            return lesson.copyWith(status: LessonStatus.completed);
+          }
+          return lesson;
+        }).toList();
+
+        int newCompleted = module.completedLessons + 1;
+        if (newCompleted > module.totalLessons) {
+          newCompleted = module.totalLessons;
+        }
+
+        final double newPercentage = module.totalLessons > 0 
+            ? ((newCompleted / module.totalLessons) * 100) 
+            : 0.0;
+
+        return module.copyWith(
+          lessons: updatedLessons,
+          completedLessons: newCompleted,
+          progressPercentage: newPercentage,
+        );
+      }
+      return module;
+    }).toList();
+
+    _state = _state.copyWith(modules: updatedModules);
+    notifyListeners();
   }
 }

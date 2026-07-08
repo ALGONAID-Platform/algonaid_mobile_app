@@ -31,48 +31,55 @@ class ContinueLearningCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           border: AppBorder.main_border,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                height: 160,
-                child: _CourseImagePreview(image_irl: module.image_url),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _CourseMetaTags(moduleName: module.moduleName),
-                    const SizedBox(height: 12),
-                    Text(
-                      module.courseName,
-                      style: context.textTheme.titleMedium?.copyWith(
-                        color: context.colorScheme.onBackground,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 110,
+                      height: 125,
+                      child: _CourseImagePreview(image_irl: module.image_url),
                     ),
-
-                    const SizedBox(height: 16),
-                    _ProgressBarSection(
-                      progressPercentage: module.progressPercentage.toDouble(),
-                      completedLessons: module.completedLessons,
-                      totalLessons: module.totalLessons,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _CourseMetaTags(moduleName: module.moduleName),
+                        const SizedBox(height: 8),
+                        Text(
+                          module.courseName,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            color: context.colorScheme.onBackground,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 12),
+                        _ProgressBarSection(
+                          progressPercentage: module.progressPercentage.toDouble(),
+                          completedLessons: module.completedLessons,
+                          totalLessons: module.totalLessons,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    _ActionButtonsRow(module: module),
-                  ],
-                ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 16),
+              _ActionButtonsRow(module: module),
             ],
           ),
-        ),
-      ),
+      ),)
     );
   }
 }
@@ -173,6 +180,7 @@ class _ActionButtonsRow extends StatelessWidget {
                   'completedLessons': module.completedLessons,
                   'progressPercentage': module.progressPercentage,
                   'totalLessons': module.totalLessons,
+                  'moduleDescription': module.moduleDescription,
                 },
               );
             },
@@ -180,7 +188,7 @@ class _ActionButtonsRow extends StatelessWidget {
               backgroundColor: context.primary,
               foregroundColor: theme.colorScheme.onPrimary,
               elevation: 0,
-              minimumSize: const Size(0, 45),
+              minimumSize: const Size(0, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -207,7 +215,7 @@ class _ActionButtonsRow extends StatelessWidget {
               side: BorderSide(
                 color: context.colorScheme.onSecondary.withOpacity(0.5),
               ),
-              minimumSize: const Size(0, 45),
+              minimumSize: const Size(0, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -255,10 +263,6 @@ class _CourseImagePreview extends StatelessWidget {
                 imageUrl: resolvedUrl,
                 fit: BoxFit.cover,
               ),
-        Container(color: Colors.black12),
-        const Center(
-          child: Icon(Icons.play_circle_fill, color: Colors.white, size: 45),
-        ),
       ],
     );
   }

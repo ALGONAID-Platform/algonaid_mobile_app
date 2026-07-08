@@ -9,9 +9,11 @@ import 'package:algonaid_mobile_app/core/widgets/shared/guest_login_dialog.dart'
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/circular_reveal.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/pages/competitions_page.dart';
 import 'package:algonaid_mobile_app/features/downloads/presentation/pages/downloads_page.dart';
@@ -48,7 +50,13 @@ class _GuestCoursesPageState extends State<GuestCoursesPage> {
           return Stack(
             children: [
               CustomThresholdRefreshIndicator(
-                color: AppColors.primary,
+                elevation: 0.0,
+                color: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                strokeWidth: 0,
+                notificationPredicate: (ScrollNotification notification) {
+                  return defaultScrollNotificationPredicate(notification) && notification.metrics.pixels <= 0;
+                },
                 onRefresh: _refreshCourses,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
@@ -65,6 +73,9 @@ class _GuestCoursesPageState extends State<GuestCoursesPage> {
                               onLogin: () {
                                 context.read<AuthServiceProvider>().setAuthMode(true);
                                 context.push(Routes.auth);
+                              },
+                              onGuest: () {
+                                context.push('${Routes.modulesList}/${course.id}', extra: course);
                               },
                             );
                           },
@@ -98,7 +109,9 @@ class _GuestCoursesGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     if (courses.isEmpty) {
       return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         padding: const EdgeInsets.all(24),
         children: [
           const SizedBox(height: 80),
@@ -124,7 +137,9 @@ class _GuestCoursesGrid extends StatelessWidget {
     }
 
     return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       itemCount: courses.length + 1,
       itemBuilder: (context, index) {
@@ -159,129 +174,136 @@ class _GuestWelcomeCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = context.isDarkMode;
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [AppColors.indigoDark.withOpacity(0.85), AppColors.indigo]
-              : [context.primary.withOpacity(0.9), context.primary.withOpacity(0.7)],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDark
+                ? [AppColors.indigoDark.withOpacity(0.85), AppColors.indigo]
+                : [context.primary.withOpacity(0.9), context.primary.withOpacity(0.7)],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: context.primary.withOpacity(0.15),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: context.primary.withOpacity(0.15),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: -24,
-            top: -24,
-            child: Icon(
-              Icons.school_outlined,
-              size: 140,
-              color: Colors.white.withOpacity(0.08),
+        child: Stack(
+          children: [
+            Positioned(
+              left: -24,
+              top: -24,
+              child: Icon(
+                Icons.school_outlined,
+                size: 140,
+                color: Colors.white.withOpacity(0.08),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.waving_hand_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      'أهلاً بك في منصة الجنيد!',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'أنشئ حسابك الآن مجاناً لتسجيل حضورك وحفظ تقدمك الدراسي، بالإضافة إلى خوض المسابقات والتحديات المميزة مع زملائك.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.white.withOpacity(0.95),
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<AuthServiceProvider>().setAuthMode(false);
-                        context.push(Routes.auth);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: context.primary,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 10,
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        child: const Icon(
+                          Icons.waving_hand_rounded,
+                          color: Colors.white,
+                          size: 20,
                         ),
                       ),
-                      child: const Text(
-                        'ابدأ الآن مجاناً',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    TextButton(
-                      onPressed: () {
-                        context.read<AuthServiceProvider>().setAuthMode(true);
-                        context.push(Routes.auth);
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                      ),
-                      child: const Text(
-                        'لدي حساب بالفعل',
+                      const SizedBox(width: 12),
+                      const Text(
+                        'أهلاً بك في منصة الجنيد!',
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'أنشئ حسابك الآن مجاناً لتسجيل حضورك وحفظ تقدمك الدراسي، بالإضافة إلى خوض المسابقات والتحديات المميزة مع زملائك.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.95),
+                      height: 1.5,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      TrackTapOffset(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            context.read<AuthServiceProvider>().setAuthMode(false);
+                            context.push(Routes.auth);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: context.primary,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'ابدأ الآن مجاناً',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      TrackTapOffset(
+                        child: TextButton(
+                          onPressed: () {
+                            context.read<AuthServiceProvider>().setAuthMode(true);
+                            context.push(Routes.auth);
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                          ),
+                          child: const Text(
+                            'لدي حساب بالفعل',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -442,18 +464,31 @@ class _GuestGridShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final baseColor = context.isDarkMode
+        ? const Color(0xFF2A3644)
+        : Colors.grey[200]!;
+    final highlightColor = context.isDarkMode
+        ? const Color(0xFF3A4B5D)
+        : Colors.grey[50]!;
+
     return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       itemCount: 6,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            height: 160,
-            decoration: BoxDecoration(
-              color: context.colorScheme.surfaceVariant.withOpacity(0.35),
-              borderRadius: BorderRadius.circular(20),
+          return Shimmer.fromColors(
+            baseColor: baseColor,
+            highlightColor: highlightColor,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              height: 160,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
           );
         }
@@ -468,70 +503,74 @@ class _GuestGridShimmer extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18),
                 border: AppBorder.main_border,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    flex: 4,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: context.colorScheme.surfaceVariant.withOpacity(0.35),
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(18),
+              child: Shimmer.fromColors(
+                baseColor: baseColor,
+                highlightColor: highlightColor,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(18),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 12,
-                            width: 120,
-                            decoration: BoxDecoration(
-                              color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          ),
-                          Container(
-                            height: 10,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: context.colorScheme.surfaceVariant.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                height: 14,
-                                width: 80,
-                                decoration: BoxDecoration(
-                                  color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 12,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(999),
                               ),
-                              Container(
-                                height: 14,
-                                width: 14,
-                                decoration: BoxDecoration(
-                                  color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                                  shape: BoxShape.circle,
-                                ),
+                            ),
+                            Container(
+                              height: 10,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(999),
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  height: 14,
+                                  width: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                                Container(
+                                  height: 14,
+                                  width: 14,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -591,25 +630,27 @@ class _GuestHomePageState extends State<GuestHomePage> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              OutlinedButton(
-                onPressed: () {
-                  context.read<AuthServiceProvider>().setAuthMode(true);
-                  context.push(Routes.auth);
-                },
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: context.primary),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+              TrackTapOffset(
+                child: OutlinedButton(
+                  onPressed: () {
+                    context.read<AuthServiceProvider>().setAuthMode(true);
+                    context.push(Routes.auth);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: context.primary),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    minimumSize: const Size(0, 36),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  minimumSize: const Size(0, 36),
-                ),
-                child: Text(
-                  'تسجيل الدخول',
-                  style: TextStyle(
-                    color: context.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
+                  child: Text(
+                    'تسجيل الدخول',
+                    style: TextStyle(
+                      color: context.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ),

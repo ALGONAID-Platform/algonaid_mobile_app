@@ -18,7 +18,7 @@ class LessonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasVideo = lesson.videoUrl != null && lesson.videoUrl!.isNotEmpty;
+    final isReading = lesson.isReading;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -39,13 +39,19 @@ class LessonCard extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                displayOrder.toString(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
+              child: isReading
+                  ? const Icon(
+                      Icons.menu_book_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    )
+                  : Text(
+                      displayOrder.toString(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -74,26 +80,83 @@ class LessonCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: hasVideo
-                    ? AppColors.primary.withOpacity(0.1)
-                    : AppColors.grey200,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                hasVideo ? 'فيديو' : 'نصي',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: hasVideo
-                      ? AppColors.primary
-                      : Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.grey400,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (lesson.hasTest) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.edit_document,
+                          size: 14,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'يحتوي على اختبار',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                ] else if (lesson.hasExam) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.amber.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.assignment_turned_in_rounded,
+                          size: 14,
+                          color: AppColors.amber,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'اختبار',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.amber,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                ],
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    isReading ? 'قراءة' : 'فيديو',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),

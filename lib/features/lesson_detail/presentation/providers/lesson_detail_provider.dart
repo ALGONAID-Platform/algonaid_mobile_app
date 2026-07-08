@@ -42,14 +42,16 @@ class LessonDetailState {
     Exam? exam,
     int? nextLessonId,
     int? previousLessonId,
+    bool clearLesson = false,
+    bool clearExam = false,
     bool clearNextLesson = false,
     bool clearPreviousLesson = false,
   }) {
     return LessonDetailState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
-      lesson: lesson ?? this.lesson,
-      exam: exam ?? this.exam,
+      lesson: clearLesson ? null : (lesson ?? this.lesson),
+      exam: clearExam ? null : (exam ?? this.exam),
       nextLessonId: clearNextLesson
           ? null
           : (nextLessonId ?? this.nextLessonId),
@@ -78,7 +80,14 @@ class LessonDetailProvider extends ChangeNotifier {
     debugPrint(
       'LessonDetailProvider: loadLesson started for lessonId=$lessonId',
     );
-    _state = _state.copyWith(isLoading: true, errorMessage: null);
+    _state = _state.copyWith(
+      isLoading: true, 
+      errorMessage: null,
+      clearLesson: true,
+      clearExam: true,
+      clearNextLesson: true,
+      clearPreviousLesson: true,
+    );
     notifyListeners();
 
     final result = await _getLessonDetail(lessonId);
@@ -114,16 +123,16 @@ class LessonDetailProvider extends ChangeNotifier {
         notifyListeners();
 
         // Fetch lessons to find next lesson and determine completion status
-        final lessonsResult = await _getModuleLessons(lesson.moduleId);
+        final lessonsResult = await _getModuleLessons(GetModuleLessonsParams(moduleId: lesson.moduleId, page: 1, limit: 100));
         lessonsResult.fold(
           (_) {
-            final isAlreadyCompleted =
+            var isAlreadyCompleted =
                 CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ??
                 false;
-            updateProgress(lesson.id, isAlreadyCompleted);
+            // Removed automatic updateProgress here because the UI now calls it directly as completed.
           },
-          (lessons) {
-            final sortedLessons = [...lessons]
+          (paginatedLessons) {
+            final sortedLessons = [...paginatedLessons.lessons]
               ..sort((a, b) {
                 final orderCompare = a.order.compareTo(b.order);
                 if (orderCompare != 0) return orderCompare;
@@ -162,25 +171,25 @@ class LessonDetailProvider extends ChangeNotifier {
                   CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ??
                   false;
             }
-            updateProgress(lesson.id, isCompleted);
+            // Removed automatic updateProgress here because the UI now calls it directly as completed.
           },
         );
       },
     );
   }
 
-  Future<void> updateProgress(int lessonId, bool isCompleted) async {
+  Future<bool> updateProgress(int lessonId, bool isCompleted) async {
     final result = await _updateLessonProgress(
       lessonId: lessonId,
       isCompleted: isCompleted,
     );
 
-    result.fold(
+    return result.fold(
       (failure) {
-        // Optional: handle failure silently or log it
+        return false;
       },
       (_) {
-        // Progress successfully updated
+        return true;
       },
     );
   }

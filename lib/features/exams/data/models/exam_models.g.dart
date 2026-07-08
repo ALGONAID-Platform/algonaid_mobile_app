@@ -17,13 +17,13 @@ class ExamModelAdapter extends TypeAdapter<ExamModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExamModel(
-      id: fields[0] as int? ?? 0,
-      title: fields[1] as String? ?? '',
+      id: fields[0] as int,
+      title: fields[1] as String,
       description: fields[2] as String?,
-      passingScore: fields[3] as int? ?? 0,
-      maxAttempts: fields[4] as int? ?? 0,
-      lessonId: fields[5] as int? ?? 0,
-      questions: (fields[6] as List?)?.cast<Question>() ?? const [],
+      passingScore: fields[3] as int,
+      maxAttempts: fields[4] as int,
+      lessonId: fields[5] as int,
+      questions: (fields[6] as List).cast<Question>(),
     );
   }
 
@@ -69,12 +69,12 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return QuestionModel(
-      id: fields[0] as int? ?? 0,
-      text: fields[1] as String? ?? '',
-      type: fields[2] as String? ?? 'MULTIPLE_CHOICE',
-      points: fields[3] as int? ?? 0,
-      examId: fields[4] as int? ?? 0,
-      options: (fields[5] as List?)?.cast<Option>() ?? const [],
+      id: fields[0] as int,
+      text: fields[1] as String,
+      type: fields[2] as String,
+      points: fields[3] as int,
+      examId: fields[4] as int,
+      options: (fields[5] as List).cast<Option>(),
       description: fields[6] as String?,
       imageUrl: fields[7] as String?,
       explanation: fields[8] as String?,
@@ -130,10 +130,10 @@ class OptionModelAdapter extends TypeAdapter<OptionModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return OptionModel(
-      id: fields[0] as int? ?? 0,
-      text: fields[1] as String? ?? '',
-      isCorrect: fields[2] as bool? ?? false,
-      questionId: fields[3] as int? ?? 0,
+      id: fields[0] as int,
+      text: fields[1] as String,
+      isCorrect: fields[2] as bool,
+      questionId: fields[3] as int,
     );
   }
 
@@ -173,15 +173,15 @@ class ExamAttemptModelAdapter extends TypeAdapter<ExamAttemptModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExamAttemptModel(
-      id: fields[0] as int? ?? 0,
-      score: fields[1] as int? ?? 0,
-      status: fields[2] as String? ?? 'IN_PROGRESS',
-      startedAt: fields[3] as DateTime? ?? DateTime.now(),
+      id: fields[0] as int,
+      score: fields[1] as int,
+      status: fields[2] as String,
+      startedAt: fields[3] as DateTime,
       completedAt: fields[4] as DateTime?,
-      studentId: fields[5] as int? ?? 0,
-      examId: fields[6] as int? ?? 0,
-      answers: (fields[7] as Map?)?.cast<int, int>() ?? const {},
-      questions: (fields[8] as List?)?.cast<Question>() ?? const [],
+      studentId: fields[5] as int,
+      examId: fields[6] as int,
+      answers: (fields[7] as Map).cast<int, int>(),
+      questions: (fields[8] as List).cast<Question>(),
     );
   }
 
@@ -231,17 +231,17 @@ class ExamResultModelAdapter extends TypeAdapter<ExamResultModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExamResultModel(
-      attemptId: fields[0] as int? ?? 0,
-      examId: fields[1] as int? ?? 0,
-      studentId: fields[2] as int? ?? 0,
-      score: fields[3] as int? ?? 0,
-      status: fields[4] as String? ?? 'FAILED',
-      submittedAt: fields[5] as DateTime? ?? DateTime.now(),
-      totalQuestions: fields[6] as int? ?? 0,
-      correctAnswers: fields[7] as int? ?? 0,
-      wrongAnswers: fields[8] as int? ?? 0,
-      answers: (fields[9] as Map?)?.cast<int, int>() ?? const {},
-      correctOptions: (fields[10] as Map?)?.cast<int, int>() ?? const {},
+      attemptId: fields[0] as int,
+      examId: fields[1] as int,
+      studentId: fields[2] as int,
+      score: fields[3] as int,
+      status: fields[4] as String,
+      submittedAt: fields[5] as DateTime,
+      totalQuestions: fields[6] as int,
+      correctAnswers: fields[7] as int,
+      wrongAnswers: fields[8] as int,
+      answers: (fields[9] as Map).cast<int, int>(),
+      correctOptions: (fields[10] as Map).cast<int, int>(),
     );
   }
 

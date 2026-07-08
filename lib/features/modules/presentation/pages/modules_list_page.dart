@@ -22,10 +22,11 @@ import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/features/modules/data/datasources/module_local_datasource.dart';
 import 'package:algonaid_mobile_app/features/modules/data/models/last_accessed_module_model.dart';
 import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid_mobile_app/features/practice_exams/presentation/widgets/practice_exams_tab_view.dart';
 
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
-
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 
 class ModulesListPage extends StatefulWidget {
@@ -61,8 +62,9 @@ class _ModulesListPageState extends State<ModulesListPage> {
       isBackgroundRefreshing: _isBackgroundRefreshing,
       onRefresh: () async {
         setState(() => _isBackgroundRefreshing = true);
+        final isGuest = TokenStorage.getToken() == null;
         await context.read<ModulesListProvider>().loadModules(widget.course.id);
-        await context.read<GetCoursesProvider>().refreshAll(isGuest: false);
+        await context.read<GetCoursesProvider>().refreshAll(isGuest: isGuest);
         if (mounted) setState(() => _isBackgroundRefreshing = false);
       },
     );
@@ -98,7 +100,7 @@ class _ModulesListView extends StatelessWidget {
           child: Directionality(
             textDirection: TextDirection.rtl,
             child: DefaultTabController(
-              length: 2,
+              length: 3,
               child: Scaffold(
                 backgroundColor: context.background,
                 body: Stack(
@@ -132,6 +134,7 @@ class _ModulesListView extends StatelessWidget {
                                   tabs: const [
                                     Tab(text: "محتوى الدورة"),
                                     Tab(text: "التفاصيل"),
+                                    Tab(text: "نماذج الاختبارات"),
                                   ],
                                 ),
                               ),
@@ -157,6 +160,15 @@ class _ModulesListView extends StatelessWidget {
                                           completedCount: updatedCourse.completedLessons,
                                           progress: updatedCourse.progressPercentage,
                                           onContinueTap: () {
+                                            final isGuest = TokenStorage.getToken() == null;
+                                            if (isGuest) {
+                                              AppSnackBar.show(
+                                                context: context,
+                                                message: 'عذراً، ميزة مواصلة التعلم غير متاحة في وضع الزائر. يرجى تسجيل الدخول لحفظ تقدمك! 🔒',
+                                                type: SnackBarType.warning,
+                                              );
+                                              return;
+                                            }
                                             if (modules.isEmpty) return;
 
                                             final lastLessonId = CacheHelper.getInt(key: 'last_lesson_course_${updatedCourse.id}');
@@ -168,14 +180,7 @@ class _ModulesListView extends StatelessWidget {
                                                 extra: lastModuleId != null
                                                     ? '${Routes.lessonsList}/$lastModuleId'
                                                     : '${Routes.coursesPage}',
-                                              ).then((_) {
-                                                if (context.mounted) {
-                                                  context.read<ModulesListProvider>().loadModules(updatedCourse.id);
-                                                  try {
-                                                    context.read<GetCoursesProvider>().refreshAll();
-                                                  } catch (_) {}
-                                                }
-                                              });
+                                              );
                                             } else {
                                               AppSnackBar.show(
                                                 context: context,
@@ -238,6 +243,9 @@ class _ModulesListView extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+
+                                // Tab 3: Practice Exams
+                                PracticeExamsTabView(courseId: updatedCourse.id),
                               ],
                             );
                           },
@@ -334,23 +342,37 @@ class _CourseDetailsSectionState extends State<_CourseDetailsSection> {
               ],
             ),
             const SizedBox(height: 12),
-            AnimatedCrossFade(
+            AnimatedSize(
               duration: const Duration(milliseconds: 300),
-              crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-              firstChild: Text(
-                widget.course.description,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.bodyMedium?.copyWith(
-                  height: 1.6,
-                  color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: _isExpanded ? double.infinity : 75,
                 ),
-              ),
-              secondChild: Text(
-                widget.course.description,
-                style: context.textTheme.bodyMedium?.copyWith(
-                  height: 1.6,
-                  color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                child: ClipRect(
+                  child: MarkdownBody(
+                    data: widget.course.description,
+                    selectable: true,
+                    styleSheet: MarkdownStyleSheet(
+                      p: context.textTheme.bodyMedium?.copyWith(
+                        height: 1.6,
+                        color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                      ),
+                      h1: context.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.isDarkMode ? Colors.white : Colors.black,
+                      ),
+                      h2: context.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.isDarkMode ? Colors.white : Colors.black,
+                      ),
+                      h3: context.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

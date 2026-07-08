@@ -13,11 +13,22 @@ import 'package:algonaid_mobile_app/core/theme/theme_provider.dart'
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/global_video_state.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/floating_video_widget.dart';
 import 'package:video_player/video_player.dart';
+import 'package:upgrader/upgrader.dart';
+import 'dart:async';
+import 'package:app_links/app_links.dart';
+import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +37,15 @@ void main() async {
   if (kReleaseMode) {
     debugPrint = (String? message, {int? wrapWidth}) {};
   }
+
+  // تهيئة أداة التحميل بالخلفية لضمان عملها بشكل مستقل عن حالة التطبيق
+  if (!kIsWeb) {
+    await FlutterDownloader.initialize(debug: kDebugMode, ignoreSsl: true);
+  }
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await Hive.initFlutter();
 
@@ -56,16 +76,115 @@ void main() async {
   runApp(AppProviders(child: MyApp(initTheme: initTheme)));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final ThemeData initTheme;
   const MyApp({super.key, required this.initTheme});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // User is active, so cancel any scheduled retention notifications
+    NotificationService().cancelRetentionNotifications();
+    _initAppLinks();
+  }
+
+  void _initAppLinks() {
+    _appLinks = AppLinks();
+
+    // Check initial link if app was in cold state (terminated)
+    _appLinks.getInitialLink().then((uri) {
+      if (uri != null) {
+        _handleDeepLink(uri);
+      }
+    });
+
+    // Handle link when app is in warm state (front or background)
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      _handleDeepLink(uri);
+    });
+  }
+
+  void _handleDeepLink(Uri uri) {
+    if (uri.path == '/api/v1/auth/verify-email' || uri.path == '/auth/verify-email') {
+      final token = uri.queryParameters['token'];
+      if (token != null && token.isNotEmpty) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          final context = navigatorKey.currentContext;
+          if (context != null) {
+            _verifyEmailToken(context, token);
+          }
+        });
+      }
+    } else if (uri.path == '/reset-password') {
+      final token = uri.queryParameters['token'];
+      if (token != null && token.isNotEmpty) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          final context = navigatorKey.currentContext;
+          if (context != null) {
+            context.go(Routes.resetPassword, extra: token);
+          }
+        });
+      }
+    }
+  }
+
+  void _verifyEmailToken(BuildContext context, String token) async {
+    final authProvider = Provider.of<AuthServiceProvider>(context, listen: false);
+    
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final success = await authProvider.verifyEmail(token);
+    
+    if (context.mounted) {
+      // hide loading dialog
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    if (success) {
+       navigatorKey.currentContext?.go(Routes.emailVerifiedSuccess);
+    } else {
+       navigatorKey.currentContext?.go(Routes.emailVerifyFailed, extra: authProvider.errorMessage);
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      // User left the app, schedule retention notifications
+      NotificationService().scheduleRetentionNotifications();
+    } else if (state == AppLifecycleState.resumed) {
+      // User came back, cancel them
+      NotificationService().cancelRetentionNotifications();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // إعدادات شريط الحالة (Status Bar Configuration)
+    // إعدادات شريط الحالة
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // شفاف ليبدو أجمل مع الأنميشن
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
       ),
     );
@@ -81,17 +200,26 @@ class MyApp extends StatelessWidget {
             fontIndex: appThemeProvider.fontIndex,
           );
 
+    // ThemeProvider (animated) ضروري كـ ancestor لـ ThemeSwitchingArea
+    // نستخدم myTheme لضمان سلاسة حركة التبديل الدائرية دون وميض
     return ThemeProvider(
       initTheme: currentTheme,
-      // الـ duration هنا يتحكم في سرعة انتشار الدائرة (نفس سرعة تليجرام تقريباً)
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 1100),
       builder: (context, myTheme) {
         return MaterialApp.router(
           title: 'Algonaid Lessons',
           debugShowCheckedModeBanner: false,
-          theme: myTheme, // يتم إدارة السمة بالكامل بواسطة ThemeProvider
+          theme: myTheme,
           routerConfig: AppRouters.routers,
-          // إضافة Builder هنا مهمة جداً لضمان عمل الـ ThemeSwitcher في الصفحات الداخلية
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ar'),
+            Locale('en'),
+          ],
           builder: (context, child) {
             return ThemeSwitchingArea(
               child: ValueListenableBuilder<bool>(
@@ -132,7 +260,16 @@ class MyApp extends StatelessWidget {
                     },
                   );
                 },
-                child: child!,
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: UpgradeAlert(
+                    upgrader: Upgrader(
+                      messages: UpgraderMessages(code: 'ar'),
+                    ),
+                    navigatorKey: navigatorKey,
+                    child: child!,
+                  ),
+                ),
               ),
             );
           },

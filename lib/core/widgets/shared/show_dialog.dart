@@ -2,6 +2,7 @@ import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/circular_reveal.dart';
 
 class AppDialog {
   static void showDynamicDialog({
@@ -13,6 +14,7 @@ class AppDialog {
     String? confirmText,
     String? cancelText,
     VoidCallback? onConfirm,
+    VoidCallback? onCancel, // 🌟 مضاف لدعم تنفيذ عمليات عند الإلغاء
     Widget? content,
   }) {
     final currentContext = context ?? navigatorKey.currentContext;
@@ -78,6 +80,7 @@ class AppDialog {
                   confirmText,
                   cancelText,
                   onConfirm,
+                  onCancel,
                 ),
               ],
             ),
@@ -95,24 +98,27 @@ class AppDialog {
     String? confirmText,
     String? cancelText,
     VoidCallback? onConfirm,
+    VoidCallback? onCancel,
   ) {
     // زر التأكيد الأساسي
-    final confirmButton = ElevatedButton(
-      onPressed: () {
-        Navigator.pop(context);
-        if (onConfirm != null) onConfirm();
-      },
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        backgroundColor: isError ? Colors.red : context.primary,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(
-        confirmText ?? (isError ? "حسناً" : "تأكيد"),
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+    final confirmButton = TrackTapOffset(
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pop(context);
+          if (onConfirm != null) onConfirm();
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          backgroundColor: isError ? Colors.red : context.primary,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Text(
+          confirmText ?? (isError ? "حسناً" : "تأكيد"),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -125,28 +131,33 @@ class AppDialog {
     // إذا كان المطلوب زرين (تأكيد وإلغاء) كما في السابق
     return Row(
       children: [
+        Expanded(child: confirmButton),
+        const SizedBox(width: 12),
         Expanded(
-          child: OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(
-                color: context.colorScheme.onSecondary.withOpacity(0.5),
+          child: TrackTapOffset(
+            child: OutlinedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (onCancel != null) onCancel();
+              },
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                side: BorderSide(
+                  color: context.colorScheme.onSecondary.withOpacity(0.5),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(
-              cancelText ?? "إغلاق",
-              style: context.textTheme.labelMedium!.copyWith(
-                color: context.colorScheme.onSecondary.withOpacity(0.5),
+              child: Text(
+                cancelText ?? "إغلاق",
+                style: context.textTheme.labelMedium!.copyWith(
+                  color: context.colorScheme.onSecondary.withOpacity(0.5),
+                ),
               ),
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(child: confirmButton),
       ],
     );
   }

@@ -16,7 +16,18 @@ class StorageSettingsSection extends StatelessWidget {
     try {
       final tempDir = await getTemporaryDirectory();
       if (tempDir.existsSync()) {
-        tempDir.deleteSync(recursive: true);
+        final List<FileSystemEntity> entities = tempDir.listSync();
+        for (final entity in entities) {
+          try {
+            if (entity is File) {
+              entity.deleteSync();
+            } else if (entity is Directory) {
+              entity.deleteSync(recursive: true);
+            }
+          } catch (e) {
+            debugPrint('Failed to delete cache entity: ${entity.path}, error: $e');
+          }
+        }
       }
       if (context.mounted) {
         AppSnackBar.show(
@@ -41,7 +52,7 @@ class StorageSettingsSection extends StatelessWidget {
       context: context,
       title: 'مسح التنزيلات',
       message:
-          'هل أنت متأكد أنك تريد مسح جميع الفيديوهات والدروس التي قمت بتنزيلها؟ لا يمكن التراجع عن هذا الإجراء.',
+          'هل أنت متأكد أنك تريد مسح جميع الفيديوهات، الدروس، ونماذج الاختبارات التي قمت بتنزيلها؟ لا يمكن التراجع عن هذا الإجراء.',
       isError: true,
       confirmText: 'مسح',
       cancelText: 'إلغاء',
@@ -51,8 +62,18 @@ class StorageSettingsSection extends StatelessWidget {
           final keys = prefs.getKeys().toList();
 
           for (final key in keys) {
+            if (key.startsWith('is_saved_lesson_') ||
+                key.startsWith('video_filename_') ||
+                key.startsWith('video_download_id_') ||
+                key.startsWith('pdf_filename_') ||
+                key.startsWith('pdf_download_id_')) {
+              await prefs.remove(key);
+              continue;
+            }
+
             if (key.startsWith(AppConstants.videoLocalPathPrefix) ||
-                key.startsWith(AppConstants.pdfLocalPathPrefix)) {
+                key.startsWith(AppConstants.pdfLocalPathPrefix) ||
+                key.startsWith('practice_exam_pdf_')) {
               final path = prefs.getString(key);
               if (path != null && path.isNotEmpty) {
                 final file = File(path);
@@ -112,7 +133,7 @@ class StorageSettingsSection extends StatelessWidget {
           ),
           title: Text('مسح التنزيلات', style: context.textTheme.bodyLarge),
           subtitle: Text(
-            'حذف جميع الفيديوهات والدروس المحملة',
+            'حذف جميع الفيديوهات، الدروس، والنماذج المحملة',
             style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),
           ),
           onTap: () => _clearDownloads(context),

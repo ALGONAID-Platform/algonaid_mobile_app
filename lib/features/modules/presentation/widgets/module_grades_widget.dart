@@ -7,6 +7,7 @@ import 'package:algonaid_mobile_app/features/modules/presentation/providers/modu
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 
 class ModuleGradesWidget extends StatefulWidget {
   final int moduleId;
@@ -25,7 +26,10 @@ class _ModuleGradesWidgetState extends State<ModuleGradesWidget> {
     super.initState();
     _provider = getIt<ModuleGradesProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _provider.fetchGrades(widget.moduleId);
+      final isGuest = TokenStorage.getToken() == null;
+      if (!isGuest) {
+        _provider.fetchGrades(widget.moduleId);
+      }
     });
   }
 
@@ -35,6 +39,63 @@ class _ModuleGradesWidgetState extends State<ModuleGradesWidget> {
       value: _provider,
       child: Consumer<ModuleGradesProvider>(
         builder: (context, provider, child) {
+          final isGuest = TokenStorage.getToken() == null;
+          if (isGuest) {
+            return Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.lock_outline_rounded,
+                      size: 64,
+                      color: context.primary.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'ميزة غير متاحة للزوار',
+                      style: context.theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'يرجى تسجيل الدخول لتتمكن من استعراض تفاصيل درجات ونتائج الاختبارات الخاصة بالوحدة.',
+                      style: context.theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          GoRouter.of(context).push(Routes.auth);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          "تسجيل الدخول",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           final state = provider.getState(widget.moduleId);
 
           if (state.isLoading) {

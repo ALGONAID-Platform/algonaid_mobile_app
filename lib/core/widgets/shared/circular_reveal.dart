@@ -2,6 +2,27 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+class RevealOffsetTracker {
+  static Offset? lastTapOffset;
+}
+
+class TrackTapOffset extends StatelessWidget {
+  final Widget child;
+
+  const TrackTapOffset({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: (event) {
+        RevealOffsetTracker.lastTapOffset = event.position;
+      },
+      child: child,
+    );
+  }
+}
+
 class GreenRevealPage extends CustomTransitionPage {
   GreenRevealPage({
     required LocalKey key,

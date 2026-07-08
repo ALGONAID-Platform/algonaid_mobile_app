@@ -14,6 +14,7 @@ import 'package:algonaid_mobile_app/features/modules/presentation/widgets/module
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/core/di/service_locator.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:marquee/marquee.dart' as marquee;
 
 class ModuleHeaderStats extends StatefulWidget {
   final int moduleId;
@@ -21,6 +22,7 @@ class ModuleHeaderStats extends StatefulWidget {
   final int completedLessons;
   final double progressPercentage;
   final int totalLessons;
+  final String? moduleDescription;
   final VoidCallback? onBack;
   const ModuleHeaderStats({
     super.key,
@@ -29,6 +31,7 @@ class ModuleHeaderStats extends StatefulWidget {
     required this.completedLessons,
     required this.progressPercentage,
     required this.totalLessons,
+    this.moduleDescription,
     this.onBack,
   });
 
@@ -55,7 +58,7 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
         builder: (context, provider, child) {
           // Read cached state if available — no fetch triggered here.
           final state = provider.getState(widget.moduleId);
-          final isUnlocked = (state.grades?.averagePercentage ?? 0.0) > 85;
+          final isUnlocked = (state.grades?.averagePercentage ?? 0.0) >= 85;
 
           final theme = Theme.of(context);
           final isDark = theme.brightness == Brightness.dark;
@@ -80,12 +83,42 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            "وحدة تعليمية",
-                            style: context.textTheme.bodySmall?.copyWith(),
-                            textAlign: TextAlign.center,
+                          Builder(
+                            builder: (context) {
+                              final desc = widget.moduleDescription ?? "وحدة تعليمية";
+                              final style = context.textTheme.bodyMedium?.copyWith(
+                                color: context.textTheme.bodySmall?.color,
+                              ) ?? const TextStyle();
+                              
+                              if (desc.length > 35) {
+                                return SizedBox(
+                                  height: 24,
+                                  width: MediaQuery.of(context).size.width * 0.7,
+                                  child: marquee.Marquee(
+                                    text: desc,
+                                    style: style,
+                                    scrollAxis: Axis.horizontal,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    blankSpace: 30.0,
+                                    velocity: 30.0,
+                                    pauseAfterRound: const Duration(seconds: 2),
+                                    startPadding: 10.0,
+                                    textDirection: TextDirection.rtl,
+                                  ),
+                                );
+                              }
+                              return Text(
+                                desc,
+                                style: style,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -128,8 +161,8 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
                           title: "وسام البراعة الفضي",
                           description: isUnlocked
                               ? "تهانينا! لقد أثبت براعتك واجتزت اختبارات هذه الوحدة بنجاح باهر، وحصلت على وسام البراعة الفضي بكل جدارة. استمر في هذا التميز!"
-                              : "أنت على بُعد خطوة من التميّز! ستحصل على وسام البراعة الفضي عند اجتيازك لجميع اختبارات هذه الوحدة بنسبة %90 أو أكثر. أثبت مهاراتك الآن!",
-                          lottie: AppLottie.goldMedal2,
+                              : "أنت على بُعد خطوة من التميّز! ستحصل على وسام البراعة الفضي عند اجتيازك لجميع اختبارات هذه الوحدة بنسبة %85 أو أكثر. أثبت مهاراتك الآن!",
+                          lottie: AppLottie.goldMedal2, // We might need a silver medal here if we have one, but keeping it as is.
                           gradientColors: [
                             const Color.fromARGB(255, 94, 94, 94),
                             const Color.fromARGB(255, 153, 153, 153),
@@ -211,7 +244,7 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
                                 ),
                                 SizedBox(height: 10),
                                 Text(
-                                  'يتطلب الحصول على درجة 85% أو أعلى في الاختبار النهائي.',
+                                  'يتطلب الحصول على درجة 85% أو أعلى في اختبارات الوحدة.',
                                   style: theme.textTheme.bodySmall,
                                   textAlign: TextAlign.center,
                                 ),

@@ -18,6 +18,9 @@ class SearchCoursesProvider extends ChangeNotifier {
   List<SearchLessonEntity> _lessons = [];
   List<SearchLessonEntity> get lessons => _lessons;
 
+  List<SearchPracticeExamEntity> _practiceExams = [];
+  List<SearchPracticeExamEntity> get practiceExams => _practiceExams;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -36,6 +39,7 @@ class SearchCoursesProvider extends ChangeNotifier {
       _courses = [];
       _modules = [];
       _lessons = [];
+      _practiceExams = [];
       _error = null;
       _isLoading = false;
       notifyListeners();
@@ -57,6 +61,7 @@ class SearchCoursesProvider extends ChangeNotifier {
           _courses = [];
           _modules = [];
           _lessons = [];
+          _practiceExams = [];
           _isLoading = false;
           notifyListeners();
         },
@@ -64,6 +69,7 @@ class SearchCoursesProvider extends ChangeNotifier {
           _courses = globalSearch.courses;
           _modules = globalSearch.modules;
           _lessons = globalSearch.lessons;
+          _practiceExams = globalSearch.practiceExams;
           _error = null;
           _isLoading = false;
           notifyListeners();
@@ -77,6 +83,7 @@ class SearchCoursesProvider extends ChangeNotifier {
     _courses = [];
     _modules = [];
     _lessons = [];
+    _practiceExams = [];
     _error = null;
     _isLoading = false;
     if (_debounce?.isActive ?? false) _debounce?.cancel();

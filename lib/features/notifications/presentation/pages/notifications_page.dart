@@ -4,6 +4,7 @@ import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
 import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
 import 'package:intl/intl.dart';
 
 class NotificationsPage extends StatefulWidget {
@@ -143,43 +144,29 @@ class _NotificationsPageState extends State<NotificationsPage> {
               IconButton(
                 icon: const Icon(Icons.delete_sweep_outlined, color: Colors.red),
                 tooltip: 'حذف جميع الإشعارات',
-                onPressed: () async {
-                  final confirm = await showDialog<bool>(
+                onPressed: () {
+                  AppDialog.showDynamicDialog(
                     context: context,
-                    builder: (context) => Directionality(
-                      textDirection: ui.TextDirection.rtl,
-                      child: AlertDialog(
-                        title: const Text('حذف جميع الإشعارات؟'),
-                        content: const Text('هل أنت متأكد من رغبتك في حذف كل الإشعارات نهائياً؟'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('إلغاء'),
+                    title: 'حذف جميع الإشعارات؟',
+                    message: 'هل أنت متأكد من رغبتك في حذف كل الإشعارات نهائياً؟',
+                    isError: true,
+                    confirmText: 'حذف الكل',
+                    cancelText: 'إلغاء',
+                    onConfirm: () async {
+                      await NotificationService().clearAll();
+                      if (mounted) {
+                        setState(() {
+                          _notifications = [];
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('تم حذف جميع الإشعارات بنجاح', textAlign: TextAlign.center),
+                            backgroundColor: Colors.black87,
                           ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            style: TextButton.styleFrom(foregroundColor: Colors.red),
-                            child: const Text('حذف الكل'),
-                          ),
-                        ],
-                      ),
-                    ),
+                        );
+                      }
+                    },
                   );
-
-                  if (confirm == true) {
-                    await NotificationService().clearAll();
-                    setState(() {
-                      _notifications = [];
-                    });
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('تم حذف جميع الإشعارات بنجاح', textAlign: TextAlign.center),
-                          backgroundColor: Colors.black87,
-                        ),
-                      );
-                    }
-                  }
                 },
               ),
           ],

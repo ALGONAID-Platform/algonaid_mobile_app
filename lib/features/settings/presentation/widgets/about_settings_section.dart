@@ -42,17 +42,6 @@ class AboutSettingsSection extends StatelessWidget {
       children: [
         const SettingsSectionTitle(title: 'عن المنصة'),
         ListTile(
-          leading: SettingsIconWrapper(
-            icon: Icons.info_outline_rounded,
-            color: context.primary,
-          ),
-          title: Text('حول المنصة', style: context.textTheme.bodyLarge),
-          trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-          onTap: () {
-            context.push(Routes.aboutPage);
-          },
-        ),
-        ListTile(
           leading: const SettingsIconWrapper(
             icon: Icons.code_rounded,
             color: Colors.purple,

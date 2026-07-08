@@ -1,6 +1,6 @@
 import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgress_entity.dart';
 import 'package:hive/hive.dart';
-part 'course_progress_model.g.dart';
+part 'courseProgress_model.g.dart';
 
 @HiveType(typeId: 5)
 class CourseProgressModel extends CourseProgressEntity {

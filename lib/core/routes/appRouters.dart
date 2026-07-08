@@ -5,6 +5,10 @@ import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/circular_reveal.dart';
 import 'package:algonaid_mobile_app/features/auth/presentation/pages/signin_&_signup_pages.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/pages/email_verification_page.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/pages/email_verified_success_page.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/pages/email_verify_failed_page.dart';
+import 'package:algonaid_mobile_app/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/teacher_entity.dart';
@@ -21,6 +25,7 @@ import 'package:algonaid_mobile_app/features/search/presentation/pages/search_pa
 import 'package:algonaid_mobile_app/features/search/presentation/providers/search_courses_provider.dart';
 import 'package:algonaid_mobile_app/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:algonaid_mobile_app/features/settings/presentation/pages/about_page.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/pages/about_teacher_page.dart';
 import 'package:algonaid_mobile_app/features/settings/presentation/pages/developers_page.dart';
 import 'package:algonaid_mobile_app/features/settings/presentation/pages/settings_page.dart';
 import 'package:algonaid_mobile_app/features/excellence_courses/presentation/pages/all_excellence_courses_page.dart';
@@ -33,6 +38,36 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class AppRouters {
+  static final Map<ValueKey<String>, Offset> _routeOffsetCache = {};
+
+  static Offset? _consumeOffset(GoRouterState state) {
+    final pageKey = state.pageKey;
+    if (_routeOffsetCache.containsKey(pageKey)) {
+      return _routeOffsetCache[pageKey];
+    }
+
+    Offset? offset;
+    final extra = state.extra;
+    if (extra is Offset) {
+      offset = extra;
+    } else if (extra is Map<String, dynamic> && extra['offset'] is Offset) {
+      offset = extra['offset'] as Offset;
+    }
+    offset ??= RevealOffsetTracker.lastTapOffset;
+    RevealOffsetTracker.lastTapOffset = null;
+
+    if (offset != null) {
+      _routeOffsetCache[pageKey] = offset;
+    }
+
+    // Clean up cache to prevent memory leaks
+    if (_routeOffsetCache.length > 10) {
+      _routeOffsetCache.remove(_routeOffsetCache.keys.first);
+    }
+
+    return offset;
+  }
+
   /// The central router configuration for the application using [GoRouter].
   /// Handles navigation paths, transitions, and argument passing between screens.
   static final routers = GoRouter(
@@ -51,19 +86,61 @@ abstract class AppRouters {
       /// Main landing page containing the dashboard or user's courses.
       GoRoute(
         path: Routes.homePage,
-        builder: (context, state) => const CoursesHomePage(),
+        pageBuilder: (context, state) {
+          Offset? centerOffset = _consumeOffset(state);
+
+          if (centerOffset == null) {
+            final size = MediaQuery.of(context).size;
+            centerOffset = Offset(size.width / 2, size.height / 2);
+          }
+
+          return GreenRevealPage(
+            key: state.pageKey,
+            child: const CoursesHomePage(),
+            center: centerOffset,
+            color: AppColors.primary,
+          );
+        },
       ),
 
       /// Guest landing page containing the courses in grid view without login.
       GoRoute(
         path: Routes.guestHome,
-        builder: (context, state) => const GuestHomePage(),
+        pageBuilder: (context, state) {
+          Offset? centerOffset = _consumeOffset(state);
+
+          if (centerOffset == null) {
+            final size = MediaQuery.of(context).size;
+            centerOffset = Offset(size.width / 2, size.height / 2);
+          }
+
+          return GreenRevealPage(
+            key: state.pageKey,
+            child: const GuestHomePage(),
+            center: centerOffset,
+            color: AppColors.primary,
+          );
+        },
       ),
 
       /// Alternate path explicitly pointing to the courses page.
       GoRoute(
         path: Routes.coursesPage,
-        builder: (context, state) => const CoursesHomePage(),
+        pageBuilder: (context, state) {
+          Offset? centerOffset = _consumeOffset(state);
+
+          if (centerOffset == null) {
+            final size = MediaQuery.of(context).size;
+            centerOffset = Offset(size.width / 2, size.height / 2);
+          }
+
+          return GreenRevealPage(
+            key: state.pageKey,
+            child: const CoursesHomePage(),
+            center: centerOffset,
+            color: AppColors.primary,
+          );
+        },
       ),
 
       /// Search page for courses.
@@ -83,13 +160,56 @@ abstract class AppRouters {
       GoRoute(
         path: Routes.auth,
         pageBuilder: (context, state) {
-          final size = MediaQuery.of(context).size;
+          Offset? centerOffset = _consumeOffset(state);
+
+          if (centerOffset == null) {
+            final size = MediaQuery.of(context).size;
+            final topPadding = MediaQuery.of(context).padding.top;
+            final isRtl = Directionality.of(context) == TextDirection.rtl;
+            final x = isRtl ? 80.0 : (size.width - 80.0);
+            final y = topPadding + 56.0 / 2; // Center of the AppBar
+            centerOffset = Offset(x, y);
+          }
+
           return GreenRevealPage(
             key: state.pageKey,
             child: const SigninAndSignupPage(),
-            center: Offset(size.width - 50, size.height - 70),
+            center: centerOffset,
             color: AppColors.primary,
           );
+        },
+      ),
+
+      /// Email Verification Page
+      GoRoute(
+        path: Routes.emailVerification,
+        builder: (context, state) {
+          final email = state.extra as String? ?? '';
+          return EmailVerificationPage(email: email);
+        },
+      ),
+
+      /// Email Verified Success Page
+      GoRoute(
+        path: Routes.emailVerifiedSuccess,
+        builder: (context, state) => const EmailVerifiedSuccessPage(),
+      ),
+
+      /// Email Verify Failed Page
+      GoRoute(
+        path: Routes.emailVerifyFailed,
+        builder: (context, state) {
+          final message = state.extra as String?;
+          return EmailVerifyFailedPage(message: message);
+        },
+      ),
+
+      /// Reset Password Page
+      GoRoute(
+        path: Routes.resetPassword,
+        builder: (context, state) {
+          final token = state.extra as String? ?? '';
+          return ResetPasswordPage(token: token);
         },
       ),
 
@@ -154,6 +274,7 @@ abstract class AppRouters {
                 (data?['progressPercentage'] as num?)?.toDouble() ?? 0.0,
             totalLessons: (data?['totalLessons'] as num?)?.toInt() ?? 0,
             courseId: (data?['courseId'] as num?)?.toInt(),
+            moduleDescription: data?['moduleDescription'] as String?,
           );
         },
       ),
@@ -239,6 +360,12 @@ abstract class AppRouters {
       GoRoute(
         path: Routes.allBadgesPage,
         builder: (context, state) => const AllBadgesPage(),
+      ),
+
+      /// About teacher page
+      GoRoute(
+        path: Routes.aboutTeacherPage,
+        builder: (context, state) => const AboutTeacherPage(),
       ),
     ],
   );

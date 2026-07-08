@@ -8,6 +8,7 @@ import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,7 @@ class BuildCourseDetails extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -47,55 +48,19 @@ class BuildCourseDetails extends StatelessWidget {
   }
 
   Widget _buildHeaderSection(BuildContext context, ColorScheme colorScheme) {
-    final bool hasModules =
-        course.moduleTitles != null && course.moduleTitles!.isNotEmpty;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
 
-        // قسم عرض الوحدات أو الوصف
+        // قسم عرض الوصف
         if (course.isEnrolled == false)
           SizedBox(
             height: 35, // ارتفاع ثابت لمنع القفز في التصميم
-            child: hasModules
-                ? _buildModulesList(context) // دالة عرض الوحدات كـ Tags
-                : _buildDescriptionText(context), // دالة عرض الوصف
+            child: _buildDescriptionText(context), // دالة عرض الوصف دائماً
           ),
       ],
-    );
-  }
-
-  Widget _buildModulesList(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Row(
-        children: [
-          Icon(
-            Icons.collections_bookmark_outlined,
-            size: 16,
-            color: context.primary.withOpacity(0.7),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics:
-                  const NeverScrollableScrollPhysics(), // منع التمرير ليبقى التصميم ثابتاً
-              child: Row(
-                children: course.moduleTitles.map((title) {
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 6),
-                    child: _CourseTag(label: title),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -142,7 +107,7 @@ class BuildCourseDetails extends StatelessWidget {
               ),
             ),
             Text(
-              "${course.completedLessons} / ${course.totalLessons} مكتمل", // تم تعديل الترتيب ليكون منطقياً
+              "${course.totalLessons} / ${course.completedLessons} مكتمل", // تم تعديل الترتيب ليكون منطقياً
               style: context.theme.textTheme.labelMedium,
             ),
           ],
@@ -161,12 +126,7 @@ class BuildCourseDetails extends StatelessWidget {
       child: course.isEnrolled
           ? TextButton(
               onPressed: () {
-                final context = navigatorKey.currentContext;
-                if (context != null) {
-                  GoRouter.of(
-                    context,
-                  ).push('/modulesList/${course.id}', extra: course);
-                }
+                GoRouter.of(context).push('/modulesList/${course.id}', extra: course);
               },
               style: TextButton.styleFrom(
                 backgroundColor: context.primary.withOpacity(0.1),
@@ -177,7 +137,7 @@ class BuildCourseDetails extends StatelessWidget {
                 foregroundColor: context.primary,
               ),
               child: Text(
-                "استمرار",
+                course.progressPercentage >= 100.0 ? "مكتمل" : "استمرار",
                 style: context.textTheme.labelLarge!.copyWith(
                   color: context.primary,
                 ),
@@ -233,15 +193,20 @@ class BuildCourseDetails extends StatelessWidget {
                               color: context.primary.withOpacity(0.1),
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              course.description,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.bodySmall?.copyWith(
-                                height: 1.5,
-                                color: context.isDarkMode
-                                    ? Colors.grey[300]
-                                    : Colors.grey[800],
+                            SizedBox(
+                              height: 60,
+                              child: ClipRect(
+                                child: MarkdownBody(
+                                  data: course.description,
+                                  styleSheet: MarkdownStyleSheet(
+                                    p: context.textTheme.bodySmall?.copyWith(
+                                      height: 1.5,
+                                      color: context.isDarkMode
+                                          ? Colors.grey[300]
+                                          : Colors.grey[800],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -251,8 +216,27 @@ class BuildCourseDetails extends StatelessWidget {
                     onConfirm: () async {
                       final context = navigatorKey.currentContext;
                       if (context != null) {
+                        // إظهار مؤشر التحميل في منتصف الشاشة
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext dialogContext) => Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
+                        );
+
                         final authService = context.read<GetCoursesProvider>();
                         await authService.enrollInCourse(courseId: course.id);
+
+                        // إغلاق مؤشر التحميل بعد انتهاء الطلب
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+
                         if (authService.isSuccessEnroll) {
                           AppDialog.showDynamicDialog(
                             showCancelButton: false,
@@ -281,43 +265,8 @@ class BuildCourseDetails extends StatelessWidget {
                   );
                 }
               },
-              child: const Text("استكشف الدورة الآن"),
+              child: const Text("سجل الآن"),
             ),
-    );
-  }
-}
-
-class _CourseTag extends StatelessWidget {
-  final String label;
-  final bool isMore;
-
-  const _CourseTag({required this.label, this.isMore = false});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: isMore
-            ? theme.colorScheme.primary.withOpacity(0.1)
-            : theme.colorScheme.surfaceVariant.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: isMore
-              ? theme.colorScheme.primary.withOpacity(0.2)
-              : theme.dividerColor.withOpacity(0.1),
-        ),
-      ),
-      child: Text(
-        label,
-        style: context.textTheme.labelMedium?.copyWith(
-          // إذا كان "المزيد" نبرز النص بلون المنصة الأساسي
-          color: isMore ? theme.colorScheme.primary : null,
-          fontWeight: isMore ? FontWeight.bold : null,
-        ),
-      ),
     );
   }
 }

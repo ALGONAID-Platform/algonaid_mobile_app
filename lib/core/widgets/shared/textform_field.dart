@@ -17,6 +17,8 @@ class CustomTextFormField extends StatelessWidget {
   final Color? borderColor;
   final double borderRadius;
   final Function(String)? onChanged;
+  final TextDirection? textDirection;
+  final TextAlign? textAlign;
 
   // --- الحقول الجديدة للتحكم في التعبئة ---
   final double fillPercentage; // من 0.0 إلى 1.0
@@ -40,6 +42,8 @@ class CustomTextFormField extends StatelessWidget {
     this.borderRadius = 60.0,
     this.fillPercentage = 0.5, // افتراضياً لا يوجد تعبئة
     this.fillColorValue,
+    this.textDirection,
+    this.textAlign,
   }) : super(key: key);
 
   @override
@@ -48,6 +52,13 @@ class CustomTextFormField extends StatelessWidget {
         borderColor ?? Theme.of(context).colorScheme.primary;
 
     final progressColor = fillColorValue ?? AppColors.green.withOpacity(0.2);
+
+    final effectiveTextDirection = textDirection ??
+        ((isPassword || keyboardType == TextInputType.emailAddress)
+            ? TextDirection.ltr
+            : TextDirection.rtl);
+
+    final effectiveTextAlign = textAlign ?? TextAlign.right;
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -84,6 +95,8 @@ class CustomTextFormField extends StatelessWidget {
             controller: controller,
             keyboardType: keyboardType,
             onTap: onTap,
+            textDirection: effectiveTextDirection,
+            textAlign: effectiveTextAlign,
 
             obscureText: isPassword && !isPasswordVisible,
             validator: validator,

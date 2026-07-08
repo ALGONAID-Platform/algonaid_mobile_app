@@ -1,5 +1,7 @@
 import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class ResultsQuestionsReviewSection extends StatelessWidget {
   final List<Question> questions;
@@ -167,15 +169,71 @@ class _QuestionReviewCardState extends State<QuestionReviewCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    widget.question.text,
-                    textAlign: TextAlign.right,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.5,
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: MarkdownBody(
+                      data: widget.question.text,
+                      styleSheet: MarkdownStyleSheet(
+                        p: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onBackground,
+                          height: 1.5,
+                        ),
+                        textAlign: WrapAlignment.start,
+                      ),
                     ),
                   ),
+                  if (widget.question.imageUrl != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.sizeOf(context).height * 0.25 > 200 
+                            ? 200 
+                            : MediaQuery.sizeOf(context).height * 0.25,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.question.imageUrl!,
+                          fit: BoxFit.contain,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.broken_image_rounded,
+                                  size: 40,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'تعذر تحميل الصورة',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   _AnswerBox(
                     label: 'إجابتك',
@@ -215,14 +273,19 @@ class _QuestionReviewCardState extends State<QuestionReviewCard> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          widget.question.explanation ?? 'لا يوجد شرح متاح',
-                          textAlign: TextAlign.right,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onBackground.withOpacity(0.8),
-                            height: 1.5,
+                        Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: MarkdownBody(
+                            data: widget.question.explanation ?? 'لا يوجد شرح متاح',
+                            styleSheet: MarkdownStyleSheet(
+                              p: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onBackground.withOpacity(0.8),
+                                height: 1.5,
+                              ),
+                              textAlign: WrapAlignment.start,
+                            ),
                           ),
                         ),
                       ],

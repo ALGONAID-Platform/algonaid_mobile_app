@@ -5,6 +5,7 @@ import 'package:algonaid_mobile_app/features/settings/data/datasources/settings_
 import 'package:algonaid_mobile_app/features/settings/domain/entities/developer_info.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
 
 class DevelopersPage extends StatefulWidget {
@@ -160,7 +161,7 @@ class _DevelopersPageState extends State<DevelopersPage>
                     ),
                     const SizedBox(width: 12),
                     const Text(
-                      'فريق كوديان (Codyan)',
+                      'فريق كوديان (Codian)',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -178,10 +179,55 @@ class _DevelopersPageState extends State<DevelopersPage>
                     height: 1.6,
                   ),
                 ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    _buildSocialLink(
+                      context,
+                      icon: Icons.facebook_rounded,
+                      url: 'https://facebook.com/CodianTeam',
+                      color: Colors.blueAccent,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildSocialLink(
+                      context,
+                      icon: FontAwesomeIcons.instagram,
+                      url: 'https://www.instagram.com/CodianTeam',
+                      color: Colors.pinkAccent,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildSocialLink(
+                      context,
+                      icon: FontAwesomeIcons.whatsapp,
+                      url: 'https://whatsapp.com/channel/0029Vb6ysOvElah0xq7PhH0s',
+                      color: Colors.greenAccent,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSocialLink(
+    BuildContext context, {
+    required IconData icon,
+    required String url,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: () => _launchURL(url),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, size: 20, color: color),
       ),
     );
   }

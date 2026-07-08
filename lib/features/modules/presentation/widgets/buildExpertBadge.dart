@@ -2,6 +2,7 @@ import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/expertBadge3D.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
 import 'package:flutter/foundation.dart';
@@ -40,7 +41,12 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
       child: Consumer<CourseGradesProvider>(
         builder: (context, provider, child) {
           final state = provider.getState(widget.courseId);
-          final isUnlocked = (state.grades?.averagePercentage ?? 0.0) > 90;
+          final averagePercentage = state.grades?.averagePercentage ?? 0.0;
+          final isCurrentlyUnlocked = averagePercentage >= 90;
+          // Note: using CacheHelper to know if user previously unlocked it
+          final hasUnlockedBefore = CacheHelper.getBool(key: 'unlocked_course_gold_${widget.courseId}') ?? false;
+          final isUnlocked = isCurrentlyUnlocked || hasUnlockedBefore;
+          final showWarning = hasUnlockedBefore && !isCurrentlyUnlocked;
     return GestureDetector(
       onTap: () {
         showDialog(
@@ -49,9 +55,11 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
           builder: (context) => Badge3DDialog(
             heroTag: "expert_badge_",
             title: "وسام التفوق الذهبي",
-            description: isUnlocked
-                ? "عمل رائع وإنجاز استثنائي! لقد اجتزت جميع التحديات بجدارة واستحقاق، وحصلت على وسام التفوق الذهبي. أنت بالفعل بطل هذه المادة!"
-                : "كن بطل هذه المادة! ستتوج بـ وسام التفوق الذهبي عند اجتيازك لكافة اختبارات هذا الكورس بمعدل لا يقل عن 90%. استمر، العظمة بانتظارك!",
+            description: showWarning 
+                ? "لقد تم منحك هذا الوسام مسبقاً، ولكن تمت إضافة اختبارات جديدة. لضمان الحصول على معدل عالٍ يرجى إتمامها."
+                : (isUnlocked
+                    ? "عمل رائع وإنجاز استثنائي! لقد اجتزت جميع التحديات بجدارة واستحقاق، وحصلت على وسام التفوق الذهبي. أنت بالفعل بطل هذه المادة!"
+                    : "كن بطل هذه المادة! ستتوج بـ وسام التفوق الذهبي عند اجتيازك لكافة اختبارات هذا الكورس بمعدل لا يقل عن 90%. استمر، العظمة بانتظارك!"),
             lottie: AppLottie.goldMedal,
             gradientColors: [
               const Color.fromARGB(255, 255, 255, 255),
@@ -93,6 +101,14 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
                         style: context.textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
+                      if (showWarning) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          "ملاحظة: تمت إضافة اختبارات جديدة، يرجى إتمامها لضمان بقاء معدلك عالياً.",
+                          style: context.textTheme.bodySmall?.copyWith(color: Colors.orange),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.symmetric(

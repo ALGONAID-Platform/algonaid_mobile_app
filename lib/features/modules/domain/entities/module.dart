@@ -24,15 +24,37 @@ class Module extends Equatable {
     required this.totalLessons,
   });
 
+  Module copyWith({
+    int? id,
+    String? title,
+    String? description,
+    int? courseId,
+    List<Lesson>? lessons,
+    int? completedLessons,
+    double? progressPercentage,
+    int? totalLessons,
+  }) {
+    return Module(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      courseId: courseId ?? this.courseId,
+      lessons: lessons ?? this.lessons,
+      completedLessons: completedLessons ?? this.completedLessons,
+      progressPercentage: progressPercentage ?? this.progressPercentage,
+      totalLessons: totalLessons ?? this.totalLessons,
+    );
+  }
+
   @override
   List<Object?> get props => [
-    id,
-    title,
-    description,
-    courseId,
-    lessons,
-    completedLessons,
-    progressPercentage,
-    totalLessons,
-  ];
+        id,
+        title,
+        description,
+        courseId,
+        lessons,
+        completedLessons,
+        progressPercentage,
+        totalLessons,
+      ];
 }

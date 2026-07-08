@@ -46,7 +46,7 @@ class MyCoursesListSection extends StatelessWidget {
                   },
                 ),
                 SizedBox(
-                  height: 345,
+                  height: 300,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -54,7 +54,7 @@ class MyCoursesListSection extends StatelessWidget {
                     itemCount: reversedCourses.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        width: 300,
+                        width: 240,
                         margin: const EdgeInsets.only(
                           left: 16,
                         ), // تنسيق الهوامش
@@ -116,9 +116,12 @@ class MyCoursesListSection extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
-            child: const Text("استكشف الدورات المتاحة"),
+            child: const FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text("استكشف الدورات المتاحة"),
+            ),
           ),
         ],
       ),

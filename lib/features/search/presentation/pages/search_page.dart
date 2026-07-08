@@ -5,6 +5,7 @@ import 'package:algonaid_mobile_app/features/search/presentation/providers/searc
 import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_courses_tab.dart';
 import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_lessons_tab.dart';
 import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_modules_tab.dart';
+import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_practice_exams_tab.dart';
 import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,7 @@ class _SearchPageState extends State<SearchPage> {
     return ChangeNotifierProvider.value(
       value: _searchProvider,
       child: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: SafeArea(
@@ -70,6 +71,8 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
               bottom: TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.center,
                 labelColor: context.primary,
                 unselectedLabelColor: context.colorScheme.onSurface.withOpacity(0.5),
                 indicatorColor: context.primary,
@@ -80,6 +83,7 @@ class _SearchPageState extends State<SearchPage> {
                   Tab(text: 'الكورسات'),
                   Tab(text: 'الوحدات'),
                   Tab(text: 'الدروس'),
+                  Tab(text: 'نماذج الاختبارات'),
                 ],
               ),
             ),
@@ -116,7 +120,7 @@ class _SearchPageState extends State<SearchPage> {
                     );
                   }
 
-                  if (provider.courses.isEmpty && provider.modules.isEmpty && provider.lessons.isEmpty) {
+                  if (provider.courses.isEmpty && provider.modules.isEmpty && provider.lessons.isEmpty && provider.practiceExams.isEmpty) {
                     return const AppEmptyState(
                       icon: Icons.search_off_rounded,
                       title: 'لا توجد نتائج',
@@ -129,6 +133,7 @@ class _SearchPageState extends State<SearchPage> {
                       SearchCoursesTab(courses: provider.courses),
                       SearchModulesTab(modules: provider.modules),
                       SearchLessonsTab(lessons: provider.lessons),
+                      SearchPracticeExamsTab(practiceExams: provider.practiceExams),
                     ],
                   );
                 },

@@ -10,6 +10,7 @@ import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.da
 import 'package:algonaid_mobile_app/features/modules/data/models/module_model.dart';
 import 'package:algonaid_mobile_app/features/exams/data/models/exam_models.dart';
 
+import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveService {
@@ -35,20 +36,30 @@ class HiveService {
     Hive.registerAdapter<ExamResultModel>(
       ExamResultModelAdapter(),
     ); // typeId: 10
+    Hive.registerAdapter<LessonStatus>(LessonStatusAdapter()); // typeId: 20
 
-    await Hive.openBox(AppConstants.boxAuthTokenName);
-    await Hive.openBox<CourseModel>(AppConstants.boxCourses);
-    await Hive.openBox<CourseModel>(AppConstants.boxMyCourses);
-    await Hive.openBox<LastAccessedModuleModel>(
+    await _safeOpenBox(AppConstants.boxAuthTokenName);
+    await _safeOpenBox<CourseModel>(AppConstants.boxCourses);
+    await _safeOpenBox<CourseModel>(AppConstants.boxMyCourses);
+    await _safeOpenBox<LastAccessedModuleModel>(
       AppConstants.boxLastAccessedModule,
     ); // Added
-    await Hive.openBox<CourseProgressModel>(AppConstants.boxCourseProgress);
-    await Hive.openBox<LessonModel>(AppConstants.boxLessons);
-    await Hive.openBox<String>(AppConstants.boxLessonDetails);
-    await Hive.openBox<ModuleModel>(AppConstants.boxModules);
-    await Hive.openBox<LessonProgressModel>(AppConstants.boxLessonProgress);
-    await Hive.openBox<String>(AppConstants.boxReadingProgress);
-    await Hive.openBox<ExamModel>(AppConstants.boxExams);
-    await Hive.openBox<ExamResultModel>(AppConstants.boxExamResults);
+    await _safeOpenBox<CourseProgressModel>(AppConstants.boxCourseProgress);
+    await _safeOpenBox<LessonModel>(AppConstants.boxLessons);
+    await _safeOpenBox<String>(AppConstants.boxLessonDetails);
+    await _safeOpenBox<ModuleModel>(AppConstants.boxModules);
+    await _safeOpenBox<LessonProgressModel>(AppConstants.boxLessonProgress);
+    await _safeOpenBox<String>(AppConstants.boxReadingProgress);
+    await _safeOpenBox<ExamModel>(AppConstants.boxExams);
+    await _safeOpenBox<ExamResultModel>(AppConstants.boxExamResults);
+  }
+
+  static Future<Box<T>> _safeOpenBox<T>(String boxName) async {
+    try {
+      return await Hive.openBox<T>(boxName);
+    } catch (e) {
+      await Hive.deleteBoxFromDisk(boxName);
+      return await Hive.openBox<T>(boxName);
+    }
   }
 }

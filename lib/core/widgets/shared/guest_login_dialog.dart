@@ -78,6 +78,29 @@ class GuestAccessPrompt {
               Row(
                 children: [
                   Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        messenger.hideCurrentSnackBar();
+                        if (onLogin != null) {
+                          onLogin();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        backgroundColor: context.primary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        'تسجيل الدخول',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
                     child: OutlinedButton(
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
@@ -97,29 +120,6 @@ class GuestAccessPrompt {
                       ),
                       child: const Text(
                         'المتابعة كضيف',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        messenger.hideCurrentSnackBar();
-                        if (onLogin != null) {
-                          onLogin();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: context.primary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: const Text(
-                        'تسجيل الدخول',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -149,5 +149,6 @@ void showGuestLoginDialog(
     confirmText: 'تسجيل الدخول',
     cancelText: 'المتابعة كضيف',
     onConfirm: onLogin,
+    onCancel: onGuest,
   );
 }

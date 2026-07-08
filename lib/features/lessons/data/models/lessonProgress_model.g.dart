@@ -17,11 +17,11 @@ class LessonProgressModelAdapter extends TypeAdapter<LessonProgressModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return LessonProgressModel(
-      id: fields[0] as int? ?? 0,
-      isCompleted: fields[1] as bool? ?? false,
+      id: fields[0] as int,
+      isCompleted: fields[1] as bool,
       completedAt: fields[2] as DateTime?,
-      studentId: fields[3] as int? ?? 0,
-      lessonId: fields[4] as int? ?? 0,
+      studentId: fields[3] as int,
+      lessonId: fields[4] as int,
     );
   }
 

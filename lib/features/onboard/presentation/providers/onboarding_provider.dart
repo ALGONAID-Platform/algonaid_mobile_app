@@ -24,7 +24,7 @@ class OnboardingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void goToNextPage() async {
+  void goToNextPage(Offset offset) async {
     if (current_bage < OnboardingData.items.length - 1) {
       pageController.nextPage(
         duration: const Duration(milliseconds: 500),
@@ -41,7 +41,7 @@ class OnboardingProvider extends ChangeNotifier {
       await Future.delayed(const Duration(milliseconds: 200));
 
       // Navigate to guest home page
-      GoRouter.of(context!).go(Routes.guestHome);
+      GoRouter.of(context!).go(Routes.guestHome, extra: offset);
     }
     notifyListeners();
   }

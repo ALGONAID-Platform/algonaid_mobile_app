@@ -32,13 +32,13 @@ class BuildCourseImage extends StatelessWidget {
             child: (hasNoImage || isResolvedInvalid)
                 ? Image.asset(
                     Images.noImageFound,
-                    height: 160,
+                    height: 130,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   )
                 : TimeoutImageWrapper(
                     imageUrl: resolvedUrl,
-                    height: 160,
+                    height: 130,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),

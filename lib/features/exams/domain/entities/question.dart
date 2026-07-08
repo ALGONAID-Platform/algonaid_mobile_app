@@ -14,6 +14,7 @@ class Question extends Equatable {
   final QuestionType type;
   final int points;
   final List<Option>? options; // Populated for multiple/single choice
+  final String? image;
 
   const Question({
     required this.id,
@@ -21,8 +22,9 @@ class Question extends Equatable {
     required this.type,
     required this.points,
     this.options,
+    this.image,
   });
 
   @override
-  List<Object?> get props => [id, text, type, points, options];
+  List<Object?> get props => [id, text, type, points, options, image];
 }

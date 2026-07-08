@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
 import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
 import 'package:dartz/dartz.dart';
 import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
@@ -8,6 +9,7 @@ import 'package:algonaid_mobile_app/features/auth/domain/entities/user_entity.da
 import 'package:algonaid_mobile_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthRepoImpl extends AuthRepo {
   final AuthRemoteDatasourse authRemotDataSource;
@@ -22,7 +24,7 @@ class AuthRepoImpl extends AuthRepo {
         email: email,
         password: password,
       );
-      await TokenStorage.saveToken(authResponse.accessToken!);
+      await TokenStorage.saveToken(authResponse.accessToken);
 
       return Right(
         UserEntity(
@@ -43,6 +45,9 @@ class AuthRepoImpl extends AuthRepo {
         ),
       );
     } catch (e) {
+      if (e is ServerException) {
+        return left(ServerFailure(e.message));
+      }
       if (e is DioException) {
         return left(DioErrorHandler.handle(e));
       }
@@ -64,7 +69,17 @@ class AuthRepoImpl extends AuthRepo {
         password: password,
         role: role,
       );
-      await TokenStorage.saveToken(authResponse.accessToken!);
+
+      // نسجّل ما يُرجعه السيرفر لتشخيص مشكلة التوكن
+      debugPrint('📦 SignUp Response: accessToken="${authResponse.accessToken}"');
+
+      // نحفظ التوكن دائمًا إذا كان موجودًا
+      if (authResponse.accessToken.isNotEmpty) {
+        await TokenStorage.saveToken(authResponse.accessToken);
+        debugPrint('✅ SignUp: تم حفظ التوكن: ${authResponse.accessToken.substring(0, 20)}...');
+      } else {
+        debugPrint('⚠️ SignUp: السيرفر لم يُرجع accessToken!');
+      }
 
       return Right(
         UserEntity(
@@ -73,7 +88,7 @@ class AuthRepoImpl extends AuthRepo {
           email: authResponse.user.email,
           role: authResponse.user.role,
           message: authResponse.message,
-          token: authResponse.accessToken,
+          token: authResponse.accessToken.isNotEmpty ? authResponse.accessToken : null,
           avatar: authResponse.user.avatar,
           background: authResponse.user.background,
           academicId: authResponse.user.academicId,
@@ -85,6 +100,9 @@ class AuthRepoImpl extends AuthRepo {
         ),
       );
     } catch (e) {
+      if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
@@ -124,6 +142,9 @@ class AuthRepoImpl extends AuthRepo {
         ),
       );
     } catch (e) {
+      if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
@@ -137,6 +158,9 @@ class AuthRepoImpl extends AuthRepo {
       await authRemotDataSource.logout();
       return const Right(null);
     } catch (e) {
+      if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
@@ -155,6 +179,9 @@ class AuthRepoImpl extends AuthRepo {
           'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني';
       return Right(message);
     } catch (e) {
+      if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }
@@ -176,6 +203,48 @@ class AuthRepoImpl extends AuthRepo {
           response['message'] as String? ?? 'تم إعادة تعيين كلمة المرور بنجاح';
       return Right(message);
     } catch (e) {
+      if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      }
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> verifyEmail({required String token}) async {
+    try {
+      final response = await authRemotDataSource.verifyEmail(token: token);
+      final message =
+          response['message'] as String? ?? 'تم تأكيد بريدك الإلكتروني بنجاح';
+      return Right(message);
+    } catch (e) {
+      if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      }
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> resendVerificationEmail({
+    required String email,
+  }) async {
+    try {
+      final response =
+          await authRemotDataSource.resendVerificationEmail(email: email);
+      final message =
+          response['message'] as String? ?? 'تم إرسال رابط التحقق بنجاح';
+      return Right(message);
+    } catch (e) {
+      if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
       if (e is DioException) {
         return Left(DioErrorHandler.handle(e));
       }

@@ -23,7 +23,7 @@ class LessonVideoPlayer extends StatefulWidget {
   final int lessonId;
   final String? videoUrl;
   final String? localVideoPath;
-  final VoidCallback? onProgressComplete;
+  final Future<bool> Function()? onProgressComplete;
   final VoidCallback? onVideoStart;
   final VoidCallback? onVideoEnd;
 
@@ -300,7 +300,7 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
     }
   }
 
-  void _onPlayerStateChange() {
+  void _onPlayerStateChange()async {
     final globalState = GlobalVideoState();
     if (!mounted || globalState.videoPlayerController == null) return;
 
@@ -322,10 +322,13 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
         
         final isAlreadyCompleted = CacheHelper.getBool(key: 'lesson_completed_${widget.lessonId}') ?? false;
         
-        widget.onProgressComplete?.call();
+        bool success = false;
+        if (widget.onProgressComplete != null) {
+          success = await widget.onProgressComplete!();
+        }
         
         final autoPlayNext = CacheHelper.getBool(key: 'autoPlayNext') ?? false;
-        if (!autoPlayNext && !isAlreadyCompleted && mounted) {
+        if (success && !autoPlayNext && !isAlreadyCompleted && mounted) {
           _showSuccessSheet(context);
         }
       }
@@ -407,7 +410,7 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
     }
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
       child: SizedBox(
         width: double.infinity,
         height: 210,

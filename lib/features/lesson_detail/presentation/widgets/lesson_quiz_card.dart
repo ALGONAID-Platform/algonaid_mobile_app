@@ -16,9 +16,13 @@ class LessonQuizCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final hasExam = examId != null;
+    
+    if (!hasExam) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: context.surface,

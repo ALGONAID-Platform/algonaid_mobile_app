@@ -7,6 +7,7 @@ import 'package:algonaid_mobile_app/features/lessons/data/datasources/lesson_loc
 import 'package:algonaid_mobile_app/features/lessons/data/datasources/lesson_remote_data_source.dart';
 import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
 import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/paginated_lessons.dart';
 import 'package:algonaid_mobile_app/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -21,13 +22,18 @@ class LessonRepositoryImpl implements LessonRepository {
   });
 
   @override
-  Future<Either<Failure, List<Lesson>>> getModuleLessons(int moduleId) async {
+  Future<Either<Failure, PaginatedLessons>> getModuleLessons(int moduleId, {int page = 1, int? limit}) async {
     final localModels = localDataSource.getLessons(moduleId);
     final isOffline = await hasNoInternet();
 
     if (isOffline) {
       if (localModels.isNotEmpty) {
-        return Right(localModels);
+        // Since we are offline, we can just return all local models and fake a single page of pagination
+        final sorted = _sortLessons(localModels);
+        return Right(PaginatedLessons(
+            lessons: sorted,
+            meta: PaginationMeta(
+                total: sorted.length, page: 1, limit: sorted.length, totalPages: 1)));
       }
       return Left(
         ServerFailure(
@@ -37,20 +43,31 @@ class LessonRepositoryImpl implements LessonRepository {
     }
 
     try {
-      final remoteModels = await remoteDataSource.fetchLessonsByModule(
+      final paginatedResult = await remoteDataSource.fetchLessonsByModule(
         moduleId,
+        page: page,
+        limit: limit,
       );
-      final sortedRemoteModels = _sortLessons(remoteModels);
-      await localDataSource.saveLessons(
-        moduleId,
-        sortedRemoteModels.map((e) => e as LessonModel).toList(),
-      );
-      return Right(sortedRemoteModels);
+      final sortedRemoteModels = _sortLessons(paginatedResult.lessons);
+      
+      // Only cache first page or all of them depending on logic, here we can just save them
+      if (page == 1) {
+          await localDataSource.saveLessons(
+            moduleId,
+            sortedRemoteModels.map((e) => e as LessonModel).toList(),
+          );
+      }
+      
+      return Right(PaginatedLessons(lessons: sortedRemoteModels, meta: paginatedResult.meta));
     } catch (e) {
       if ((e is DioException || e is ServerException) &&
           localModels.isNotEmpty) {
         debugPrint('Failed to fetch lessons from remote, trying local...');
-        return Right(_sortLessons(localModels));
+        final sorted = _sortLessons(localModels);
+        return Right(PaginatedLessons(
+            lessons: sorted,
+            meta: PaginationMeta(
+                total: sorted.length, page: 1, limit: sorted.length, totalPages: 1)));
       }
 
       if (e is DioException) {
@@ -79,7 +96,9 @@ class LessonRepositoryImpl implements LessonRepository {
     try {
       final localModels = localDataSource.getLessons(moduleId);
       if (localModels.isNotEmpty) {
-        return Right(_sortLessons(localModels));
+        final sorted = _sortLessons(localModels);
+        // We only return the first 10 lessons from cache to avoid jumping from 20 (cached) to 10 (remote)
+        return Right(sorted.take(10).toList());
       }
       return const Right([]);
     } catch (e) {

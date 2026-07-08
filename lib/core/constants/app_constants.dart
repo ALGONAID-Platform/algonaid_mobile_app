@@ -74,9 +74,9 @@ abstract class AppConstants {
   static const int maxPageSize = 100;
 
   // api timeouts
-  static const Duration apiConnectTimeout = Duration(seconds: 15);
-  static const Duration apiReceiveTimeout = Duration(seconds: 5);
-  static const Duration apiSendTimeout = Duration(seconds: 5);
+  static const Duration apiConnectTimeout = Duration(seconds: 60);
+  static const Duration apiReceiveTimeout = Duration(seconds: 60);
+  static const Duration apiSendTimeout = Duration(seconds: 60);
 
   //responsive screens
   static const double mobileBreakpoint = 700;

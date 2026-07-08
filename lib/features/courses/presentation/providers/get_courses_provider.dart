@@ -24,10 +24,11 @@ class GetCoursesProvider extends ChangeNotifier {
     required this.enrollmentUseCase,
     required this.courseProgressUsecase,
   }) {
-    loadCachedData(isGuest: false);
+    // تحميل الكاش بصمت دون إشعار الـ listeners لأنه لا أحد يستمع بعد في هذه المرحلة
+    loadCachedData(isGuest: false, notify: false);
   }
 
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool _isBackgroundUpdating = false;
   bool _isEnrolling = false;
   bool _isSuccessEnroll = false;
@@ -49,7 +50,8 @@ class GetCoursesProvider extends ChangeNotifier {
   bool get isSuccessEnroll => _isSuccessEnroll;
 
   // تحميل الكاش محلياً بشكل متزامن
-  void loadCachedData({bool isGuest = false}) {
+  // [notify: false] عند الاستدعاء من الـ constructor لتجنب إشعار الـ listeners قبل أن يُبنى الـ widget tree
+  void loadCachedData({bool isGuest = false, bool notify = true}) {
     final cachedResult = getCachedCoursesUsecase();
     cachedResult.fold(
       (failure) => debugPrint('Error loading cached courses: ${failure.message}'),
@@ -63,13 +65,21 @@ class GetCoursesProvider extends ChangeNotifier {
       cachedMyResult.fold(
         (failure) => debugPrint('Error loading cached myCourses: ${failure.message}'),
         (courses) {
-          myCourses = courses;
+          final uniqueCourses = <CourseEntity>[];
+          final seenIds = <int>{};
+          for (var c in courses) {
+            if (!seenIds.contains(c.id)) {
+              uniqueCourses.add(c);
+              seenIds.add(c.id);
+            }
+          }
+          myCourses = uniqueCourses;
         },
       );
     } else {
       myCourses = [];
     }
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   // جلب الكورسات العامة (الاكتشاف)
@@ -224,31 +234,37 @@ class GetCoursesProvider extends ChangeNotifier {
   }
 
   Future<void> refreshAll({bool isGuest = false}) async {
-    // 1. قراءة البيانات المخزنة مؤقتاً فوراً لمنع الوميض
-    loadCachedData(isGuest: isGuest);
+    // 1. قراءة الكاش بصمت دون إشعار (سنُطلق إشعاراً واحداً بعدها)
+    loadCachedData(isGuest: isGuest, notify: false);
 
-    // 2. إذا كان الكاش فارغاً تماماً، نُظهر الشيمر الرئيسي
-    // وإلا، نعتمد على الكاش ونقوم بالتحديث في الخلفية بهدوء
+    // 2. تحديد حالة التحميل وإطلاق إشعار واحد فقط للحالة الأولية
     final hasCache = allCourses.isNotEmpty || myCourses.isNotEmpty;
-    if (!hasCache) {
-      _isLoading = true;
-      _isBackgroundUpdating = false;
-    } else {
-      _isLoading = false;
-      _isBackgroundUpdating = true;
-    }
+    _isLoading = !hasCache;
+    _isBackgroundUpdating = hasCache;
     _errorMessage = null;
-    notifyListeners();
+    notifyListeners(); // ← إشعار أول ووحيد للحالة الأولية
 
-    // 3. بدء عملية جلب البيانات الجديدة في الخلفية
+    // 3. جلب البيانات من الشبكة بشكل متوازٍ وبصمت تام
+    // لا notifyListeners هنا — سنُطلق إشعاراً واحداً فقط عند الانتهاء
     try {
       if (isGuest) {
-        await getCourses(showLoading: !hasCache);
+        final result = await coursesUsecase();
+        result.fold(
+          (failure) { _errorMessage = failure.message; },
+          (courses) { allCourses = courses; },
+        );
         myCourses = [];
       } else {
-        await Future.wait([
-          getCourses(showLoading: !hasCache),
-          getMyCourses(showLoading: !hasCache),
+        // تشغيل الطلبين بالتوازي لتوفير الوقت
+        await Future.wait<void>([
+          coursesUsecase().then((result) => result.fold(
+            (failure) { _errorMessage = failure.message; },
+            (courses) { allCourses = courses; },
+          )),
+          myCoursesUsecase().then((result) => result.fold(
+            (failure) {},
+            (courses) { myCourses = courses; },
+          )),
         ]);
       }
     } catch (e) {
@@ -256,8 +272,53 @@ class GetCoursesProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       _isBackgroundUpdating = false;
-      notifyListeners();
+      notifyListeners(); // ← إشعار ثانٍ ووحيد عند اكتمال جلب البيانات
       debugPrint('refreshAll completed: background sync complete');
+    }
+  }
+
+  void updateCourseProgressLocally(int courseId) {
+    bool fetchFromBackend = false;
+
+    myCourses = myCourses.map((course) {
+      if (course.id == courseId) {
+        if (course.completedLessons == 0) fetchFromBackend = true;
+        int newCompleted = course.completedLessons + 1;
+        if (newCompleted > course.totalLessons) {
+          newCompleted = course.totalLessons;
+        }
+        final double newPercentage = course.totalLessons > 0 
+            ? ((newCompleted / course.totalLessons) * 100) 
+            : 0.0;
+        return course.copyWith(
+          completedLessons: newCompleted,
+          progressPercentage: newPercentage,
+        );
+      }
+      return course;
+    }).toList();
+
+    allCourses = allCourses.map((course) {
+      if (course.id == courseId) {
+        int newCompleted = course.completedLessons + 1;
+        if (newCompleted > course.totalLessons) {
+          newCompleted = course.totalLessons;
+        }
+        final double newPercentage = course.totalLessons > 0 
+            ? ((newCompleted / course.totalLessons) * 100) 
+            : 0.0;
+        return course.copyWith(
+          completedLessons: newCompleted,
+          progressPercentage: newPercentage,
+        );
+      }
+      return course;
+    }).toList();
+
+    notifyListeners();
+
+    if (fetchFromBackend) {
+      getMyCourses(showLoading: false);
     }
   }
 }

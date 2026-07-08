@@ -23,4 +23,8 @@ abstract class AuthRepo {
     required String token,
     required String newPassword,
   });
+  
+  // ==================== Email Verification ====================
+  Future<Either<Failure, String>> verifyEmail({required String token});
+  Future<Either<Failure, String>> resendVerificationEmail({required String email});
 }

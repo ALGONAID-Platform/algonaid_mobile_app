@@ -4,14 +4,37 @@ import 'package:hive/hive.dart';
 
 part 'lessonProgress_model.g.dart'; // the command in cmd: flutter packages pub run build_runner build --delete-conflicting-outputs
 
+@HiveType(typeId: 11)
 class LessonProgressModel extends LessonProgress {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final bool isCompleted;
+  @override
+  @HiveField(2)
+  final DateTime? completedAt;
+  @override
+  @HiveField(3)
+  final int studentId;
+  @override
+  @HiveField(4)
+  final int lessonId;
+
   const LessonProgressModel({
-    required super.id,
-    required super.isCompleted,
-    super.completedAt,
-    required super.studentId,
-    required super.lessonId,
-  });
+    required this.id,
+    required this.isCompleted,
+    this.completedAt,
+    required this.studentId,
+    required this.lessonId,
+  }) : super(
+         id: id,
+         isCompleted: isCompleted,
+         completedAt: completedAt,
+         studentId: studentId,
+         lessonId: lessonId,
+       );
 
   factory LessonProgressModel.fromJson(Map<String, dynamic> json) {
     return LessonProgressModel(

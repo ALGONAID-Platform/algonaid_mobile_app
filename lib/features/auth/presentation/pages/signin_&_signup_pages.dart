@@ -18,6 +18,7 @@ import 'package:algonaid_mobile_app/features/auth/presentation/widgets/auth_head
 import 'package:algonaid_mobile_app/features/auth/presentation/widgets/drop_down_bottun.dart';
 import 'package:algonaid_mobile_app/features/auth/presentation/widgets/signin_with_google.dart';
 import 'package:algonaid_mobile_app/features/auth/presentation/widgets/swap_bottons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SigninAndSignupPage extends StatefulWidget {
   const SigninAndSignupPage({super.key});
@@ -53,7 +54,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
                   AuthHeader(),
@@ -128,10 +129,14 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             child: Text("نسيت كلمة السر؟"),
-                            onPressed: () => _showForgotPasswordBottomSheet(
-                              context,
-                              authService,
-                            ),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('سوف تتفعل قريباً', textAlign: TextAlign.center),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
                           ),
                         )
                       : SizedBox.shrink(),
@@ -185,11 +190,12 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                               if (!context.mounted) return;
 
                               if (authService.user != null) {
+                                // نجاح تسجيل الدخول أو إنشاء الحساب → الصفحة الرئيسية مباشرة
                                 GoRouter.of(context).go(Routes.homePage);
                               } else if (authService.errorMessage != null) {
                                 AppDialog.showDynamicDialog(
                                   context: context,
-                                  title: "تعذر تسجيل الدخول",
+                                  title: authService.isLogin ? "تعذر تسجيل الدخول" : "تعذر إنشاء الحساب",
                                   message: toUserFriendlyErrorMessage(
                                     authService.errorMessage,
                                   ),
@@ -243,7 +249,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
             key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
                   child: Container(
@@ -291,8 +297,26 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                       if (!context.mounted) return;
 
                       if (successMsg != null) {
-                        // Success: Show the reset password sheet
-                        _showResetPasswordBottomSheet(context, authService);
+                        // Success: Show a dialog to open email app
+                        AppDialog.showDynamicDialog(
+                          context: context,
+                          title: "تم الإرسال",
+                          message: "تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني بنجاح. يرجى التحقق من صندوق الوارد الخاص بك.",
+                          isError: false,
+                          showCancelButton: true,
+                          cancelText: "إغلاق",
+                          confirmText: "فتح الإيميل",
+                          onConfirm: () async {
+                            final Uri emailLaunchUri = Uri(
+                              scheme: 'mailto',
+                            );
+                            try {
+                              await launchUrl(emailLaunchUri);
+                            } catch (e) {
+                              // Ignore if no email app is installed
+                            }
+                          },
+                        );
                       } else {
                         // Error
                         AppDialog.showDynamicDialog(
@@ -307,140 +331,6 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                       }
                     },
                     text: "إرسال رمز إعادة التعيين",
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(sheetContext);
-                      _showResetPasswordBottomSheet(context, authService);
-                    },
-                    child: const Text(
-                      "لديك رمز إعادة التعيين بالفعل؟ أدخله هنا",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showResetPasswordBottomSheet(
-    BuildContext context,
-    AuthServiceProvider authService,
-  ) {
-    final tokenController = TextEditingController();
-    final newPasswordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: context.surfaceContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
-            left: 24,
-            right: 24,
-            top: 24,
-          ),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: context.colorScheme.onSecondary.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: Text(
-                    "تعيين كلمة المرور الجديدة",
-                    style: context.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextLabel(text: "رمز إعادة التعيين (Token)"),
-                const SizedBox(height: 5),
-                CustomTextFormField(
-                  controller: tokenController,
-                  labelText: "ادخل الرمز المرسل إليك",
-                  borderColor: context.primary,
-                  validator: (value) => value == null || value.isEmpty
-                      ? "يرجى إدخال الرمز"
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                TextLabel(text: "كلمة المرور الجديدة"),
-                const SizedBox(height: 5),
-                CustomTextFormField(
-                  controller: newPasswordController,
-                  labelText: "ادخل كلمة المرور الجديدة",
-                  borderColor: context.primary,
-                  isPassword: true,
-                  validator: (password) => Validator.password(
-                    password,
-                    strength: PasswordStrength.strong,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Center(
-                  child: CustomButton(
-                    color: context.primary,
-                    textColor: Colors.white,
-                    onPressed: () async {
-                      if (!formKey.currentState!.validate()) return;
-                      final token = tokenController.text.trim();
-                      final newPassword = newPasswordController.text.trim();
-
-                      Navigator.pop(sheetContext); // Close reset sheet
-
-                      final successMsg = await authService.resetPassword(
-                        token: token,
-                        newPassword: newPassword,
-                      );
-
-                      if (!context.mounted) return;
-
-                      if (successMsg != null) {
-                        AppDialog.showDynamicDialog(
-                          context: context,
-                          title: "نجاح",
-                          message: successMsg,
-                          isError: false,
-                          showCancelButton: false,
-                        );
-                      } else {
-                        AppDialog.showDynamicDialog(
-                          context: context,
-                          title: "خطأ",
-                          message: toUserFriendlyErrorMessage(
-                            authService.errorMessage,
-                          ),
-                          isError: true,
-                          showCancelButton: false,
-                        );
-                      }
-                    },
-                    text: "تأكيد تغيير كلمة المرور",
                   ),
                 ),
               ],

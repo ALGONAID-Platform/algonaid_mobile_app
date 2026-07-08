@@ -5,7 +5,6 @@ import 'package:algonaid_mobile_app/core/theme/borders.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
 import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -378,41 +377,6 @@ class CompetitionsPage extends StatelessWidget {
             style: context.textTheme.bodyMedium?.copyWith(
               color: isDark ? Colors.grey[300] : Colors.grey[700],
               height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 28),
-          ElevatedButton(
-            onPressed: () {
-              context.read<AuthServiceProvider>().setAuthMode(false);
-              context.push(Routes.auth);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              elevation: 0,
-            ),
-            child: const Text(
-              'سجل الآن لتكون مستعداً',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () {
-              context.read<AuthServiceProvider>().setAuthMode(true);
-              context.push(Routes.auth);
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: context.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-            ),
-            child: const Text(
-              'تسجيل الدخول',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
           ),
         ],

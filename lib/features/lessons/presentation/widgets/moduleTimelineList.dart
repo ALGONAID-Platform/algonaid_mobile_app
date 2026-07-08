@@ -4,6 +4,7 @@ import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
 import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class LessonTimelineItem extends StatelessWidget {
@@ -28,7 +29,7 @@ class LessonTimelineItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTimelineIndicator(isLast, lesson.status, context),
+            _buildTimelineIndicator(isLast, lesson.status, lesson.isReading, context),
 
             const SizedBox(width: 16),
 
@@ -38,47 +39,87 @@ class LessonTimelineItem extends StatelessWidget {
                 child: InkWell(
                   onTap: onTap,
                   borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(18),
-                      border: AppBorder.main_border,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(18),
+                          border: AppBorder.main_border,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Expanded(
-                              child: Text(
-                                lesson.title,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    lesson.title,
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                _buildStatusTag(
+                                  context,
+                                  lesson.status.label,
+                                  lesson.status.getStatusColor(context),
+                                ),
+                              ],
                             ),
-
-                            _buildStatusTag(
-                              lesson.status.label,
+                            const SizedBox(height: 8),
+                            Builder(
+                              builder: (context) {
+                                final typeText = lesson.isReading ? 'قراءة' : 'فيديو';
+                                final typeIcon = lesson.isReading ? Icons.menu_book_rounded : Icons.play_circle_outline_rounded;
+                                
+                                return Row(
+                                  children: [
+                                    Icon(typeIcon, size: 14, color: AppColors.textSecondaryLight),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      typeText,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: AppColors.textSecondaryLight,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    if (lesson.hasTest || lesson.hasExam) ...[
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Text(
+                                          '•',
+                                          style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                        ),
+                                      ),
+                                      const Icon(Icons.edit_document, size: 14, color: AppColors.textSecondaryLight),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'يتضمن اختبار',
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: AppColors.textSecondaryLight,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                );
+                              }
+                            ),
+                            const SizedBox(height: 16),
+                            _customButton(
+                              _getButtonText(lesson.status, lesson.isReading),
                               lesson.status.getStatusColor(context),
+                              isOutlined: true,
+                              icon: _getButtonIcon(lesson.status, lesson.isReading),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _customButton(
-                          lesson.status.buttonText,
-                          lesson.status.getStatusColor(context),
-                          isOutlined: true,
-                          icon: lesson.status.buttonIcon,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                
               ),
-            ),
           ],
         ),
       ),
@@ -88,6 +129,7 @@ class LessonTimelineItem extends StatelessWidget {
   Widget _buildTimelineIndicator(
     bool isLast,
     LessonStatus status,
+    bool isReading,
     BuildContext context,
   ) {
     final Color iconColor = status.getStatusColor(context);
@@ -98,7 +140,7 @@ class LessonTimelineItem extends StatelessWidget {
 
     return Column(
       children: [
-        Icon(status.timeLineIcons, color: iconColor, size: 32),
+        Icon(_getTimelineIcon(status, isReading), color: iconColor, size: 32),
 
         if (!isLast)
           Expanded(
@@ -114,12 +156,14 @@ class LessonTimelineItem extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusTag(String text, Color color) {
+  Widget _buildStatusTag(BuildContext context, String text, Color color, {bool isFloating = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: isFloating ? Theme.of(context).colorScheme.surface : color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
+        border: isFloating ? Border.all(color: color.withOpacity(0.3)) : null,
+        boxShadow: isFloating ? AppShadows.cardShadow : null,
       ),
       child: Text(
         text,
@@ -132,11 +176,41 @@ class LessonTimelineItem extends StatelessWidget {
     );
   }
 
+  Widget _buildTypeTag(String text, BuildContext context, {IconData? icon, Color? color, bool isFloating = false}) {
+    final themeColor = color ?? Theme.of(context).colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: isFloating ? Theme.of(context).colorScheme.surface : themeColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: isFloating ? Border.all(color: themeColor.withOpacity(0.3)) : null,
+        boxShadow: isFloating ? AppShadows.cardShadow : null,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: themeColor),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              color: themeColor,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _customButton(
     String text,
     Color color, {
     required bool isOutlined,
-    required IconData icon,
+    IconData? icon,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -148,8 +222,10 @@ class LessonTimelineItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 16, color: isOutlined ? color : Colors.white),
-          const SizedBox(width: 8),
+          if (icon != null) ...[
+            Icon(icon, size: 16, color: isOutlined ? color : Colors.white),
+            const SizedBox(width: 8),
+          ],
           Text(
             text,
             style: TextStyle(
@@ -163,5 +239,40 @@ class LessonTimelineItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  IconData _getTimelineIcon(LessonStatus status, bool isReading) {
+    if (!isReading) return status.timeLineIcons;
+    switch (status) {
+      case LessonStatus.locked:
+        return Icons.lock_outline;
+      case LessonStatus.notStarted:
+        return Icons.menu_book_outlined;
+      case LessonStatus.inProgress:
+        return Icons.menu_book;
+      case LessonStatus.completed:
+        return Icons.menu_book;
+    }
+  }
+
+  String _getButtonText(LessonStatus status, bool isReading) {
+    if (isReading && status == LessonStatus.completed) {
+      return 'اكتملت القراءة';
+    }
+    return status.buttonText;
+  }
+
+  IconData? _getButtonIcon(LessonStatus status, bool isReading) {
+    if (!isReading) return status.buttonIcon;
+    switch (status) {
+      case LessonStatus.completed:
+        return null; // Remove the refresh icon for completed reading lessons
+      case LessonStatus.inProgress:
+        return Icons.menu_book;
+      case LessonStatus.notStarted:
+        return Icons.menu_book_outlined;
+      case LessonStatus.locked:
+        return Icons.lock_outline;
+    }
   }
 }

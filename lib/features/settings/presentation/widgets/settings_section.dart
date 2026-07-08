@@ -5,7 +5,7 @@ import 'package:algonaid_mobile_app/core/theme/theme.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
 import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:go_router/go_router.dart';
-import 'package:animated_theme_switcher/animated_theme_switcher.dart';
+import 'package:animated_theme_switcher/animated_theme_switcher.dart' hide ThemeProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:algonaid_mobile_app/core/theme/theme_provider.dart'
@@ -62,7 +62,7 @@ class SettingsSection extends StatelessWidget {
                               .read<app_theme.ThemeProvider>();
                           final isNewModeDark = !context.isDarkMode;
 
-                          // Trigger theme switch animation with preserved color/font settings
+                          // 1) شغّل انيميشن الدائرة أولاً
                           ThemeSwitcher.of(context).changeTheme(
                             theme: isNewModeDark
                                 ? ThemeApp.getDarkTheme(
@@ -74,15 +74,36 @@ class SettingsSection extends StatelessWidget {
                                     fontIndex: themeProv.fontIndex,
                                   ),
                             isReversed: context.isDarkMode,
-                            onAnimationFinish: () {
-                              // Update provider state and cache after animation finishes
-                              themeProv.toggleTheme(isNewModeDark);
-                            },
                           );
+
+                          // 2) حدّث الـ provider بتأخير بسيط لتجنب الوميض المفاجئ
+                          Future.delayed(const Duration(milliseconds: 120), () {
+                            themeProv.toggleTheme(isNewModeDark);
+                          });
                         },
                       );
                     },
                   ),
+                ),
+                _buildDivider(),
+                _buildListTile(
+                  context,
+                  icon: Icons.info_outline_rounded,
+                  iconColor: context.primary,
+                  title: 'حول المنصة',
+                  onTap: () {
+                    context.push(Routes.aboutPage);
+                  },
+                ),
+                _buildDivider(),
+                _buildListTile(
+                  context,
+                  icon: Icons.person_pin_rounded,
+                  iconColor: Colors.orange,
+                  title: 'نبذة عن الأستاذ نذير الجنيد',
+                  onTap: () {
+                    context.push(Routes.aboutTeacherPage);
+                  },
                 ),
                 _buildDivider(),
                 _buildListTile(
@@ -109,7 +130,7 @@ class SettingsSection extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: context.colorScheme.surfaceContainer,
+        color: context.surface,
         borderRadius: BorderRadius.circular(16),
         border: AppBorder.main_border,
       ),

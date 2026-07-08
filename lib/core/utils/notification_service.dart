@@ -194,6 +194,48 @@ class NotificationService {
     );
   }
 
+  // Show or update a progress notification
+  Future<void> showProgressNotification({
+    required int notificationId,
+    required String title,
+    required String body,
+    required int progress,
+    required int maxProgress,
+  }) async {
+    final AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'download_progress_channel',
+      'Downloads',
+      channelDescription: 'Download progress notifications',
+      importance: Importance.low,
+      priority: Priority.low,
+      showProgress: true,
+      maxProgress: maxProgress,
+      progress: progress,
+      onlyAlertOnce: true,
+      playSound: false,
+    );
+
+    final DarwinNotificationDetails darwinNotificationDetails =
+        const DarwinNotificationDetails(
+      presentAlert: false,
+      presentBadge: false,
+      presentSound: false,
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: darwinNotificationDetails,
+    );
+
+    await _localNotificationsPlugin.show(
+      notificationId,
+      title,
+      body,
+      notificationDetails,
+    );
+  }
+
   // Retrieve notification history
   List<LocalNotification> getNotifications() {
     try {
@@ -239,6 +281,11 @@ class NotificationService {
       }
     }
     await _notificationsBox.deleteAll(keysToDelete);
+  }
+
+  // Cancel a local notification by ID
+  Future<void> cancelLocalNotification(int id) async {
+    await _localNotificationsPlugin.cancel(id);
   }
 
   // Delete a single notification
@@ -378,5 +425,92 @@ class NotificationService {
     } catch (_) {
       return null;
     }
+  }
+
+  // Schedule Retention Notifications
+  Future<void> scheduleRetentionNotifications() async {
+    // 1. Cancel previous retention notifications first
+    await cancelRetentionNotifications();
+
+    final now = tz.TZDateTime.now(tz.local);
+
+    final List<Map<String, dynamic>> retentionSchedule = [
+      {
+        'id': 9001,
+        'days': 3,
+        'title': 'اشتقنالك! 👋',
+        'body': 'مرت 3 أيام منذ آخر زيارة لك. خصص 10 دقائق اليوم لمواصلة تعلمك ولا تفقد حماسك!',
+      },
+      {
+        'id': 9002,
+        'days': 7,
+        'title': 'أسبوع كامل بعيداً عنا! ⏳',
+        'body': 'زملائك يتقدمون في الكورسات ويحصدون النقاط، لا تدعهم يسبقونك! افتح التطبيق وأكمل من حيث توقفت.',
+      },
+      {
+        'id': 9003,
+        'days': 14,
+        'title': 'المنصة تفتقدك يا بطل! 🌟',
+        'body': 'الاستمرارية هي سر النجاح. لدينا تحديات ودروس جديدة بانتظارك، هل أنت مستعد للعودة؟',
+      },
+      {
+        'id': 9004,
+        'days': 30,
+        'title': 'هل أنت مستعد لانطلاقة جديدة؟ 🚀',
+        'body': 'مضى شهر على آخر زيارة لك. لا يزال الوقت مناسباً لتحقيق أهدافك، افتح التطبيق وابدأ من جديد، نحن هنا لمساعدتك.',
+      },
+    ];
+
+    AndroidScheduleMode scheduleMode = AndroidScheduleMode.inexactAllowWhileIdle;
+    try {
+      if (Platform.isAndroid) {
+        final bool canScheduleExact = await Permission.scheduleExactAlarm.isGranted;
+        if (canScheduleExact) {
+          scheduleMode = AndroidScheduleMode.exactAllowWhileIdle;
+        }
+      }
+    } catch (_) {}
+
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'retention_channel',
+      'تنبيهات العودة',
+      channelDescription: 'تنبيهات تذكرك بالعودة لمتابعة الكورسات في حال الغياب',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      color: Color(0xFF4A9F8A),
+    );
+
+    const DarwinNotificationDetails darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
+
+    for (var schedule in retentionSchedule) {
+      final scheduledDate = now.add(Duration(days: schedule['days'] as int));
+      
+      await _localNotificationsPlugin.zonedSchedule(
+        schedule['id'] as int,
+        schedule['title'] as String,
+        schedule['body'] as String,
+        scheduledDate,
+        notificationDetails,
+        androidScheduleMode: scheduleMode,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    }
+  }
+
+  Future<void> cancelRetentionNotifications() async {
+    await _localNotificationsPlugin.cancel(9001);
+    await _localNotificationsPlugin.cancel(9002);
+    await _localNotificationsPlugin.cancel(9003);
+    await _localNotificationsPlugin.cancel(9004);
   }
 }

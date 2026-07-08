@@ -32,6 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 MathBackground(),
 
                 PageView.builder(
+                  reverse: true,
                   onPageChanged: (value) => onboardinValue.onPagechange(value),
                   controller: onboardinValue.pageController,
                   itemCount: items.length,
@@ -39,12 +40,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     bool isCurrentPage = onboardinValue.current_bage == index;
 
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: SingleChildScrollView(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 OnboardingImage(
                                   isCurrentPage: isCurrentPage,

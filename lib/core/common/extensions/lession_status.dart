@@ -66,7 +66,7 @@ extension LessonStatusHelper on LessonStatus {
       case LessonStatus.inProgress:
         return Icons.play_circle_filled;
       case LessonStatus.completed:
-        return Icons.check_circle;
+        return Icons.play_circle_filled;
     }
   }
 }

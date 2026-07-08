@@ -77,7 +77,7 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 195,
+                  height: 170,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -86,12 +86,16 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                         : provider.courses.length,
                     itemBuilder: (context, index) {
                       final course = provider.courses[index];
+                      // سبق أن حصل على الوسام (completedAt موجود) لكن المعدل نقص عن 90% بسبب اختبارات جديدة
+                      final showWarning = course.completedAt != null && course.averagePercentage < 90;
+                      final isVisuallyCompleted = course.isCompleted || showWarning;
+
                       return GestureDetector(
                         onTap: () {
                           ExcellenceModulesBottomSheet.show(context, course);
                         },
                         child: Opacity(
-                          opacity: course.isCompleted ? 1.0 : 0.6,
+                          opacity: isVisuallyCompleted ? 1.0 : 0.6,
                           child: Container(
                             width: 160,
                             margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -110,9 +114,9 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                         top: Radius.circular(16),
                                       ),
                                       child: Container(
-                                        height: 110,
+                                        height: 95,
                                         width: double.infinity,
-                                        color: !course.isCompleted
+                                        color: !isVisuallyCompleted
                                             ? Colors.grey.withOpacity(0.2)
                                             : (context.isDarkMode
                                                   ? Colors.amber.withOpacity(
@@ -120,11 +124,11 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                                     )
                                                   : Colors.amber.shade50),
                                         child: Center(
-                                          child: course.isCompleted
+                                          child: isVisuallyCompleted
                                               ? Lottie.asset(
                                                   AppLottie.goldMedal,
-                                                  width: 95,
-                                                  height: 95,
+                                                  width: 100,
+                                                  height: 100,
                                                   fit: BoxFit.contain,
                                                 )
                                               : ColorFiltered(
@@ -153,18 +157,18 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                                           0,
                                                         ],
                                                       ),
-                                                  child: Lottie.asset(
-                                                    AppLottie.goldMedal,
-                                                    width: 95,
-                                                    height: 95,
-                                                    fit: BoxFit.contain,
-                                                  ),
+                                                   child: Lottie.asset(
+                                                     AppLottie.goldMedal,
+                                                     width: 100,
+                                                     height: 100,
+                                                     fit: BoxFit.contain,
+                                                   ),
                                                 ),
                                         ),
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.all(12.0),
+                                      padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0, bottom: 2.0),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -174,7 +178,7 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                             style: context.titleMedium
                                                 ?.copyWith(
                                                   fontWeight: FontWeight.bold,
-                                                  color: !course.isCompleted
+                                                  color: !isVisuallyCompleted
                                                       ? Colors.grey
                                                       : null,
                                                 ),
@@ -182,13 +186,12 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           const SizedBox(height: 4),
-                                          if (course.isCompleted)
+                                          if (isVisuallyCompleted)
                                             Text(
                                               'المعدل: ${course.averagePercentage}%',
                                               style: context.bodyMedium
                                                   ?.copyWith(
-                                                    color:
-                                                        Colors.amber.shade700,
+                                                    color: showWarning ? Colors.orange : Colors.amber.shade700,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                             ),
@@ -197,6 +200,41 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                     ),
                                   ],
                                 ),
+                                if (showWarning)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(12),
+                                          topRight: Radius.circular(12),
+                                          bottomLeft: Radius.circular(12),
+                                          bottomRight: Radius.circular(2),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.15),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Text(
+                                        'يرجى إتمام الاختبارات الجديدة',
+                                        style: TextStyle(
+                                          color: Colors.orange.shade700,
+                                          fontSize: 7.5,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),

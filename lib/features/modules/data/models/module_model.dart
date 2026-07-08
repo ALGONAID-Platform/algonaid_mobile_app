@@ -7,16 +7,50 @@ part 'module_model.g.dart';
 
 @HiveType(typeId: 13)
 class ModuleModel extends Module {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final String title;
+  @override
+  @HiveField(2)
+  final String description;
+  @override
+  @HiveField(3)
+  final int courseId;
+  @override
+  @HiveField(4)
+  final List<Lesson> lessons;
+  @override
+  @HiveField(5)
+  final int completedLessons;
+  @override
+  @HiveField(6)
+  final double progressPercentage;
+  @override
+  @HiveField(7)
+  final int totalLessons;
+
   const ModuleModel({
-    @HiveField(0) required super.id,
-    @HiveField(1) required super.title,
-    @HiveField(2) required super.description,
-    @HiveField(3) required super.courseId,
-    @HiveField(4) required super.lessons,
-    @HiveField(5) required super.completedLessons,
-    @HiveField(6) required super.progressPercentage,
-    @HiveField(7) required super.totalLessons,
-  });
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.courseId,
+    required this.lessons,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
+  }) : super(
+         id: id,
+         title: title,
+         description: description,
+         courseId: courseId,
+         lessons: lessons,
+         completedLessons: completedLessons,
+         progressPercentage: progressPercentage,
+         totalLessons: totalLessons,
+       );
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {
     return ModuleModel(

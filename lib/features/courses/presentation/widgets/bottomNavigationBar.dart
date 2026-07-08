@@ -82,9 +82,11 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
           borderRadius: BorderRadius.circular(30),
           boxShadow: AppShadows.cardShadow,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(icons.length, (i) {
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(icons.length, (i) {
             final bool isActive = i == widget.selectedIndex;
 
             return Expanded(
@@ -146,6 +148,7 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
               ),
             );
           }),
+        ),
         ),
       ),
     );

@@ -5,6 +5,8 @@ import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -56,8 +58,8 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
     // Start the zoom animation
     _animationController.forward();
 
-    // Wait for the animation duration (800ms) to ensure smooth transition
-    await Future.delayed(const Duration(milliseconds: 800));
+    // Wait for the animation duration to ensure smooth transition and typing effect finishes
+    await Future.delayed(const Duration(milliseconds: 2000));
 
     // Await the restoreSession task to complete
     await restoreFuture;
@@ -88,19 +90,47 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
             ),
           ),
           
-          // Centered Animated Logo
+          // Centered Animated Logo and Text
           Center(
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Hero(
-                tag: 'app_logo_hero',
-                child: Image.asset(
-                  Images.logo,
-                  width: 180,
-                  height: 180,
-                  fit: BoxFit.contain,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Hero(
+                    tag: 'app_logo_hero',
+                    child: Image.asset(
+                      Images.logo,
+                      width: 180,
+                      height: 180,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 15), // Spacing for scale effect
+                Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: DefaultTextStyle(
+                    style: const TextStyle(
+                      fontFamily: 'IBM Plex Sans Arabic',
+                      fontSize: 28.0,
+                      fontWeight: FontWeight.bold,
+                    ).copyWith(
+                      color: isDark ? Colors.white : AppColors.primary,
+                    ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText(
+                          'منصة الجنيد',
+                          speed: const Duration(milliseconds: 100),
+                          cursor: '|',
+                        ),
+                      ],
+                      isRepeatingAnimation: false,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

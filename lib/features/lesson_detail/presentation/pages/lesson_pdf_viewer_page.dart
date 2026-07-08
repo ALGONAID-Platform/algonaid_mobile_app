@@ -82,7 +82,7 @@ class _LessonPdfViewerPageState extends State<LessonPdfViewerPage> {
 
   String? _extractDriveFileId(String url) {
     final patterns = <RegExp>[
-      RegExp(r'https?://drive\.google\.com/file/d/([^/]+)/view'),
+      RegExp(r'https?://drive\.google\.com/file/d/([^/?#\s]+)'),
       RegExp(r'https?://drive\.google\.com/open\?id=([^&]+)'),
       RegExp(r'https?://drive\.google\.com/uc\?export=download&id=([^&]+)'),
     ];
@@ -117,7 +117,8 @@ class _LessonPdfViewerPageState extends State<LessonPdfViewerPage> {
     final fileName = sanitizedTitle.isEmpty
         ? 'lesson_attachment'
         : sanitizedTitle;
-    return '$fileName.$extension';
+    final urlHash = sourceUrl.hashCode.abs();
+    return '${fileName}_$urlHash.$extension';
   }
 
   String _guessExtension(String sourceUrl) {

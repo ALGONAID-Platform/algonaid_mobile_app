@@ -67,15 +67,9 @@ class sliverListItemsBuilder extends StatelessWidget {
                     'progressPercentage': module.progressPercentage,
                     'totalLessons': module.totalLessons,
                     'courseId': module.courseId,
+                    'moduleDescription': module.description,
                   },
-                ).then((_) {
-                  if (context.mounted) {
-                    try {
-                      context.read<ModulesListProvider>().loadModules(module.courseId);
-                      context.read<GetCoursesProvider>().refreshAll();
-                    } catch (_) {}
-                  }
-                });
+                );
               },
             ),
           ),

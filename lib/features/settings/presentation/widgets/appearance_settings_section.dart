@@ -29,29 +29,26 @@ class AppearanceSettingsSection extends StatelessWidget {
               ),
               subtitle: Text(
                 'تغيير لون التطبيق إلى لونك المفضل',
-                style: themeContext.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                style: themeContext.textTheme.bodyMedium
+                    ?.copyWith(color: Colors.grey),
               ),
               trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-              onTap: () {
-                final switcher = ThemeSwitcher.of(themeContext);
-                _showColorPickerBottomSheet(themeContext, switcher);
-              },
+              onTap: () => _showColorPickerBottomSheet(themeContext),
             ),
             ListTile(
               leading: SettingsIconWrapper(
                 icon: Icons.font_download_rounded,
                 color: themeContext.primary,
               ),
-              title: Text('خط التطبيق', style: themeContext.textTheme.bodyLarge),
+              title:
+                  Text('خط التطبيق', style: themeContext.textTheme.bodyLarge),
               subtitle: Text(
                 'تغيير نوع الخط المستخدم في التطبيق',
-                style: themeContext.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                style: themeContext.textTheme.bodyMedium
+                    ?.copyWith(color: Colors.grey),
               ),
               trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-              onTap: () {
-                final switcher = ThemeSwitcher.of(themeContext);
-                _showFontPickerBottomSheet(themeContext, switcher);
-              },
+              onTap: () => _showFontPickerBottomSheet(themeContext),
             ),
           ],
         );
@@ -59,7 +56,7 @@ class AppearanceSettingsSection extends StatelessWidget {
     );
   }
 
-  void _showColorPickerBottomSheet(BuildContext parentContext, ThemeSwitcherState switcher) {
+  void _showColorPickerBottomSheet(BuildContext parentContext) {
     showModalBottomSheet(
       context: parentContext,
       shape: const RoundedRectangleBorder(
@@ -80,66 +77,62 @@ class AppearanceSettingsSection extends StatelessWidget {
                   children: [
                     Text(
                       'اختر لون التطبيق',
-                      style: sheetContext.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: sheetContext.textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 24),
                     Wrap(
                       spacing: 20,
                       runSpacing: 20,
-                      children: List.generate(ThemeApp.availableColors.length, (
-                        index,
-                      ) {
-                        final color = ThemeApp.availableColors[index];
-                        final isSelected = tempSelectedColorIndex == index;
-                        return GestureDetector(
-                          onTap: () {
-                            setModalState(() {
-                              tempSelectedColorIndex = index;
-                            });
-                          },
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                              border: isSelected
-                                  ? Border.all(
-                                      color: sheetContext.isDarkMode
-                                          ? Colors.white
-                                          : Colors.black,
-                                      width: 3,
-                                    )
-                                  : null,
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: color.withOpacity(0.4),
-                                        blurRadius: 8,
-                                        spreadRadius: 1,
-                                      ),
-                                    ]
+                      children: List.generate(
+                        ThemeApp.availableColors.length,
+                        (index) {
+                          final color = ThemeApp.availableColors[index];
+                          final isSelected = tempSelectedColorIndex == index;
+                          return GestureDetector(
+                            onTap: () => setModalState(
+                                () => tempSelectedColorIndex = index),
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                                border: isSelected
+                                    ? Border.all(
+                                        color: sheetContext.isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                        width: 3,
+                                      )
+                                    : null,
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: color.withOpacity(0.4),
+                                          blurRadius: 8,
+                                          spreadRadius: 1,
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              child: isSelected
+                                  ? const Icon(Icons.check, color: Colors.white)
                                   : null,
                             ),
-                            child: isSelected
-                                ? const Icon(Icons.check, color: Colors.white)
-                                : null,
-                          ),
-                        );
-                      }),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 32),
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {
-                              Navigator.of(sheetContext).pop();
-                            },
+                            onPressed: () => Navigator.of(sheetContext).pop(),
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -164,24 +157,26 @@ class AppearanceSettingsSection extends StatelessWidget {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Trigger animated theme switch on the root theme switcher using parentContext
-                              switcher.changeTheme(
+                              final selectedIndex = tempSelectedColorIndex;
+
+                              // 1) شغّل انيميشن الدائرة أولاً
+                              ThemeSwitcher.of(parentContext).changeTheme(
                                 theme: themeProvider.isDarkMode
                                     ? ThemeApp.getDarkTheme(
-                                        colorIndex: tempSelectedColorIndex,
+                                        colorIndex: selectedIndex,
                                         fontIndex: themeProvider.fontIndex,
                                       )
                                     : ThemeApp.getLightTheme(
-                                        colorIndex: tempSelectedColorIndex,
+                                        colorIndex: selectedIndex,
                                         fontIndex: themeProvider.fontIndex,
                                       ),
-                                onAnimationFinish: () {
-                                  // Update our custom provider (persists the change) after animation finishes
-                                  themeProvider.changeColor(tempSelectedColorIndex);
-                                },
                               );
 
-                              // Close the bottom sheet
+                              // 2) حدّث الـ provider بتأخير بسيط لتجنب الوميض المفاجئ
+                              Future.delayed(const Duration(milliseconds: 120), () {
+                                themeProvider.changeColor(selectedIndex);
+                              });
+
                               Navigator.of(sheetContext).pop();
                             },
                             style: ElevatedButton.styleFrom(
@@ -189,7 +184,8 @@ class AppearanceSettingsSection extends StatelessWidget {
                                   .availableColors[tempSelectedColorIndex],
                               foregroundColor: Colors.white,
                               elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -212,21 +208,24 @@ class AppearanceSettingsSection extends StatelessWidget {
     );
   }
 
-  void _showFontPickerBottomSheet(BuildContext parentContext, ThemeSwitcherState switcher) {
-    final List<String> fontNames = [
+  void _showFontPickerBottomSheet(BuildContext parentContext) {
+    final List<String> fontDisplayNames = [
       'الخط الافتراضي (IBM Plex Sans)',
       'خط كايرو (Cairo)',
       'خط تجوال (Tajawal)',
       'خط المراعي (Almarai)',
       'خط تشانجا (Changa)',
     ];
+
     showModalBottomSheet(
       context: parentContext,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (sheetContext) {
+        // استخدم watch لتتحدث علامة الاختيار عند التغيير
         final themeProvider = sheetContext.watch<ThemeProvider>();
+
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Padding(
@@ -236,35 +235,51 @@ class AppearanceSettingsSection extends StatelessWidget {
               children: [
                 Text(
                   'اختر خط التطبيق',
-                  style: sheetContext.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: sheetContext.textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 ...List.generate(ThemeApp.availableFonts.length, (index) {
+                  final isSelected = themeProvider.fontIndex == index;
                   return ListTile(
                     title: Text(
-                      fontNames[index],
+                      fontDisplayNames[index],
                       style: TextStyle(
                         fontFamily: ThemeApp.availableFonts[index],
+                        fontSize: 16,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w400,
                       ),
                     ),
-                    trailing: themeProvider.fontIndex == index
-                        ? Icon(Icons.check_circle, color: sheetContext.primary)
+                    trailing: isSelected
+                        ? Icon(Icons.check_circle,
+                            color: sheetContext.primary)
                         : null,
                     onTap: () {
-                      // Trigger animated theme switch on the root theme switcher using parentContext
-                      switcher.changeTheme(
+                      if (isSelected) {
+                        Navigator.of(sheetContext).pop();
+                        return;
+                      }
+
+                      // 1) شغّل انيميشن الدائرة أولاً
+                      ThemeSwitcher.of(parentContext).changeTheme(
                         theme: themeProvider.isDarkMode
-                            ? ThemeApp.getDarkTheme(colorIndex: themeProvider.colorIndex, fontIndex: index)
-                            : ThemeApp.getLightTheme(colorIndex: themeProvider.colorIndex, fontIndex: index),
-                        onAnimationFinish: () {
-                          // Update our custom provider (persists the change) after animation finishes
-                          themeProvider.changeFont(index);
-                        },
+                            ? ThemeApp.getDarkTheme(
+                                colorIndex: themeProvider.colorIndex,
+                                fontIndex: index,
+                              )
+                            : ThemeApp.getLightTheme(
+                                colorIndex: themeProvider.colorIndex,
+                                fontIndex: index,
+                              ),
                       );
 
-                      // Close the bottom sheet
+                      // 2) حدّث الـ provider بتأخير بسيط لتجنب الوميض المفاجئ
+                      Future.delayed(const Duration(milliseconds: 120), () {
+                        themeProvider.changeFont(index);
+                      });
+
                       Navigator.of(sheetContext).pop();
                     },
                   );

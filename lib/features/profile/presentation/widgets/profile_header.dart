@@ -207,7 +207,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     if (hasLocal) {
       imageProvider = FileImage(File(localAvatarPath!));
     } else if (hasNetwork) {
-      imageProvider = CachedNetworkImageProvider(avatarUrl!);
+      imageProvider = CachedNetworkImageProvider(avatarUrl!, errorListener: (err) {});
     }
 
     return GestureDetector(
@@ -223,6 +223,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 ? DecorationImage(
                     image: imageProvider!,
                     fit: BoxFit.cover,
+                    onError: (exception, stackTrace) {},
                   )
                 : null,
             gradient: !hasAvatar
@@ -269,7 +270,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     if (hasLocal) {
       imageProvider = FileImage(File(localAvatarPath!));
     } else if (hasNetwork) {
-      imageProvider = CachedNetworkImageProvider(avatarUrl!);
+      imageProvider = CachedNetworkImageProvider(avatarUrl!, errorListener: (err) {});
     }
 
     Navigator.of(context).push(
@@ -298,6 +299,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                           ? DecorationImage(
                               image: imageProvider!,
                               fit: BoxFit.cover,
+                              onError: (exception, stackTrace) {},
                             )
                           : null,
                       gradient: !hasAvatar

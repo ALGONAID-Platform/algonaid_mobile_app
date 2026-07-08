@@ -5,7 +5,7 @@ import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
 import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/lesson_detail_download_controller.dart';
+import 'package:algonaid_mobile_app/features/downloads/presentation/providers/active_downloads_provider.dart';
 import 'package:flutter/material.dart';
 
 class LessonDetailContent extends StatelessWidget {
@@ -15,7 +15,7 @@ class LessonDetailContent extends StatelessWidget {
   final String? Function(String? pdfUrl) resolvePdfUrl;
 
   final VoidCallback? onVideoStart;
-  final VoidCallback? onProgressComplete;
+  final Future<bool> Function()? onProgressComplete;
 
   final DownloadStatus pdfDownloadStatus;
   final int pdfDownloadProgress;
@@ -42,14 +42,16 @@ class LessonDetailContent extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          LessonVideoPlayer(
-            lessonId: lesson.id,
-            videoUrl: lesson.videoUrl,
-            localVideoPath: localVideoPath,
-            onVideoStart: onVideoStart,
-            onProgressComplete: onProgressComplete,
-          ),
-          const SizedBox(height: 16),
+          if (lesson.videoUrl != null && lesson.videoUrl!.isNotEmpty) ...[
+            LessonVideoPlayer(
+              lessonId: lesson.id,
+              videoUrl: lesson.videoUrl,
+              localVideoPath: localVideoPath,
+              onVideoStart: onVideoStart,
+              onProgressComplete: onProgressComplete,
+            ),
+            const SizedBox(height: 16),
+          ],
           LessonInfoCard(title: lesson.title),
           const SizedBox(height: 16),
           LessonPdfCard(
@@ -74,9 +76,9 @@ class LessonDetailContent extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
           LessonTabs(description: lesson.description, content: lesson.content),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
           LessonQuizCard(examId: actualExamId),
           const SizedBox(height: 16),
         ],

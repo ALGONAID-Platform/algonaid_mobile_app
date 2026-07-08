@@ -8,6 +8,7 @@ import 'package:algonaid_mobile_app/features/settings/presentation/widgets/logou
 import 'package:algonaid_mobile_app/features/settings/presentation/widgets/notifications_settings_section.dart';
 import 'package:algonaid_mobile_app/features/settings/presentation/widgets/storage_settings_section.dart';
 import 'package:algonaid_mobile_app/features/settings/presentation/widgets/video_settings_section.dart';
+import 'package:algonaid_mobile_app/features/settings/presentation/widgets/more_apps_settings_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -84,6 +85,8 @@ class _SettingsPageState extends State<SettingsPage> {
             const StorageSettingsSection(),
             const SizedBox(height: 24),
             const AboutSettingsSection(),
+            const SizedBox(height: 24),
+            const MoreAppsSettingsSection(),
             const SizedBox(height: 24),
             const LogoutSettingsButton(),
           ],

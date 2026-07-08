@@ -17,14 +17,14 @@ class ModuleModelAdapter extends TypeAdapter<ModuleModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ModuleModel(
-      id: fields[0] as int? ?? 0,
-      title: fields[1] as String? ?? '',
-      description: fields[2] as String? ?? '',
-      courseId: fields[3] as int? ?? 0,
-      lessons: (fields[4] as List?)?.cast<Lesson>() ?? const [],
-      completedLessons: fields[5] as int? ?? 0,
-      progressPercentage: fields[6] as double? ?? 0.0,
-      totalLessons: fields[7] as int? ?? 0,
+      id: fields[0] as int,
+      title: fields[1] as String,
+      description: fields[2] as String,
+      courseId: fields[3] as int,
+      lessons: (fields[4] as List).cast<Lesson>(),
+      completedLessons: fields[5] as int,
+      progressPercentage: fields[6] as double,
+      totalLessons: fields[7] as int,
     );
   }
 

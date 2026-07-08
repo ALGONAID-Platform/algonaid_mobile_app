@@ -1,7 +1,6 @@
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ThemeApp {
   static final List<Color> availableColors = [
@@ -13,11 +12,11 @@ class ThemeApp {
   ];
 
   static final List<String> availableFonts = [
-    GoogleFonts.ibmPlexSansArabic().fontFamily ?? 'IBM Plex Sans Arabic',
-    GoogleFonts.cairo().fontFamily ?? 'Cairo',
-    GoogleFonts.tajawal().fontFamily ?? 'Tajawal',
-    GoogleFonts.almarai().fontFamily ?? 'Almarai',
-    GoogleFonts.changa().fontFamily ?? 'Changa',
+    'IBM Plex Sans Arabic',
+    'Cairo',
+    'Tajawal',
+    'Almarai',
+    'Changa',
   ];
 
   static String getAppFontFamily(int index) {
@@ -36,8 +35,9 @@ class ThemeApp {
 
   static TextTheme _buildTextTheme({
     required bool isDark,
-    required String fontFamily,
+    required int fontIndex,
   }) {
+    final String fontFamily = getAppFontFamily(fontIndex);
     final Color primaryText = isDark
         ? AppColors.textPrimaryDark.withOpacity(0.85)
         : AppColors.textPrimaryLight;
@@ -45,98 +45,111 @@ class ThemeApp {
         ? AppColors.textSecondaryDark.withOpacity(0.65)
         : AppColors.textSecondaryLight;
     final Color tertiaryText = isDark
-        ? AppColors.textSecondaryDark.withOpacity(0.45) // خافت جداً
+        ? AppColors.textSecondaryDark.withOpacity(0.45)
         : AppColors.textSecondaryLight.withOpacity(0.70);
-    final TextTheme baseTextTheme = ThemeData.light().textTheme.apply(
-      fontFamily: fontFamily,
-    );
+
+    TextTheme baseTextTheme = ThemeData.light().textTheme;
 
     return baseTextTheme.copyWith(
-      // --- عائلة الـ Display (للأرقام الكبيرة والترحيب) ---
+      // --- عائلة الـ Display ---
       displayLarge: baseTextTheme.displayLarge?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 48,
-        fontWeight: FontWeight.w800, // عريض جداً
+        fontWeight: FontWeight.w800,
         color: primaryText,
-        letterSpacing: 0, // العربية لا تحتاج مسافات بين الحروف
+        letterSpacing: 0,
       ),
       displayMedium: baseTextTheme.displayMedium?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 36,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
       displaySmall: baseTextTheme.displaySmall?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 30,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
 
-      // --- عائلة الـ Headline (عناوين الصفحات والأقسام) ---
+      // --- عائلة الـ Headline ---
       headlineLarge: baseTextTheme.headlineLarge?.copyWith(
-        // أضفت Large للكمال
+        fontFamily: fontFamily,
         fontSize: 28,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
       headlineMedium: baseTextTheme.headlineMedium?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 24,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
       headlineSmall: baseTextTheme.headlineSmall?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: primaryText,
       ),
 
-      // --- عائلة الـ Title (عناوين الكروت والأشرطة) ---
+      // --- عائلة الـ Title ---
       titleLarge: baseTextTheme.titleLarge?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 18,
         fontWeight: FontWeight.w700,
         color: primaryText,
       ),
       titleMedium: baseTextTheme.titleMedium?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 16,
-        fontWeight: FontWeight.w600, // تم التعديل إلى 600 ليبرز كعنوان
+        fontWeight: FontWeight.w600,
         color: primaryText,
       ),
       titleSmall: baseTextTheme.titleSmall?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: primaryText,
       ),
 
-      // --- عائلة الـ Body (النصوص القرائية والوصف) ---
+      // --- عائلة الـ Body ---
       bodyLarge: baseTextTheme.bodyLarge?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 16,
         fontWeight: FontWeight.w400,
-        color: primaryText, // محتوى أساسي
+        color: primaryText,
       ),
       bodyMedium: baseTextTheme.bodyMedium?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: secondaryText, // النص الافتراضي يفضل أن يكون أهدأ قليلاً
+        color: secondaryText,
       ),
       bodySmall: baseTextTheme.bodySmall?.copyWith(
-        fontSize: 12, // تم الرفع من 10 إلى 12 لأن 10 صغير جداً للعربي
+        fontFamily: fontFamily,
+        fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: secondaryText, // الوصف الباهت
+        color: secondaryText,
       ),
 
-      // --- عائلة الـ Label (الأزرار والتاغات) ---
+      // --- عائلة الـ Label ---
       labelLarge: baseTextTheme.labelLarge?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: primaryText, // نص الأزرار
+        color: primaryText,
       ),
       labelMedium: baseTextTheme.labelMedium?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: secondaryText,
       ),
       labelSmall: baseTextTheme.labelSmall?.copyWith(
+        fontFamily: fontFamily,
         fontSize: 10,
         fontWeight: FontWeight.w500,
-        color: tertiaryText, // التاغات الصغيرة جداً
+        color: tertiaryText,
       ),
     );
   }
@@ -227,7 +240,22 @@ class ThemeApp {
       ),
 
       // 5. Text Theme
-      textTheme: _buildTextTheme(isDark: false, fontFamily: appFontFamily),
+      textTheme: _buildTextTheme(isDark: false, fontIndex: fontIndex),
+
+      // 6. TimePicker Theme
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: AppColors.bgLight,
+        dayPeriodColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? primaryColor.withOpacity(0.2) : AppColors.surfaceLight),
+        dayPeriodTextColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? primaryColor : AppColors.textSecondaryLight),
+        hourMinuteColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? primaryColor.withOpacity(0.2) : AppColors.surfaceLight),
+        hourMinuteTextColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? primaryColor : AppColors.textPrimaryLight),
+        dialBackgroundColor: AppColors.surfaceLight,
+        dialHandColor: primaryColor,
+      ),
     );
   }
 
@@ -255,12 +283,12 @@ class ThemeApp {
         onPrimary: AppColors.white,
         onSecondary: AppColors.white,
 
-        surfaceContainer: Color(0xFF212E3E),
+        surfaceContainer: AppColors.surfaceDark,
         onBackground: AppColors.textPrimaryDark,
         onError: AppColors.white,
       ),
 
-      // AppBar Dark
+      // 2. AppBar Theme
       appBarTheme: AppBarTheme(
         centerTitle: true,
         backgroundColor: AppColors.bgDark,
@@ -272,22 +300,34 @@ class ThemeApp {
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimaryDark,
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimaryDark),
+        iconTheme: IconThemeData(color: AppColors.textPrimaryDark),
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
 
-      // Button Dark
+      // 3. Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
           foregroundColor: AppColors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primaryColor,
+          side: BorderSide(color: primaryColor.withOpacity(0.5)),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
 
-      // Input Dark
+      // 4. Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceDark,
@@ -305,12 +345,32 @@ class ThemeApp {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryColor),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.red),
         ),
         hintStyle: const TextStyle(color: AppColors.textSecondaryDark),
       ),
 
-      textTheme: _buildTextTheme(isDark: true, fontFamily: appFontFamily),
+      // 5. Text Theme
+      textTheme: _buildTextTheme(isDark: true, fontIndex: fontIndex),
+
+      // 6. TimePicker Theme
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: AppColors.surfaceDark,
+        dayPeriodColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? primaryColor.withOpacity(0.3) : AppColors.bgDark),
+        dayPeriodTextColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? AppColors.white : AppColors.textSecondaryDark),
+        hourMinuteColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? primaryColor.withOpacity(0.3) : AppColors.bgDark),
+        hourMinuteTextColor: WidgetStateColor.resolveWith((states) => 
+            states.contains(WidgetState.selected) ? AppColors.white : AppColors.textPrimaryDark),
+        dialBackgroundColor: AppColors.bgDark,
+        dialHandColor: primaryColor,
+      ),
     );
   }
 }

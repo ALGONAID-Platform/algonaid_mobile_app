@@ -156,7 +156,7 @@ class CourseThinCard extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "${course.completedLessons} / ${course.totalLessons} مكتمل",
+                                "${course.totalLessons} / ${course.completedLessons} مكتمل",
                                 style: context.theme.textTheme.labelSmall,
                               ),
                             ],

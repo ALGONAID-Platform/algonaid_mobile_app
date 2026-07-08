@@ -14,6 +14,8 @@ import 'package:algonaid_mobile_app/features/profile/presentation/providers/prof
 import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_module_lessons.dart';
 import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:algonaid_mobile_app/features/lessons/presentation/providers/lessons_list_provider.dart';
+import 'package:algonaid_mobile_app/features/practice_exams/presentation/providers/practice_exams_provider.dart';
+import 'package:algonaid_mobile_app/features/downloads/presentation/providers/active_downloads_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -61,10 +63,12 @@ class AppProviders extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ModulesListProvider(getIt(), getIt())),
         ChangeNotifierProvider(create: (_) => LessonsListProvider(getIt(), getIt())),
         ChangeNotifierProvider(create: (_) => DownloadsProvider()),
+        ChangeNotifierProvider(create: (_) => ActiveDownloadsProvider()),
         ChangeNotifierProvider(
           create: (_) => getIt<ExcellenceCoursesProvider>(),
         ),
         ChangeNotifierProvider(create: (_) => getIt<ProfileProvider>()),
+        ChangeNotifierProvider(create: (_) => getIt<PracticeExamsProvider>()),
       ],
       child: child,
     );

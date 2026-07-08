@@ -42,7 +42,7 @@ class AllCoursesListSection extends StatelessWidget {
             _buildAllEnrolledCard(context)
           else
             SizedBox(
-              height: 345,
+              height: 300,
               child: ListView.builder(
                 reverse: false,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -51,7 +51,7 @@ class AllCoursesListSection extends StatelessWidget {
                 itemCount: reversedCourses.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    width: 300,
+                    width: 240,
                     // تعديل المارجن ليكون متناسقاً مع الاتجاه العكسي
                     margin: const EdgeInsets.only(left: 16),
                     child: CourseCard(course: reversedCourses[index]),

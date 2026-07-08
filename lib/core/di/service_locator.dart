@@ -9,6 +9,8 @@ import 'package:algonaid_mobile_app/features/auth/domain/usecases/signup_usecase
 import 'package:algonaid_mobile_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
 import 'package:algonaid_mobile_app/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:algonaid_mobile_app/features/auth/domain/usecases/reset_password_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/verify_email_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/resend_verification_usecase.dart';
 import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
 
 import 'package:algonaid_mobile_app/features/courses/data/datasources/course_local_stroage.dart';
@@ -86,6 +88,12 @@ import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_user_ba
 import 'package:algonaid_mobile_app/features/profile/domain/usecases/get_cached_user_badges_usecase.dart';
 import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
 
+import 'package:algonaid_mobile_app/features/practice_exams/data/datasources/practice_exams_remote_data_source.dart';
+import 'package:algonaid_mobile_app/features/practice_exams/data/repositories/practice_exams_repository_impl.dart';
+import 'package:algonaid_mobile_app/features/practice_exams/domain/repositories/practice_exams_repository.dart';
+import 'package:algonaid_mobile_app/features/practice_exams/domain/usecases/get_practice_exams_usecase.dart';
+import 'package:algonaid_mobile_app/features/practice_exams/presentation/providers/practice_exams_provider.dart';
+
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -161,6 +169,10 @@ void setupServiceLocator() {
     () => SearchRemoteDataSourceImpl(apiService: getIt()),
   );
 
+  getIt.registerLazySingleton<PracticeExamsRemoteDataSource>(
+    () => PracticeExamsRemoteDataSourceImpl(apiService: getIt()),
+  );
+
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(authRemotDataSource: getIt()),
@@ -213,6 +225,10 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<SearchRepository>(
     () => SearchRepositoryImpl(remoteDataSource: getIt()),
   );
+
+  getIt.registerLazySingleton<PracticeExamsRepository>(
+    () => PracticeExamsRepositoryImpl(remoteDataSource: getIt()),
+  );
   // ================= USE CASES =================
   getIt.registerLazySingleton<SigninUsecase>(
     () => SigninUsecase(authRepo: getIt()),
@@ -236,6 +252,14 @@ void setupServiceLocator() {
 
   getIt.registerLazySingleton<ResetPasswordUsecase>(
     () => ResetPasswordUsecase(authRepo: getIt()),
+  );
+
+  getIt.registerLazySingleton<VerifyEmailUsecase>(
+    () => VerifyEmailUsecase(authRepo: getIt()),
+  );
+
+  getIt.registerLazySingleton<ResendVerificationUsecase>(
+    () => ResendVerificationUsecase(authRepo: getIt()),
   );
 
   getIt.registerLazySingleton<GetCoursesUsecase>(
@@ -359,6 +383,10 @@ void setupServiceLocator() {
     () => GetCachedUserBadgesUseCase(getIt()),
   );
 
+  getIt.registerLazySingleton<GetPracticeExamsUseCase>(
+    () => GetPracticeExamsUseCase(getIt()),
+  );
+
   // ================= PROVIDERS =================
   getIt.registerFactory<AuthServiceProvider>(
     () => AuthServiceProvider(
@@ -368,6 +396,8 @@ void setupServiceLocator() {
       logoutUseCase: getIt(), // Added
       forgotPasswordUseCase: getIt(),
       resetPasswordUseCase: getIt(),
+      verifyEmailUseCase: getIt(),
+      resendVerificationUseCase: getIt(),
     ),
   );
 
@@ -426,5 +456,9 @@ void setupServiceLocator() {
       getCachedUserProfileUsecase: getIt(),
       getCachedTotalPointsUsecase: getIt(),
     ),
+  );
+
+  getIt.registerFactory<PracticeExamsProvider>(
+    () => PracticeExamsProvider(getPracticeExamsUseCase: getIt()),
   );
 }

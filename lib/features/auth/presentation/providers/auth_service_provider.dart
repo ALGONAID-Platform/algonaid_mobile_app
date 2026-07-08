@@ -3,6 +3,7 @@ import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
 import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/init_hive.dart';
 import 'package:algonaid_mobile_app/core/utils/validations/app_validation.dart';
 import 'package:algonaid_mobile_app/features/auth/domain/entities/user_entity.dart';
 import 'package:algonaid_mobile_app/features/auth/domain/usecases/google_signin_usecase.dart';
@@ -11,10 +12,13 @@ import 'package:algonaid_mobile_app/features/auth/domain/usecases/signup_usecase
 import 'package:algonaid_mobile_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
 import 'package:algonaid_mobile_app/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:algonaid_mobile_app/features/auth/domain/usecases/reset_password_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/verify_email_usecase.dart';
+import 'package:algonaid_mobile_app/features/auth/domain/usecases/resend_verification_usecase.dart';
 import 'package:algonaid_mobile_app/features/auth/data/models/auth_models.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthServiceProvider extends ChangeNotifier {
   final SigninUsecase signInUseCase;
@@ -23,6 +27,8 @@ class AuthServiceProvider extends ChangeNotifier {
   final LogoutUsecase logoutUseCase; // Added
   final ForgotPasswordUsecase forgotPasswordUseCase;
   final ResetPasswordUsecase resetPasswordUseCase;
+  final VerifyEmailUsecase verifyEmailUseCase;
+  final ResendVerificationUsecase resendVerificationUseCase;
 
   AuthServiceProvider({
     required this.signInUseCase,
@@ -31,6 +37,8 @@ class AuthServiceProvider extends ChangeNotifier {
     required this.logoutUseCase, // Added
     required this.forgotPasswordUseCase,
     required this.resetPasswordUseCase,
+    required this.verifyEmailUseCase,
+    required this.resendVerificationUseCase,
   });
 
   UserEntity? _user;
@@ -120,14 +128,21 @@ class AuthServiceProvider extends ChangeNotifier {
     result.fold(
       (failure) {
         _errorMessage = failure.message;
-
         _isLoading = false;
         notifyListeners();
       },
-      (userEntity) async {
+      (userEntity) {
         _user = userEntity;
-        await cacheUserData(userEntity);
         _errorMessage = null;
+        // حفظ البيانات في الخلفية دون انتظار
+        cacheUserData(userEntity).catchError((e) {
+          debugPrint('⚠️ SignUp: خطأ أثناء حفظ بيانات المستخدم: $e');
+        });
+        if (userEntity.token != null && userEntity.token!.isNotEmpty) {
+          debugPrint('✅ SignUp: تم تعيين المستخدم والتوكن بنجاح.');
+        } else {
+          debugPrint('⚠️ SignUp: السيرفر لم يُرجع توكن.');
+        }
         _isLoading = false;
         notifyListeners();
       },
@@ -173,13 +188,36 @@ class AuthServiceProvider extends ChangeNotifier {
     try {
       final googleSignIn = GoogleSignIn(
         clientId: Platform.isIOS
-            ? '891038928378-o7m1sealgkogiaolpuaisspg22g2c1i5.apps.googleusercontent.com'
+            ? '384073856983-fshcgklqtg7fk3kuu7tonnbbfq0k6281.apps.googleusercontent.com'
             : null,
         serverClientId:
-            '292600777770-chig09sldsl4up6t5vqhr7lvgmqk4glg.apps.googleusercontent.com',
+            '384073856983-j4h4lvqbgurl07ecd3nhd1bf0btuq6js.apps.googleusercontent.com',
         scopes: ['email', 'profile'],
       );
+
+      // ── خطوة 1: مسح أي جلسة سابقة ──────────────────────────────────
+      // نتحقق من وجود جلسة Firebase سابقة أو جلسة Google ونحذفها
+      // لضمان ظهور نافذة اختيار الحسابات في كل مرة
+      try {
+        final currentFirebaseUser = FirebaseAuth.instance.currentUser;
+        if (currentFirebaseUser != null) {
+          debugPrint('🔄 Google Sign-In: جلسة Firebase سابقة موجودة، يتم حذفها...');
+          await FirebaseAuth.instance.signOut();
+        }
+        final isSignedInGoogle = await googleSignIn.isSignedIn();
+        if (isSignedInGoogle) {
+          debugPrint('🔄 Google Sign-In: جلسة Google سابقة موجودة، يتم حذفها...');
+          await googleSignIn.signOut();
+        }
+        debugPrint('✅ Google Sign-In: تم التأكد من عدم وجود جلسات سابقة.');
+      } catch (signOutError) {
+        // إذا فشل تسجيل الخروج، نستمر على أي حال
+        debugPrint('⚠️ Google Sign-In: خطأ أثناء مسح الجلسة السابقة: $signOutError');
+      }
+      // ─────────────────────────────────────────────────────────────────
+
       final account = await googleSignIn.signIn();
+
 
       if (account == null) {
         _isLoading = false;
@@ -188,13 +226,27 @@ class AuthServiceProvider extends ChangeNotifier {
       }
 
       final auth = await account.authentication;
-      final idToken = auth.idToken;
-      if (idToken == null || idToken.trim().isEmpty) {
-        throw Exception('Google ID token is missing.');
+      
+      final credential = GoogleAuthProvider.credential(
+        accessToken: auth.accessToken,
+        idToken: auth.idToken,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final firebaseUser = userCredential.user;
+
+      if (firebaseUser == null) {
+        throw Exception('Firebase authentication failed.');
+      }
+
+      final firebaseIdToken = await firebaseUser.getIdToken();
+
+      if (firebaseIdToken == null || firebaseIdToken.trim().isEmpty) {
+        throw Exception('Firebase ID token is missing.');
       }
 
       final result = await googleSignInUseCase(
-        GoogleSigninParams(idToken: idToken),
+        GoogleSigninParams(idToken: firebaseIdToken),
       );
 
       result.fold(
@@ -232,8 +284,10 @@ class AuthServiceProvider extends ChangeNotifier {
           notifyListeners();
         },
       );
-    } catch (e) {
-      _errorMessage = "حدث خطأ غير متوقع أثناء تسجيل الدخول بجوجل";
+    } catch (e, stackTrace) {
+      debugPrint('❌ Google Sign-In Error: $e');
+      debugPrint('📋 Stack Trace: $stackTrace');
+      _errorMessage = "فشل في تسجيل الدخول، يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.";
       _isLoading = false;
       notifyListeners();
     }
@@ -435,6 +489,12 @@ class AuthServiceProvider extends ChangeNotifier {
     await CacheHelper.removeData(key: AppConstants.userBirthDate);
     await CacheHelper.removeData(key: AppConstants.userCreatedAt);
     await CacheHelper.removeData(key: AppConstants.userUpdatedAt);
+    
+    await CacheHelper.clearByPrefix('last_lesson_course_');
+    await CacheHelper.clearByPrefix('last_module_course_');
+    await CacheHelper.clearByPrefix(AppConstants.cacheModuleGradesPrefix);
+
+    await clearAllUserHiveData();
     _user = null;
     notifyListeners();
   }
@@ -444,8 +504,8 @@ class AuthServiceProvider extends ChangeNotifier {
 
     final result = await logoutUseCase();
 
-    result.fold(
-      (failure) {
+    await result.fold(
+      (failure) async {
         _errorMessage = failure.message;
         _isLoading = false;
         notifyListeners();
@@ -505,6 +565,52 @@ class AuthServiceProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return message;
+      },
+    );
+  }
+
+  // ==================== Email Verification ====================
+  bool _isEmailVerificationSuccess = false;
+  bool get isEmailVerificationSuccess => _isEmailVerificationSuccess;
+
+  Future<bool> verifyEmail(String token) async {
+    _prepareForRequest();
+    _isEmailVerificationSuccess = false;
+    final result = await verifyEmailUseCase(VerifyEmailParams(token: token));
+
+    return result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      },
+      (message) {
+        _errorMessage = null;
+        _isLoading = false;
+        _isEmailVerificationSuccess = true;
+        notifyListeners();
+        return true;
+      },
+    );
+  }
+
+  Future<bool> resendVerificationEmail(String email) async {
+    _prepareForRequest();
+    final result = await resendVerificationUseCase(ResendVerificationParams(email: email));
+
+    return result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      },
+      (message) {
+        _errorMessage = null;
+        _isLoading = false;
+        notifyListeners();
+        return true;
       },
     );
   }

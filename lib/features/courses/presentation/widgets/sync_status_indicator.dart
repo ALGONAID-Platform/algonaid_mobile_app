@@ -119,9 +119,21 @@ class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
         icon = Icons.check_circle_rounded;
         break;
       case SyncStatus.error:
-        themeColor = Colors.red;
-        text = widget.errorMessage ?? 'تعذر تحديث البيانات';
-        icon = Icons.error_rounded;
+        final msg = widget.errorMessage ?? '';
+        final isGuestError = msg.contains('رفض الوصول') || 
+                             msg.contains('رمز الدخول') || 
+                             msg.contains('401') ||
+                             msg.contains('غير مصرح');
+        
+        if (isGuestError) {
+          themeColor = Colors.orange;
+          text = 'في وضع الزائر';
+          icon = Icons.person_outline_rounded;
+        } else {
+          themeColor = Colors.red;
+          text = msg.isEmpty ? 'تعذر تحديث البيانات' : msg;
+          icon = Icons.error_rounded;
+        }
         break;
       case SyncStatus.hidden:
         return const SizedBox.shrink();
@@ -175,11 +187,13 @@ class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
                       else
                         Icon(icon, color: themeColor, size: 18),
                       const SizedBox(width: 8),
-                      Text(
-                        text,
-                        style: context.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: context.onBackground,
+                      Flexible(
+                        child: Text(
+                          text,
+                          style: context.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: context.onBackground,
+                          ),
                         ),
                       ),
                     ],

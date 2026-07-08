@@ -41,7 +41,19 @@ class _MoveButtonWidgetAnimatedState extends State<MoveButtonWidgetAnimated> {
               : (widget.isLastPage ? 190 : 60);
 
           return GestureDetector(
-            onTap: () => widget.onboardinValue.goToNextPage(),
+            onTap: () {
+              final renderBox = context.findRenderObject() as RenderBox?;
+              Offset centerOffset;
+              if (renderBox != null) {
+                final size = renderBox.size;
+                final localOffset = Offset(size.width / 2, size.height / 2);
+                centerOffset = renderBox.localToGlobal(localOffset);
+              } else {
+                final media = MediaQuery.of(context);
+                centerOffset = Offset(media.size.width - 60, media.size.height - 60);
+              }
+              widget.onboardinValue.goToNextPage(centerOffset);
+            },
 
             child: Stack(
               alignment: Alignment.center,
@@ -92,24 +104,30 @@ class _MoveButtonWidgetAnimatedState extends State<MoveButtonWidgetAnimated> {
                                             ),
                                           ),
                                           SizedBox(width: 8),
-                                          Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                        ],
+                                            const Directionality(
+                                              textDirection: TextDirection.ltr,
+                                              child: Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                : const Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.white,
-                                    size: 20,
-                                  )),
+                                    )
+                                  : const Directionality(
+                                      textDirection: TextDirection.ltr,
+                                      child: Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    )),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
             ),
           );
         },

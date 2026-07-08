@@ -6,15 +6,45 @@ part 'exam_models.g.dart';
 /// Model for Exam - extends Exam entity with JSON serialization
 @HiveType(typeId: 6)
 class ExamModel extends Exam {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final String title;
+  @override
+  @HiveField(2)
+  final String? description;
+  @override
+  @HiveField(3)
+  final int passingScore;
+  @override
+  @HiveField(4)
+  final int maxAttempts;
+  @override
+  @HiveField(5)
+  final int lessonId;
+  @override
+  @HiveField(6)
+  final List<Question> questions;
+
   const ExamModel({
-    required super.id,
-    required super.title,
-    super.description,
-    required super.passingScore,
-    required super.maxAttempts,
-    required super.lessonId,
-    super.questions,
-  });
+    required this.id,
+    required this.title,
+    this.description,
+    required this.passingScore,
+    required this.maxAttempts,
+    required this.lessonId,
+    this.questions = const [],
+  }) : super(
+         id: id,
+         title: title,
+         description: description,
+         passingScore: passingScore,
+         maxAttempts: maxAttempts,
+         lessonId: lessonId,
+         questions: questions,
+       );
 
   /// Convert JSON to ExamModel
   factory ExamModel.fromJson(Map<String, dynamic> json) {
@@ -50,18 +80,60 @@ class ExamModel extends Exam {
 /// Model for Question - extends Question entity with JSON serialization
 @HiveType(typeId: 7)
 class QuestionModel extends Question {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final String text;
+  @override
+  @HiveField(2)
+  final String type;
+  @override
+  @HiveField(3)
+  final int points;
+  @override
+  @HiveField(4)
+  final int examId;
+  @override
+  @HiveField(5)
+  final List<Option> options;
+  @override
+  @HiveField(6)
+  final String? description;
+  @override
+  @HiveField(7)
+  final String? imageUrl;
+  @override
+  @HiveField(8)
+  final String? explanation;
+  @override
+  @HiveField(9)
+  final int? userAnswer;
+
   const QuestionModel({
-    required super.id,
-    required super.text,
-    required super.type,
-    required super.points,
-    required super.examId,
-    super.options,
-    super.description,
-    super.imageUrl,
-    super.explanation,
-    super.userAnswer,
-  });
+    required this.id,
+    required this.text,
+    required this.type,
+    required this.points,
+    required this.examId,
+    this.options = const [],
+    this.description,
+    this.imageUrl,
+    this.explanation,
+    this.userAnswer,
+  }) : super(
+         id: id,
+         text: text,
+         type: type,
+         points: points,
+         examId: examId,
+         options: options,
+         description: description,
+         imageUrl: imageUrl,
+         explanation: explanation,
+         userAnswer: userAnswer,
+       );
 
   /// Convert JSON to QuestionModel
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
@@ -77,7 +149,7 @@ class QuestionModel extends Question {
               .toList() ??
           const [],
       description: json['description'] as String?,
-      imageUrl: json['imageUrl'] as String?,
+      imageUrl: json['imageUrl'] as String? ?? json['image'] as String?,
       explanation: json['explanation'] as String?,
       userAnswer: (json['userAnswer'] as num?)?.toInt(),
     );
@@ -130,12 +202,30 @@ class QuestionModel extends Question {
 /// Model for Option - extends Option entity with JSON serialization
 @HiveType(typeId: 8)
 class OptionModel extends Option {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final String text;
+  @override
+  @HiveField(2)
+  final bool isCorrect;
+  @override
+  @HiveField(3)
+  final int questionId;
+
   const OptionModel({
-    required super.id,
-    required super.text,
-    required super.isCorrect,
-    required super.questionId,
-  });
+    required this.id,
+    required this.text,
+    required this.isCorrect,
+    required this.questionId,
+  }) : super(
+         id: id,
+         text: text,
+         isCorrect: isCorrect,
+         questionId: questionId,
+       );
 
   /// Convert JSON to OptionModel
   factory OptionModel.fromJson(Map<String, dynamic> json) {
@@ -161,17 +251,55 @@ class OptionModel extends Option {
 /// Model for ExamAttempt - extends ExamAttempt entity with JSON serialization
 @HiveType(typeId: 9)
 class ExamAttemptModel extends ExamAttempt {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final int score;
+  @override
+  @HiveField(2)
+  final String status;
+  @override
+  @HiveField(3)
+  final DateTime startedAt;
+  @override
+  @HiveField(4)
+  final DateTime? completedAt;
+  @override
+  @HiveField(5)
+  final int studentId;
+  @override
+  @HiveField(6)
+  final int examId;
+  @override
+  @HiveField(7)
+  final Map<int, int> answers;
+  @override
+  @HiveField(8)
+  final List<Question> questions;
+
   const ExamAttemptModel({
-    required super.id,
-    required super.score,
-    required super.status,
-    required super.startedAt,
-    super.completedAt,
-    required super.studentId,
-    required super.examId,
-    super.answers,
-    super.questions,
-  });
+    required this.id,
+    required this.score,
+    required this.status,
+    required this.startedAt,
+    this.completedAt,
+    required this.studentId,
+    required this.examId,
+    this.answers = const {},
+    this.questions = const [],
+  }) : super(
+         id: id,
+         score: score,
+         status: status,
+         startedAt: startedAt,
+         completedAt: completedAt,
+         studentId: studentId,
+         examId: examId,
+         answers: answers,
+         questions: questions,
+       );
 
   /// Convert JSON to ExamAttemptModel
   factory ExamAttemptModel.fromJson(Map<String, dynamic> json) {
@@ -246,19 +374,65 @@ class ExamAttemptModel extends ExamAttempt {
 // Assuming ExamResult is similar to ExamAttempt for now, but specialized for results view
 @HiveType(typeId: 10) // Changed typeId to avoid conflict
 class ExamResultModel extends ExamResult {
+  @override
+  @HiveField(0)
+  final int attemptId;
+  @override
+  @HiveField(1)
+  final int examId;
+  @override
+  @HiveField(2)
+  final int studentId;
+  @override
+  @HiveField(3)
+  final int score;
+  @override
+  @HiveField(4)
+  final String status;
+  @override
+  @HiveField(5)
+  final DateTime submittedAt;
+  @override
+  @HiveField(6)
+  final int totalQuestions;
+  @override
+  @HiveField(7)
+  final int correctAnswers;
+  @override
+  @HiveField(8)
+  final int wrongAnswers;
+  @override
+  @HiveField(9)
+  final Map<int, int> answers;
+  @override
+  @HiveField(10)
+  final Map<int, int> correctOptions;
+
   const ExamResultModel({
-    required super.attemptId,
-    required super.examId,
-    required super.studentId,
-    required super.score,
-    required super.status,
-    required super.submittedAt,
-    required super.totalQuestions,
-    required super.correctAnswers,
-    required super.wrongAnswers,
-    required super.answers,
-    required super.correctOptions,
-  });
+    required this.attemptId,
+    required this.examId,
+    required this.studentId,
+    required this.score,
+    required this.status,
+    required this.submittedAt,
+    required this.totalQuestions,
+    required this.correctAnswers,
+    required this.wrongAnswers,
+    required this.answers,
+    required this.correctOptions,
+  }) : super(
+         attemptId: attemptId,
+         examId: examId,
+         studentId: studentId,
+         score: score,
+         status: status,
+         submittedAt: submittedAt,
+         totalQuestions: totalQuestions,
+         correctAnswers: correctAnswers,
+         wrongAnswers: wrongAnswers,
+         answers: answers,
+         correctOptions: correctOptions,
+       );
 
   factory ExamResultModel.fromJson(Map<String, dynamic> json) {
     return ExamResultModel.fromResultJson(json);

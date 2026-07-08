@@ -54,18 +54,20 @@ void initializeDio(Dio dio) {
           final token = TokenStorage.getToken();
           final isGuest = token == null || token.trim().isEmpty;
 
-          await TokenStorage.deleteToken();
+          if (!isGuest) {
+            await TokenStorage.deleteToken();
 
-          final context = navigatorKey.currentContext;
-          if (context != null) {
-            GoRouter.of(context).go(Routes.auth);
-            AppSnackBar.show(
-              context: context,
-              message: isGuest
-                  ? 'يرجى تسجيل الدخول للقيام بهذه العملية'
-                  : 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً',
-              type: SnackBarType.error,
-            );
+            final context = navigatorKey.currentContext;
+            if (context != null) {
+              GoRouter.of(context).go(Routes.auth);
+              AppSnackBar.show(
+                context: context,
+                message: 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً',
+                type: SnackBarType.error,
+              );
+            }
+          } else {
+            debugPrint('Dio Interceptor: 401 received for guest user. Skipping redirect.');
           }
         }
 

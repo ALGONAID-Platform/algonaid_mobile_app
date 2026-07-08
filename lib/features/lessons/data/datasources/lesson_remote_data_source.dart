@@ -1,9 +1,12 @@
 import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
 import 'package:algonaid_mobile_app/core/network/api_service.dart';
 import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+
+import 'package:algonaid_mobile_app/features/lessons/domain/entities/paginated_lessons.dart';
 
 abstract class LessonRemoteDataSource {
-  Future<List<LessonModel>> fetchLessonsByModule(int moduleId);
+  Future<PaginatedLessons> fetchLessonsByModule(int moduleId, {int page = 1, int? limit});
 }
 
 class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
@@ -12,14 +15,33 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
   const LessonRemoteDataSourceImpl(this._api);
 
   @override
-  Future<List<LessonModel>> fetchLessonsByModule(int moduleId) async {
-    final data = await _api.get(endpoint: EndPoint.lessonsByModule(moduleId));
+  Future<PaginatedLessons> fetchLessonsByModule(int moduleId, {int page = 1, int? limit}) async {
+    final isGuest = TokenStorage.getToken() == null;
+    final endpoint = isGuest
+        ? (limit != null 
+            ? EndPoint.lessonsByModuleGuest(moduleId, page: page, limit: limit)
+            : EndPoint.lessonsByModuleGuest(moduleId, page: page))
+        : (limit != null 
+            ? EndPoint.lessonsByModule(moduleId, page: page, limit: limit)
+            : EndPoint.lessonsByModule(moduleId, page: page));
+    final data = await _api.get(endpoint: endpoint);
 
     final items = _extractList(data);
-    return items
+    final meta = _extractMeta(data);
+
+    final lessons = items
         .whereType<Map<String, dynamic>>()
         .map(LessonModel.fromJson)
         .toList();
+
+    return PaginatedLessons(lessons: lessons, meta: meta);
+  }
+
+  PaginationMeta _extractMeta(dynamic data) {
+    if (data is Map<String, dynamic> && data['meta'] != null) {
+      return PaginationMeta.fromJson(data['meta']);
+    }
+    return PaginationMeta(total: 0, page: 1, limit: 10, totalPages: 1);
   }
 
   List<dynamic> _extractList(dynamic data) {

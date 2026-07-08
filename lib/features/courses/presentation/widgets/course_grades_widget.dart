@@ -2,11 +2,13 @@ import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/di/service_locator.dart';
 import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/providers/course_grades_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
 
 class CourseGradesWidget extends StatefulWidget {
   final int courseId;
@@ -25,7 +27,10 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
     super.initState();
     _provider = getIt<CourseGradesProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _provider.fetchGrades(widget.courseId);
+      final isGuest = TokenStorage.getToken() == null;
+      if (!isGuest) {
+        _provider.fetchGrades(widget.courseId);
+      }
     });
   }
 
@@ -35,6 +40,63 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
       value: _provider,
       child: Consumer<CourseGradesProvider>(
         builder: (context, provider, child) {
+          final isGuest = TokenStorage.getToken() == null;
+          if (isGuest) {
+            return Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.lock_outline_rounded,
+                      size: 64,
+                      color: context.primary.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'ميزة غير متاحة للزوار',
+                      style: context.theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'يرجى تسجيل الدخول لتتمكن من استعراض تفاصيل درجات ونتائج الاختبارات الخاصة بالكورس.',
+                      style: context.theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          GoRouter.of(context).push(Routes.auth);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          "تسجيل الدخول",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           final state = provider.getState(widget.courseId);
 
           if (state.isLoading) {
@@ -94,7 +156,10 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
           }
 
           final grades = state.grades!;
-          final isUnlocked = grades.averagePercentage > 90;
+          final isCurrentlyUnlocked = grades.averagePercentage > 90;
+          final hasUnlockedBefore = CacheHelper.getBool(key: 'unlocked_course_gold_${widget.courseId}') ?? false;
+          final isUnlocked = isCurrentlyUnlocked || hasUnlockedBefore;
+          final showWarning = hasUnlockedBefore && !isCurrentlyUnlocked;
           final isDark = context.theme.brightness == Brightness.dark;
 
           final unlockedGradient = isDark
@@ -181,14 +246,18 @@ class _CourseGradesWidgetState extends State<CourseGradesWidget> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                isUnlocked
-                                    ? 'رائع! لقد تم فك قفل وسام التفوق الذهبي.'
-                                    : 'تحتاج إلى أكثر من 90% لفتح الوسام.',
+                                showWarning
+                                    ? 'تم منحك الوسام، لكن تمت إضافة اختبارات جديدة.'
+                                    : (isUnlocked
+                                        ? 'رائع! لقد تم فك قفل وسام التفوق الذهبي.'
+                                        : 'تحتاج إلى أكثر من 90% لفتح الوسام.'),
                                 style: context.theme.textTheme.bodySmall
                                     ?.copyWith(
-                                      color: isUnlocked
-                                          ? unlockedTextColor
-                                          : lockedSubTextColor,
+                                      color: showWarning
+                                          ? Colors.orange
+                                          : (isUnlocked
+                                              ? unlockedTextColor
+                                              : lockedSubTextColor),
                                     ),
                               ),
                             ],

@@ -53,25 +53,30 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                           crossAxisCount: 2,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          childAspectRatio: 0.8,
+                          childAspectRatio: 0.85,
                         ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final course = provider.courses[index];
+                      final showWarning = course.completedAt != null && course.averagePercentage < 90;
+                      final isVisuallyCompleted = course.isCompleted || showWarning;
+
                       return GestureDetector(
                         onTap: () {
                           ExcellenceModulesBottomSheet.show(context, course);
                         },
                         child: Opacity(
-                          opacity: course.isCompleted ? 1.0 : 0.6,
+                          opacity: isVisuallyCompleted ? 1.0 : 0.6,
                           child: Container(
                             decoration: BoxDecoration(
                               color: context.surface,
                               borderRadius: BorderRadius.circular(16),
                               border: AppBorder.main_border,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Stack(
                               children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
                                 Expanded(
                                   child: ClipRRect(
                                     borderRadius: const BorderRadius.vertical(
@@ -79,13 +84,13 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                                     ),
                                     child: Container(
                                       width: double.infinity,
-                                      color: !course.isCompleted
+                                      color: !isVisuallyCompleted
                                           ? Colors.grey.withOpacity(0.2)
                                           : (context.isDarkMode
                                                 ? Colors.amber.withOpacity(0.1)
                                                 : Colors.amber.shade50),
                                       child: Center(
-                                        child: course.isCompleted
+                                        child: isVisuallyCompleted
                                             ? Lottie.asset(
                                                 AppLottie.goldMedal,
                                                 width: 95,
@@ -130,7 +135,7 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.all(12.0),
+                                  padding: const EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0, bottom: 4.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -139,7 +144,7 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                                         course.courseTitle,
                                         style: context.titleMedium?.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: !course.isCompleted
+                                          color: !isVisuallyCompleted
                                               ? Colors.grey
                                               : null,
                                         ),
@@ -147,11 +152,11 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 4),
-                                      if (course.isCompleted)
+                                      if (isVisuallyCompleted)
                                         Text(
                                           'المعدل: ${course.averagePercentage}%',
                                           style: context.bodyMedium?.copyWith(
-                                            color: Colors.amber.shade700,
+                                            color: showWarning ? Colors.orange : Colors.amber.shade700,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -160,9 +165,46 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ),
+                            if (showWarning)
+                              Positioned(
+                                top: 6,
+                                right: 6,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      topRight: Radius.circular(12),
+                                      bottomLeft: Radius.circular(12),
+                                      bottomRight: Radius.circular(2),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.15),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    'يرجى إتمام الاختبارات الجديدة',
+                                    style: TextStyle(
+                                      color: Colors.orange.shade700,
+                                      fontSize: 7.5,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
-                      );
+                      ),
+                    ),
+                  );
                     }, childCount: provider.courses.length),
                   ),
                 ),

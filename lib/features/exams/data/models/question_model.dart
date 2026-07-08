@@ -9,6 +9,7 @@ class QuestionModel extends Question {
     required super.type,
     required super.points,
     super.options,
+    super.image,
   });
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +24,7 @@ class QuestionModel extends Question {
               .map((o) => OptionModel.fromJson(o))
               .toList()
           : null,
+      image: json['image'] ?? json['imageUrl'],
     );
   }
 

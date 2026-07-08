@@ -16,18 +16,26 @@ abstract class AuthRemoteDatasourse {
     required UserRole role,
   });
   Future<AuthResponse> googleSignin({required String idToken});
-  Future<void> logout(); // Added
+  Future<void> logout();
   Future<Map<String, dynamic>> forgotPassword({required String email});
   Future<Map<String, dynamic>> resetPassword({
     required String token,
     required String newPassword,
   });
+
+  // ==================== Email Verification ====================
+  /// يرسل الـ Token للسيرفر للتحقق من البريد الإلكتروني
+  Future<Map<String, dynamic>> verifyEmail({required String token});
+
+  /// يطلب إعادة إرسال بريد التحقق
+  Future<Map<String, dynamic>> resendVerificationEmail({required String email});
 }
 
 class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
   final ApiService apiService;
 
   AuthRemoteDatasourseImp({required this.apiService});
+
   @override
   Future<AuthResponse> signin({
     required String email,
@@ -92,6 +100,29 @@ class AuthRemoteDatasourseImp extends AuthRemoteDatasourse {
     final response = await apiService.post(
       endpoint: EndPoint.resetPassword,
       data: {'token': token, 'newPassword': newPassword},
+    );
+    return Map<String, dynamic>.from(response);
+  }
+
+  // ==================== Email Verification ====================
+  @override
+  Future<Map<String, dynamic>> verifyEmail({required String token}) async {
+    /// GET /auth/verify-email?token=TOKEN
+    final response = await apiService.get(
+      endpoint: EndPoint.verifyEmail,
+      query: {'token': token},
+    );
+    return Map<String, dynamic>.from(response);
+  }
+
+  @override
+  Future<Map<String, dynamic>> resendVerificationEmail({
+    required String email,
+  }) async {
+    /// POST /auth/resend-verification
+    final response = await apiService.post(
+      endpoint: EndPoint.resendVerification,
+      data: {'email': email},
     );
     return Map<String, dynamic>.from(response);
   }

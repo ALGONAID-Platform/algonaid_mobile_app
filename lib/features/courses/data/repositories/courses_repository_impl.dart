@@ -31,7 +31,18 @@ class CoursesRepositoryImpl implements CoursesRepository {
   @override
   Future<Either<Failure, List<CourseEntity>>> getMyCourses() async {
     return _fetchData(
-      fetchRemote: () => remote.fetchMyCourses(),
+      fetchRemote: () async {
+        final courses = await remote.fetchMyCourses();
+        final uniqueCourses = <CourseEntity>[];
+        final seenIds = <int>{};
+        for (var c in courses) {
+          if (!seenIds.contains(c.id)) {
+            uniqueCourses.add(c);
+            seenIds.add(c.id);
+          }
+        }
+        return uniqueCourses;
+      },
       fetchLocal: () => local.getMyCourses(),
       cacheData: (courses) => local.saveMyCourses(courses),
     );

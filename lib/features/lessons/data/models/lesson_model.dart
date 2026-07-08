@@ -8,17 +8,75 @@ part 'lesson_model.g.dart';
 
 @HiveType(typeId: 4) // Starting from 4 as per instructions
 class LessonModel extends Lesson {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final String title;
+  @override
+  @HiveField(2)
+  final String description;
+  @override
+  @HiveField(3)
+  final int moduleId;
+  @override
+  @HiveField(4)
+  final int order;
+  @override
+  @HiveField(5)
+  final List<LessonProgress>? lessonProgress;
+  @override
+  @HiveField(6)
+  final LessonStatus status;
+  @override
+  @HiveField(7)
+  final String? content;
+  @override
+  @HiveField(8)
+  final bool isReading;
+  @override
+  @HiveField(9)
+  final bool hasExam;
+  @override
+  @HiveField(10)
+  final bool hasTest;
+  @override
+  @HiveField(11)
+  final String? videoUrl;
+  @override
+  @HiveField(12)
+  final String? pdfUrl;
+
   const LessonModel({
-    @HiveField(0) required super.id,
-    @HiveField(1) required super.title,
-    @HiveField(2) required super.description,
-    super.videoUrl, // Exclude from Hive storage
-    super.pdfUrl, // Exclude from Hive storage
-    @HiveField(3) required super.moduleId,
-    @HiveField(4) required super.order,
-    @HiveField(5) required super.lessonProgress,
-    @HiveField(6) required super.status,
-  });
+    required this.id,
+    required this.title,
+    required this.description,
+    this.videoUrl,
+    this.pdfUrl,
+    required this.moduleId,
+    required this.order,
+    this.lessonProgress,
+    required this.status,
+    this.content,
+    this.isReading = false,
+    this.hasExam = false,
+    this.hasTest = false,
+  }) : super(
+         id: id,
+         title: title,
+         description: description,
+         videoUrl: videoUrl,
+         pdfUrl: pdfUrl,
+         moduleId: moduleId,
+         order: order,
+         lessonProgress: lessonProgress,
+         status: status,
+         content: content,
+         isReading: isReading,
+         hasExam: hasExam,
+         hasTest: hasTest,
+       );
 
   factory LessonModel.fromJson(Map<String, dynamic> json) {
     final progressRaw =
@@ -46,6 +104,18 @@ class LessonModel extends Lesson {
       order: int.tryParse(json['order']?.toString() ?? '0') ?? 0,
       lessonProgress: progressList,
       status: calculatedStatus,
+      content: json['content']?.toString(),
+      isReading: json['isReading'] == true || 
+                 json['is_reading'] == true || 
+                 json['isReading'] == 1 || 
+                 json['is_reading'] == 1,
+      hasExam: json['hasExam'] == true || 
+               json['has_exam'] == true || 
+               json['exam'] != null || 
+               json['examId'] != null || 
+               json['exam_id'] != null ||
+               (json['exams'] != null && (json['exams'] as List).isNotEmpty),
+      hasTest: json['hasTest'] == true || json['has_test'] == true,
     );
   }
 
@@ -62,6 +132,10 @@ class LessonModel extends Lesson {
       'lessonProgress': lessonProgress
           ?.map((e) => (e as LessonProgressModel).toJson())
           .toList(),
+      'content': content,
+      'isReading': isReading,
+      'hasExam': hasExam,
+      'hasTest': hasTest,
     };
   }
 

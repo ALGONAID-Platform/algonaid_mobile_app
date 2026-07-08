@@ -5,6 +5,7 @@ import 'package:algonaid_mobile_app/features/settings/data/datasources/settings_
 import 'package:algonaid_mobile_app/features/settings/domain/entities/platform_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -302,5 +303,5 @@ class AboutPage extends StatelessWidget {
         ],
       ),
     );
-  }
+}
 }

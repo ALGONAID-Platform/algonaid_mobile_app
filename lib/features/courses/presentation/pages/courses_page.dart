@@ -1,4 +1,5 @@
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:flutter/services.dart';
 import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
@@ -23,6 +24,7 @@ import 'package:algonaid_mobile_app/features/modules/presentation/providers/last
 import 'package:algonaid_mobile_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:algonaid_mobile_app/features/downloads/presentation/pages/downloads_page.dart';
 import 'package:algonaid_mobile_app/features/courses/presentation/pages/competitions_page.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:math' as math;
@@ -44,8 +46,15 @@ class _CoursesPageState extends State<CoursesPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       context.read<GetCoursesProvider>().refreshAll(isGuest: false);
-      context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
+      // تأجيل طلب الوحدة الأخيرة حتى لا تنطلق طلبا شبكيين في نفس اللحظة
+      // Future.microtask تؤجلل حتى بعد اكتمال دورة الأحداث الحالية
+      Future.microtask(() {
+        if (mounted) {
+          context.read<LastAccessedModuleProvider>().fetchLastAccessedModule();
+        }
+      });
     });
   }
 
@@ -151,16 +160,29 @@ class CoursesHomePage extends StatefulWidget {
 }
 
 class _CoursesHomePageState extends State<CoursesHomePage> {
+  final GlobalKey<ProfilePageState> _profileKey = GlobalKey<ProfilePageState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
-  List<Widget> get _pages {
-    return [
-      const CoursesPage(key: ValueKey('home')), // الصفحة الرئيسية
-      const CompetitionsPage(key: ValueKey('competitions')), // المسابقات
-      const DownloadsPage(key: ValueKey('bookmarks')), // المحفوظات والتحميلات
-      const ProfilePage(key: ValueKey('profile')), // الحساب
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const CoursesPage(key: ValueKey('home')),
+      const CompetitionsPage(key: ValueKey('competitions')),
+      const DownloadsPage(key: ValueKey('bookmarks')),
+      ProfilePage(key: _profileKey),
     ];
+  }
+
+  void _navigateToProfile() {
+    if (_currentIndex == 3) {
+      // إذا كنا على تاب البروفايل وضغطنا مرة ثانية، نحدث البيانات
+      _profileKey.currentState?.refreshData(forceRefresh: true);
+    }
+    setState(() => _currentIndex = 3);
   }
 
   String? _getAppBarTitle(int index) {
@@ -180,33 +202,38 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthServiceProvider>();
-    final profileProvider = context.watch<ProfileProvider>();
-
-    final userName = (profileProvider.userProfile?.name != null && profileProvider.userProfile!.name.isNotEmpty) ? profileProvider.userProfile!.name : 
-        ((authProvider.user?.username != null && authProvider.user!.username.isNotEmpty) ? authProvider.user!.username : 
-        (CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم'));
-        
-    String? userAvatar = profileProvider.userProfile?.avatar;
-    if (userAvatar == null || userAvatar.isEmpty) {
-      userAvatar = authProvider.user?.avatar;
-    }
-    if (userAvatar == null || userAvatar.isEmpty) {
-      userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
-    }
-    return Scaffold(
+    // لا يوجد هنا أي context.watch — بيانات المستخدم تُقرأ داخل ReactiveAppBar
+    // عبر context.select حتى لا تُعيد بناء هذه الصفحة كاملةً عند كل تغيير
+    return PopScope(
+      // نمنع الخروج الافتراضي دائماً لنتعامل معه يدوياً
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentIndex != 0) {
+          // إذا كنا في أي تاب غير الرئيسي، نرجع للصفحة الرئيسية
+          setState(() => _currentIndex = 0);
+        } else {
+          // إذا كنا في الصفحة الرئيسية، نسأل المستخدم هل يريد الخروج
+          AppDialog.showDynamicDialog(
+            context: context,
+            title: 'الخروج من التطبيق',
+            message: 'هل تريد الخروج من التطبيق؟',
+            isError: true, // اللون الأحمر مناسب للخروج
+            confirmText: 'خروج',
+            cancelText: 'إلغاء',
+            onConfirm: () {
+              SystemNavigator.pop();
+            },
+          );
+        }
+      },
+      child: Scaffold(
       backgroundColor: context.background,
       appBar: ReactiveAppBar(
-        userName: userName,
-        userImageUrl: userAvatar,
         appBarTitle: _getAppBarTitle(_currentIndex),
         isGuest: false,
         onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
-        onProfilePressed: () {
-          setState(() {
-            _currentIndex = 3;
-          });
-        },
+        onProfilePressed: _navigateToProfile,
         onNotificationPressed: () {
           context.push(Routes.notificationsPage);
         },
@@ -229,21 +256,22 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
             child: FancyFloatingNavBar(
               selectedIndex: _currentIndex,
               onItemSelected: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
+                if (index == 3) {
+                  _navigateToProfile();
+                } else {
+                  setState(() => _currentIndex = index);
+                }
               },
             ),
           ),
         ],
       ),
-    );
+      ),  // end Scaffold
+    );  // end PopScope
   }
 }
 
 class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String userName;
-  final String? userImageUrl;
   final String? appBarTitle;
   final VoidCallback onProfilePressed;
   final VoidCallback onNotificationPressed;
@@ -253,8 +281,6 @@ class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const ReactiveAppBar({
     super.key,
-    required this.userName,
-    required this.userImageUrl,
     this.appBarTitle,
     required this.onProfilePressed,
     required this.onNotificationPressed,
@@ -265,6 +291,38 @@ class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    // استخدام context.select بدلاً من context.watch حتى نعيد بناء الـ AppBar
+    // فقط عند تغيير القيمة المحددة (الاسم والصورة)، لا عند أي تغيير في الـ provider
+    final profileName = context.select<ProfileProvider, String?>(
+      (p) => p.userProfile?.name,
+    );
+    final profileAvatar = context.select<ProfileProvider, String?>(
+      (p) => p.userProfile?.avatar,
+    );
+    final localAvatarPath = context.select<ProfileProvider, String?>(
+      (p) => p.localAvatarPath,
+    );
+    final authName = context.select<AuthServiceProvider, String?>(
+      (p) => p.user?.username,
+    );
+    final authAvatar = context.select<AuthServiceProvider, String?>(
+      (p) => p.user?.avatar,
+    );
+
+    final userName = (profileName != null && profileName.isNotEmpty)
+        ? profileName
+        : ((authName != null && authName.isNotEmpty)
+            ? authName
+            : (CacheHelper.getString(key: AppConstants.userName) ?? 'مستخدم'));
+
+    String? userAvatar = (profileAvatar != null && profileAvatar.isNotEmpty)
+        ? profileAvatar
+        : null;
+    userAvatar ??= (authAvatar != null && authAvatar.isNotEmpty)
+        ? authAvatar
+        : null;
+    userAvatar ??= CacheHelper.getString(key: AppConstants.userAvatar);
+
     return ValueListenableBuilder<Box<String>>(
       valueListenable: Hive.box<String>('local_notifications_box').listenable(),
       builder: (context, box, _) {
@@ -286,7 +344,8 @@ class ReactiveAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         return CustomWhiteAppBar(
           userName: userName,
-          userImageUrl: userImageUrl,
+          userImageUrl: userAvatar,
+          localAvatarPath: localAvatarPath,
           appBarTitle: appBarTitle,
           notificationCount: unreadCount,
           onMenuPressed: onMenuPressed,

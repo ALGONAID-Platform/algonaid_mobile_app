@@ -14,6 +14,7 @@ import 'package:algonaid_mobile_app/features/courses/presentation/widgets/course
 import 'package:go_router/go_router.dart';
 import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
 import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
 
 class CourseHeaderSliver extends StatelessWidget {
   final CourseEntity course;
@@ -34,6 +35,7 @@ class CourseHeaderSliver extends StatelessWidget {
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
     final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+    final bool isGuest = TokenStorage.getToken() == null;
 
     return SliverAppBar(
       expandedHeight: 220.0,
@@ -54,7 +56,6 @@ class CourseHeaderSliver extends StatelessWidget {
                   if (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
                   } else {
-                    final isGuest = TokenStorage.getToken() == null;
                     context.go(isGuest ? Routes.guestHome : Routes.homePage);
                   }
                 },
@@ -74,6 +75,14 @@ class CourseHeaderSliver extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.share_rounded, size: 22, color: Colors.white),
                   onPressed: () {
+                    if (isGuest) {
+                      AppSnackBar.show(
+                        context: context,
+                        message: 'عذراً، ميزة مشاركة الكورس غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! 🔒',
+                        type: SnackBarType.warning,
+                      );
+                      return;
+                    }
                     ShareHelper.shareCourse(course);
                   },
                 ),
@@ -101,6 +110,14 @@ class CourseHeaderSliver extends StatelessWidget {
                         size: 22,
                       ),
                       onPressed: () {
+                        if (isGuest) {
+                          AppSnackBar.show(
+                            context: context,
+                            message: 'عذراً، ميزة تفعيل التنبيهات غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! 🔒',
+                            type: SnackBarType.warning,
+                          );
+                          return;
+                        }
                         AppBottomSheet.show(
                           context: context,
                           title: 'منبه الكورس الدراسي',

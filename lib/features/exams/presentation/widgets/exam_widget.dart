@@ -1,6 +1,9 @@
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+
 
 /// Header widget showing student info and timer
 class ExamHeader extends StatelessWidget {
@@ -141,50 +144,91 @@ class QuestionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Question title
-          Text(
-            question.text,
-            textAlign: TextAlign.right,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: MarkdownBody(
+              data: question.text,
+              styleSheet: MarkdownStyleSheet(
+                p: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                textAlign: WrapAlignment.start,
+              ),
+            ),
           ),
           if (question.description != null &&
               question.description!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(
-              question.description!,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-                height: 1.5,
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: MarkdownBody(
+                data: question.description!,
+                styleSheet: MarkdownStyleSheet(
+                  p: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    height: 1.5,
+                  ),
+                  textAlign: WrapAlignment.start,
+                ),
               ),
             ),
             const SizedBox(height: 16),
           ],
           // Question image if available
-          if (question.imageUrl != null)
+          if (question.imageUrl != null) ...[
+            const SizedBox(height: 16),
             GestureDetector(
               onTap: onImageTap,
               child: Container(
                 width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.25 > 200 
+                      ? 200 
+                      : MediaQuery.sizeOf(context).height * 0.25,
                 ),
-                child: Image.network(
-                  question.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    imageUrl: question.imageUrl!,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                    );
-                  },
+                    ),
+                    errorWidget: (context, url, error) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.broken_image_rounded,
+                            size: 40,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'تعذر تحميل الصورة',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+          ],
         ],
       ),
     );

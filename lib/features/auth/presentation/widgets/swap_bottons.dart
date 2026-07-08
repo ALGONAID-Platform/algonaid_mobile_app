@@ -39,8 +39,8 @@ class StackButtons extends StatelessWidget {
         AnimatedAlign(
           duration: Duration(milliseconds: 300),
           alignment: auth.isLogin
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
+              ? AlignmentDirectional.centerStart
+              : AlignmentDirectional.centerEnd,
           child: Container(
             height: 59,
             padding: EdgeInsets.all(5),
@@ -64,7 +64,7 @@ class StackButtons extends StatelessWidget {
                   child: Text(
                     "تسجيل دخول",
                     style: Styles.textStyle16.copyWith(
-                      color: auth.isLogin ? context.primary : Colors.white,
+                      color: auth.isLogin ? context.primary : context.onPrimary,
                     ),
                   ),
                 ),
@@ -77,7 +77,7 @@ class StackButtons extends StatelessWidget {
                   child: Text(
                     "إنشاء حساب",
                     style: Styles.textStyle16.copyWith(
-                      color: !auth.isLogin ? context.primary : Colors.white,
+                      color: !auth.isLogin ? context.primary : context.onPrimary,
                     ),
                   ),
                 ),

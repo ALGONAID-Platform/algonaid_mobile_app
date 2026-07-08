@@ -3,10 +3,11 @@ import 'package:algonaid_mobile_app/features/search/domain/entities/global_searc
 
 class GlobalSearchModel extends GlobalSearchEntity {
   GlobalSearchModel({
-    required List<CourseModel> courses,
-    required List<SearchModuleModel> modules,
-    required List<SearchLessonModel> lessons,
-  }) : super(courses: courses, modules: modules, lessons: lessons);
+    required super.courses,
+    required super.modules,
+    required super.lessons,
+    required super.practiceExams,
+  });
 
   factory GlobalSearchModel.fromJson(Map<String, dynamic> json) {
     return GlobalSearchModel(
@@ -20,6 +21,10 @@ class GlobalSearchModel extends GlobalSearchEntity {
           [],
       lessons: (json['lessons'] as List<dynamic>?)
               ?.map((e) => SearchLessonModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      practiceExams: (json['practiceExams'] as List<dynamic>?)
+              ?.map((e) => SearchPracticeExamModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -59,6 +64,29 @@ class SearchLessonModel extends SearchLessonEntity {
                 (json['module_id'] as num?)?.toInt() ?? 0,
       courseId: (json['courseId'] as num?)?.toInt() ?? 
                 (json['course_id'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+class SearchPracticeExamModel extends SearchPracticeExamEntity {
+  SearchPracticeExamModel({
+    required super.id,
+    required super.title,
+    super.grade,
+    super.pdfUrl,
+    super.courseId,
+    super.courseTitle,
+  });
+
+  factory SearchPracticeExamModel.fromJson(Map<String, dynamic> json) {
+    return SearchPracticeExamModel(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      title: json['title'] as String? ?? '',
+      grade: json['grade'] as String?,
+      pdfUrl: json['pdfUrl'] as String?,
+      courseId: (json['courseId'] as num?)?.toInt() ?? 
+                (json['course_id'] as num?)?.toInt(),
+      courseTitle: json['courseTitle'] as String?,
     );
   }
 }
