@@ -72,7 +72,7 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                           crossAxisCount: 2,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          childAspectRatio: 0.8,
+                          childAspectRatio: 0.75,
                         ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final course = provider.courses[index];
@@ -194,7 +194,7 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 4),
-                                      if (course.isCompleted)
+                                      if (course.isCompleted) ...[
                                         Text(
                                           'المعدل: ${course.averagePercentage}%',
                                           style: context.bodyMedium?.copyWith(
@@ -202,6 +202,33 @@ class AllExcellenceCoursesPage extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
+                                        if (course.targetAverage != null && course.allExamsAttempted != null && 
+                                            (course.averagePercentage < course.targetAverage! || !course.allExamsAttempted!)) ...[
+                                          const SizedBox(height: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.orange.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: const Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(Icons.warning_amber_rounded, size: 10, color: Colors.orange),
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  'اختبارات جديدة',
+                                                  style: TextStyle(
+                                                    fontSize: 8,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.orange,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ]
                                     ],
                                   ),
                                 ),

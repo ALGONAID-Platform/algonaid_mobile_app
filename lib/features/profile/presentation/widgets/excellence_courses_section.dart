@@ -76,7 +76,7 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 195,
+                  height: 215,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -209,16 +209,41 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           const SizedBox(height: 4),
-                                          if (course.isCompleted)
+                                          if (course.isCompleted) ...[
                                             Text(
                                               'المعدل: ${course.averagePercentage}%',
-                                              style: context.bodyMedium
-                                                  ?.copyWith(
-                                                    color:
-                                                        Colors.amber.shade700,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                              style: context.bodyMedium?.copyWith(
+                                                color: Colors.amber.shade700,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
+                                            if (course.targetAverage != null && course.allExamsAttempted != null && 
+                                                (course.averagePercentage < course.targetAverage! || !course.allExamsAttempted!)) ...[
+                                              const SizedBox(height: 4),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.orange.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                                child: const Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.warning_amber_rounded, size: 10, color: Colors.orange),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                      'اختبارات جديدة',
+                                                      style: TextStyle(
+                                                        fontSize: 8,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.orange,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ]
                                         ],
                                       ),
                                     ),

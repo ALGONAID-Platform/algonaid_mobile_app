@@ -25,6 +25,9 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   Future<UserProfileModel> getUserProfile() async {
     final response = await apiService.get(endpoint: '/users/profile');
     final responseData = response as Map<String, dynamic>;
+    if (responseData.containsKey('data')) {
+      return UserProfileModel.fromJson(responseData['data'] as Map<String, dynamic>);
+    }
     if (responseData.containsKey('user')) {
       return UserProfileModel.fromJson(responseData['user'] as Map<String, dynamic>);
     }
@@ -38,6 +41,9 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       data: data,
     );
     final responseData = response as Map<String, dynamic>;
+    if (responseData.containsKey('data')) {
+      return UserProfileModel.fromJson(responseData['data'] as Map<String, dynamic>);
+    }
     if (responseData.containsKey('user')) {
       return UserProfileModel.fromJson(responseData['user'] as Map<String, dynamic>);
     }

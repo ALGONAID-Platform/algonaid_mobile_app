@@ -8,6 +8,8 @@ class ExcellenceCourseModel extends ExcellenceCourseEntity {
     required super.averagePercentage,
     required super.completedAt,
     required super.isCompleted,
+    super.targetAverage,
+    super.allExamsAttempted,
   });
 
   factory ExcellenceCourseModel.fromJson(Map<String, dynamic> json) {
@@ -18,8 +20,10 @@ class ExcellenceCourseModel extends ExcellenceCourseEntity {
       averagePercentage: json['averagePercentage'] ?? 0.0,
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'])
-          : DateTime.now(),
+          : null,
       isCompleted: json['isCompleted'] ?? false,
+      targetAverage: json['targetAverage'],
+      allExamsAttempted: json['allExamsAttempted'],
     );
   }
 
@@ -29,8 +33,10 @@ class ExcellenceCourseModel extends ExcellenceCourseEntity {
       'courseTitle': courseTitle,
       'courseImage': courseImage,
       'averagePercentage': averagePercentage,
-      'completedAt': completedAt.toIso8601String(),
+      'completedAt': completedAt?.toIso8601String(),
       'isCompleted': isCompleted,
+      'targetAverage': targetAverage,
+      'allExamsAttempted': allExamsAttempted,
     };
   }
 }

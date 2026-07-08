@@ -10,6 +10,9 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/entities/user_badge_entity.dart';
 import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
 import 'package:algonaid_mobile_app/features/profile/presentation/utils/badges_helper.dart';
 
@@ -59,67 +62,48 @@ class ProfileProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
+  String? _localAvatarPath;
+  String? get localAvatarPath => _localAvatarPath;
+
   Future<void> loadTotalPoints() async {
-    // 1. Load from cache first
+    // 1. تحميل الكاش وتحديد حالة التحميل — إشعار واحد للحالة الأولية
     final cachedResult = getCachedTotalPointsUsecase();
     cachedResult.fold(
       (failure) {},
-      (data) {
-        _totalPoints = data.totalPoints;
-        notifyListeners();
-      },
+      (data) { _totalPoints = data.totalPoints; },
     );
+    _isLoadingPoints = _totalPoints == 0;
+    _isBackgroundUpdating = _totalPoints > 0;
+    _error = null;
+    notifyListeners(); // ← إشعار أول للحالة الأولية (مع الكاش إن وُجد)
 
-    // 2. Fetch from remote if cache is empty
-    if (_totalPoints == 0) {
-      _isLoadingPoints = true;
-      _isBackgroundUpdating = false;
-      _error = null;
-      notifyListeners();
-    } else {
-      _isBackgroundUpdating = true;
-      notifyListeners();
-    }
-
+    // 2. الجلب من الشبكة — إشعار واحد عند الانتهاء
     final result = await getTotalPointsUseCase();
-
     result.fold(
       (failure) {
         _error = _totalPoints == 0 ? failure.message : null;
         debugPrint('Error loading points: ${failure.message}');
       },
-      (data) {
-        _totalPoints = data.totalPoints;
-      },
+      (data) { _totalPoints = data.totalPoints; },
     );
-
     _isLoadingPoints = false;
     _isBackgroundUpdating = false;
-    notifyListeners();
+    notifyListeners(); // ← إشعار ثانٍ ووحيد عند اكتمال البيانات
   }
 
   Future<void> loadUserProfile() async {
-    // 1. Load from cache first
+    // 1. تحميل الكاش وتحديد حالة التحميل — إشعار واحد للحالة الأولية
     final cachedResult = getCachedUserProfileUsecase();
     cachedResult.fold(
       (failure) {},
-      (profile) {
-        _userProfile = profile;
-        notifyListeners();
-      },
+      (profile) { _userProfile = profile; },
     );
+    _isLoadingProfile = _userProfile == null;
+    _isBackgroundUpdating = _userProfile != null;
+    _error = null;
+    notifyListeners(); // ← إشعار أول للحالة الأولية (مع الكاش إن وُجد)
 
-    // 2. Load from remote if cache is empty
-    if (_userProfile == null) {
-      _isLoadingProfile = true;
-      _isBackgroundUpdating = false;
-      _error = null;
-      notifyListeners();
-    } else {
-      _isBackgroundUpdating = true;
-      notifyListeners();
-    }
-
+    // 2. الجلب من الشبكة — إشعار واحد عند الانتهاء
     final result = await getUserProfileUseCase();
     result.fold(
       (failure) {
@@ -128,44 +112,60 @@ class ProfileProvider extends ChangeNotifier {
       },
       (profile) {
         _userProfile = profile;
-        // Keep AppConstants cache in sync
+        // مزامنة الكاش العام مع بيانات الملف الشخصي
         CacheHelper.saveData(key: AppConstants.userName, value: profile.name);
         if (profile.avatar != null) {
-          CacheHelper.saveData(
-            key: AppConstants.userAvatar,
-            value: profile.avatar!,
-          );
+          CacheHelper.saveData(key: AppConstants.userAvatar, value: profile.avatar!);
         }
         if (profile.background != null) {
-          CacheHelper.saveData(
-            key: AppConstants.userBackground,
-            value: profile.background!,
-          );
+          CacheHelper.saveData(key: AppConstants.userBackground, value: profile.background!);
         }
         if (profile.grade != null) {
-          CacheHelper.saveData(
-            key: AppConstants.userGrade,
-            value: profile.grade!,
-          );
+          CacheHelper.saveData(key: AppConstants.userGrade, value: profile.grade!);
         }
         if (profile.address != null) {
-          CacheHelper.saveData(
-            key: AppConstants.userAddress,
-            value: profile.address!,
-          );
+          CacheHelper.saveData(key: AppConstants.userAddress, value: profile.address!);
         }
         if (profile.birthDate != null) {
-          CacheHelper.saveData(
-            key: AppConstants.userBirthDate,
-            value: profile.birthDate!,
-          );
+          CacheHelper.saveData(key: AppConstants.userBirthDate, value: profile.birthDate!);
         }
       },
     );
+    
+    // تحميل الصورة المحلية الخاصة بالحساب الحالي
+    final userId = CacheHelper.getString(key: AppConstants.userId);
+    if (userId != null) {
+      _localAvatarPath = CacheHelper.getString(key: 'local_avatar_$userId');
+    }
 
     _isLoadingProfile = false;
     _isBackgroundUpdating = false;
-    notifyListeners();
+    notifyListeners(); // ← إشعار ثانٍ ووحيد عند اكتمال البيانات
+  }
+
+  Future<bool> pickAndSaveProfileImage() async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile == null) return false;
+
+      final userId = CacheHelper.getString(key: AppConstants.userId);
+      if (userId == null) return false;
+
+      final appDir = await getApplicationDocumentsDirectory();
+      final extension = pickedFile.path.split('.').last;
+      final fileName = 'user_avatar_$userId.$extension';
+      final savedImage = await File(pickedFile.path).copy('${appDir.path}/$fileName');
+
+      _localAvatarPath = savedImage.path;
+      await CacheHelper.saveData(key: 'local_avatar_$userId', value: _localAvatarPath);
+      
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      return false;
+    }
   }
 
   Future<void> loadUserBadges({bool forceRefresh = false}) async {
@@ -304,6 +304,7 @@ class ProfileProvider extends ChangeNotifier {
     _totalPoints = 0;
     _userBadges = [];
     _error = null;
+    _localAvatarPath = null;
     notifyListeners();
   }
 }

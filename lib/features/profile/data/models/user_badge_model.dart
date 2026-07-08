@@ -8,6 +8,7 @@ class UserBadgeModel extends UserBadgeEntity {
     required super.progress,
     required super.target,
     required super.tier,
+    super.earnedAt,
   });
 
   factory UserBadgeModel.fromJson(Map<String, dynamic> json) {
@@ -18,6 +19,9 @@ class UserBadgeModel extends UserBadgeEntity {
       progress: json['progress'] as int,
       target: json['target'] as int,
       tier: json['tier'] as String? ?? 'STANDARD',
+      earnedAt: json['earnedAt'] != null
+          ? DateTime.tryParse(json['earnedAt'] as String)
+          : null,
     );
   }
 
@@ -29,6 +33,7 @@ class UserBadgeModel extends UserBadgeEntity {
       'progress': progress,
       'target': target,
       'tier': tier,
+      'earnedAt': earnedAt?.toIso8601String(),
     };
   }
 }

@@ -11,8 +11,40 @@ import 'package:algonaid_mobile_app/features/profile/presentation/providers/prof
 import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
+
+  @override
+  State<ProfilePage> createState() => ProfilePageState();
+}
+
+// public state class so CoursesHomePage can call refreshData via GlobalKey
+class ProfilePageState extends State<ProfilePage> {
+  bool _hasLoadedOnce = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      refreshData();
+    });
+  }
+
+  Future<void> refreshData({bool forceRefresh = false}) async {
+    if (!mounted) return;
+    await Future.wait([
+      context.read<GetCoursesProvider>().refreshAll(isGuest: false),
+      context.read<ProfileProvider>().loadTotalPoints(),
+      context.read<ProfileProvider>().loadUserProfile(),
+      // forceRefresh دائماً عند الدخول الأول أو عند السحب للتحديث
+      context.read<ProfileProvider>().loadUserBadges(
+        forceRefresh: forceRefresh || !_hasLoadedOnce,
+      ),
+    ]);
+    if (mounted) {
+      setState(() => _hasLoadedOnce = true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +62,7 @@ class ProfilePage extends StatelessWidget {
                 return defaultScrollNotificationPredicate(notification) && notification.metrics.pixels <= 0;
               },
               onRefresh: () async {
-                await Future.wait([
-                  context.read<GetCoursesProvider>().refreshAll(isGuest: false),
-                  context.read<ProfileProvider>().loadTotalPoints(),
-                  context.read<ProfileProvider>().loadUserProfile(),
-                  context.read<ProfileProvider>().loadUserBadges(forceRefresh: true),
-                ]);
+                await refreshData(forceRefresh: true);
               },
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(

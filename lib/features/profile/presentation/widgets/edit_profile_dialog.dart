@@ -13,7 +13,6 @@ class EditProfileSheet extends StatefulWidget {
 class _EditProfileSheetState extends State<EditProfileSheet> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
-  late TextEditingController _avatarController;
   late TextEditingController _backgroundController;
   late TextEditingController _gradeController;
   late TextEditingController _birthDateController;
@@ -37,7 +36,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     }
 
     _nameController = TextEditingController(text: profile?.name ?? '');
-    _avatarController = TextEditingController(text: profile?.avatar ?? '');
     _backgroundController = TextEditingController(
       text: profile?.background ?? '',
     );
@@ -49,7 +47,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   @override
   void dispose() {
     _nameController.dispose();
-    _avatarController.dispose();
     _backgroundController.dispose();
     _gradeController.dispose();
     _birthDateController.dispose();
@@ -72,6 +69,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       initialDate: initialDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      locale: const Locale('ar'), // 🌟 فرض اللغة العربية لمربع التاريخ
       builder: (context, child) {
         return Theme(
           data: context.theme.copyWith(
@@ -79,7 +77,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
               primary: context.colorScheme.primary,
             ),
           ),
-          child: child!,
+          child: Directionality(
+            textDirection: TextDirection.rtl, // 🌟 فرض الاتجاه من اليمين إلى اليسار
+            child: child!,
+          ),
         );
       },
     );
@@ -97,7 +98,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     if (_formKey.currentState!.validate()) {
       final data = {
         if (_nameController.text.isNotEmpty) 'name': _nameController.text,
-        if (_avatarController.text.isNotEmpty) 'avatar': _avatarController.text,
         if (_backgroundController.text.isNotEmpty)
           'background': _backgroundController.text,
         if (_gradeController.text.isNotEmpty) 'grade': _gradeController.text,
@@ -131,6 +131,9 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
+                    const SizedBox(height: 16),
+                    _buildAvatarPicker(context),
+                    const SizedBox(height: 24),
                     _buildTextField(
                       context,
                       controller: _nameController,
@@ -161,13 +164,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                       controller: _addressController,
                       label: 'العنوان الحالي',
                       icon: Icons.location_on_rounded,
-                    ),
-                    const SizedBox(height: 14),
-                    _buildTextField(
-                      context,
-                      controller: _avatarController,
-                      label: 'رابط الصورة الشخصية (URL)',
-                      icon: Icons.link_rounded,
                     ),
 
                     const SizedBox(height: 8),
@@ -275,6 +271,58 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
           borderSide: const BorderSide(color: Colors.redAccent, width: 1),
         ),
       ),
+    );
+  }
+
+  Widget _buildAvatarPicker(BuildContext context) {
+    return Consumer<ProfileProvider>(
+      builder: (context, provider, child) {
+        return InkWell(
+          onTap: () async {
+            await provider.pickAndSaveProfileImage();
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: context.colorScheme.surfaceContainerLow.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: context.colorScheme.onSurface.withOpacity(0.06),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.photo_camera_rounded,
+                  color: context.colorScheme.primary.withOpacity(0.7),
+                  size: 24,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'الصورة الشخصية',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: context.colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
+                      Text(
+                        'اضغط هنا لاختيار صورة من جهازك',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

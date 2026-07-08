@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
 import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
 import 'package:algonaid_mobile_app/core/theme/borders.dart';
@@ -21,12 +22,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<ProfileProvider>(context, listen: false);
-      provider.loadTotalPoints();
-      provider.loadUserProfile();
-      provider.loadUserBadges();
-    });
+    // تحميل البيانات يتم من ProfilePage لتفادي الطلبات المزدوجة
   }
 
   String _getInitials(String name) {
@@ -88,33 +84,36 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         // القسم الأول: الصورة الشخصية والاسم والنقاط
                         Row(
                           children: [
-                            _buildAvatar(profile, initials, userAvatar),
+                            _buildAvatar(profile, initials, userAvatar, provider.localAvatarPath),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    userName,
-                                    style: context.textTheme.titleLarge
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: textColor,
-                                        ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    userEmail,
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(color: subTextColor),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  _buildPointsBadge(provider),
-                                ],
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 36.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      userName,
+                                      style: context.textTheme.titleLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: textColor,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      userEmail,
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(color: subTextColor),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    _buildPointsBadge(provider),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -199,10 +198,20 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   }
 
   // ويدجت بناء الصورة الشخصية بدقة عالية وظلال ناعمة
-  Widget _buildAvatar(dynamic profile, String initials, String? avatarUrl) {
-    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
+  Widget _buildAvatar(dynamic profile, String initials, String? avatarUrl, String? localAvatarPath) {
+    final bool hasLocal = localAvatarPath != null && localAvatarPath.isNotEmpty;
+    final bool hasNetwork = avatarUrl != null && avatarUrl.isNotEmpty;
+    final bool hasAvatar = hasLocal || hasNetwork;
+
+    ImageProvider? imageProvider;
+    if (hasLocal) {
+      imageProvider = FileImage(File(localAvatarPath!));
+    } else if (hasNetwork) {
+      imageProvider = CachedNetworkImageProvider(avatarUrl!);
+    }
+
     return GestureDetector(
-      onTap: () => _showFullScreenImage(context, profile, initials, avatarUrl),
+      onTap: () => _showFullScreenImage(context, profile, initials, avatarUrl, localAvatarPath),
       child: Hero(
         tag: 'user_profile_avatar',
         child: Container(
@@ -210,10 +219,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           height: 78,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-
             image: hasAvatar
                 ? DecorationImage(
-                    image: CachedNetworkImageProvider(avatarUrl!),
+                    image: imageProvider!,
                     fit: BoxFit.cover,
                   )
                 : null,
@@ -251,8 +259,19 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     dynamic profile,
     String initials,
     String? avatarUrl,
+    String? localAvatarPath,
   ) {
-    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
+    final bool hasLocal = localAvatarPath != null && localAvatarPath.isNotEmpty;
+    final bool hasNetwork = avatarUrl != null && avatarUrl.isNotEmpty;
+    final bool hasAvatar = hasLocal || hasNetwork;
+
+    ImageProvider? imageProvider;
+    if (hasLocal) {
+      imageProvider = FileImage(File(localAvatarPath!));
+    } else if (hasNetwork) {
+      imageProvider = CachedNetworkImageProvider(avatarUrl!);
+    }
+
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
@@ -277,9 +296,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       shape: BoxShape.circle,
                       image: hasAvatar
                           ? DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                avatarUrl!,
-                              ),
+                              image: imageProvider!,
                               fit: BoxFit.cover,
                             )
                           : null,
