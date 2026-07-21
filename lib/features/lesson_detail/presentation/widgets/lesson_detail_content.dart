@@ -1,11 +1,11 @@
-import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
-import 'package:algonaid_mobile_app/features/downloads/presentation/providers/active_downloads_provider.dart';
+import 'package:algonaid/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
+import 'package:algonaid/features/downloads/presentation/providers/active_downloads_provider.dart';
 import 'package:flutter/material.dart';
 
 class LessonDetailContent extends StatelessWidget {

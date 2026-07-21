@@ -1,10 +1,10 @@
-// algonaid_mobile_app/lib/features/modules/presentation/providers/modules_list_provider.dart
+// algonaid/lib/features/modules/presentation/providers/modules_list_provider.dart
 
-import 'package:algonaid_mobile_app/features/modules/domain/entities/module.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_modules_by_course.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_cached_modules_usecase.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid/features/modules/domain/entities/module.dart';
+import 'package:algonaid/features/modules/domain/usecases/get_modules_by_course.dart';
+import 'package:algonaid/features/modules/domain/usecases/get_cached_modules_usecase.dart';
+import 'package:algonaid/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid/core/common/enums/lesson_status.dart';
 import 'package:flutter/material.dart';
 
 class ModulesListState {

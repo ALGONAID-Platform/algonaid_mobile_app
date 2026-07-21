@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid/features/lessons/domain/entities/lesson.dart';
 
 class PaginationMeta {
   final int total;

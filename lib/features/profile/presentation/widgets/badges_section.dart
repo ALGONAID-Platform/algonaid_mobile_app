@@ -1,12 +1,12 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/utils/badges_helper.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/widgets/shared/section_header.dart';
+import 'package:algonaid/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid/features/profile/presentation/utils/badges_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
 
 class BadgesSection extends StatelessWidget {
   const BadgesSection({Key? key}) : super(key: key);

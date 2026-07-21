@@ -1,10 +1,10 @@
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobile_app/core/network/api_service.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/courseProgress_model.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgress_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/course_model.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/course_grades_model.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/network/api_service.dart';
+import 'package:algonaid/features/courses/data/models/courseProgress_model.dart';
+import 'package:algonaid/features/courses/domain/entities/courseProgress_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/data/models/course_model.dart';
+import 'package:algonaid/features/courses/data/models/course_grades_model.dart';
 
 abstract class CoursesRemoteDataSource {
   Future<List<CourseEntity>> fetchCourses();

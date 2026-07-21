@@ -1,8 +1,8 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/circular_reveal.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/routes/navigatorKey.dart';
+import 'package:algonaid/core/widgets/shared/circular_reveal.dart';
 
 class AppDialog {
   static void showDynamicDialog({

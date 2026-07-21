@@ -1,6 +1,6 @@
-// algonaid_mobile_app/lib/features/exams/data/models/exam_model.dart
-import 'package:algonaid_mobile_app/features/exams/data/models/question_model.dart';
-import 'package:algonaid_mobile_app/features/exams/domain/entities/exam.dart';
+// algonaid/lib/features/exams/data/models/exam_model.dart
+import 'package:algonaid/features/exams/data/models/question_model.dart';
+import 'package:algonaid/features/exams/domain/entities/exam.dart';
 
 class ExamModel extends Exam {
   const ExamModel({

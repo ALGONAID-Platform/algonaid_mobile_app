@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart'; // 🌟
-import 'package:algonaid_mobile_app/features/courses/data/models/user_model.dart'
+import 'package:algonaid/features/courses/data/models/user_model.dart'
     show UserModel;
-import 'package:algonaid_mobile_app/features/courses/domain/entities/teacher_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/teacher_entity.dart';
 
 part 'teacher_model.g.dart'; // 🌟
 

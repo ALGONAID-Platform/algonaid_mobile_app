@@ -1,5 +1,5 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/pages/about_page.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/settings/presentation/pages/about_page.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeCard extends StatelessWidget {

@@ -65,10 +65,14 @@ class MainActivity: FlutterActivity() {
         super.onUserLeaveHint()
         if (isPipAllowed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val aspectRatio = Rational(16, 9)
-            val params = PictureInPictureParams.Builder()
+            val paramsBuilder = PictureInPictureParams.Builder()
                 .setAspectRatio(aspectRatio)
-                .build()
-            enterPictureInPictureMode(params)
+                
+            pipRect?.let {
+                paramsBuilder.setSourceRectHint(it)
+            }
+            
+            enterPictureInPictureMode(paramsBuilder.build())
         }
     }
 

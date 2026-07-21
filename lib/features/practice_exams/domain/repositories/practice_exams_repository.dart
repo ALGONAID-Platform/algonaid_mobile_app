@@ -1,5 +1,5 @@
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/features/practice_exams/domain/entities/practice_exam_entity.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/features/practice_exams/domain/entities/practice_exam_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class PracticeExamsRepository {

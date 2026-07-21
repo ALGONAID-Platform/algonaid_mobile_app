@@ -8,10 +8,10 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:algonaid_mobile_app/core/routes/appRouters.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/routes/appRouters.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
 
 class LocalNotification {
   final String id;

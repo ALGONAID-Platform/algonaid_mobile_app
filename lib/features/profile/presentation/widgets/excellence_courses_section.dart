@@ -1,15 +1,15 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/teacher_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/user_entity.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/section_header.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/teacher_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/user_entity.dart';
+import 'package:algonaid/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
 import 'package:lottie/lottie.dart';
 
 class ExcellenceCoursesSection extends StatefulWidget {

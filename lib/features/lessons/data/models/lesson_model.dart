@@ -1,7 +1,7 @@
-import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
-import 'package:algonaid_mobile_app/features/lessons/data/models/lessonProgress_model.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/lessonProgress_entity.dart';
+import 'package:algonaid/core/common/enums/lesson_status.dart';
+import 'package:algonaid/features/lessons/data/models/lessonProgress_model.dart';
+import 'package:algonaid/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid/features/lessons/domain/entities/lessonProgress_entity.dart';
 import 'package:hive/hive.dart';
 
 part 'lesson_model.g.dart';

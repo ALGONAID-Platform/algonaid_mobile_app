@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section_title.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_icon_wrapper.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_section_title.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

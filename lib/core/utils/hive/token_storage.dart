@@ -1,5 +1,5 @@
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
 
 class TokenStorage {
   static String? _token; // In-memory token storage

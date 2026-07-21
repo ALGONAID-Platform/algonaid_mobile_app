@@ -1,31 +1,31 @@
 import 'dart:async';
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_error_state.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobile_app/core/utils/share_helper.dart';
-import 'package:algonaid_mobile_app/core/network/check_internet.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobile_app/features/downloads/presentation/providers/active_downloads_provider.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
-import 'package:algonaid_mobile_app/features/lessons/presentation/providers/lessons_list_provider.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/providers/lesson_detail_provider.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_detail_app_bar.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_detail_bottom_bar.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/global_video_state.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/notification_service.dart';
+import 'package:algonaid/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid/core/utils/share_helper.dart';
+import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid/features/downloads/presentation/providers/active_downloads_provider.dart';
+import 'package:algonaid/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid/features/lessons/presentation/providers/lessons_list_provider.dart';
+import 'package:algonaid/features/lesson_detail/presentation/providers/lesson_detail_provider.dart';
+import 'package:algonaid/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_detail_app_bar.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_detail_bottom_bar.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_info_card.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_pdf_card.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_quiz_card.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_tabs.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
+import 'package:algonaid/features/lesson_detail/presentation/controllers/global_video_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -54,7 +54,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
     Future.microtask(() {
       if (!mounted) return;
-      context.read<LessonDetailProvider>().loadLesson(widget.lessonId);
+      final provider = context.read<LessonDetailProvider>();
+      if (provider.state.lesson?.id != widget.lessonId) {
+        provider.loadLesson(widget.lessonId);
+      }
     });
   }
 

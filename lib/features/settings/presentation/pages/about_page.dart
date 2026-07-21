@@ -1,10 +1,10 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/features/settings/data/datasources/settings_static_datasource.dart';
-import 'package:algonaid_mobile_app/features/settings/domain/entities/platform_feature.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid/features/settings/domain/entities/platform_feature.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {

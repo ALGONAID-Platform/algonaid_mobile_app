@@ -1,5 +1,5 @@
 // موديل فرعي للتعامل مع بيانات التقدم
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/lessonProgress_entity.dart';
+import 'package:algonaid/features/lessons/domain/entities/lessonProgress_entity.dart';
 import 'package:hive/hive.dart';
 
 part 'lessonProgress_model.g.dart'; // the command in cmd: flutter packages pub run build_runner build --delete-conflicting-outputs

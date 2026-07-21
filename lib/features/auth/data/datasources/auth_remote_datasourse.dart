@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobile_app/core/network/api_service.dart';
-import 'package:algonaid_mobile_app/features/auth/data/models/auth_models.dart';
+import 'package:algonaid/core/common/enums/user_role.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/network/api_service.dart';
+import 'package:algonaid/features/auth/data/models/auth_models.dart';
 
 abstract class AuthRemoteDatasourse {
   Future<AuthResponse> signin({

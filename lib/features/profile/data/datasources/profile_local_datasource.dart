@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/features/profile/data/models/total_points_model.dart';
-import 'package:algonaid_mobile_app/features/profile/data/models/user_profile_model.dart';
-import 'package:algonaid_mobile_app/features/profile/data/models/user_badge_model.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/features/profile/data/models/total_points_model.dart';
+import 'package:algonaid/features/profile/data/models/user_profile_model.dart';
+import 'package:algonaid/features/profile/data/models/user_badge_model.dart';
 
 abstract class ProfileLocalDataSource {
   Future<void> saveTotalPoints(TotalPointsModel points);

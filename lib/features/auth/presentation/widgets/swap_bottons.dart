@@ -1,10 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/core/theme/styles.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/theme/styles.dart';
 
 // ignore: must_be_immutable
 class SwapAuthButtonCostum extends StatelessWidget {

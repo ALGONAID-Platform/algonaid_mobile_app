@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/features/settings/domain/entities/policy_item.dart';
+import 'package:algonaid/features/settings/domain/entities/policy_item.dart';
 
 class PolicyItemModel extends PolicyItem {
   const PolicyItemModel({required String title, required String content})

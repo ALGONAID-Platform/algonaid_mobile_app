@@ -1,14 +1,14 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/about_settings_section.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/appearance_settings_section.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/logout_settings_button.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/notifications_settings_section.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/storage_settings_section.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/video_settings_section.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/more_apps_settings_section.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid/features/settings/presentation/widgets/about_settings_section.dart';
+import 'package:algonaid/features/settings/presentation/widgets/appearance_settings_section.dart';
+import 'package:algonaid/features/settings/presentation/widgets/logout_settings_button.dart';
+import 'package:algonaid/features/settings/presentation/widgets/notifications_settings_section.dart';
+import 'package:algonaid/features/settings/presentation/widgets/storage_settings_section.dart';
+import 'package:algonaid/features/settings/presentation/widgets/video_settings_section.dart';
+import 'package:algonaid/features/settings/presentation/widgets/more_apps_settings_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

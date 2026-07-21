@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid/features/courses/domain/entities/course_grades.dart';
 
 class CourseGradesModel extends CourseGrades {
   const CourseGradesModel({

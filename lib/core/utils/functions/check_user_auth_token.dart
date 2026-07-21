@@ -1,9 +1,9 @@
-import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/network/check_internet.dart';
+import 'package:algonaid/core/routes/navigatorKey.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/network/check_internet.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';

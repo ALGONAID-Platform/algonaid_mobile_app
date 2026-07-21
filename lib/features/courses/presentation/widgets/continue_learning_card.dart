@@ -1,20 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/linearProgress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/widgets/module_grades_widget.dart';
+import 'package:algonaid/features/modules/presentation/widgets/module_grades_widget.dart';
 
-import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobile_app/core/theme/styles.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/entities/last_accessed_module_entity.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/app_shadows.dart';
+import 'package:algonaid/core/theme/styles.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
 
 class ContinueLearningCard extends StatelessWidget {
   final LastAccessedModuleEntity module;

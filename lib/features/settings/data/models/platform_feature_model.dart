@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/features/settings/domain/entities/platform_feature.dart';
+import 'package:algonaid/features/settings/domain/entities/platform_feature.dart';
 import 'package:flutter/material.dart';
 
 class PlatformFeatureModel extends PlatformFeature {

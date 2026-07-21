@@ -1,14 +1,14 @@
-import 'package:algonaid_mobile_app/core/di/service_locator.dart';
-import 'package:algonaid_mobile_app/core/routes/appRouters.dart';
-import 'package:algonaid_mobile_app/core/theme/theme.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/hive_setup.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobile_app/core/utils/providers/app_providers.dart';
-import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/core/routes/appRouters.dart';
+import 'package:algonaid/core/theme/theme.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/hive/hive_setup.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/utils/providers/app_providers.dart';
+import 'package:algonaid/core/utils/notification_service.dart';
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/theme/theme_provider.dart'
+import 'package:algonaid/core/theme/theme_provider.dart'
     as app_theme;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +16,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/global_video_state.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/widgets/floating_video_widget.dart';
+import 'package:algonaid/features/lesson_detail/presentation/controllers/global_video_state.dart';
+import 'package:algonaid/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
+import 'package:algonaid/features/lesson_detail/presentation/widgets/floating_video_widget.dart';
 import 'package:video_player/video_player.dart';
 import 'package:upgrader/upgrader.dart';
 import 'dart:async';
 import 'package:app_links/app_links.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobile_app/core/routes/navigatorKey.dart';
+import 'package:algonaid/core/routes/navigatorKey.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -225,39 +225,44 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               child: ValueListenableBuilder<bool>(
                 valueListenable: NativePipHandler().isInPipMode,
                 builder: (context, isPip, widgetChild) {
-                  if (isPip &&
-                      GlobalVideoState().videoPlayerController != null) {
-                    return Material(
-                      child: Container(
-                        color: Colors.black,
-                        child: Center(
-                          child: AspectRatio(
-                            aspectRatio: GlobalVideoState()
-                                .videoPlayerController!
-                                .value
-                                .aspectRatio,
-                            child: VideoPlayer(
-                              GlobalVideoState().videoPlayerController!,
+                  return Stack(
+                    children: [
+                      // Keep the app alive in the background to prevent state loss
+                      widgetChild!,
+                      
+                      // In Native PIP mode, show only the VideoPlayer with black background
+                      if (isPip && GlobalVideoState().videoPlayerController != null)
+                        Positioned.fill(
+                          child: Material(
+                            color: Colors.black,
+                            child: Center(
+                              child: AspectRatio(
+                                aspectRatio: GlobalVideoState()
+                                    .videoPlayerController!
+                                    .value
+                                    .aspectRatio,
+                                child: VideoPlayer(
+                                  GlobalVideoState().videoPlayerController!,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }
-                  return ValueListenableBuilder<bool>(
-                    valueListenable: GlobalVideoState().isFloatingNotifier,
-                    builder: (context, isFloating, _) {
-                      return Stack(
-                        children: [
-                          widgetChild!,
-                          if (isFloating &&
-                              GlobalVideoState().currentLessonId != null)
-                            FloatingVideoWidget(
-                              lessonId: GlobalVideoState().currentLessonId!,
-                            ),
-                        ],
-                      );
-                    },
+
+                      // Normal In-App floating video
+                      if (!isPip)
+                        ValueListenableBuilder<bool>(
+                          valueListenable: GlobalVideoState().isFloatingNotifier,
+                          builder: (context, isFloating, _) {
+                            if (isFloating && GlobalVideoState().currentLessonId != null) {
+                              return FloatingVideoWidget(
+                                lessonId: GlobalVideoState().currentLessonId!,
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                    ],
                   );
                 },
                 child: Directionality(

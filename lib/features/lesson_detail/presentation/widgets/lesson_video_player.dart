@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/global_video_state.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/features/lesson_detail/presentation/controllers/global_video_state.dart';
+import 'package:algonaid/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/show_dialog.dart';
 
 class VideoQuality {
   final String resolution;
@@ -52,6 +52,8 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
 
   List<VideoQuality> _availableQualities = [];
   VideoQuality? _selectedQuality;
+  
+  final GlobalKey _videoKey = GlobalKey();
 
   @override
   void initState() {
@@ -300,6 +302,24 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
     }
   }
 
+  void _updatePipRect() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final renderBox = _videoKey.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        final position = renderBox.localToGlobal(Offset.zero);
+        final size = renderBox.size;
+        final dpr = MediaQuery.of(context).devicePixelRatio;
+        NativePipHandler().setPipRect(
+          (position.dx * dpr).toInt(),
+          (position.dy * dpr).toInt(),
+          ((position.dx + size.width) * dpr).toInt(),
+          ((position.dy + size.height) * dpr).toInt(),
+        );
+      }
+    });
+  }
+
   void _onPlayerStateChange()async {
     final globalState = GlobalVideoState();
     if (!mounted || globalState.videoPlayerController == null) return;
@@ -309,6 +329,7 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
     final duration = globalState.videoPlayerController!.value.duration;
 
     NativePipHandler().setPipAllowed(isPlaying);
+    _updatePipRect();
 
     if (isPlaying && !_isStartedReported) {
       _isStartedReported = true;
@@ -385,7 +406,10 @@ class _LessonVideoPlayerState extends State<LessonVideoPlayer> {
       );
     } else if (globalState.chewieController != null &&
         globalState.chewieController!.videoPlayerController.value.isInitialized) {
-      playerWidget = Chewie(controller: globalState.chewieController!);
+      playerWidget = Container(
+        key: _videoKey,
+        child: Chewie(controller: globalState.chewieController!),
+      );
     } else if (_playerError != null) {
       playerWidget = _buildMessageState(
         message: _playerError!,

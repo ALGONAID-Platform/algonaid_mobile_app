@@ -1,9 +1,9 @@
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobile_app/core/network/api_service.dart';
-import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/network/api_service.dart';
+import 'package:algonaid/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
 
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/paginated_lessons.dart';
+import 'package:algonaid/features/lessons/domain/entities/paginated_lessons.dart';
 
 abstract class LessonRemoteDataSource {
   Future<PaginatedLessons> fetchLessonsByModule(int moduleId, {int page = 1, int? limit});

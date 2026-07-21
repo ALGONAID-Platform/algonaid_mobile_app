@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';

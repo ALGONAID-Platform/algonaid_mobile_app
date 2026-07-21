@@ -1,34 +1,34 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
 import 'package:flutter/services.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobile_app/core/widgets/loading/continueLearningShimmer.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/all_courses_section.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/bottomNavigationBar.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildShimmerSection.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/courseHeader.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/my_courses_section.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sliver_appbar.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/widgets/loading/continueLearningShimmer.dart';
+import 'package:algonaid/core/widgets/shared/section_header.dart';
+import 'package:algonaid/features/courses/presentation/widgets/all_courses_section.dart';
+import 'package:algonaid/features/courses/presentation/widgets/bottomNavigationBar.dart';
+import 'package:algonaid/features/courses/presentation/widgets/buildShimmerSection.dart';
+import 'package:algonaid/features/courses/presentation/widgets/courseHeader.dart';
+import 'package:algonaid/features/courses/presentation/widgets/my_courses_section.dart';
+import 'package:algonaid/features/courses/presentation/widgets/sliver_appbar.dart';
+import 'package:algonaid/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/pages/profile_page.dart';
-import 'package:algonaid_mobile_app/features/downloads/presentation/pages/downloads_page.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/pages/competitions_page.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid/features/profile/presentation/pages/profile_page.dart';
+import 'package:algonaid/features/downloads/presentation/pages/downloads_page.dart';
+import 'package:algonaid/features/courses/presentation/pages/competitions_page.dart';
+import 'package:algonaid/core/widgets/shared/show_dialog.dart';
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:math' as math;
-import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
+import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 
 class CoursesPage extends StatefulWidget {
@@ -89,7 +89,7 @@ class _CoursesPageState extends State<CoursesPage> {
 
               await Future.wait([
                 coursesProvider.refreshAll(isGuest: false),
-                lastAccessedProvider.fetchLastAccessedModule(),
+                lastAccessedProvider.fetchLastAccessedModule(forceRefresh: true),
               ]);
               if (mounted) setState(() => _isBackgroundRefreshing = false);
             },

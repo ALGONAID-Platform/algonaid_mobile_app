@@ -1,13 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
 import 'package:dartz/dartz.dart';
-import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/features/auth/data/datasources/auth_remote_datasourse.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/entities/user_entity.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/repositories/auth_repo.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/common/enums/user_role.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/features/auth/data/datasources/auth_remote_datasourse.dart';
+import 'package:algonaid/features/auth/domain/entities/user_entity.dart';
+import 'package:algonaid/features/auth/domain/repositories/auth_repo.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 

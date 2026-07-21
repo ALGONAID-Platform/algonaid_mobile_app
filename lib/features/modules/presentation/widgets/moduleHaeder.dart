@@ -1,20 +1,20 @@
 import 'dart:ui';
 
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobile_app/core/utils/share_helper.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/course_reminder_sheet.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/utils/share_helper.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/presentation/widgets/course_reminder_sheet.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
 
 class CourseHeaderSliver extends StatelessWidget {
   final CourseEntity course;

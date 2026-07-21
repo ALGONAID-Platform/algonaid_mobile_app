@@ -1,6 +1,6 @@
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobile_app/core/network/api_service.dart';
-import 'package:algonaid_mobile_app/features/practice_exams/data/models/practice_exam_model.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/network/api_service.dart';
+import 'package:algonaid/features/practice_exams/data/models/practice_exam_model.dart';
 
 abstract class PracticeExamsRemoteDataSource {
   Future<List<PracticeExamModel>> getPracticeExams(int courseId);

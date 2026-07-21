@@ -1,11 +1,11 @@
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/hive_data.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/courseProgress_model.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/course_grades_model.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/course_model.dart'; // 🌟 استيراد الموديل ضروري
-import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgress_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/utils/hive/hive_data.dart';
+import 'package:algonaid/features/courses/data/models/courseProgress_model.dart';
+import 'package:algonaid/features/courses/data/models/course_grades_model.dart';
+import 'package:algonaid/features/courses/data/models/course_model.dart'; // 🌟 استيراد الموديل ضروري
+import 'package:algonaid/features/courses/domain/entities/courseProgress_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
 import 'dart:convert';
 
 abstract class CourseLocalDataSourse {

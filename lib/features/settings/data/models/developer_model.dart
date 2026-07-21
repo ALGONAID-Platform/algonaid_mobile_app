@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/features/settings/domain/entities/developer_info.dart';
+import 'package:algonaid/features/settings/domain/entities/developer_info.dart';
 import 'package:flutter/material.dart';
 
 class DeveloperModel extends DeveloperInfo {

@@ -1,12 +1,12 @@
-import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgress_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/usecases/enroll_usecase.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_progress.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_mycourese_usecase.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_cached_courses_usecase.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_cached_mycourses_usecase.dart';
+import 'package:algonaid/features/courses/domain/entities/courseProgress_entity.dart';
+import 'package:algonaid/features/courses/domain/usecases/enroll_usecase.dart';
+import 'package:algonaid/features/courses/domain/usecases/get_course_progress.dart';
+import 'package:algonaid/features/courses/domain/usecases/get_mycourese_usecase.dart';
+import 'package:algonaid/features/courses/domain/usecases/get_cached_courses_usecase.dart';
+import 'package:algonaid/features/courses/domain/usecases/get_cached_mycourses_usecase.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/domain/usecases/get_courses_usecase.dart';
 
 class GetCoursesProvider extends ChangeNotifier {
   final GetCoursesUsecase coursesUsecase;

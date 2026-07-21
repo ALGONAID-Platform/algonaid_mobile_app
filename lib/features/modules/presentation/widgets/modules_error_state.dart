@@ -1,6 +1,6 @@
-// algonaid_mobile_app/lib/features/modules/presentation/widgets/modules_error_state.dart
+// algonaid/lib/features/modules/presentation/widgets/modules_error_state.dart
 
-import 'package:algonaid_mobile_app/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid/core/widgets/shared/app_error_state.dart';
 import 'package:flutter/material.dart';
 
 class ModulesErrorState extends StatelessWidget {

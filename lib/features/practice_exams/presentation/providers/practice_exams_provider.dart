@@ -4,11 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
-import 'package:algonaid_mobile_app/features/practice_exams/data/models/practice_exam_model.dart';
-import 'package:algonaid_mobile_app/features/practice_exams/domain/entities/practice_exam_entity.dart';
-import 'package:algonaid_mobile_app/features/practice_exams/domain/usecases/get_practice_exams_usecase.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/utils/notification_service.dart';
+import 'package:algonaid/features/practice_exams/data/models/practice_exam_model.dart';
+import 'package:algonaid/features/practice_exams/domain/entities/practice_exam_entity.dart';
+import 'package:algonaid/features/practice_exams/domain/usecases/get_practice_exams_usecase.dart';
 import 'package:flutter/material.dart';
 
 class PracticeExamsProvider extends ChangeNotifier {

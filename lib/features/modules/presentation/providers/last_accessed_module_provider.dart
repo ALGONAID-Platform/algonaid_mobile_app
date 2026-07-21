@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/entities/last_accessed_module_entity.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
+import 'package:algonaid/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid/features/modules/domain/usecases/get_last_accessed_module_usecase.dart';
+import 'package:algonaid/features/modules/domain/usecases/get_cached_last_accessed_module_usecase.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid/features/modules/data/models/last_accessed_module_model.dart';
 
 class LastAccessedModuleProvider extends ChangeNotifier {
   final GetLastAccessedModuleUseCase getLastAccessedModuleUseCase;
@@ -36,20 +39,31 @@ class LastAccessedModuleProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   LastAccessedModuleEntity? get lastAccessedModule => _lastAccessedModule;
 
-  Future<void> fetchLastAccessedModule() async {
-    // 1. قراءة الكاش وتحديد حالة التحميل — إشعار واحد للحالة الأولية
+  Future<void> fetchLastAccessedModule({bool forceRefresh = false}) async {
+    // 1. قراءة الكاش وتحديد حالة التحميل
     final cachedResult = await getCachedLastAccessedModuleUseCase();
+    bool hasCache = false;
     cachedResult.fold(
       (failure) {},
       (module) {
-        if (module != null) _lastAccessedModule = module;
+        if (module != null) {
+          _lastAccessedModule = module;
+          hasCache = true;
+        }
       },
     );
-    // نُظهر التحميل فقط إذا لم يكن هناك كاش
-    _isLoading = _lastAccessedModule == null;
-    notifyListeners(); // ← إشعار أول للحالة الأولية (مع الكاش إن وُجد)
+    
+    // إذا كان لدينا كاش ولا نريد تحديثاً إجبارياً، نعتمد على الكاش لكي لا نلغي تنقل المستخدم المحلي
+    if (hasCache && !forceRefresh) {
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
 
-    // 2. الجلب من الشبكة — إشعار واحد عند الانتهاء
+    _isLoading = _lastAccessedModule == null;
+    notifyListeners();
+
+    // 2. الجلب من الشبكة
     final result = await getLastAccessedModuleUseCase();
     result.fold(
       (failure) {
@@ -62,7 +76,7 @@ class LastAccessedModuleProvider extends ChangeNotifier {
       },
     );
     _isLoading = false;
-    notifyListeners(); // ← إشعار ثانٍ ووحيد عند اكتمال البيانات
+    notifyListeners();
   }
 
   Future<void> updateLastAccessedModule(LastAccessedModuleEntity module) async {
@@ -84,6 +98,21 @@ class LastAccessedModuleProvider extends ChangeNotifier {
         completedLessons: newCompleted,
         progressPercentage: newPercentage,
       );
+      
+      final modelToSave = LastAccessedModuleModel(
+        moduleId: _lastAccessedModule!.moduleId,
+        courseName: _lastAccessedModule!.courseName,
+        moduleName: _lastAccessedModule!.moduleName,
+        moduleDescription: _lastAccessedModule!.moduleDescription,
+        totalLessons: _lastAccessedModule!.totalLessons,
+        completedLessons: newCompleted,
+        progressPercentage: newPercentage,
+        image_url: _lastAccessedModule!.image_url,
+      );
+      try {
+         getIt<ModuleLocalDataSource>().cacheLastAccessedModule(modelToSave);
+      } catch (_) {}
+
       notifyListeners();
     } else {
       // If it's the very first lesson a user completes, _lastAccessedModule will be null.

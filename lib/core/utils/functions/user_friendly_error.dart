@@ -11,7 +11,7 @@ String toUserFriendlyErrorMessage(String? rawMessage) {
       normalized.contains('apiexception') ||
       normalized.contains('google_sign_in') ||
       normalized.contains('google')) {
-    return 'فشل تسجيل الدخول باستخدام جوجل.\nتفاصيل الخطأ:nتنبيه: تأكد من تسجيل بصمة SHA-1 لجهازك (مفتاح الـ Debug) وحزمة التطبيق (com.example.algonaid_mobile_app) في مشروع Google Console أو Firebase المرتبط بالسيرفر.';
+    return 'فشل تسجيل الدخول باستخدام جوجل.\nتفاصيل الخطأ:nتنبيه: تأكد من تسجيل بصمة SHA-1 لجهازك (مفتاح الـ Debug) وحزمة التطبيق (com.example.algonaid) في مشروع Google Console أو Firebase المرتبط بالسيرفر.';
   }
 
   if (normalized.contains('internet') ||

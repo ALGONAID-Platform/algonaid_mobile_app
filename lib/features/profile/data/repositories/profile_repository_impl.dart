@@ -1,6 +1,6 @@
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid/core/errors/failure.dart';
 import 'package:dartz/dartz.dart';
-import 'package:algonaid_mobile_app/core/network/check_internet.dart';
+import 'package:algonaid/core/network/check_internet.dart';
 import '../../domain/entities/total_points_entity.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/entities/user_badge_entity.dart';

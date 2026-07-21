@@ -1,5 +1,5 @@
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/features/search/domain/entities/global_search_entity.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/features/search/domain/entities/global_search_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class SearchRepository {

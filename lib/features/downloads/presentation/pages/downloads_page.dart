@@ -1,15 +1,15 @@
 import 'dart:io';
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobile_app/features/downloads/presentation/providers/downloads_provider.dart';
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/features/downloads/presentation/providers/downloads_provider.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
+import 'package:algonaid/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class DownloadsPage extends StatefulWidget {
   const DownloadsPage({Key? key}) : super(key: key);

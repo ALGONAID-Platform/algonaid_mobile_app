@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '384073856983',
     projectId: 'algonaid-4025a',
     storageBucket: 'algonaid-4025a.firebasestorage.app',
+    androidClientId: '384073856983-caqhvjku2po103mpqo9g44m72b1pdo5r.apps.googleusercontent.com',
     iosClientId: '384073856983-fshcgklqtg7fk3kuu7tonnbbfq0k6281.apps.googleusercontent.com',
     iosBundleId: 'com.example.algonaidmobileApp',
   );
@@ -74,6 +75,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '384073856983',
     projectId: 'algonaid-4025a',
     storageBucket: 'algonaid-4025a.firebasestorage.app',
+    androidClientId: '384073856983-caqhvjku2po103mpqo9g44m72b1pdo5r.apps.googleusercontent.com',
     iosClientId: '384073856983-fshcgklqtg7fk3kuu7tonnbbfq0k6281.apps.googleusercontent.com',
     iosBundleId: 'com.example.algonaidmobileApp',
   );

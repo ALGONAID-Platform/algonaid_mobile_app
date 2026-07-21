@@ -1,19 +1,19 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/expertBadge3D.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/widgets/shared/expertBadge3D.dart';
+import 'package:algonaid/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/core/widgets/shared/linearProgress.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/module_grades_provider.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/widgets/module_grades_widget.dart';
+import 'package:algonaid/features/modules/presentation/providers/module_grades_provider.dart';
+import 'package:algonaid/features/modules/presentation/widgets/module_grades_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/di/service_locator.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
 import 'package:marquee/marquee.dart' as marquee;
 
 class ModuleHeaderStats extends StatefulWidget {

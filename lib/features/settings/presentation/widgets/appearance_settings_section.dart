@@ -1,8 +1,8 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/theme.dart';
-import 'package:algonaid_mobile_app/core/theme/theme_provider.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section_title.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/theme.dart';
+import 'package:algonaid/core/theme/theme_provider.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_icon_wrapper.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_section_title.dart';
 import 'package:animated_theme_switcher/animated_theme_switcher.dart' hide ThemeProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

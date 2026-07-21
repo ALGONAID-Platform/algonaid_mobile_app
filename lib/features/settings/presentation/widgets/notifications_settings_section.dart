@@ -1,6 +1,6 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section_title.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_icon_wrapper.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_section_title.dart';
 import 'package:flutter/material.dart';
 
 class NotificationsSettingsSection extends StatelessWidget {

@@ -1,12 +1,12 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/animation.dart';
-import 'package:algonaid_mobile_app/features/onboard/data/models/onboarding_data.dart';
-import 'package:algonaid_mobile_app/features/onboard/domain/entity/onboarding_entity.dart';
-import 'package:algonaid_mobile_app/features/onboard/presentation/providers/onboarding_provider.dart';
-import 'package:algonaid_mobile_app/features/onboard/presentation/widgets/onBoardingFooter.dart';
-import 'package:algonaid_mobile_app/features/onboard/presentation/widgets/onBoardingImage.dart';
-import 'package:algonaid_mobile_app/features/onboard/presentation/widgets/onBoardingTitle.dart';
-import 'package:algonaid_mobile_app/features/onboard/presentation/widgets/onBoardingdescription.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/animation.dart';
+import 'package:algonaid/features/onboard/data/models/onboarding_data.dart';
+import 'package:algonaid/features/onboard/domain/entity/onboarding_entity.dart';
+import 'package:algonaid/features/onboard/presentation/providers/onboarding_provider.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingFooter.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingImage.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingTitle.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingdescription.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

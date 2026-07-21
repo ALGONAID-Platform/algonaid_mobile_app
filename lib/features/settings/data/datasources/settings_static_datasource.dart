@@ -1,7 +1,7 @@
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/features/settings/domain/entities/developer_info.dart';
-import 'package:algonaid_mobile_app/features/settings/domain/entities/platform_feature.dart';
-import 'package:algonaid_mobile_app/features/settings/domain/entities/policy_item.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/features/settings/domain/entities/developer_info.dart';
+import 'package:algonaid/features/settings/domain/entities/platform_feature.dart';
+import 'package:algonaid/features/settings/domain/entities/policy_item.dart';
 import 'package:flutter/material.dart';
 
 abstract class SettingsStaticDataSource {

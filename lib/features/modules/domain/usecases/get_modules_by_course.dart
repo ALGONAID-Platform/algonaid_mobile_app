@@ -1,9 +1,9 @@
-// algonaid_mobile_app/lib/features/modules/domain/usecases/get_modules_by_course.dart
+// algonaid/lib/features/modules/domain/usecases/get_modules_by_course.dart
 
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/core/usecase/usecase.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/entities/module.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/repositories/module_repository.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/usecase/usecase.dart';
+import 'package:algonaid/features/modules/domain/entities/module.dart';
+import 'package:algonaid/features/modules/domain/repositories/module_repository.dart';
 import 'package:dartz/dartz.dart';
 
 class GetModulesByCourse extends UseCase<List<Module>, int> {

@@ -1,15 +1,15 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/heroWidget.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/linearProgress.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildCourseDetails.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/timeout_image_wrapper.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/presentation/widgets/buildCourseDetails.dart';
+import 'package:algonaid/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobile_app/core/constants/endpoints.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class CourseThinCard extends StatelessWidget {

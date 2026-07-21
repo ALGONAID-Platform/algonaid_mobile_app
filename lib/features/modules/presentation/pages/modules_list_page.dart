@@ -1,33 +1,33 @@
-// algonaid_mobile_app/lib/features/modules/presentation/pages/modules_list_page.dart
+// algonaid/lib/features/modules/presentation/pages/modules_list_page.dart
 
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/di/service_locator.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/widgets/buildExpertBadge.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/widgets/progressInfo.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/widgets/moduleHaeder.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/widgets/sliverListItemBuilder.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/widgets/modules_error_state.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid/features/modules/presentation/widgets/buildExpertBadge.dart';
+import 'package:algonaid/features/modules/presentation/widgets/progressInfo.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid/features/modules/presentation/widgets/moduleHaeder.dart';
+import 'package:algonaid/features/modules/presentation/widgets/sliverListItemBuilder.dart';
+import 'package:algonaid/features/modules/presentation/widgets/modules_error_state.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/entities/module.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/features/modules/domain/entities/module.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/features/modules/data/datasources/module_local_datasource.dart';
-import 'package:algonaid_mobile_app/features/modules/data/models/last_accessed_module_model.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
-import 'package:algonaid_mobile_app/features/practice_exams/presentation/widgets/practice_exams_tab_view.dart';
+import 'package:algonaid/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid/features/modules/data/models/last_accessed_module_model.dart';
+import 'package:algonaid/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid/features/practice_exams/presentation/widgets/practice_exams_tab_view.dart';
 
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
+import 'package:algonaid/features/courses/presentation/widgets/sync_status_indicator.dart';
+import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
 
 class ModulesListPage extends StatefulWidget {
   const ModulesListPage({super.key, required this.course});

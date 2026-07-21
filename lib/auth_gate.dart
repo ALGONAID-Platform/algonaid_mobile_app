@@ -1,8 +1,8 @@
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
-import 'package:algonaid_mobile_app/core/utils/functions/check_user_auth_token.dart';
-import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/core/utils/functions/check_user_auth_token.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -28,9 +28,9 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
       duration: const Duration(milliseconds: 800),
     );
 
-    // Smoothly scale up from 1.0 (native size) to 2.2
+    // Smoothly scale up from 1.0 (native size) to 1.3
     // Uses Curves.easeOutCubic to start fast and then decelerate/slow down
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 2.2).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeOutCubic,
@@ -101,8 +101,8 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
                     tag: 'app_logo_hero',
                     child: Image.asset(
                       Images.logo,
-                      width: 180,
-                      height: 180,
+                      width: 130,
+                      height: 130,
                       fit: BoxFit.contain,
                     ),
                   ),

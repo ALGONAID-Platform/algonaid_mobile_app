@@ -1,5 +1,5 @@
-// algonaid_mobile_app/lib/features/exams/domain/entities/exam.dart
-import 'package:algonaid_mobile_app/features/exams/domain/entities/question.dart';
+// algonaid/lib/features/exams/domain/entities/exam.dart
+import 'package:algonaid/features/exams/domain/entities/question.dart';
 import 'package:equatable/equatable.dart';
 
 class Exam extends Equatable {

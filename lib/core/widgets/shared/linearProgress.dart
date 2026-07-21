@@ -1,6 +1,6 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/features/modules/domain/entities/module.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/features/modules/domain/entities/module.dart';
 import 'package:flutter/material.dart';
 
 class LinearProgress extends StatelessWidget {

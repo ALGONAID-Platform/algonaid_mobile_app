@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
-import 'package:algonaid_mobile_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobile_app/core/network/check_internet.dart';
-import 'package:algonaid_mobile_app/features/courses/data/datasources/course_local_stroage.dart';
-import 'package:algonaid_mobile_app/features/courses/data/datasources/courses_remote_data_source.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/course_grades_model.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgress_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_grades.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/repositories/courses_repository.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
+import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/features/courses/data/datasources/course_local_stroage.dart';
+import 'package:algonaid/features/courses/data/datasources/courses_remote_data_source.dart';
+import 'package:algonaid/features/courses/data/models/course_grades_model.dart';
+import 'package:algonaid/features/courses/domain/entities/courseProgress_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid/features/courses/domain/repositories/courses_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 

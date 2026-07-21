@@ -1,22 +1,22 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/lessons/presentation/widgets/lessonHeader.dart';
-import 'package:algonaid_mobile_app/features/lessons/presentation/widgets/moduleTimelineList.dart';
-import 'package:algonaid_mobile_app/features/lessons/presentation/widgets/textDivider.dart';
-import 'package:algonaid_mobile_app/features/lessons/presentation/widgets/lessons_error_state.dart';
-import 'package:algonaid_mobile_app/features/lessons/presentation/providers/lessons_list_provider.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid/features/lessons/presentation/widgets/lessonHeader.dart';
+import 'package:algonaid/features/lessons/presentation/widgets/moduleTimelineList.dart';
+import 'package:algonaid/features/lessons/presentation/widgets/textDivider.dart';
+import 'package:algonaid/features/lessons/presentation/widgets/lessons_error_state.dart';
+import 'package:algonaid/features/lessons/presentation/providers/lessons_list_provider.dart';
+import 'package:algonaid/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/core/widgets/shared/app_empty_state.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/guest_login_dialog.dart';
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/widgets/shared/guest_login_dialog.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/features/courses/presentation/widgets/sync_status_indicator.dart';
+import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class LessonsListPage extends StatefulWidget {
   final int moduleId;

@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/user_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/user_entity.dart';
 
 part 'user_model.g.dart';
 

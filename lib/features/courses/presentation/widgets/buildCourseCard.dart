@@ -1,10 +1,10 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/app_shadows.dart';
+import 'package:algonaid/core/theme/borders.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildCourseDetails.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/buildCourseImage.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/presentation/widgets/buildCourseDetails.dart';
+import 'package:algonaid/features/courses/presentation/widgets/buildCourseImage.dart';
 
 class CourseCard extends StatelessWidget {
   final CourseEntity course;

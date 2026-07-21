@@ -1,9 +1,9 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/global_video_state.dart';
-import 'package:algonaid_mobile_app/core/routes/appRouters.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/features/lesson_detail/presentation/controllers/global_video_state.dart';
+import 'package:algonaid/core/routes/appRouters.dart';
+import 'package:algonaid/features/lesson_detail/presentation/controllers/native_pip_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
@@ -58,7 +58,7 @@ class _FloatingVideoWidgetState extends State<FloatingVideoWidget> {
     final currentUri = router.routerDelegate.currentConfiguration.uri.toString();
     
     if (!currentUri.contains('${Routes.lessonDetails}/${widget.lessonId}')) {
-      router.push('${Routes.lessonDetails}/${widget.lessonId}');
+      router.go('${Routes.lessonDetails}/${widget.lessonId}');
     } else {
       GlobalVideoState().hideFloatingVideo();
     }

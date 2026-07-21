@@ -1,8 +1,8 @@
-import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_cached_lessons_usecase.dart';
+import 'package:algonaid/core/common/enums/lesson_status.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid/features/lessons/domain/usecases/get_cached_lessons_usecase.dart';
 import 'package:flutter/foundation.dart';
 
 class LessonsListState {

@@ -1,8 +1,8 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_snackbar.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_icon_wrapper.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section_title.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_icon_wrapper.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_section_title.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';

@@ -1,12 +1,12 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/di/service_locator.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
-import 'package:algonaid_mobile_app/features/search/presentation/providers/search_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_courses_tab.dart';
-import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_lessons_tab.dart';
-import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_modules_tab.dart';
-import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_practice_exams_tab.dart';
-import 'package:algonaid_mobile_app/features/search/presentation/widgets/search_text_field.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/features/search/presentation/providers/search_courses_provider.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_courses_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_lessons_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_modules_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_practice_exams_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

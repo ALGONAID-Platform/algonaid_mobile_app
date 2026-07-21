@@ -1,7 +1,7 @@
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_grades.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/usecases/get_course_grades.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
+import 'package:algonaid/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid/features/courses/domain/usecases/get_course_grades.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/notification_service.dart';
 import 'package:flutter/material.dart';
 
 class CourseGradesState {

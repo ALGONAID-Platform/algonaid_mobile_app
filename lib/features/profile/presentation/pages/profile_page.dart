@@ -1,15 +1,15 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/widgets/badges_section.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/presentation/widgets/excellence_courses_section.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/widgets/profile_header.dart';
-import 'package:algonaid_mobile_app/features/settings/presentation/widgets/settings_section.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/profile/presentation/widgets/badges_section.dart';
+import 'package:algonaid/features/excellence_courses/presentation/widgets/excellence_courses_section.dart';
+import 'package:algonaid/features/profile/presentation/widgets/profile_header.dart';
+import 'package:algonaid/features/settings/presentation/widgets/settings_section.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/widgets/sync_status_indicator.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/custom_threshold_refresh_indicator.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid/features/courses/presentation/widgets/sync_status_indicator.dart';
+import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);

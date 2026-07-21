@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
+import 'package:algonaid/core/errors/failure.dart';
 import 'package:dio/dio.dart';
 
 class DioErrorHandler {

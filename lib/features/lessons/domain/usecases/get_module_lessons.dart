@@ -1,11 +1,11 @@
-// algonaid_mobile_app/lib/features/lessons/domain/usecases/get_module_lessons.dart
+// algonaid/lib/features/lessons/domain/usecases/get_module_lessons.dart
 
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/core/usecase/usecase.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/repositories/lesson_repository.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/usecase/usecase.dart';
+import 'package:algonaid/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:dartz/dartz.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/entities/paginated_lessons.dart';
+import 'package:algonaid/features/lessons/domain/entities/paginated_lessons.dart';
 
 class GetModuleLessonsParams {
   final int moduleId;

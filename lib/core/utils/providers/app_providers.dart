@@ -1,21 +1,21 @@
 // lib/core/providers/app_providers.dart
 
-import 'package:algonaid_mobile_app/features/auth/presentation/providers/auth_service_provider.dart';
-import 'package:algonaid_mobile_app/features/courses/presentation/providers/get_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart'; // Added
-import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/providers/lesson_detail_provider.dart'; // Added
-import 'package:algonaid_mobile_app/features/onboard/presentation/providers/onboarding_provider.dart';
-import 'package:algonaid_mobile_app/core/theme/theme_provider.dart'; // Added
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/last_accessed_module_provider.dart';
-import 'package:algonaid_mobile_app/features/downloads/presentation/providers/downloads_provider.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/providers/profile_provider.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobile_app/features/modules/presentation/providers/modules_list_provider.dart';
-import 'package:algonaid_mobile_app/features/lessons/presentation/providers/lessons_list_provider.dart';
-import 'package:algonaid_mobile_app/features/practice_exams/presentation/providers/practice_exams_provider.dart';
-import 'package:algonaid_mobile_app/features/downloads/presentation/providers/active_downloads_provider.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
+import 'package:algonaid/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid/features/lesson_detail/domain/usecases/get_lesson_detail.dart'; // Added
+import 'package:algonaid/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid/features/lesson_detail/presentation/providers/lesson_detail_provider.dart'; // Added
+import 'package:algonaid/features/onboard/presentation/providers/onboarding_provider.dart';
+import 'package:algonaid/core/theme/theme_provider.dart'; // Added
+import 'package:algonaid/features/modules/presentation/providers/last_accessed_module_provider.dart';
+import 'package:algonaid/features/downloads/presentation/providers/downloads_provider.dart';
+import 'package:algonaid/features/profile/presentation/providers/profile_provider.dart';
+import 'package:algonaid/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid/features/modules/presentation/providers/modules_list_provider.dart';
+import 'package:algonaid/features/lessons/presentation/providers/lessons_list_provider.dart';
+import 'package:algonaid/features/practice_exams/presentation/providers/practice_exams_provider.dart';
+import 'package:algonaid/features/downloads/presentation/providers/active_downloads_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';

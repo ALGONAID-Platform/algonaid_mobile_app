@@ -1,7 +1,7 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/features/search/domain/entities/global_search_entity.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/app_empty_state.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/search/domain/entities/global_search_entity.dart';
+import 'package:algonaid/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
 import 'package:flutter/material.dart';
 
 class SearchPracticeExamsTab extends StatelessWidget {

@@ -1,6 +1,6 @@
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/core/userCases/usecase.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/repositories/courses_repository.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/userCases/usecase.dart';
+import 'package:algonaid/features/courses/domain/repositories/courses_repository.dart';
 import 'package:dartz/dartz.dart';
 
 class EnrollUsecase extends UseCase<bool, EnrollUsecaseParams> {

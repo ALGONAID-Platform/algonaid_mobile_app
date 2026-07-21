@@ -1,10 +1,10 @@
-import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
-import 'package:algonaid_mobile_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
-import 'package:algonaid_mobile_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
+import 'package:algonaid/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/common/enums/lesson_status.dart';
 import 'package:flutter/foundation.dart';
 
 class LessonDetailState {

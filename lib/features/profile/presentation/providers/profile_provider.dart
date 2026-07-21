@@ -8,13 +8,13 @@ import '../../domain/usecases/get_cached_user_profile_usecase.dart';
 import '../../domain/usecases/get_cached_total_points_usecase.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/entities/user_badge_entity.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:algonaid_mobile_app/core/utils/notification_service.dart';
-import 'package:algonaid_mobile_app/features/profile/presentation/utils/badges_helper.dart';
+import 'package:algonaid/core/utils/notification_service.dart';
+import 'package:algonaid/features/profile/presentation/utils/badges_helper.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final GetTotalPointsUseCase getTotalPointsUseCase;

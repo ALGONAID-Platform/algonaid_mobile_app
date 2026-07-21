@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:algonaid_mobile_app/core/network/execute_request.dart';
-import 'package:algonaid_mobile_app/core/network/initial_dio.dart';
+import 'package:algonaid/core/network/execute_request.dart';
+import 'package:algonaid/core/network/initial_dio.dart';
 import 'package:dio/dio.dart';
 
 class ApiService {

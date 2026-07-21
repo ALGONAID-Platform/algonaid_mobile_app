@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';

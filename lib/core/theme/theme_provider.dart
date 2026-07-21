@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {

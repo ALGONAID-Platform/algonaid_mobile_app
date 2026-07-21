@@ -1,20 +1,22 @@
 import 'dart:io' show Platform;
-import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/token_storage.dart';
-import 'package:algonaid_mobile_app/core/utils/hive/init_hive.dart';
-import 'package:algonaid_mobile_app/core/utils/validations/app_validation.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/entities/user_entity.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/google_signin_usecase.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/signin_usecase.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/signup_usecase.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/logout_usecase.dart'; // Added
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/forgot_password_usecase.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/reset_password_usecase.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/verify_email_usecase.dart';
-import 'package:algonaid_mobile_app/features/auth/domain/usecases/resend_verification_usecase.dart';
-import 'package:algonaid_mobile_app/features/auth/data/models/auth_models.dart';
+import 'dart:developer' as developer;
+import 'package:flutter/services.dart';
+import 'package:algonaid/core/common/enums/user_role.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/utils/hive/init_hive.dart';
+import 'package:algonaid/core/utils/validations/app_validation.dart';
+import 'package:algonaid/features/auth/domain/entities/user_entity.dart';
+import 'package:algonaid/features/auth/domain/usecases/google_signin_usecase.dart';
+import 'package:algonaid/features/auth/domain/usecases/signin_usecase.dart';
+import 'package:algonaid/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:algonaid/features/auth/domain/usecases/logout_usecase.dart'; // Added
+import 'package:algonaid/features/auth/domain/usecases/forgot_password_usecase.dart';
+import 'package:algonaid/features/auth/domain/usecases/reset_password_usecase.dart';
+import 'package:algonaid/features/auth/domain/usecases/verify_email_usecase.dart';
+import 'package:algonaid/features/auth/domain/usecases/resend_verification_usecase.dart';
+import 'package:algonaid/features/auth/data/models/auth_models.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -285,9 +287,18 @@ class AuthServiceProvider extends ChangeNotifier {
         },
       );
     } catch (e, stackTrace) {
-      debugPrint('❌ Google Sign-In Error: $e');
+      String errorDetails = 'Error Type: ${e.runtimeType}\nError: $e';
+      if (e is FirebaseAuthException) {
+        errorDetails += '\nFirebaseAuthException Code: ${e.code}\nMessage: ${e.message}';
+      } else if (e is PlatformException) {
+        errorDetails += '\nPlatformException Code: ${e.code}\nMessage: ${e.message}\nDetails: ${e.details}';
+      }
+      
+      developer.log('❌ Google Sign-In Failed', error: e, stackTrace: stackTrace, name: 'AuthServiceGoogleSignIn');
+      debugPrint('❌ Google Sign-In Error Details: $errorDetails');
       debugPrint('📋 Stack Trace: $stackTrace');
-      _errorMessage = "فشل في تسجيل الدخول، يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.";
+      
+      _errorMessage = "تفاصيل خطأ تسجيل الدخول بجوجل:\n$errorDetails\nالتتبع: $stackTrace";
       _isLoading = false;
       notifyListeners();
     }

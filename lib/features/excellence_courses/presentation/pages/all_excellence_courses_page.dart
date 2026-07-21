@@ -1,14 +1,14 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/info_banner.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/info_banner.dart';
+import 'package:algonaid/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobile_app/core/constants/assets_constants.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
 import 'package:lottie/lottie.dart';
 
-import 'package:algonaid_mobile_app/features/excellence_courses/presentation/widgets/excellence_modules_bottom_sheet.dart';
-import 'package:algonaid_mobile_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid/features/excellence_courses/presentation/widgets/excellence_modules_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
 
 class AllExcellenceCoursesPage extends StatelessWidget {
   const AllExcellenceCoursesPage({super.key});

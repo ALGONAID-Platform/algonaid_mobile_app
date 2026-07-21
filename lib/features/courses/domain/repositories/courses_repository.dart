@@ -1,7 +1,7 @@
-import 'package:algonaid_mobile_app/core/errors/failure.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/courseProgress_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobile_app/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/features/courses/domain/entities/courseProgress_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_grades.dart';
 import 'package:dartz/dartz.dart';
 
 /// عقد جلب بيانات الدورات (كتالوج، متابعة التعلم، …).

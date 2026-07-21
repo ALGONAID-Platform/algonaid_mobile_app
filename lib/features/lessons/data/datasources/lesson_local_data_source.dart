@@ -1,5 +1,5 @@
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/features/lessons/data/models/lesson_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class LessonLocalDataSource {

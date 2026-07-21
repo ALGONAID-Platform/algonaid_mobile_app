@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/core/routes/paths_routes.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

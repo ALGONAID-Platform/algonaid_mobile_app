@@ -1,5 +1,5 @@
-// algonaid_mobile_app/lib/features/exams/data/models/option_model.dart
-import 'package:algonaid_mobile_app/features/exams/domain/entities/option.dart';
+// algonaid/lib/features/exams/data/models/option_model.dart
+import 'package:algonaid/features/exams/domain/entities/option.dart';
 
 class OptionModel extends Option {
   const OptionModel({

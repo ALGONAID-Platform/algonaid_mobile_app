@@ -1,8 +1,8 @@
-import 'package:algonaid_mobile_app/features/excellence_courses/domain/entities/excellence_course_entity.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/domain/entities/excellence_module_entity.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_cached_excellence_courses_usecase.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_excellence_courses_usecase.dart';
-import 'package:algonaid_mobile_app/features/excellence_courses/domain/usecases/get_excellence_modules_usecase.dart';
+import 'package:algonaid/features/excellence_courses/domain/entities/excellence_course_entity.dart';
+import 'package:algonaid/features/excellence_courses/domain/entities/excellence_module_entity.dart';
+import 'package:algonaid/features/excellence_courses/domain/usecases/get_cached_excellence_courses_usecase.dart';
+import 'package:algonaid/features/excellence_courses/domain/usecases/get_excellence_courses_usecase.dart';
+import 'package:algonaid/features/excellence_courses/domain/usecases/get_excellence_modules_usecase.dart';
 import 'package:flutter/material.dart';
 
 class ExcellenceCoursesProvider extends ChangeNotifier {

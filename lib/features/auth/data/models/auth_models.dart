@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/core/common/enums/user_role.dart';
+import 'package:algonaid/core/common/enums/user_role.dart';
 
 class AuthResponse {
   final String message;

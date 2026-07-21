@@ -1,4 +1,4 @@
-import 'package:algonaid_mobile_app/core/theme/colors.dart';
+import 'package:algonaid/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

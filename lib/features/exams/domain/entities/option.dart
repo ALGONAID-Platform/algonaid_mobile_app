@@ -1,4 +1,4 @@
-// algonaid_mobile_app/lib/features/exams/domain/entities/option.dart
+// algonaid/lib/features/exams/domain/entities/option.dart
 import 'package:equatable/equatable.dart';
 
 class Option extends Equatable {

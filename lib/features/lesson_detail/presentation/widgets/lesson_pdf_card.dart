@@ -1,6 +1,6 @@
-import 'package:algonaid_mobile_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobile_app/core/theme/borders.dart';
-import 'package:algonaid_mobile_app/features/downloads/presentation/providers/active_downloads_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/features/downloads/presentation/providers/active_downloads_provider.dart';
 import 'package:flutter/material.dart';
 
 class LessonPdfCard extends StatelessWidget {

@@ -1,11 +1,11 @@
-import 'package:algonaid_mobile_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/course_model.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/teacher_model.dart';
-import 'package:algonaid_mobile_app/features/courses/data/models/user_model.dart';
-import 'package:algonaid_mobile_app/features/modules/data/models/module_model.dart';
-import 'package:algonaid_mobile_app/features/modules/data/models/last_accessed_module_model.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/features/courses/data/models/course_model.dart';
+import 'package:algonaid/features/courses/data/models/teacher_model.dart';
+import 'package:algonaid/features/courses/data/models/user_model.dart';
+import 'package:algonaid/features/modules/data/models/module_model.dart';
+import 'package:algonaid/features/modules/data/models/last_accessed_module_model.dart';
 
-import 'package:algonaid_mobile_app/features/lessons/data/models/lesson_model.dart'; // New Import
+import 'package:algonaid/features/lessons/data/models/lesson_model.dart'; // New Import
 
 import 'package:hive/hive.dart';
 
