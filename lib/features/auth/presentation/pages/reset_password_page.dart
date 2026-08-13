@@ -26,6 +26,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
 
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   // حالة التحقق من التوكن عند فتح الصفحة
   bool _isValidatingToken = true;
   bool _isTokenValid = false;
@@ -158,6 +161,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             labelText: 'أدخل كلمة المرور الجديدة',
                             borderColor: context.primary,
                             isPassword: true,
+                            isPasswordVisible: _isNewPasswordVisible,
+                            onSuffixPressed: () {
+                              setState(() {
+                                _isNewPasswordVisible = !_isNewPasswordVisible;
+                              });
+                            },
                             validator: (password) => Validator.password(
                               password,
                               strength: PasswordStrength.strong,
@@ -171,6 +180,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             labelText: 'أعد إدخال كلمة المرور',
                             borderColor: context.primary,
                             isPassword: true,
+                            isPasswordVisible: _isConfirmPasswordVisible,
+                            onSuffixPressed: () {
+                              setState(() {
+                                _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              });
+                            },
                             validator: (password) => Validator.password(
                               password,
                               strength: PasswordStrength.strong,
