@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   void _handleDeepLink(Uri uri) {
-    if (uri.path == '/api/v1/auth/verify-email' || uri.path == '/auth/verify-email') {
+    if (uri.path == '/verify-email' || uri.path == '/api/v1/auth/verify-email' || uri.path == '/auth/verify-email') {
       final token = uri.queryParameters['token'];
       if (token != null && token.isNotEmpty) {
         Future.delayed(const Duration(milliseconds: 500), () {
@@ -148,14 +148,27 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
 
     final success = await authProvider.verifyEmail(token);
+    final isAlreadyVerified = authProvider.errorMessage != null && authProvider.errorMessage!.contains('بالفعل');
     
     if (context.mounted) {
       // hide loading dialog
       Navigator.of(context, rootNavigator: true).pop();
     }
 
-    if (success) {
-       navigatorKey.currentContext?.go(Routes.emailVerifiedSuccess);
+    if (success || isAlreadyVerified) {
+       // Refresh user state if possible
+       await authProvider.restoreSession();
+       
+       if (authProvider.user != null) {
+          navigatorKey.currentContext?.go(Routes.homePage);
+       } else {
+          navigatorKey.currentContext?.go(Routes.auth);
+          if (navigatorKey.currentContext != null) {
+            ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+              const SnackBar(content: Text('تم تأكيد البريد الإلكتروني بنجاح. يرجى تسجيل الدخول.')),
+            );
+          }
+       }
     } else {
        navigatorKey.currentContext?.go(Routes.emailVerifyFailed, extra: authProvider.errorMessage);
     }

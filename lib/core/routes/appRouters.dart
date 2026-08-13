@@ -72,6 +72,13 @@ abstract class AppRouters {
   /// Handles navigation paths, transitions, and argument passing between screens.
   static final routers = GoRouter(
     navigatorKey: navigatorKey,
+    redirect: (context, state) {
+      // If the incoming location is a full URL (deep link), strip the domain
+      if (state.uri.host.isNotEmpty) {
+        return state.uri.path + (state.uri.hasQuery ? '?${state.uri.query}' : '');
+      }
+      return null;
+    },
     routes: [
       /// Root route that acts as an authentication and initial load gatekeeper.
       /// Directs the user to the appropriate screen (e.g., Auth, Home, or Onboarding).
@@ -178,6 +185,14 @@ abstract class AppRouters {
             color: AppColors.primary,
           );
         },
+      ),
+
+      /// Dummy route for deep linking email verification
+      GoRoute(
+        path: '/verify-email',
+        builder: (context, state) => const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
       ),
 
       /// Email Verification Page

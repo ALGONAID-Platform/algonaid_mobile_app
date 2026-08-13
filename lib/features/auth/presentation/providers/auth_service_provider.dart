@@ -17,6 +17,9 @@ import 'package:algonaid/features/auth/domain/usecases/reset_password_usecase.da
 import 'package:algonaid/features/auth/domain/usecases/verify_email_usecase.dart';
 import 'package:algonaid/features/auth/domain/usecases/resend_verification_usecase.dart';
 import 'package:algonaid/features/auth/data/models/auth_models.dart';
+import 'package:algonaid/core/network/api_service.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/di/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -94,6 +97,7 @@ class AuthServiceProvider extends ChangeNotifier {
     result.fold(
       (failure) {
         _errorMessage = failure.message;
+        _user = null; // تأكد من مسح المستخدم في حال الفشل
         _isLoading = false;
 
         notifyListeners();
@@ -605,6 +609,22 @@ class AuthServiceProvider extends ChangeNotifier {
       },
     );
   }
+
+  // ==================== Validate Reset Token ====================
+  /// يتحقق من صلاحية توكن إعادة التعيين قبل إظهار الصفحة
+  Future<bool> validateResetToken(String token) async {
+    try {
+      final apiService = getIt<ApiService>();
+      await apiService.get(
+        endpoint: EndPoint.validateResetToken,
+        query: {'token': token},
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
 
   Future<bool> resendVerificationEmail(String email) async {
     _prepareForRequest();

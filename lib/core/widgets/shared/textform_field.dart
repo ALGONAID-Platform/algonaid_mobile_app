@@ -40,7 +40,7 @@ class CustomTextFormField extends StatelessWidget {
     this.onChanged,
     this.borderColor,
     this.borderRadius = 60.0,
-    this.fillPercentage = 0.5, // افتراضياً لا يوجد تعبئة
+    this.fillPercentage = 0.0, // افتراضياً لا يوجد تعبئة
     this.fillColorValue,
     this.textDirection,
     this.textAlign,

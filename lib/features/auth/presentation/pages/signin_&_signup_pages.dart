@@ -6,6 +6,7 @@ import 'package:algonaid/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid/core/utils/functions/user_friendly_error.dart';
 import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid/features/auth/presentation/widgets/label.dart';
+import 'package:algonaid/features/auth/presentation/widgets/signin_with_google.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -16,9 +17,10 @@ import 'package:algonaid/core/widgets/buttons/custom_button.dart';
 import 'package:algonaid/core/widgets/shared/textform_field.dart';
 import 'package:algonaid/features/auth/presentation/widgets/auth_header.dart';
 import 'package:algonaid/features/auth/presentation/widgets/drop_down_bottun.dart';
-import 'package:algonaid/features/auth/presentation/widgets/signin_with_google.dart';
 import 'package:algonaid/features/auth/presentation/widgets/swap_bottons.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
+import 'dart:io' show Platform;
 
 class SigninAndSignupPage extends StatefulWidget {
   const SigninAndSignupPage({super.key});
@@ -30,6 +32,7 @@ class SigninAndSignupPage extends StatefulWidget {
 class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _nameController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -37,6 +40,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _nameController.dispose();
     super.dispose();
   }
@@ -62,8 +66,8 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
 
                   Center(child: SwapAuthButtonCostum(auth: authService)),
                   const SizedBox(height: 16),
-                  SignInWithGoogle(auth: authService),
-                  Center(child: TextLabel(text: "أو", Vpadding: 8.0)),
+                  // SignInWithGoogle(auth: authService),
+                  // Center(child: TextLabel(text: "أو", Vpadding: 8.0)),
 
                   //=========================
                   // user name fields
@@ -124,18 +128,39 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                   const SizedBox(height: 16),
 
                   //=========================
+                  // confirm password field
+                  //=========================
+                  // if (!authService.isLogin) ...[
+                  //   TextLabel(text: " تأكيد كلمة السر"),
+                  //   const SizedBox(height: 5),
+                  //   CustomTextFormField(
+                  //     controller: _confirmPasswordController,
+                  //     labelText: "أعد ادخل كلمة المرور",
+                  //     borderColor: context.primary,
+                  //     isPasswordVisible: authService.isPasswordVisible!,
+                  //     isPassword: true,
+                  //     onSuffixPressed: () {
+                  //       authService.changePasswordVisiblity();
+                  //     },
+                  //     suffixIcon: const Icon(Icons.remove_red_eye_outlined),
+                  //     validator: (password) {
+                  //       if (password != _passwordController.text) {
+                  //         return "كلمات المرور غير متطابقة";
+                  //       }
+                  //       return null;
+                  //     },
+                  //   ),
+                  //   const SizedBox(height: 16),
+                  // ],
+
+                  //=========================
                   authService.isLogin
                       ? Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             child: Text("نسيت كلمة السر؟"),
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('سوف تتفعل قريباً', textAlign: TextAlign.center),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
+                              _showForgotPasswordBottomSheet(context, authService);
                             },
                           ),
                         )
@@ -190,8 +215,34 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                               if (!context.mounted) return;
 
                               if (authService.user != null) {
-                                // نجاح تسجيل الدخول أو إنشاء الحساب → الصفحة الرئيسية مباشرة
-                                GoRouter.of(context).go(Routes.homePage);
+                                // نجاح تسجيل الدخول أو إنشاء الحساب
+                                if (!authService.isLogin) {
+                                  AppDialog.showDynamicDialog(
+                                    context: context,
+                                    title: "تم إنشاء الحساب",
+                                    message: "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب عبر الرابط المرسل.",
+                                    isError: false,
+                                    showCancelButton: false,
+                                    confirmText: "الانتقال إلى البريد للتحقق",
+                                    onConfirm: () async {
+                                      if (Platform.isAndroid) {
+                                        final intent = const AndroidIntent(
+                                          action: 'android.intent.action.MAIN',
+                                          category: 'android.intent.category.APP_EMAIL',
+                                          flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+                                        );
+                                        try {
+                                          await intent.launch();
+                                        } catch (e) {
+                                          // ignore
+                                        }
+                                      }
+                                      authService.setAuthMode(true);
+                                    }
+                                  );
+                                } else {
+                                  GoRouter.of(context).go(Routes.homePage);
+                                }
                               } else if (authService.errorMessage != null) {
                                 AppDialog.showDynamicDialog(
                                   context: context,
@@ -301,19 +352,23 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                         AppDialog.showDynamicDialog(
                           context: context,
                           title: "تم الإرسال",
-                          message: "تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني بنجاح. يرجى التحقق من صندوق الوارد الخاص بك.",
+                          message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني. يرجى فتح الإيميل والضغط على الرابط لإنشاء كلمة مرور جديدة.",
                           isError: false,
                           showCancelButton: true,
                           cancelText: "إغلاق",
                           confirmText: "فتح الإيميل",
                           onConfirm: () async {
-                            final Uri emailLaunchUri = Uri(
-                              scheme: 'mailto',
-                            );
-                            try {
-                              await launchUrl(emailLaunchUri);
-                            } catch (e) {
-                              // Ignore if no email app is installed
+                            if (Platform.isAndroid) {
+                              final intent = const AndroidIntent(
+                                action: 'android.intent.action.MAIN',
+                                category: 'android.intent.category.APP_EMAIL',
+                                flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+                              );
+                              try {
+                                await intent.launch();
+                              } catch (e) {
+                                // ignore
+                              }
                             }
                           },
                         );
@@ -330,7 +385,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                         );
                       }
                     },
-                    text: "إرسال رمز إعادة التعيين",
+                    text: "إرسال رابط إعادة تعيين كلمة المرور",
                   ),
                 ),
               ],

@@ -1,16 +1,13 @@
 import 'package:flutter/foundation.dart';
 
 const port = '3000';
-const ip = '10.30.215.22';
+const ip = '10.229.154.22';
 
 class EndPoint {
   // base url for app API
-  // في وضع الـ Debug يشتغل على الـ IP المحلي، في الـ Release يشتغل على السيرفر الإنتاجي
-//   static String get baseUrl => kDebugMode
-//       ? 'http://$ip:$port/api/v1'
-//       : 'https://algonaid-api.onrender.com/api/v1';
-
-  static String get baseUrl => 'https://algonaid-api.onrender.com/api/v1';
+  static String get baseUrl => kDebugMode
+      ? 'http://$ip:$port/api/v1'
+      : 'https://algonaid-api.onrender.com/api/v1';
 
 
   // base url for uploaded files
@@ -29,6 +26,7 @@ class EndPoint {
   static String get logout => '$baseUrl/auth/logout';
   static String get forgotPassword => '$baseUrl/auth/forgot-password';
   static String get resetPassword => '$baseUrl/auth/reset-password';
+  static String get validateResetToken => '$baseUrl/auth/validate-reset-token';
 
   // Email Verification endpoints
   static String get verifyEmail => '$baseUrl/auth/verify-email';

@@ -217,6 +217,15 @@ class AuthRepoImpl extends AuthRepo {
   Future<Either<Failure, String>> verifyEmail({required String token}) async {
     try {
       final response = await authRemotDataSource.verifyEmail(token: token);
+      
+      if (response['access_token'] != null) {
+        final accessToken = response['access_token'] as String;
+        if (accessToken.isNotEmpty) {
+          await TokenStorage.saveToken(accessToken);
+          debugPrint('✅ VerifyEmail: تم حفظ التوكن بنجاح');
+        }
+      }
+
       final message =
           response['message'] as String? ?? 'تم تأكيد بريدك الإلكتروني بنجاح';
       return Right(message);
