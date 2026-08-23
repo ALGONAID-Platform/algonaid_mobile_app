@@ -69,5 +69,15 @@ String toUserFriendlyErrorMessage(String? rawMessage) {
     return 'حدثت مشكلة أثناء تحميل البيانات. حاول مرة أخرى بعد قليل.';
   }
 
+  if (normalized.contains('verify') ||
+      normalized.contains('unverified') ||
+      normalized.contains('confirm') ||
+      message.contains('تأكيد') ||
+      message.contains('رسالة إلى الإيميل') ||
+      message.contains('لم تقم بالتأكيد') ||
+      message.contains('لم يتم التحقق')) {
+    return 'لم تقم بتأكيد حسابك بعد. لقد قمنا مسبقاً بإرسال رسالة تفعيل إلى بريدك الإلكتروني، يرجى مراجعة البريد والضغط على رابط التأكيد لتتمكن من تسجيل الدخول.';
+  }
+
   return message;
 }

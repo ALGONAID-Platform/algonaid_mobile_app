@@ -246,15 +246,17 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                   GoRouter.of(context).go(Routes.homePage);
                                 }
                               } else if (authService.errorMessage != null) {
+                                final friendlyMessage = toUserFriendlyErrorMessage(authService.errorMessage);
+                                final isNotVerified = authService.isLogin && friendlyMessage.contains('تفعيل إلى بريدك');
+
                                 AppDialog.showDynamicDialog(
                                   context: context,
                                   title: authService.isLogin ? "تعذر تسجيل الدخول" : "تعذر إنشاء الحساب",
-                                  message: toUserFriendlyErrorMessage(
-                                    authService.errorMessage,
-                                  ),
+                                  message: friendlyMessage,
+                                  content: isNotVerified ? _buildSpamWarningWidget(context) : null,
                                   isError: true,
                                   showCancelButton: false,
-                                  confirmText: "حاول مرة أخرى",
+                                  confirmText: isNotVerified ? "حسناً" : "حاول مرة أخرى",
                                 );
                               }
                             },
