@@ -21,6 +21,7 @@ import 'package:algonaid/features/auth/presentation/widgets/swap_bottons.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
 import 'dart:io' show Platform;
+import 'package:url_launcher/url_launcher.dart';
 
 class SigninAndSignupPage extends StatefulWidget {
   const SigninAndSignupPage({super.key});
@@ -66,8 +67,8 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
 
                   Center(child: SwapAuthButtonCostum(auth: authService)),
                   const SizedBox(height: 16),
-                  // SignInWithGoogle(auth: authService),
-                  // Center(child: TextLabel(text: "أو", Vpadding: 8.0)),
+                   SignInWithGoogle(auth: authService),
+                   Center(child: TextLabel(text: "أو", Vpadding: 8.0)),
 
                   //=========================
                   // user name fields
@@ -221,6 +222,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                                     context: context,
                                     title: "تم إنشاء الحساب",
                                     message: "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب عبر الرابط المرسل.",
+                                    content: _buildSpamWarningWidget(context),
                                     isError: false,
                                     showCancelButton: false,
                                     confirmText: "الانتقال إلى البريد للتحقق",
@@ -264,7 +266,47 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                   ),
 
                   //=========================
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
+                  Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          "في حال مواجهة أي مشكلة، تواصل مع الدعم الفني:",
+                          style: context.textTheme.labelSmall?.copyWith(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 6),
+                        InkWell(
+                          onTap: () async {
+                            final Uri url = Uri.parse('https://wa.me/967772971739');
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.support_agent_rounded, size: 18, color: context.primary),
+                                const SizedBox(width: 6),
+                                Text(
+                                  "772971739",
+                                  style: context.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: context.primary,
+                                  ),
+                                  textDirection: TextDirection.ltr,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -353,6 +395,7 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
                           context: context,
                           title: "تم الإرسال",
                           message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني. يرجى فتح الإيميل والضغط على الرابط لإنشاء كلمة مرور جديدة.",
+                          content: _buildSpamWarningWidget(context),
                           isError: false,
                           showCancelButton: true,
                           cancelText: "إغلاق",
@@ -393,6 +436,102 @@ class _SigninAndSignupPageState extends State<SigninAndSignupPage> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSpamWarningWidget(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.red.withOpacity(0.3)),
+        ),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          childrenPadding: const EdgeInsets.all(12),
+          iconColor: Colors.red,
+          collapsedIconColor: Colors.red,
+          title: const Row(
+            children: [
+              Icon(Icons.help_outline_rounded, color: Colors.red, size: 20),
+              SizedBox(width: 8),
+              Flexible(
+                child: const Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'ملاحظة مهمة: ',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      TextSpan(
+                        text: 'في حال عدم وصول الرسالة إلى البريد الوارد (اضغط هنا)',
+                      ),
+                    ],
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12.0),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                                                    'في حال لم تجد الرسالة في البريد الوارد، قم بالضغط على القائمة الجانبية في  تطبيق الجيميل، ثم اختر الرسائل غير المرغوب فيها، كما هو موضح بالصورة:',
+
+                    style: TextStyle(fontSize: 12, height: 1.5, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 220, // تكبير الارتفاع
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.red.withOpacity(0.2)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: RawScrollbar(
+                        thumbColor: Colors.red.withOpacity(0.5),
+                        radius: const Radius.circular(8),
+                        thickness: 4,
+                        child: SingleChildScrollView(
+                          reverse: true,
+                          child: Image.network(
+                            'https://user24230.na.imgto.link/public/20260816/photo-2026-08-16-07-56-36.avif',
+                            fit: BoxFit.fitWidth, // ملء العرض والتمرير للأسفل
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const SizedBox(
+                                height: 220,
+                                child: Center(
+                                  child: CircularProgressIndicator(color: Colors.red),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -441,7 +441,7 @@ class _GuestCourseCard extends StatelessWidget {
                             ),
                           ),
                           Icon(
-                            Icons.arrow_back_ios_new,
+                            Icons.arrow_forward_ios,
                             size: 14,
                             color: context.primary,
                           ),

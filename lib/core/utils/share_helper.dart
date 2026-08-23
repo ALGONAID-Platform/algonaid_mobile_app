@@ -3,7 +3,7 @@ import 'package:algonaid/features/lesson_detail/domain/entities/lesson_detail.da
 import 'package:share_plus/share_plus.dart';
 
 class ShareHelper {
-  static const String _baseUrl = 'https://algonaid-api.onrender.com';
+  static const String _baseUrl = 'https://api.exchangesmangement.online';
 
   /// Shares a course link with motivational text
   static Future<void> shareCourse(CourseEntity course) async {

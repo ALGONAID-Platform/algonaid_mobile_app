@@ -30,59 +30,61 @@ class AppDialog {
           ),
           elevation: 10,
           backgroundColor: context.surfaceContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // أيقونة علوية
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // أيقونة علوية
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isError
+                          ? Colors.red.withOpacity(0.1)
+                          : Colors.green.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isError
+                          ? Icons.report_gmailerrorred_rounded
+                          : Icons.check_circle_rounded,
+                      color: isError ? Colors.red : Colors.green,
+                      size: 50,
+                    ),
                   ),
-                  child: Icon(
-                    isError
-                        ? Icons.report_gmailerrorred_rounded
-                        : Icons.check_circle_rounded,
-                    color: isError ? Colors.red : Colors.green,
-                    size: 50,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.titleLarge?.copyWith(),
-                ),
-                const SizedBox(height: 12),
-
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
-                ),
-                if (content != null) ...[
                   const SizedBox(height: 20),
-                  content,
-                ],
-                const SizedBox(height: 30),
 
-                // 🌟 منطق الأزرار المحدث
-                _buildActionButtons(
-                  context,
-                  showCancelButton,
-                  isError,
-                  confirmText,
-                  cancelText,
-                  onConfirm,
-                  onCancel,
-                ),
-              ],
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleLarge?.copyWith(),
+                  ),
+                  const SizedBox(height: 12),
+
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
+                  ),
+                  if (content != null) ...[
+                    const SizedBox(height: 20),
+                    content,
+                  ],
+                  const SizedBox(height: 30),
+
+                  // 🌟 منطق الأزرار المحدث
+                  _buildActionButtons(
+                    context,
+                    showCancelButton,
+                    isError,
+                    confirmText,
+                    cancelText,
+                    onConfirm,
+                    onCancel,
+                  ),
+                ],
+              ),
             ),
           ),
         );

@@ -8,6 +8,7 @@ import 'package:algonaid/features/exams/presentation/pages/exam_intro_page.dart'
 import 'package:algonaid/features/exams/presentation/providers/exam_provider.dart';
 import 'package:algonaid/features/exams/presentation/widgets/exam_widget.dart';
 import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/exams/presentation/widgets/exam_timer_widget.dart';
 import 'package:algonaid/features/exams/presentation/pages/results_page.dart';
 import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
 
@@ -63,6 +64,27 @@ class _ExamPageState extends State<ExamPage> {
       appBar: SharedAppBar(
         leading: const SizedBox.shrink(), // hide default back arrow
         actions: [
+          Consumer<ExamProvider>(
+            builder: (context, examProvider, _) {
+              if (examProvider.exam == null || examProvider.isSubmitted) return const SizedBox.shrink();
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ExamTimerWidget(
+                    durationMinutes: examProvider.examDurationMinutes,
+                    onTimeUp: () {
+                      examProvider.submitExam();
+                      AppSnackBar.show(
+                        context: context,
+                        message: 'انتهى الوقت المخصص للاختبار! تم تسليم إجاباتك.',
+                        type: SnackBarType.warning,
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.arrow_forward_ios, size: 20),
             padding: const EdgeInsets.only(right: 16),
@@ -252,14 +274,8 @@ class _ExamPageState extends State<ExamPage> {
                 return;
               }
 
-              if ((examProvider.attemptId ?? 0) <= 0) {
-                AppSnackBar.show(
-                  context: context,
-                  message: 'لا يمكن تسليم الاختبار بدون اتصال بالإنترنت. يمكنك المتابعة والمراجعة ثم الإرسال عند عودة الاتصال.',
-                  type: SnackBarType.error,
-                );
-                return;
-              }
+              // Removed offline check because offline attempts (attemptId <= 0) 
+              // will now be scored locally instead of blocking the user indefinitely.
 
               AppDialog.showDynamicDialog(
                 context: context,

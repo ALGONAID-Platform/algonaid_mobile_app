@@ -39,8 +39,11 @@ class ModuleHeaderStats extends StatefulWidget {
   State<ModuleHeaderStats> createState() => _ModuleHeaderStatsState();
 }
 
-class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
+class _ModuleHeaderStatsState extends State<ModuleHeaderStats> with SingleTickerProviderStateMixin {
   late ModuleGradesProvider _gradesProvider;
+  bool _isDescriptionExpanded = false;
+  late AnimationController _arrowAnimationController;
+  late Animation<double> _arrowAnimation;
 
   @override
   void initState() {
@@ -48,6 +51,22 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
     // We obtain the provider but do NOT fetch here.
     // Fetching happens inside ModuleGradesWidget when the user presses the button.
     _gradesProvider = getIt<ModuleGradesProvider>();
+    _arrowAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    )..repeat(reverse: true);
+    _arrowAnimation = Tween<double>(begin: 0.0, end: 6.0).animate(
+      CurvedAnimation(
+        parent: _arrowAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _arrowAnimationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -74,53 +93,40 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
                   Stack(
                     alignment: Alignment.center,
                     children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            widget.moduleTitle,
-                            style: context.textTheme.headlineSmall?.copyWith(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 48.0),
+                        child: Builder(
+                          builder: (context) {
+                            final title = widget.moduleTitle;
+                            final style = context.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Builder(
-                            builder: (context) {
-                              final desc = widget.moduleDescription ?? "وحدة تعليمية";
-                              final style = context.textTheme.bodyMedium?.copyWith(
-                                color: context.textTheme.bodySmall?.color,
-                              ) ?? const TextStyle();
-                              
-                              if (desc.length > 35) {
-                                return SizedBox(
-                                  height: 24,
-                                  width: MediaQuery.of(context).size.width * 0.7,
-                                  child: marquee.Marquee(
-                                    text: desc,
-                                    style: style,
-                                    scrollAxis: Axis.horizontal,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    blankSpace: 30.0,
-                                    velocity: 30.0,
-                                    pauseAfterRound: const Duration(seconds: 2),
-                                    startPadding: 10.0,
-                                    textDirection: TextDirection.rtl,
-                                  ),
-                                );
-                              }
-                              return Text(
-                                desc,
-                                style: style,
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                            ) ?? const TextStyle();
+                            
+                            if (title.length > 20) {
+                              return SizedBox(
+                                height: 35,
+                                child: marquee.Marquee(
+                                  text: title,
+                                  style: style,
+                                  scrollAxis: Axis.horizontal,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  blankSpace: 30.0,
+                                  velocity: 30.0,
+                                  pauseAfterRound: const Duration(seconds: 2),
+                                  startPadding: 10.0,
+                                  textDirection: TextDirection.rtl,
+                                ),
                               );
-                            },
-                          ),
-                        ],
+                            }
+                            return Text(
+                              title,
+                              style: style,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            );
+                          },
+                        ),
                       ),
 
                       Positioned(
@@ -260,6 +266,52 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
+                                if (widget.moduleDescription != null && widget.moduleDescription!.isNotEmpty) ...[
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _isDescriptionExpanded = !_isDescriptionExpanded;
+                                      });
+                                    },
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "وصف الوحدة",
+                                            style: theme.textTheme.labelMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: theme.colorScheme.onBackground.withOpacity(0.7),
+                                            ),
+                                          ),
+                                          AnimatedBuilder(
+                                            animation: _arrowAnimation,
+                                            builder: (context, child) {
+                                              return Transform.translate(
+                                                offset: Offset(0, _isDescriptionExpanded ? 0 : _arrowAnimation.value),
+                                                child: Icon(
+                                                  _isDescriptionExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                                  color: theme.colorScheme.primary,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if (_isDescriptionExpanded) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.moduleDescription!,
+                                      style: theme.textTheme.bodyMedium,
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ],
+                                  const SizedBox(height: 20),
+                                ],
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,

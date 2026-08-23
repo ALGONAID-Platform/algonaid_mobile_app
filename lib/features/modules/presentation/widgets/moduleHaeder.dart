@@ -78,7 +78,7 @@ class CourseHeaderSliver extends StatelessWidget {
                     if (isGuest) {
                       AppSnackBar.show(
                         context: context,
-                        message: 'عذراً، ميزة مشاركة الكورس غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! 🔒',
+                        message: 'عذراً، ميزة مشاركة الكورس غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! ',
                         type: SnackBarType.warning,
                       );
                       return;
@@ -113,7 +113,7 @@ class CourseHeaderSliver extends StatelessWidget {
                         if (isGuest) {
                           AppSnackBar.show(
                             context: context,
-                            message: 'عذراً، ميزة تفعيل التنبيهات غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! 🔒',
+                            message: 'عذراً، ميزة تفعيل التنبيهات غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! ',
                             type: SnackBarType.warning,
                           );
                           return;

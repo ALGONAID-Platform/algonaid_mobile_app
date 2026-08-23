@@ -93,16 +93,20 @@ class _CourseMetaTags extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            moduleName,
-            style: context.textTheme.labelMedium!.copyWith(
-              color: theme.colorScheme.primary,
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              moduleName,
+              style: context.textTheme.labelMedium!.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),

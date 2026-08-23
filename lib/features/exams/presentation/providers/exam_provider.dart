@@ -3,6 +3,7 @@ import 'package:algonaid/core/di/service_locator.dart';
 import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
 import 'package:algonaid/features/exams/domain/usecases/exam_usecases.dart';
 import 'package:algonaid/core/utils/notification_service.dart';
+import 'package:hive/hive.dart';
 
 /// State for exam loading
 enum ExamState { initial, loading, loaded, error }
@@ -72,6 +73,31 @@ class ExamProvider extends ChangeNotifier {
   int get answeredQuestions => _answers.length;
   int get remainingQuestions => totalQuestions - answeredQuestions;
 
+  // New logic for attempts and duration
+  int get currentAttempts {
+    if (_exam == null) return 0;
+    if (!Hive.isBoxOpen('user_exam_attempts')) return 0;
+    final box = Hive.box<String>('user_exam_attempts');
+    final countStr = box.get(_exam!.id.toString());
+    return countStr != null ? (int.tryParse(countStr) ?? 0) : 0;
+  }
+
+  int get remainingAttempts {
+    final remaining = 3 - currentAttempts;
+    return remaining < 0 ? 0 : remaining;
+  }
+  
+  bool get hasExceededAttempts => currentAttempts >= 3;
+
+  int get examDurationMinutes {
+    final qCount = totalQuestions;
+    if (qCount == 0) return 15;
+    if (qCount == 1) return 15;
+    if (qCount == 2 || qCount == 3) return 20;
+    if (qCount >= 4 && qCount <= 6) return 30;
+    return 40;
+  }
+
   /// Load exam data
   Future<void> loadExam(int examId) async {
     // 1. Check if already loading or already loaded for same ID to prevent redundant calls
@@ -82,10 +108,14 @@ class ExamProvider extends ChangeNotifier {
       return;
     }
     if (_exam?.id == examId && _state == ExamState.loaded) {
-      debugPrint(
-        'ExamProvider: loadExam skipped because examId=$examId is already loaded',
-      );
-      return;
+      if (_isSubmitted) {
+        resetExam();
+      } else {
+        debugPrint(
+          'ExamProvider: loadExam skipped because examId=$examId is already loaded',
+        );
+        return;
+      }
     }
 
     debugPrint('ExamProvider: loadExam started for examId: $examId');
@@ -258,6 +288,44 @@ class ExamProvider extends ChangeNotifier {
       notifyListeners();
     }
 
+    if (hasExceededAttempts || _attemptId! <= 0) {
+      // Bypass backend submission if attempts exceeded or if it's a local/offline attempt
+      _result = ExamResult(
+        attemptId: _attemptId!,
+        examId: _exam!.id,
+        studentId: 0,
+        score: 0,
+        status: 'COMPLETED_LOCALLY',
+        submittedAt: DateTime.now(),
+        totalQuestions: totalQuestions,
+        correctAnswers: 0,
+        wrongAnswers: totalQuestions,
+        answers: _answers,
+        correctOptions: {},
+      );
+      _isSubmitted = true;
+      _state = ExamState.loaded;
+      _error = null;
+      await _saveProgressUseCase.call(_exam!.id, <int, int>{});
+      
+      // Increment local attempt count even for bypassed/local submissions
+      try {
+        if (!Hive.isBoxOpen('user_exam_attempts')) {
+          await Hive.openBox<String>('user_exam_attempts');
+        }
+        final box = Hive.box<String>('user_exam_attempts');
+        final newAttempts = currentAttempts >= 3 ? 3 : currentAttempts + 1;
+        await box.put(_exam!.id.toString(), newAttempts.toString());
+      } catch (e) {
+        debugPrint('Error saving local attempt count: $e');
+      }
+
+      if (hasListeners) {
+        notifyListeners();
+      }
+      return;
+    }
+
     final result = await _submitExamUseCase.call(_attemptId!, _answers);
 
     await result.fold(
@@ -285,6 +353,18 @@ class ExamProvider extends ChangeNotifier {
           );
         } catch (e) {
           debugPrint('Error triggering exam completion notification: $e');
+        }
+        
+        // Increment local attempt count
+        try {
+          if (!Hive.isBoxOpen('user_exam_attempts')) {
+            await Hive.openBox<String>('user_exam_attempts');
+          }
+          final box = Hive.box<String>('user_exam_attempts');
+          final newAttempts = currentAttempts + 1;
+          await box.put(_exam!.id.toString(), newAttempts.toString());
+        } catch (e) {
+          debugPrint('Error saving local attempt count: $e');
         }
       },
     );

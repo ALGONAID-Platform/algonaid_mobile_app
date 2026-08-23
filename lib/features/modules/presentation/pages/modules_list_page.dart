@@ -164,7 +164,7 @@ class _ModulesListView extends StatelessWidget {
                                             if (isGuest) {
                                               AppSnackBar.show(
                                                 context: context,
-                                                message: 'عذراً، ميزة مواصلة التعلم غير متاحة في وضع الزائر. يرجى تسجيل الدخول لحفظ تقدمك! 🔒',
+                                                message: 'عذراً، ميزة مواصلة التعلم غير متاحة في وضع الزائر. يرجى تسجيل الدخول لحفظ تقدمك! ',
                                                 type: SnackBarType.warning,
                                               );
                                               return;
@@ -351,25 +351,28 @@ class _CourseDetailsSectionState extends State<_CourseDetailsSection> {
                   maxHeight: _isExpanded ? double.infinity : 75,
                 ),
                 child: ClipRect(
-                  child: MarkdownBody(
-                    data: widget.course.description,
-                    selectable: true,
-                    styleSheet: MarkdownStyleSheet(
-                      p: context.textTheme.bodyMedium?.copyWith(
-                        height: 1.6,
-                        color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
-                      ),
-                      h1: context.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: context.isDarkMode ? Colors.white : Colors.black,
-                      ),
-                      h2: context.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: context.isDarkMode ? Colors.white : Colors.black,
-                      ),
-                      h3: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: context.isDarkMode ? Colors.white : Colors.black,
+                  child: SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: MarkdownBody(
+                      data: widget.course.description,
+                      selectable: true,
+                      styleSheet: MarkdownStyleSheet(
+                        p: context.textTheme.bodyMedium?.copyWith(
+                          height: 1.6,
+                          color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                        ),
+                        h1: context.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: context.isDarkMode ? Colors.white : Colors.black,
+                        ),
+                        h2: context.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: context.isDarkMode ? Colors.white : Colors.black,
+                        ),
+                        h3: context.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: context.isDarkMode ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -424,6 +427,47 @@ class _CourseDetailsSectionState extends State<_CourseDetailsSection> {
                       style: context.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: context.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.sell_rounded, size: 20, color: context.primary),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'تكلفة الدورة',
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(Icons.workspace_premium_rounded, size: 16, color: context.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'مجانية بالكامل',
+                          style: context.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: context.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

@@ -24,88 +24,125 @@ class BuildCourseImage extends StatelessWidget {
 
     final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
 
-    return Stack(
-      children: [
-        ClipRRect(
-          child: AppHero(
-            tag: "course_image${course.id}",
-            child: (hasNoImage || isResolvedInvalid)
-                ? Image.asset(
-                    Images.noImageFound,
-                    height: 130,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  )
-                : TimeoutImageWrapper(
-                    imageUrl: resolvedUrl,
-                    height: 130,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: EdgeInsets.zero,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                InteractiveViewer(
+                  panEnabled: true,
+                  boundaryMargin: const EdgeInsets.all(20),
+                  minScale: 0.5,
+                  maxScale: 4,
+                  child: (hasNoImage || isResolvedInvalid)
+                      ? Image.asset(Images.noImageFound, fit: BoxFit.contain)
+                      : TimeoutImageWrapper(
+                          imageUrl: resolvedUrl,
+                          fit: BoxFit.contain,
+                        ),
+                ),
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
-          ),
-        ),
-
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
-              ),
+                ),
+              ],
             ),
           ),
-        ),
-
-        Positioned(
-          bottom: 16,
-          right: 16,
-
-          child: AppHero(
-            tag: "course_name${course.id}",
-
-            child: Text(
-              course.title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              softWrap: false,
-
-              overflow: TextOverflow.ellipsis,
+        );
+      },
+      child: Stack(
+        children: [
+          ClipRRect(
+            child: AppHero(
+              tag: "course_image${course.id}",
+              child: (hasNoImage || isResolvedInvalid)
+                  ? Image.asset(
+                      Images.noImageFound,
+                      height: 130,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : TimeoutImageWrapper(
+                      imageUrl: resolvedUrl,
+                      height: 130,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
-        ),
 
-        ValueListenableBuilder<Box<String>>(
-          valueListenable: Hive.box<String>('course_reminders_box').listenable(),
-          builder: (context, box, _) {
-            final hasReminder = box.containsKey(course.id.toString());
-            if (!hasReminder) return const SizedBox.shrink();
-            return Positioned(
-              top: 12,
-              left: 12,
+          Positioned.fill(
+            child: IgnorePointer(
               child: Container(
-                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.55),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.greenAccent.withOpacity(0.4),
-                    width: 1,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
                   ),
                 ),
-                child: const Icon(
-                  Icons.alarm_on_rounded,
-                  color: Colors.greenAccent,
-                  size: 16,
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: IgnorePointer(
+              child: AppHero(
+                tag: "course_name${course.id}",
+                child: Text(
+                  course.title,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            );
-          },
-        ),
-      ],
+            ),
+          ),
+
+          ValueListenableBuilder<Box<String>>(
+            valueListenable: Hive.box<String>('course_reminders_box').listenable(),
+            builder: (context, box, _) {
+              final hasReminder = box.containsKey(course.id.toString());
+              if (!hasReminder) return const SizedBox.shrink();
+              return Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.55),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.greenAccent.withOpacity(0.4),
+                      width: 1,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.alarm_on_rounded,
+                    color: Colors.greenAccent,
+                    size: 16,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

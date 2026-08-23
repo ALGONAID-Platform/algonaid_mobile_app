@@ -3,22 +3,27 @@ import 'package:flutter/foundation.dart';
 const port = '3000';
 const ip = '10.229.154.22';
 
-class EndPoint {
-  // base url for app API
-  static String get baseUrl => kDebugMode
-      ? 'http://$ip:$port/api/v1'
-      : 'https://algonaid-api.onrender.com/api/v1';
 
+class EndPoint {  
+
+// base url for app API
+//   static String get baseUrl => kDebugMode
+//       ? 'http://$ip:$port/api/v1'
+//       : 'https://api.exchangesmangement.online/api/v1';
+
+static String get baseUrl => 'https://api.exchangesmangement.online/api/v1';
 
   // base url for uploaded files
-  static String get uploadsBaseUrl => kDebugMode
+static String get uploadsBaseUrl => kDebugMode
       ? 'http://$ip:$port/uploads/'
-      : 'https://algonaid-api.onrender.com/uploads/';
+      : 'https://api.exchangesmangement.online/uploads/';
+
 
   // Google OAuth entry points
   static String get googleAuth => '$baseUrl/auth/google';
   static String get googleCallback => '$baseUrl/auth/google/callback';
   static String get googleMobileAuth => '$baseUrl/auth/google/mobile';
+
 
   // API endpoints
   static String get signin => '$baseUrl/auth/signin';
@@ -59,4 +64,5 @@ class EndPoint {
   static String submitExam(int attemptId) => '$baseUrl/exams/attempts/$attemptId/submit';
   static String getExamResult(int attemptId) => '$baseUrl/exams/attempts/$attemptId/result';
   static String practiceExamsByCourse(int courseId) => '$baseUrl/practice-exams/course/$courseId';
+
 }

@@ -114,7 +114,10 @@ class ModuleCardContent extends StatelessWidget {
             child: Text(
               module.description,
               style: theme.textTheme.bodySmall,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.right,
+              textDirection: TextDirection.rtl,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           const SizedBox(height: 12),

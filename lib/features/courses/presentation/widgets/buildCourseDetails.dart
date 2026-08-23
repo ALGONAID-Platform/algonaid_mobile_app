@@ -193,17 +193,19 @@ class BuildCourseDetails extends StatelessWidget {
                               color: context.primary.withOpacity(0.1),
                             ),
                             const SizedBox(height: 8),
-                            SizedBox(
-                              height: 60,
-                              child: ClipRect(
-                                child: MarkdownBody(
-                                  data: course.description,
-                                  styleSheet: MarkdownStyleSheet(
-                                    p: context.textTheme.bodySmall?.copyWith(
-                                      height: 1.5,
-                                      color: context.isDarkMode
-                                          ? Colors.grey[300]
-                                          : Colors.grey[800],
+                            Container(
+                              constraints: const BoxConstraints(maxHeight: 150),
+                              child: SingleChildScrollView(
+                                child: ClipRect(
+                                  child: MarkdownBody(
+                                    data: course.description,
+                                    styleSheet: MarkdownStyleSheet(
+                                      p: context.textTheme.bodySmall?.copyWith(
+                                        height: 1.5,
+                                        color: context.isDarkMode
+                                            ? Colors.grey[300]
+                                            : Colors.grey[800],
+                                      ),
                                     ),
                                   ),
                                 ),

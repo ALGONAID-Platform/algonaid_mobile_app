@@ -55,9 +55,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     Future.microtask(() {
       if (!mounted) return;
       final provider = context.read<LessonDetailProvider>();
-      if (provider.state.lesson?.id != widget.lessonId) {
-        provider.loadLesson(widget.lessonId);
-      }
+      // دائماً أعد تحميل الدرس من السيرفر لضمان عرض أحدث محتوى
+      // (يحل مشكلة عرض محتوى قديم عند تغيير نوع الدرس من فيديو إلى قراءة أو العكس)
+      provider.loadLesson(widget.lessonId);
     });
   }
 

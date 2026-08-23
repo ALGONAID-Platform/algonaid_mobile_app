@@ -9,6 +9,22 @@ class SearchCoursesProvider extends ChangeNotifier {
 
   SearchCoursesProvider({required this.searchCoursesUseCase});
 
+  bool _isDisposed = false;
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
+  }
+
   List<CourseEntity> _courses = [];
   List<CourseEntity> get courses => _courses;
 

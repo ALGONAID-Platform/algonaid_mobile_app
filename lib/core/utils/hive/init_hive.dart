@@ -22,6 +22,7 @@ Future<void> initHive() async {
   await _openBoxSafely<ModuleModel>(AppConstants.boxModules);
   await _openBoxSafely<LessonModel>(AppConstants.boxLessons);
   await _openBoxSafely<String>(AppConstants.boxLessonDetails);
+  await _openBoxSafely<String>('user_exam_attempts');
 }
 
 Future<Box<T>> _openBoxSafely<T>(String name) async {

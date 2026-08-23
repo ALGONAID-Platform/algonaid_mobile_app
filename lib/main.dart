@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           }
         });
       }
-    } else if (uri.path == '/reset-password') {
+    } else if (uri.path == '/reset-password' || uri.path == '/api/v1/auth/reset-password' || uri.path == '/auth/reset-password') {
       final token = uri.queryParameters['token'];
       if (token != null && token.isNotEmpty) {
         Future.delayed(const Duration(milliseconds: 500), () {
