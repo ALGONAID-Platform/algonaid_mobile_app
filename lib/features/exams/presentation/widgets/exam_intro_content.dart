@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/info_banner.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/info_banner.dart';
 import 'package:flutter/material.dart';
 
 class ExamIntroContent extends StatelessWidget {
@@ -7,6 +7,7 @@ class ExamIntroContent extends StatelessWidget {
   final int totalQuestions;
   final int durationMinutes;
   final int remainingAttempts;
+  final bool hasExceededAttempts;
   final VoidCallback onStartExam;
 
   const ExamIntroContent({
@@ -15,6 +16,7 @@ class ExamIntroContent extends StatelessWidget {
     required this.totalQuestions,
     required this.durationMinutes,
     required this.remainingAttempts,
+    required this.hasExceededAttempts,
     required this.onStartExam,
   });
 
@@ -113,6 +115,28 @@ class ExamIntroContent extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      if (hasExceededAttempts)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: InfoBanner(
+                            message: 'لقد استهلكت جميع المحاولات (3 محاولات). يمكنك إجراء الاختبار للمراجعة فقط، ولن يتم حفظ نتيجتك أو تقدمك.',
+                            icon: Icons.info_outline_rounded,
+                            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.blue.withOpacity(0.1)
+                                : Colors.blue.shade50,
+                            borderColor: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.blue.withOpacity(0.2)
+                                : Colors.blue.shade100,
+                            iconColor: Colors.blue,
+                            textStyle: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.blue.shade200
+                                  : Colors.blue.shade900,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
                       const ExamIntroWarningNote(),
                     ],
                   ),

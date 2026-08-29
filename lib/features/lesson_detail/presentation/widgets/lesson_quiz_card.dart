@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_snackbar.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
 
 class LessonQuizCard extends StatelessWidget {
   final int? examId;
@@ -16,9 +16,13 @@ class LessonQuizCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final hasExam = examId != null;
+    
+    if (!hasExam) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: context.surface,

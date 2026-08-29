@@ -1,22 +1,61 @@
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
+import 'package:algonaid/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid/features/modules/domain/entities/module.dart';
 import 'package:hive/hive.dart';
 
 part 'module_model.g.dart';
 
 @HiveType(typeId: 13)
 class ModuleModel extends Module {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final String title;
+  @override
+  @HiveField(2)
+  final String description;
+  @override
+  @HiveField(3)
+  final int courseId;
+  @override
+  @HiveField(4)
+  final List<Lesson> lessons;
+  @override
+  @HiveField(5)
+  final int completedLessons;
+  @override
+  @HiveField(6)
+  final double progressPercentage;
+  @override
+  @HiveField(7)
+  final int totalLessons;
+  @override
+  @HiveField(8)
+  final String? imageUrl;
+
   const ModuleModel({
-    @HiveField(0) required super.id,
-    @HiveField(1) required super.title,
-    @HiveField(2) required super.description,
-    @HiveField(3) required super.courseId,
-    @HiveField(4) required super.lessons,
-    @HiveField(5) required super.completedLessons,
-    @HiveField(6) required super.progressPercentage,
-    @HiveField(7) required super.totalLessons,
-  });
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.courseId,
+    required this.lessons,
+    required this.completedLessons,
+    required this.progressPercentage,
+    required this.totalLessons,
+    this.imageUrl,
+  }) : super(
+         id: id,
+         title: title,
+         description: description,
+         courseId: courseId,
+         lessons: lessons,
+         completedLessons: completedLessons,
+         progressPercentage: progressPercentage,
+         totalLessons: totalLessons,
+         imageUrl: imageUrl,
+       );
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {
     return ModuleModel(
@@ -32,6 +71,7 @@ class ModuleModel extends Module {
       completedLessons: int.tryParse(json['completedLessons']?.toString() ?? json['completed_lessons']?.toString() ?? '0') ?? 0,
       progressPercentage: double.tryParse(json['progressPercentage']?.toString() ?? json['progress_percentage']?.toString() ?? '0.0') ?? 0.0,
       totalLessons: int.tryParse(json['totalLessons']?.toString() ?? json['total_lessons']?.toString() ?? '0') ?? 0,
+      imageUrl: json['imageUrl']?.toString() ?? json['image_url']?.toString() ?? json['image']?.toString() ?? json['thumbnail']?.toString(),
     );
   }
 
@@ -45,6 +85,7 @@ class ModuleModel extends Module {
       'completedLessons': completedLessons,
       'progressPercentage': progressPercentage,
       'totalLessons': totalLessons,
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 }

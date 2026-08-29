@@ -1,6 +1,10 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
+
 
 /// Header widget showing student info and timer
 class ExamHeader extends StatelessWidget {
@@ -141,50 +145,111 @@ class QuestionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Question title
-          Text(
-            question.text,
-            textAlign: TextAlign.right,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: MarkdownBlock(
+              data: question.text,
+              
+              generator: MarkdownGenerator(
+                inlineSyntaxList: [LatexSyntax()],
+                generators: [
+                  SpanNodeGeneratorWithTag(
+                    tag: 'latex',
+                    generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                  ),
+                ],
+              ),
+              config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                PConfig(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              ]),
+            ),
           ),
           if (question.description != null &&
               question.description!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(
-              question.description!,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-                height: 1.5,
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: MarkdownBlock(
+                data: question.description!,
+                
+                generator: MarkdownGenerator(
+                  inlineSyntaxList: [LatexSyntax()],
+                  generators: [
+                    SpanNodeGeneratorWithTag(
+                      tag: 'latex',
+                      generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                    ),
+                  ],
+                ),
+                config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                  PConfig(textStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    height: 1.5,
+                  )),
+                ]),
               ),
             ),
             const SizedBox(height: 16),
           ],
           // Question image if available
-          if (question.imageUrl != null)
+          if (question.imageUrl != null) ...[
+            const SizedBox(height: 16),
             GestureDetector(
               onTap: onImageTap,
               child: Container(
                 width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.25 > 200 
+                      ? 200 
+                      : MediaQuery.sizeOf(context).height * 0.25,
                 ),
-                child: Image.network(
-                  question.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    imageUrl: question.imageUrl!,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                    );
-                  },
+                    ),
+                    errorWidget: (context, url, error) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.broken_image_rounded,
+                            size: 40,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'تعذر تحميل الصورة',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+          ],
         ],
       ),
     );
@@ -246,15 +311,30 @@ class AnswerOption extends StatelessWidget {
             const SizedBox(width: 12),
             // Option text
             Expanded(
-              child: Text(
-                option.text,
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: MarkdownBlock(
+                  data: option.text,
+                  
+                  generator: MarkdownGenerator(
+                    inlineSyntaxList: [LatexSyntax()],
+                    generators: [
+                      SpanNodeGeneratorWithTag(
+                        tag: 'latex',
+                        generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                      ),
+                    ],
+                  ),
+                  config: MarkdownConfig(configs: [
+                    TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                    PConfig(textStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
+                    )),
+                  ]),
                 ),
               ),
             ),

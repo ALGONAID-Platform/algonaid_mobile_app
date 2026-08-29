@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/info_banner.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/entities/excellence_course_entity.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/info_banner.dart';
+import 'package:algonaid/features/excellence_courses/domain/entities/excellence_course_entity.dart';
+import 'package:algonaid/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -68,17 +68,22 @@ class _ExcellenceModulesBottomSheetState extends State<ExcellenceModulesBottomSh
             children: [
               Expanded(
                 child: ListView.builder(
-                  shrinkWrap: true,
+                  
                   padding: const EdgeInsets.only(bottom: 16),
                   itemCount: modules.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
+                      // سبق أن حصل على الوسام (completedAt موجود) لكن المعدل نقص عن 90% بسبب اختبارات جديدة
+                      final showWarning = widget.course.completedAt != null && widget.course.averagePercentage < 90;
+                      
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         child: InfoBanner(
-                          message: widget.course.isCompleted
-                              ? 'ألف مبروك! لقد حصلت على الوسام الذهبي لهذا الكورس بعد إكمالك لجميع هذه الوحدات بنجاح واجتياز اختباراتها.'
-                              : 'لكي تحصل على الوسام الذهبي للكورس، يجب عليك اجتياز جميع اختبارات الوحدات بنجاح   بمعدل لا يقل عن 85%.',
+                          message: showWarning 
+                              ? 'تهانينا، لقد حصلت على الوسام بنجاح! 🎉 ونظراً لإضافة اختبارات جديدة، يرجى إكمالها للحصول على معدل 100% والحفاظ على تميزك.'
+                              : (widget.course.isCompleted
+                                  ? 'ألف مبروك! لقد حصلت على الوسام الذهبي لهذا الكورس بعد إكمالك لجميع هذه الوحدات بنجاح واجتياز اختباراتها.'
+                                  : 'لكي تحصل على الوسام الذهبي للكورس، يجب عليك اجتياز جميع اختبارات الوحدات بنجاح بمعدل لا يقل عن 85%.'),
                         ),
                       );
                     }

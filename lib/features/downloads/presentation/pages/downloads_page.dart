@@ -1,12 +1,15 @@
 import 'dart:io';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/features/downloads/presentation/providers/downloads_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/features/downloads/presentation/providers/downloads_provider.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
 
 class DownloadsPage extends StatefulWidget {
   const DownloadsPage({Key? key}) : super(key: key);
@@ -26,39 +29,115 @@ class _DownloadsPageState extends State<DownloadsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final token = TokenStorage.getToken();
+    final isGuest = token == null || token.trim().isEmpty;
+
+    if (isGuest) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: context.background,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 0.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildIllustration(context),
+                  const SizedBox(height: 12),
+                  Text(
+                    'تعلم في أي مكان.. حتى بدون إنترنت!',
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'قم بتحميل دروسك ومقاطع الفيديو والملفات المفضلة لديك، وشاهدها أثناء التنقل دون الحاجة للاتصال بالشبكة ودون استهلاك باقة البيانات.',
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[600],
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildBenefitItem(
+                    context,
+                    icon: Icons.offline_pin_rounded,
+                    color: Colors.green,
+                    title: 'تحميل بضغطة زر واحدة',
+                    subtitle: 'حمل الدروس والفيديوهات والملفات المرفقة مباشرة إلى جهازك وبسرعة فائقة.',
+                  ),
+                  const SizedBox(height: 8),
+                  _buildBenefitItem(
+                    context,
+                    icon: Icons.wifi_off_rounded,
+                    color: Colors.blue,
+                    title: 'دراسة كاملة دون اتصال',
+                    subtitle: 'شاهد الشروحات، وراجع مذكرات الـ PDF، وتابع تقدمك في أي وقت وفي أي مكان.',
+                  ),
+                  const SizedBox(height: 8),
+                  _buildBenefitItem(
+                    context,
+                    icon: Icons.data_usage_rounded,
+                    color: Colors.amber.shade700,
+                    title: 'توفير باقة البيانات',
+                    subtitle: 'استغل شبكات الواي فاي لتحميل المقررات، ووفر باقة الإنترنت الخاصة بجهازك.',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: context.background,
-        body: Consumer<DownloadsProvider>(
-          builder: (context, provider, _) {
-            if (provider.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 3),
-              );
-            }
+        body: Column(
+          children: [
+            Expanded(
+              child: Consumer<DownloadsProvider>(
+                builder: (context, provider, _) {
+                  if (provider.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 3),
+                    );
+                  }
 
-            if (provider.downloadedCourses.isEmpty) {
-              return _buildEmptyState(context);
-            }
+                  if (provider.downloadedCourses.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
 
-            return RefreshIndicator(
-              onRefresh: provider.fetchDownloadedLessons,
-              color: context.primary,
-              child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 100, top: 16, left: 16, right: 16),
-                physics: const BouncingScrollPhysics(),
-                itemCount: provider.downloadedCourses.length,
-                itemBuilder: (context, index) {
-                  final course = provider.downloadedCourses[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: _CourseCard(course: course),
+                  return CustomThresholdRefreshIndicator(
+                    onRefresh: provider.fetchDownloadedLessons,
+                    color: context.primary,
+                    notificationPredicate: (ScrollNotification notification) {
+                      return defaultScrollNotificationPredicate(notification) && notification.metrics.pixels <= 0;
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 100, top: 16, left: 16, right: 16),
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: provider.downloadedCourses.length,
+                      itemBuilder: (context, index) {
+                        final course = provider.downloadedCourses[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: _CourseCard(course: course),
+                        );
+                      },
+                    ),
                   );
                 },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -72,7 +151,148 @@ class _DownloadsPageState extends State<DownloadsPage> {
       subtitle: 'الدروس التي تقوم بتحميلها ستظهر هنا للوصول إليها بدون إنترنت',
     );
   }
+
+  Widget _buildIllustration(BuildContext context) {
+    return SizedBox(
+      height: 160,
+      width: 160,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Background Circle
+          Container(
+            width: 140,
+            height: 140,
+            decoration: BoxDecoration(
+              color: context.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+          ),
+          // Ring
+          Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: context.primary.withOpacity(0.15),
+                width: 2,
+              ),
+              shape: BoxShape.circle,
+            ),
+          ),
+          // Main Phone/Tablet Icon
+          Icon(
+            Icons.tablet_android_rounded,
+            size: 84,
+            color: context.primary.withOpacity(0.9),
+          ),
+          // Download Icon Badge
+          Positioned(
+            bottom: 24,
+            left: 20,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.check_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+          // Cloud Icon Badge
+          Positioned(
+            top: 24,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.primary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: context.primary.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.cloud_download_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBenefitItem(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(16),
+        border: AppBorder.main_border,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: context.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
 
 class _CourseCard extends StatefulWidget {
   final DownloadedCourseItem course;

@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
-import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/network/api_service.dart';
+import 'package:algonaid/features/exams/data/models/exam_models.dart';
 
 abstract class ExamRemoteDataSource {
   Future<ExamModel> getExam(int examId);
@@ -76,6 +76,6 @@ class ExamRemoteDataSourceImpl implements ExamRemoteDataSource {
       return response;
     }
 
-    throw ServerException('Invalid response for $context: $response');
+    throw ServerException('بيانات الاستجابة المستلمة من الخادم غير صالحة.');
   }
 }

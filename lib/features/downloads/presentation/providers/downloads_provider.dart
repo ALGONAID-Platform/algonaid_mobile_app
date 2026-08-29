@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/features/courses/data/models/course_model.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/models/lesson_detail_model.dart';
-import 'package:algonaid_mobail_app/features/lessons/data/models/lesson_model.dart';
-import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/features/courses/data/models/course_model.dart';
+import 'package:algonaid/features/lesson_detail/data/models/lesson_detail_model.dart';
+import 'package:algonaid/features/lessons/data/models/lesson_model.dart';
+import 'package:algonaid/features/modules/data/models/module_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DownloadedLessonItem {
@@ -16,6 +17,7 @@ class DownloadedLessonItem {
   final String? localPdfPath;
   final bool hasVideo;
   final bool hasPdf;
+  final bool isSavedText;
 
   DownloadedLessonItem({
     required this.lessonId,
@@ -24,6 +26,7 @@ class DownloadedLessonItem {
     this.localPdfPath,
     this.hasVideo = false,
     this.hasPdf = false,
+    this.isSavedText = false,
   });
 }
 
@@ -73,6 +76,20 @@ class DownloadsProvider extends ChangeNotifier {
           if (id != null) {
             downloadedLessonIds.add(id);
           }
+        } else if (key.startsWith('pdf_local_path_')) {
+          final idStr = key.replaceFirst('pdf_local_path_', '');
+          final id = int.tryParse(idStr);
+          if (id != null) {
+            downloadedLessonIds.add(id);
+          }
+        } else if (key.startsWith('is_saved_lesson_')) {
+          final idStr = key.replaceFirst('is_saved_lesson_', '');
+          final id = int.tryParse(idStr);
+          if (id != null) {
+            if (prefs.getBool(key) == true) {
+              downloadedLessonIds.add(id);
+            }
+          }
         }
       }
 
@@ -89,9 +106,39 @@ class DownloadsProvider extends ChangeNotifier {
       final Map<int, String> courseThumbnails = {};
       final Map<int, String> moduleNames = {};
 
+      final docDir = await getApplicationDocumentsDirectory();
+
       for (final lessonId in downloadedLessonIds) {
-        final videoPath = prefs.getString('video_local_path_$lessonId') ?? '';
-        final pdfPath = prefs.getString('pdf_local_path_$lessonId');
+        String videoPath = '';
+        final videoFileName = prefs.getString('video_filename_$lessonId');
+        if (videoFileName != null) {
+          videoPath = '${docDir.path}/lesson_$lessonId/$videoFileName';
+        } else {
+          final storedPath = prefs.getString('video_local_path_$lessonId');
+          if (storedPath != null && storedPath.isNotEmpty) {
+            final name = storedPath.split('/').last;
+            videoPath = '${docDir.path}/lesson_$lessonId/$name';
+          }
+        }
+
+        String? pdfPath;
+        final pdfFileName = prefs.getString('pdf_filename_$lessonId');
+        if (pdfFileName != null) {
+          pdfPath = '${docDir.path}/lesson_$lessonId/$pdfFileName';
+        } else {
+          final storedPath = prefs.getString('pdf_local_path_$lessonId');
+          if (storedPath != null && storedPath.isNotEmpty) {
+            final name = storedPath.split('/').last;
+            pdfPath = '${docDir.path}/lesson_$lessonId/$name';
+          }
+        }
+
+        if (videoPath.isNotEmpty) {
+          await prefs.setString('video_local_path_$lessonId', videoPath);
+        }
+        if (pdfPath != null && pdfPath.isNotEmpty) {
+          await prefs.setString('pdf_local_path_$lessonId', pdfPath);
+        }
 
         String lessonTitle = 'درس غير معروف';
         int? moduleId;
@@ -169,26 +216,37 @@ class DownloadsProvider extends ChangeNotifier {
         bool hasP = false;
         try {
           if (videoPath.isNotEmpty) {
-            hasVid = File(videoPath).existsSync();
+            final videoFile = File(videoPath);
+            // الفيديو يُعرض فقط إذا كان الملف موجوداً وتم تسجيله كمكتمل 100%
+            final isVideoFullyDownloaded = prefs.getBool('video_fully_downloaded_$lessonId') ?? false;
+            hasVid = videoFile.existsSync() && videoFile.lengthSync() > 0 && isVideoFullyDownloaded;
           }
         } catch (_) {}
 
         try {
           if (pdfPath != null && pdfPath.isNotEmpty) {
-            hasP = File(pdfPath).existsSync();
+            final pdfFile = File(pdfPath);
+            // PDF يُعرض فقط إذا كان الملف موجوداً وتم تسجيله كمكتمل 100%
+            final isPdfFullyDownloaded = prefs.getBool('pdf_fully_downloaded_$lessonId') ?? false;
+            hasP = pdfFile.existsSync() && pdfFile.lengthSync() > 0 && isPdfFullyDownloaded;
           }
         } catch (_) {}
 
-        final item = DownloadedLessonItem(
-          lessonId: lessonId,
-          title: lessonTitle,
-          localVideoPath: videoPath,
-          localPdfPath: pdfPath,
-          hasVideo: hasVid,
-          hasPdf: hasP,
-        );
+        final bool isSavedText = prefs.getBool('is_saved_lesson_$lessonId') ?? false;
 
-        moduleToLessons.putIfAbsent(moduleId, () => []).add(item);
+        if (hasVid || hasP || isSavedText) {
+          final item = DownloadedLessonItem(
+            lessonId: lessonId,
+            title: lessonTitle,
+            localVideoPath: videoPath,
+            localPdfPath: pdfPath,
+            hasVideo: hasVid,
+            hasPdf: hasP,
+            isSavedText: isSavedText,
+          );
+
+          moduleToLessons.putIfAbsent(moduleId, () => []).add(item);
+        }
       }
 
       // تجميع الموديولات

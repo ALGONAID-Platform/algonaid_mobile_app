@@ -1,9 +1,9 @@
 import 'dart:core';
 
-import 'package:algonaid_mobail_app/core/common/enums/password_strength.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/constants/app_strings.dart';
-import 'package:algonaid_mobail_app/core/utils/validations/validation_pattern.dart';
+import 'package:algonaid/core/common/enums/password_strength.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/constants/app_strings.dart';
+import 'package:algonaid/core/utils/validations/validation_pattern.dart';
 
 class Validator {
   /// 1. Required Field Validator
@@ -17,11 +17,12 @@ class Validator {
 
   /// 2. Email Validator
   static String? email(String value) {
+    final trimmedValue = value.trim();
     // Check if empty first
-    String? requiredCheck = required(value, fieldName: 'البريد الإلكتروني');
+    String? requiredCheck = required(trimmedValue, fieldName: 'البريد الإلكتروني');
     if (requiredCheck != null) return requiredCheck;
 
-    if (!ValidationPatterns.email.hasMatch(value)) {
+    if (!ValidationPatterns.email.hasMatch(trimmedValue)) {
       return AppString.invalidEmail;
     }
     return null;
@@ -71,22 +72,14 @@ class Validator {
         break;
 
       case PasswordStrength.strong:
-        if (!ValidationPatterns.strongPassword.hasMatch(password)) {
-          // Detailed breakdown if strict regex fails
-          if (!RegExp(r'[A-Z]').hasMatch(password)) {
-            return AppString.passwordNoUppercase;
-          }
-          if (!RegExp(r'[a-z]').hasMatch(password)) {
-            return AppString.passwordNoLowercase;
-          }
-          if (!RegExp(r'\d').hasMatch(password)) {
-            return AppString.passwordNoNumber;
-          }
-          if (!RegExp(r'[@$!%*?&]').hasMatch(password)) {
-            return AppString.passwordNoSpecialChar;
-          }
-          // Default fallback
-          return null;
+        // Check all requirements individually for better flexibility
+        final hasUppercase = RegExp(r'[A-Z]').hasMatch(password);
+        final hasLowercase = RegExp(r'[a-z]').hasMatch(password);
+        final hasNumber = RegExp(r'\d').hasMatch(password);
+        final hasSpecial = RegExp(r'[\W_]').hasMatch(password); // matches any non-alphanumeric char
+        
+        if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+          return 'يجب أن تتضمن كلمة المرور حروفاً صغيرة وكبيرة وأرقاماً ورمزاً واحداً على الأقل';
         }
         break;
     }

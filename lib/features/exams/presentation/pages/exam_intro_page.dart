@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/core/widgets/shared/app_error_state.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/pages/exam_page.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/providers/exam_provider.dart';
-import 'package:algonaid_mobail_app/features/exams/presentation/widgets/exam_intro_content.dart';
+import 'package:algonaid/core/widgets/shared/app_error_state.dart';
+import 'package:algonaid/features/exams/presentation/pages/exam_page.dart';
+import 'package:algonaid/features/exams/presentation/providers/exam_provider.dart';
+import 'package:algonaid/features/exams/presentation/widgets/exam_intro_content.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
 
 class ExamIntroPage extends StatefulWidget {
   final String examId;
@@ -62,9 +62,10 @@ class _ExamIntroPageState extends State<ExamIntroPage> {
 
           return ExamIntroContent(
             title: exam.title,
-            totalQuestions: exam.questions.length,
-            durationMinutes: 30,
-            remainingAttempts: exam.maxAttempts,
+            totalQuestions: examProvider.totalQuestions,
+            durationMinutes: examProvider.examDurationMinutes,
+            remainingAttempts: examProvider.remainingAttempts,
+            hasExceededAttempts: examProvider.hasExceededAttempts,
             onStartExam: () {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(

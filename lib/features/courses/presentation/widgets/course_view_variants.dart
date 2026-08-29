@@ -1,15 +1,16 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseDetails.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/presentation/widgets/buildCourseDetails.dart';
+import 'package:algonaid/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class CourseThinCard extends StatelessWidget {
   final CourseEntity course;
@@ -54,25 +55,25 @@ class CourseThinCard extends StatelessWidget {
                         tag: "course_image${course.id}_thin",
                         child: Builder(
                           builder: (context) {
+                            final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
                             String resolvedUrl = course.thumbnail;
-                            if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+                            if (!hasNoImage && !resolvedUrl.startsWith('http')) {
                               resolvedUrl = resolvedUrl.startsWith('/')
                                   ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
                                   : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
                             }
-                            return CachedNetworkImage(
+                            final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+                            if (hasNoImage || isResolvedInvalid) {
+                              return Image.asset(
+                                Images.noImageFound,
+                                fit: BoxFit.cover,
+                              );
+                            }
+                            return TimeoutImageWrapper(
                               imageUrl: resolvedUrl,
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                                child: const Center(child: CircularProgressIndicator.adaptive()),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                color: context.colorScheme.errorContainer,
-                                child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
-                              ),
                             );
-                          }
+                          },
                         ),
                       ),
                       Positioned.fill(
@@ -81,10 +82,40 @@ class CourseThinCard extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment.centerRight,
                               end: Alignment.centerLeft,
-                              colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                              colors: [
+                                Colors.black.withOpacity(0.6),
+                                Colors.transparent,
+                              ],
                             ),
                           ),
                         ),
+                      ),
+                      ValueListenableBuilder<Box<String>>(
+                        valueListenable: Hive.box<String>('course_reminders_box').listenable(),
+                        builder: (context, box, _) {
+                          final hasReminder = box.containsKey(course.id.toString());
+                          if (!hasReminder) return const SizedBox.shrink();
+                          return Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.55),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.greenAccent.withOpacity(0.4),
+                                  width: 1,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.alarm_on_rounded,
+                                color: Colors.greenAccent,
+                                size: 12,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -125,19 +156,23 @@ class CourseThinCard extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "${course.completedLessons} / ${course.totalLessons} مكتمل",
+                                "${course.totalLessons} / ${course.completedLessons} مكتمل",
                                 style: context.theme.textTheme.labelSmall,
                               ),
                             ],
                           ),
                           const SizedBox(height: 4),
-                          LinearProgress(progressPercentage: course.progressPercentage),
+                          LinearProgress(
+                            progressPercentage: course.progressPercentage,
+                          ),
                         ] else
                           Text(
                             course.description,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodySmall?.copyWith(fontSize: 10),
+                            style: context.textTheme.bodySmall?.copyWith(
+                              fontSize: 10,
+                            ),
                           ),
                       ],
                     ),
@@ -193,25 +228,25 @@ class CourseGridItem extends StatelessWidget {
                       tag: "course_image${course.id}_grid",
                       child: Builder(
                         builder: (context) {
+                          final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
                           String resolvedUrl = course.thumbnail;
-                          if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+                          if (!hasNoImage && !resolvedUrl.startsWith('http')) {
                             resolvedUrl = resolvedUrl.startsWith('/')
                                 ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
                                 : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
                           }
-                          return CachedNetworkImage(
+                          final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+                          if (hasNoImage || isResolvedInvalid) {
+                            return Image.asset(
+                              Images.noImageFound,
+                              fit: BoxFit.cover,
+                            );
+                          }
+                          return TimeoutImageWrapper(
                             imageUrl: resolvedUrl,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: context.colorScheme.surfaceVariant.withOpacity(0.5),
-                              child: const Center(child: CircularProgressIndicator.adaptive()),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: context.colorScheme.errorContainer,
-                              child: Image.asset(Images.noImageFound, fit: BoxFit.cover),
-                            ),
                           );
-                        }
+                        },
                       ),
                     ),
                     Positioned.fill(
@@ -220,10 +255,39 @@ class CourseGridItem extends StatelessWidget {
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.8),
+                            ],
                           ),
                         ),
                       ),
+                    ),
+                    ValueListenableBuilder<Box<String>>(
+                      valueListenable: Hive.box<String>('course_reminders_box').listenable(),
+                      builder: (context, box, _) {
+                        final hasReminder = box.containsKey(course.id.toString());
+                        if (!hasReminder) return const SizedBox.shrink();
+                        return Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.55),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.greenAccent.withOpacity(0.4),
+                                  width: 1),
+                            ),
+                            child: const Icon(
+                              Icons.alarm_on_rounded,
+                              color: Colors.greenAccent,
+                              size: 12,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     Positioned(
                       bottom: 8,
@@ -269,7 +333,9 @@ class CourseGridItem extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            LinearProgress(progressPercentage: course.progressPercentage),
+                            LinearProgress(
+                              progressPercentage: course.progressPercentage,
+                            ),
                           ],
                         ),
                       ] else

@@ -1,10 +1,10 @@
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
-import 'package:algonaid_mobail_app/features/lessons/domain/usecases/get_module_lessons.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid/features/lesson_detail/domain/usecases/get_lesson_detail.dart';
+import 'package:algonaid/features/lesson_detail/domain/usecases/update_lesson_progress.dart';
+import 'package:algonaid/features/lessons/domain/usecases/get_module_lessons.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/common/enums/lesson_status.dart';
 import 'package:flutter/foundation.dart';
 
 class LessonDetailState {
@@ -42,16 +42,22 @@ class LessonDetailState {
     Exam? exam,
     int? nextLessonId,
     int? previousLessonId,
+    bool clearLesson = false,
+    bool clearExam = false,
     bool clearNextLesson = false,
     bool clearPreviousLesson = false,
   }) {
     return LessonDetailState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
-      lesson: lesson ?? this.lesson,
-      exam: exam ?? this.exam,
-      nextLessonId: clearNextLesson ? null : (nextLessonId ?? this.nextLessonId),
-      previousLessonId: clearPreviousLesson ? null : (previousLessonId ?? this.previousLessonId),
+      lesson: clearLesson ? null : (lesson ?? this.lesson),
+      exam: clearExam ? null : (exam ?? this.exam),
+      nextLessonId: clearNextLesson
+          ? null
+          : (nextLessonId ?? this.nextLessonId),
+      previousLessonId: clearPreviousLesson
+          ? null
+          : (previousLessonId ?? this.previousLessonId),
     );
   }
 }
@@ -62,7 +68,11 @@ class LessonDetailProvider extends ChangeNotifier {
   final GetModuleLessons _getModuleLessons;
   LessonDetailState _state = LessonDetailState.initial();
 
-  LessonDetailProvider(this._getLessonDetail, this._updateLessonProgress, this._getModuleLessons);
+  LessonDetailProvider(
+    this._getLessonDetail,
+    this._updateLessonProgress,
+    this._getModuleLessons,
+  );
 
   LessonDetailState get state => _state;
 
@@ -70,7 +80,14 @@ class LessonDetailProvider extends ChangeNotifier {
     debugPrint(
       'LessonDetailProvider: loadLesson started for lessonId=$lessonId',
     );
-    _state = _state.copyWith(isLoading: true, errorMessage: null);
+    _state = _state.copyWith(
+      isLoading: true, 
+      errorMessage: null,
+      clearLesson: true,
+      clearExam: true,
+      clearNextLesson: true,
+      clearPreviousLesson: true,
+    );
     notifyListeners();
 
     final result = await _getLessonDetail(lessonId);
@@ -106,28 +123,43 @@ class LessonDetailProvider extends ChangeNotifier {
         notifyListeners();
 
         // Fetch lessons to find next lesson and determine completion status
-        final lessonsResult = await _getModuleLessons(lesson.moduleId);
+        final lessonsResult = await _getModuleLessons(GetModuleLessonsParams(moduleId: lesson.moduleId, page: 1, limit: 100));
         lessonsResult.fold(
           (_) {
-            final isAlreadyCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ?? false;
-            updateProgress(lesson.id, isAlreadyCompleted);
-          }, 
-          (lessons) {
-            final currentIndex = lessons.indexWhere((l) => l.id == lesson.id);
+            var isAlreadyCompleted =
+                CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ??
+                false;
+            // Removed automatic updateProgress here because the UI now calls it directly as completed.
+          },
+          (paginatedLessons) {
+            final sortedLessons = [...paginatedLessons.lessons]
+              ..sort((a, b) {
+                final orderCompare = a.order.compareTo(b.order);
+                if (orderCompare != 0) return orderCompare;
+                return a.id.compareTo(b.id);
+              });
+
+            final currentIndex = sortedLessons.indexWhere(
+              (l) => l.id == lesson.id,
+            );
             bool isCompleted = false;
             if (currentIndex != -1) {
-              isCompleted = lessons[currentIndex].status == LessonStatus.completed;
+              isCompleted =
+                  sortedLessons[currentIndex].status == LessonStatus.completed;
               if (isCompleted) {
-                CacheHelper.saveData(key: 'lesson_completed_${lesson.id}', value: true);
+                CacheHelper.saveData(
+                  key: 'lesson_completed_${lesson.id}',
+                  value: true,
+                );
               }
-              
+
               int? nextId;
               int? previousId;
-              if (currentIndex < lessons.length - 1) {
-                nextId = lessons[currentIndex + 1].id;
+              if (currentIndex < sortedLessons.length - 1) {
+                nextId = sortedLessons[currentIndex + 1].id;
               }
               if (currentIndex > 0) {
-                previousId = lessons[currentIndex - 1].id;
+                previousId = sortedLessons[currentIndex - 1].id;
               }
               _state = _state.copyWith(
                 nextLessonId: nextId,
@@ -135,27 +167,29 @@ class LessonDetailProvider extends ChangeNotifier {
               );
               notifyListeners();
             } else {
-              isCompleted = CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ?? false;
+              isCompleted =
+                  CacheHelper.getBool(key: 'lesson_completed_${lesson.id}') ??
+                  false;
             }
-            updateProgress(lesson.id, isCompleted);
-          }
+            // Removed automatic updateProgress here because the UI now calls it directly as completed.
+          },
         );
       },
     );
   }
 
-  Future<void> updateProgress(int lessonId, bool isCompleted) async {
+  Future<bool> updateProgress(int lessonId, bool isCompleted) async {
     final result = await _updateLessonProgress(
       lessonId: lessonId,
       isCompleted: isCompleted,
     );
 
-    result.fold(
+    return result.fold(
       (failure) {
-        // Optional: handle failure silently or log it
+        return false;
       },
       (_) {
-        // Progress successfully updated
+        return true;
       },
     );
   }

@@ -1,19 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/linearProgress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/modules/presentation/widgets/module_grades_widget.dart';
+import 'package:algonaid/features/modules/presentation/widgets/module_grades_widget.dart';
 
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/app_shadows.dart';
+import 'package:algonaid/core/theme/styles.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
 
 class ContinueLearningCard extends StatelessWidget {
   final LastAccessedModuleEntity module;
@@ -28,50 +29,57 @@ class ContinueLearningCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.colorScheme.surface,
           borderRadius: BorderRadius.circular(15),
-          border : AppBorder.main_border
+          border: AppBorder.main_border,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                height: 160,
-                child: _CourseImagePreview(image_irl: module.image_url),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _CourseMetaTags(moduleName: module.moduleName),
-                    const SizedBox(height: 12),
-                    Text(
-                      module.courseName,
-                      style: context.textTheme.titleMedium?.copyWith(
-                        color: context.colorScheme.onBackground,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 110,
+                      height: 125,
+                      child: _CourseImagePreview(image_irl: module.image_url),
                     ),
-                  
-                    const SizedBox(height: 16),
-                    _ProgressBarSection(
-                      progressPercentage: module.progressPercentage.toDouble(),
-                      completedLessons: module.completedLessons,
-                      totalLessons: module.totalLessons,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _CourseMetaTags(moduleName: module.moduleName),
+                        const SizedBox(height: 8),
+                        Text(
+                          module.courseName,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            color: context.colorScheme.onBackground,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 12),
+                        _ProgressBarSection(
+                          progressPercentage: module.progressPercentage.toDouble(),
+                          completedLessons: module.completedLessons,
+                          totalLessons: module.totalLessons,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    _ActionButtonsRow(module: module),
-                  ],
-                ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 16),
+              _ActionButtonsRow(module: module),
             ],
           ),
-        ),
-      ),
+      ),)
     );
   }
 }
@@ -85,16 +93,20 @@ class _CourseMetaTags extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            moduleName,
-            style: context.textTheme.labelMedium!.copyWith(
-              color: theme.colorScheme.primary,
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              moduleName,
+              style: context.textTheme.labelMedium!.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -125,11 +137,17 @@ class _ProgressBarSection extends StatelessWidget {
           children: [
             Text(
               'نسبة الإنجاز',
-              style: theme.textTheme.labelSmall?.copyWith(color: theme.hintColor, fontWeight: FontWeight.w600),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.hintColor,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             Text(
               '${progressPercentage.toInt()}%',
-              style: theme.textTheme.labelSmall?.copyWith(color: context.primary, fontWeight: FontWeight.bold),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: context.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -166,6 +184,7 @@ class _ActionButtonsRow extends StatelessWidget {
                   'completedLessons': module.completedLessons,
                   'progressPercentage': module.progressPercentage,
                   'totalLessons': module.totalLessons,
+                  'moduleDescription': module.moduleDescription,
                 },
               );
             },
@@ -173,7 +192,7 @@ class _ActionButtonsRow extends StatelessWidget {
               backgroundColor: context.primary,
               foregroundColor: theme.colorScheme.onPrimary,
               elevation: 0,
-              minimumSize: const Size(0, 45),
+              minimumSize: const Size(0, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -200,7 +219,7 @@ class _ActionButtonsRow extends StatelessWidget {
               side: BorderSide(
                 color: context.colorScheme.onSecondary.withOpacity(0.5),
               ),
-              minimumSize: const Size(0, 45),
+              minimumSize: const Size(0, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -222,27 +241,32 @@ class _CourseImagePreview extends StatelessWidget {
   final String image_irl;
   const _CourseImagePreview({Key? key, required this.image_irl})
     : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final bool hasNoImage = Images.isInvalidImage(image_irl);
+
     String resolvedUrl = image_irl;
-    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+    if (!hasNoImage && !resolvedUrl.startsWith('http')) {
       resolvedUrl = resolvedUrl.startsWith('/')
           ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
 
+    final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(
-          imageUrl: resolvedUrl,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => Image.asset(Images.onboarding1),
-        ),
-        Container(color: Colors.black12),
-        const Center(
-          child: Icon(Icons.play_circle_fill, color: Colors.white, size: 45),
-        ),
+        (hasNoImage || isResolvedInvalid)
+            ? Image.asset(
+                Images.noImageFound,
+                fit: BoxFit.cover,
+              )
+            : TimeoutImageWrapper(
+                imageUrl: resolvedUrl,
+                fit: BoxFit.cover,
+              ),
       ],
     );
   }

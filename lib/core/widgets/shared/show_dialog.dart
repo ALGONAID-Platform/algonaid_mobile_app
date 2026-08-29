@@ -1,7 +1,8 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/routes/navigatorKey.dart';
+import 'package:algonaid/core/widgets/shared/circular_reveal.dart';
 
 class AppDialog {
   static void showDynamicDialog({
@@ -13,6 +14,7 @@ class AppDialog {
     String? confirmText,
     String? cancelText,
     VoidCallback? onConfirm,
+    VoidCallback? onCancel, // 🌟 مضاف لدعم تنفيذ عمليات عند الإلغاء
     Widget? content,
   }) {
     final currentContext = context ?? navigatorKey.currentContext;
@@ -28,58 +30,61 @@ class AppDialog {
           ),
           elevation: 10,
           backgroundColor: context.surfaceContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // أيقونة علوية
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // أيقونة علوية
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isError
+                          ? Colors.red.withOpacity(0.1)
+                          : Colors.green.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isError
+                          ? Icons.report_gmailerrorred_rounded
+                          : Icons.check_circle_rounded,
+                      color: isError ? Colors.red : Colors.green,
+                      size: 50,
+                    ),
                   ),
-                  child: Icon(
-                    isError
-                        ? Icons.report_gmailerrorred_rounded
-                        : Icons.check_circle_rounded,
-                    color: isError ? Colors.red : Colors.green,
-                    size: 50,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.titleLarge?.copyWith(),
-                ),
-                const SizedBox(height: 12),
-
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
-                ),
-                if (content != null) ...[
                   const SizedBox(height: 20),
-                  content,
-                ],
-                const SizedBox(height: 30),
 
-                // 🌟 منطق الأزرار المحدث
-                _buildActionButtons(
-                  context,
-                  showCancelButton,
-                  isError,
-                  confirmText,
-                  cancelText,
-                  onConfirm,
-                ),
-              ],
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleLarge?.copyWith(),
+                  ),
+                  const SizedBox(height: 12),
+
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.bodyMedium?.copyWith(height: 1.5),
+                  ),
+                  if (content != null) ...[
+                    const SizedBox(height: 20),
+                    content,
+                  ],
+                  const SizedBox(height: 30),
+
+                  // 🌟 منطق الأزرار المحدث
+                  _buildActionButtons(
+                    context,
+                    showCancelButton,
+                    isError,
+                    confirmText,
+                    cancelText,
+                    onConfirm,
+                    onCancel,
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -95,24 +100,27 @@ class AppDialog {
     String? confirmText,
     String? cancelText,
     VoidCallback? onConfirm,
+    VoidCallback? onCancel,
   ) {
     // زر التأكيد الأساسي
-    final confirmButton = ElevatedButton(
-      onPressed: () {
-        Navigator.pop(context);
-        if (onConfirm != null) onConfirm();
-      },
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        backgroundColor: isError ? Colors.red : context.primary,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(
-        confirmText ?? (isError ? "حسناً" : "تأكيد"),
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+    final confirmButton = TrackTapOffset(
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pop(context);
+          if (onConfirm != null) onConfirm();
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          backgroundColor: isError ? Colors.red : context.primary,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Text(
+          confirmText ?? (isError ? "حسناً" : "تأكيد"),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -125,28 +133,33 @@ class AppDialog {
     // إذا كان المطلوب زرين (تأكيد وإلغاء) كما في السابق
     return Row(
       children: [
+        Expanded(child: confirmButton),
+        const SizedBox(width: 12),
         Expanded(
-          child: OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(
-                color: context.colorScheme.onSecondary.withOpacity(0.5),
+          child: TrackTapOffset(
+            child: OutlinedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (onCancel != null) onCancel();
+              },
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                side: BorderSide(
+                  color: context.colorScheme.onSecondary.withOpacity(0.5),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(
-              cancelText ?? "إغلاق",
-              style: context.textTheme.labelMedium!.copyWith(
-                color: context.colorScheme.onSecondary.withOpacity(0.5),
+              child: Text(
+                cancelText ?? "إغلاق",
+                style: context.textTheme.labelMedium!.copyWith(
+                  color: context.colorScheme.onSecondary.withOpacity(0.5),
+                ),
               ),
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(child: confirmButton),
       ],
     );
   }

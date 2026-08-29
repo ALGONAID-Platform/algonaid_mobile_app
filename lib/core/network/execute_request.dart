@@ -1,5 +1,5 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
 import 'package:dio/dio.dart';
 
 Future<dynamic> performRequest(Future<Response> requestFunc) async {
@@ -18,7 +18,7 @@ Future<dynamic> performRequest(Future<Response> requestFunc) async {
     // 2. 🛑 التعديل الأهم: نرميها كـ Exception وليس Failure
     throw ServerException(failure.message);
   } catch (e) {
-    // التقاط أخطاء الكود (مثل null check operator)
-    throw ServerException(e.toString());
+    // التقاط أخطاء الكود (مثل null check operator) دون تسريبها للمستخدم
+    throw ServerException('حدث خطأ غير متوقع أثناء معالجة الطلب.');
   }
 }

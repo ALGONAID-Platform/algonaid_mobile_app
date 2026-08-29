@@ -69,6 +69,16 @@ class CacheHelper {
     return await _sharedPreferences.clear();
   }
 
+  // مسح مفاتيح معينة بناءً على بداية الاسم (مثل last_lesson_course_)
+  static Future<void> clearByPrefix(String prefix) async {
+    final keys = _sharedPreferences.getKeys();
+    for (String key in keys) {
+      if (key.startsWith(prefix)) {
+        await _sharedPreferences.remove(key);
+      }
+    }
+  }
+
   // ============================================================
   // 5️⃣ دوال مساعدة خاصة (Helpers) - لتسهيل الاستخدام
   // ============================================================

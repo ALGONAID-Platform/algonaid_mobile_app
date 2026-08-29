@@ -17,22 +17,26 @@ class LessonModelAdapter extends TypeAdapter<LessonModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return LessonModel(
-      id: fields[0] as int? ?? 0,
-      title: fields[1] as String? ?? '',
-      description: fields[2] as String? ?? '',
-      moduleId: fields[3] as int? ?? 0,
-      order: fields[4] as int? ?? 0,
+      id: fields[0] as int,
+      title: fields[1] as String,
+      description: fields[2] as String,
+      videoUrl: fields[11] as String?,
+      pdfUrl: fields[12] as String?,
+      moduleId: fields[3] as int,
+      order: fields[4] as int,
       lessonProgress: (fields[5] as List?)?.cast<LessonProgress>(),
-      status: fields[6] != null && fields[6] is int
-          ? LessonStatus.values[fields[6] as int]
-          : LessonStatus.notStarted,
+      status: fields[6] as LessonStatus,
+      content: fields[7] as String?,
+      isReading: fields[8] as bool,
+      hasExam: fields[9] as bool,
+      hasTest: fields[10] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, LessonModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -46,7 +50,19 @@ class LessonModelAdapter extends TypeAdapter<LessonModel> {
       ..writeByte(5)
       ..write(obj.lessonProgress)
       ..writeByte(6)
-      ..write(obj.status.index);
+      ..write(obj.status)
+      ..writeByte(7)
+      ..write(obj.content)
+      ..writeByte(8)
+      ..write(obj.isReading)
+      ..writeByte(9)
+      ..write(obj.hasExam)
+      ..writeByte(10)
+      ..write(obj.hasTest)
+      ..writeByte(11)
+      ..write(obj.videoUrl)
+      ..writeByte(12)
+      ..write(obj.pdfUrl);
   }
 
   @override

@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/search/domain/entities/global_search_entity.dart';
-import 'package:algonaid_mobail_app/features/search/domain/usecases/search_courses_usecase.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/search/domain/entities/global_search_entity.dart';
+import 'package:algonaid/features/search/domain/usecases/search_courses_usecase.dart';
 import 'dart:async';
 
 class SearchCoursesProvider extends ChangeNotifier {
   final SearchCoursesUseCase searchCoursesUseCase;
 
   SearchCoursesProvider({required this.searchCoursesUseCase});
+
+  bool _isDisposed = false;
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
+  }
 
   List<CourseEntity> _courses = [];
   List<CourseEntity> get courses => _courses;
@@ -17,6 +33,9 @@ class SearchCoursesProvider extends ChangeNotifier {
 
   List<SearchLessonEntity> _lessons = [];
   List<SearchLessonEntity> get lessons => _lessons;
+
+  List<SearchPracticeExamEntity> _practiceExams = [];
+  List<SearchPracticeExamEntity> get practiceExams => _practiceExams;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -36,6 +55,7 @@ class SearchCoursesProvider extends ChangeNotifier {
       _courses = [];
       _modules = [];
       _lessons = [];
+      _practiceExams = [];
       _error = null;
       _isLoading = false;
       notifyListeners();
@@ -57,6 +77,7 @@ class SearchCoursesProvider extends ChangeNotifier {
           _courses = [];
           _modules = [];
           _lessons = [];
+          _practiceExams = [];
           _isLoading = false;
           notifyListeners();
         },
@@ -64,6 +85,7 @@ class SearchCoursesProvider extends ChangeNotifier {
           _courses = globalSearch.courses;
           _modules = globalSearch.modules;
           _lessons = globalSearch.lessons;
+          _practiceExams = globalSearch.practiceExams;
           _error = null;
           _isLoading = false;
           notifyListeners();
@@ -77,6 +99,7 @@ class SearchCoursesProvider extends ChangeNotifier {
     _courses = [];
     _modules = [];
     _lessons = [];
+    _practiceExams = [];
     _error = null;
     _isLoading = false;
     if (_debounce?.isActive ?? false) _debounce?.cancel();

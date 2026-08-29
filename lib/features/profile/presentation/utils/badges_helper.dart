@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/user_badge_entity.dart';
 
@@ -13,6 +13,8 @@ class BadgeEntity {
   final int progress;
   final int target;
   final String tier;
+  /// تاريخ اكتساب الوسام من الـ Backend (دائمة ولا تُسحب)
+  final DateTime? earnedAt;
 
   BadgeEntity({
     required this.id,
@@ -25,6 +27,7 @@ class BadgeEntity {
     required this.progress,
     required this.target,
     required this.tier,
+    this.earnedAt,
   });
 }
 
@@ -88,7 +91,8 @@ class BadgesHelper {
       'title': 'وسام عصفور الصباح',
       'icon': Icons.wb_sunny_rounded,
       'color': Colors.orangeAccent,
-      'requirementText': 'يُمنح للطلاب الذين يكملون الدروس بين الساعة 5 صباحاً و 9 صباحاً.',
+      'requirementText':
+          'يُمنح عند مشاهدة الدروس في الصباح لمدة 3 أيام متتالية.',
     },
     'reviewer': {
       'title': 'وسام المُراجع الدقيق',
@@ -112,16 +116,19 @@ class BadgesHelper {
           progress: 0,
           target: 1,
           tier: 'STANDARD',
+          earnedAt: null,
         );
       }).toList();
     }
     return userBadges.map((badge) {
-      final meta = _badgeMeta[badge.key] ?? {
-        'title': 'وسام غير معروف',
-        'icon': Icons.star,
-        'color': Colors.grey,
-        'requirementText': '',
-      };
+      final meta =
+          _badgeMeta[badge.key] ??
+          {
+            'title': 'وسام غير معروف',
+            'icon': Icons.star,
+            'color': Colors.grey,
+            'requirementText': '',
+          };
       return BadgeEntity(
         id: badge.id,
         key: badge.key,
@@ -133,7 +140,17 @@ class BadgesHelper {
         progress: badge.progress,
         target: badge.target,
         tier: badge.tier,
+        earnedAt: badge.earnedAt,
       );
     }).toList();
+  }
+
+  /// تنسيق تاريخ الاكتساب بالعربية
+  static String formatEarnedDate(DateTime date) {
+    final months = [
+      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 }

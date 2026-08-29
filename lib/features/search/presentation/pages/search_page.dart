@@ -1,10 +1,12 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_empty_state.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/providers/search_courses_provider.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/widgets/search_courses_tab.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/widgets/search_lessons_tab.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/widgets/search_modules_tab.dart';
-import 'package:algonaid_mobail_app/features/search/presentation/widgets/search_text_field.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/core/widgets/shared/app_empty_state.dart';
+import 'package:algonaid/features/search/presentation/providers/search_courses_provider.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_courses_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_lessons_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_modules_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_practice_exams_tab.dart';
+import 'package:algonaid/features/search/presentation/widgets/search_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,21 +19,33 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  late final SearchCoursesProvider _searchProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchProvider = getIt<SearchCoursesProvider>();
+  }
 
   @override
   void dispose() {
+    _searchFocusNode.dispose();
     _searchController.dispose();
+    _searchProvider.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: SafeArea(
-          child: Scaffold(
+    return ChangeNotifierProvider.value(
+      value: _searchProvider,
+      child: DefaultTabController(
+        length: 4,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: SafeArea(
+            child: Scaffold(
             backgroundColor: context.background,
             appBar: AppBar(
               toolbarHeight: 80,
@@ -44,18 +58,21 @@ class _SearchPageState extends State<SearchPage> {
                 padding: const EdgeInsets.only(left: 16.0),
                 child: SearchTextField(
                   controller: _searchController,
+                  focusNode: _searchFocusNode,
                   onChanged: (query) {
-                    context.read<SearchCoursesProvider>().searchCourses(query);
+                    _searchProvider.searchCourses(query);
                     setState(() {}); // Trigger rebuild to show/hide suffix icon
                   },
                   onClear: () {
                     _searchController.clear();
-                    context.read<SearchCoursesProvider>().clearSearch();
+                    _searchProvider.clearSearch();
                     setState(() {}); // Trigger rebuild to hide suffix icon
                   },
                 ),
               ),
               bottom: TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.center,
                 labelColor: context.primary,
                 unselectedLabelColor: context.colorScheme.onSurface.withOpacity(0.5),
                 indicatorColor: context.primary,
@@ -66,59 +83,64 @@ class _SearchPageState extends State<SearchPage> {
                   Tab(text: 'الكورسات'),
                   Tab(text: 'الوحدات'),
                   Tab(text: 'الدروس'),
+                  Tab(text: 'نماذج الاختبارات'),
                 ],
               ),
             ),
-            body: Consumer<SearchCoursesProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+            body: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Consumer<SearchCoursesProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
 
-                if (provider.error != null) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Text(
-                        provider.error!,
-                        style: context.textTheme.bodyLarge?.copyWith(
-                          color: context.error,
+                  if (provider.error != null) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          provider.error!,
+                          style: context.textTheme.bodyLarge?.copyWith(
+                            color: context.error,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
 
-                if (provider.currentQuery.isEmpty) {
-                  return const AppEmptyState(
-                    icon: Icons.search_rounded,
-                    title: 'البحث',
-                    subtitle: 'أدخل كلمة البحث للبدء',
-                  );
-                }
+                  if (provider.currentQuery.isEmpty) {
+                    return const AppEmptyState(
+                      icon: Icons.search_rounded,
+                      title: 'البحث',
+                      subtitle: 'أدخل كلمة البحث للبدء',
+                    );
+                  }
 
-                if (provider.courses.isEmpty && provider.modules.isEmpty && provider.lessons.isEmpty) {
-                  return const AppEmptyState(
-                    icon: Icons.search_off_rounded,
-                    title: 'لا توجد نتائج',
-                    subtitle: 'لا توجد نتائج مطابقة لبحثك',
-                  );
-                }
+                  if (provider.courses.isEmpty && provider.modules.isEmpty && provider.lessons.isEmpty && provider.practiceExams.isEmpty) {
+                    return const AppEmptyState(
+                      icon: Icons.search_off_rounded,
+                      title: 'لا توجد نتائج',
+                      subtitle: 'لا توجد نتائج مطابقة لبحثك',
+                    );
+                  }
 
-                return TabBarView(
-                  children: [
-                    SearchCoursesTab(courses: provider.courses),
-                    SearchModulesTab(modules: provider.modules),
-                    SearchLessonsTab(lessons: provider.lessons),
-                  ],
-                );
-              },
+                  return TabBarView(
+                    children: [
+                      SearchCoursesTab(courses: provider.courses),
+                      SearchModulesTab(modules: provider.modules),
+                      SearchLessonsTab(lessons: provider.lessons),
+                      SearchPracticeExamsTab(practiceExams: provider.practiceExams),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
-        ),
+          ))
       ),
     );
   }

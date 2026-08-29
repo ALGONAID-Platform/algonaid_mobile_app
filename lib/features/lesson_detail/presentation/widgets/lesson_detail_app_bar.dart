@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
 
 class LessonDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onBack;
+  final VoidCallback onShare;
 
   const LessonDetailAppBar({
     super.key,
     required this.title,
     required this.onBack,
+    required this.onShare,
   });
 
   @override
@@ -23,6 +25,12 @@ class LessonDetailAppBar extends StatelessWidget implements PreferredSizeWidget 
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.share_rounded, size: 20),
+          onPressed: onShare,
+        ),
+      ],
     );
   }
 

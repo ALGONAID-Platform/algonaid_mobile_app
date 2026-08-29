@@ -1,5 +1,8 @@
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
 
 class ResultsQuestionsReviewSection extends StatelessWidget {
   final List<Question> questions;
@@ -167,15 +170,81 @@ class _QuestionReviewCardState extends State<QuestionReviewCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    widget.question.text,
-                    textAlign: TextAlign.right,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.5,
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: MarkdownBlock(
+                      data: widget.question.text,
+                      
+                      generator: MarkdownGenerator(
+                        inlineSyntaxList: [LatexSyntax()],
+                        generators: [
+                          SpanNodeGeneratorWithTag(
+                            tag: 'latex',
+                            generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                          ),
+                        ],
+                      ),
+                      config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                        PConfig(textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onBackground,
+                          height: 1.5,
+                        ) ?? const TextStyle()),
+                      ]),
                     ),
                   ),
+                  if (widget.question.imageUrl != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.sizeOf(context).height * 0.25 > 200 
+                            ? 200 
+                            : MediaQuery.sizeOf(context).height * 0.25,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.question.imageUrl!,
+                          fit: BoxFit.contain,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.broken_image_rounded,
+                                  size: 40,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'تعذر تحميل الصورة',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   _AnswerBox(
                     label: 'إجابتك',
@@ -215,14 +284,27 @@ class _QuestionReviewCardState extends State<QuestionReviewCard> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          widget.question.explanation ?? 'لا يوجد شرح متاح',
-                          textAlign: TextAlign.right,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onBackground.withOpacity(0.8),
-                            height: 1.5,
+                        Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: MarkdownBlock(
+                            data: widget.question.explanation ?? 'لا يوجد شرح متاح',
+                            
+                            generator: MarkdownGenerator(
+                              inlineSyntaxList: [LatexSyntax()],
+                              generators: [
+                                SpanNodeGeneratorWithTag(
+                                  tag: 'latex',
+                                  generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                                ),
+                              ],
+                            ),
+                            config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                              PConfig(textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                                height: 1.5,
+                              ) ?? const TextStyle()),
+                            ]),
                           ),
                         ),
                       ],
@@ -270,12 +352,27 @@ class _AnswerBox extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            answer,
-            textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground,
-              height: 1.4,
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: MarkdownBlock(
+              data: answer,
+              
+              generator: MarkdownGenerator(
+                inlineSyntaxList: [LatexSyntax()],
+                generators: [
+                  SpanNodeGeneratorWithTag(
+                    tag: 'latex',
+                    generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                  ),
+                ],
+              ),
+              config: MarkdownConfig(configs: [
+                TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                PConfig(textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  height: 1.4,
+                ) ?? const TextStyle()),
+              ]),
             ),
           ),
         ],

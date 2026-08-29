@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
 import 'package:flutter/material.dart';
 
 class AuthHeader extends StatelessWidget {
@@ -6,6 +6,6 @@ class AuthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Image.asset(Images.logo, height: 120, width: 120));
+    return Center(child: Image.asset(Images.authLogo, height: 120, width: 120));
   }
 }

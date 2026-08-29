@@ -1,17 +1,21 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/expertBadge3D.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/share_helper.dart';
+import 'package:algonaid/core/widgets/shared/expertBadge3D.dart';
+import 'package:algonaid/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import 'package:algonaid_mobail_app/core/di/service_locator.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/providers/course_grades_provider.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/course_grades_widget.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/features/courses/presentation/providers/course_grades_provider.dart';
+import 'package:algonaid/features/courses/presentation/widgets/course_grades_widget.dart';
 import 'package:provider/provider.dart';
 
 class BuildExpertBadge extends StatefulWidget {
@@ -29,6 +33,9 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
   void initState() {
     super.initState();
     _gradesProvider = getIt<CourseGradesProvider>();
+    
+    // Fetch grades silently in the background so the badge unlocks automatically
+    // without requiring the user to press "Show Grade Details".
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _gradesProvider.fetchGrades(widget.courseId);
     });
@@ -41,18 +48,45 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
       child: Consumer<CourseGradesProvider>(
         builder: (context, provider, child) {
           final state = provider.getState(widget.courseId);
-          final isUnlocked = (state.grades?.averagePercentage ?? 0.0) > 90;
+          final averagePercentage = state.grades?.averagePercentage ?? 0.0;
+          final isCurrentlyUnlocked = averagePercentage >= 90;
+          // Note: using CacheHelper to know if user previously unlocked it
+          final hasUnlockedBefore = CacheHelper.getBool(key: 'unlocked_course_gold_${widget.courseId}') ?? false;
+          final isUnlocked = isCurrentlyUnlocked || hasUnlockedBefore;
+          final showWarning = hasUnlockedBefore && !isCurrentlyUnlocked;
     return GestureDetector(
       onTap: () {
         showDialog(
           context: context,
           barrierColor: Colors.black.withOpacity(0.5),
           builder: (context) => Badge3DDialog(
+            isUnlocked: isUnlocked,
+            onShare: () {
+              // Retrieve course name from provider
+              String? courseName;
+              try {
+                final coursesProvider = context.read<GetCoursesProvider>();
+                CourseEntity? matchedCourse;
+                try {
+                  matchedCourse = coursesProvider.allCourses.firstWhere((c) => c.id == widget.courseId);
+                } catch (_) {}
+                if (matchedCourse == null) {
+                  try {
+                    matchedCourse = coursesProvider.myCourses.firstWhere((c) => c.id == widget.courseId);
+                  } catch (_) {}
+                }
+                courseName = matchedCourse?.title;
+              } catch (_) {}
+              
+              ShareHelper.shareBadge("وسام التفوق الذهبي", courseName: courseName, courseId: widget.courseId);
+            },
             heroTag: "expert_badge_",
             title: "وسام التفوق الذهبي",
-            description: isUnlocked
-                ? "عمل رائع وإنجاز استثنائي! لقد اجتزت جميع التحديات بجدارة واستحقاق، وحصلت على وسام التفوق الذهبي. أنت بالفعل بطل هذه المادة!"
-                : "كن بطل هذه المادة! ستتوج بـ وسام التفوق الذهبي عند إتمامك لجميع وحدات الكورس بنجاح واجتياز كافة الاختبارات بمعدل لا يقل عن %90. استمر، العظمة بانتظارك!",
+            description: showWarning 
+                ? "لقد تم منحك هذا الوسام مسبقاً، ولكن تمت إضافة اختبارات جديدة. لضمان الحصول على معدل عالٍ يرجى إتمامها."
+                : (isUnlocked
+                    ? "عمل رائع وإنجاز استثنائي! لقد اجتزت جميع التحديات بجدارة واستحقاق، وحصلت على وسام التفوق الذهبي. أنت بالفعل بطل هذه المادة!"
+                    : "كن بطل هذه المادة! ستتوج بـ وسام التفوق الذهبي عند اجتيازك لكافة اختبارات هذا الكورس بمعدل لا يقل عن 90%. استمر، العظمة بانتظارك!"),
             lottie: AppLottie.goldMedal,
             gradientColors: [
               const Color.fromARGB(255, 255, 255, 255),
@@ -90,10 +124,18 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "أكمل 100% من الوحدة بمتوسط 90%",
+                        "اجتياز كافة اختبارات الكورس بمعدل 90% فأكثر",
                         style: context.textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
+                      if (showWarning) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          "ملاحظة: تمت إضافة اختبارات جديدة، يرجى إتمامها لضمان بقاء معدلك عالياً.",
+                          style: context.textTheme.bodySmall?.copyWith(color: Colors.orange),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -114,9 +156,7 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      if (state.isLoading)
-                        const CircularProgressIndicator()
-                      else
+                      // الزر يظهر دائماً — التحميل يحدث فقط داخل الـ bottom sheet
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(

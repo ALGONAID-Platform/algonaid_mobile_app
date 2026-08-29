@@ -1,14 +1,12 @@
-
-
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/animation.dart';
-import 'package:algonaid_mobail_app/features/onboard/data/models/onboarding_data.dart';
-import 'package:algonaid_mobail_app/features/onboard/domain/entity/onboarding_entity.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/providers/onboarding_provider.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/widgets/onBoardingFooter.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/widgets/onBoardingImage.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/widgets/onBoardingTitle.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/widgets/onBoardingdescription.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/animation.dart';
+import 'package:algonaid/features/onboard/data/models/onboarding_data.dart';
+import 'package:algonaid/features/onboard/domain/entity/onboarding_entity.dart';
+import 'package:algonaid/features/onboard/presentation/providers/onboarding_provider.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingFooter.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingImage.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingTitle.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/onBoardingdescription.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 MathBackground(),
 
                 PageView.builder(
+                  reverse: true,
                   onPageChanged: (value) => onboardinValue.onPagechange(value),
                   controller: onboardinValue.pageController,
                   itemCount: items.length,
@@ -41,23 +40,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     bool isCurrentPage = onboardinValue.current_bage == index;
 
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        OnboardingImage(
-                          isCurrentPage: isCurrentPage,
-                          item: items[index],
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                OnboardingImage(
+                                  isCurrentPage: isCurrentPage,
+                                  item: items[index],
+                                ),
+                                const SizedBox(height: 30),
+                                OnBoardingTitle(
+                                  isCurrentPage: isCurrentPage,
+                                  item: items[index],
+                                ),
+                                const SizedBox(height: 20),
+                                OnBoardingDescription(
+                                  isCurrentPage: isCurrentPage,
+                                  item: items[index],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 30),
-                        OnBoardingTitle(
-                          isCurrentPage: isCurrentPage,
-                          item: items[index],
-                        ),
-                        const SizedBox(height: 20),
-                        OnBoardingDescription(
-                          isCurrentPage: isCurrentPage,
-                          item: items[index],
-                        ),
-                        const Spacer(),
                         OnBoardingFooterAnimated(
                           targetProgress: targetProgress,
                           onboardinValue: onboardinValue,

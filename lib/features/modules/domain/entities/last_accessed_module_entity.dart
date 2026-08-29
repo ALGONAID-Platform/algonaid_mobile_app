@@ -19,18 +19,39 @@ class LastAccessedModuleEntity extends Equatable {
     required this.completedLessons,
     required this.progressPercentage,
     required this.image_url,
-
   });
+
+  LastAccessedModuleEntity copyWith({
+    int? moduleId,
+    String? courseName,
+    String? moduleName,
+    String? moduleDescription,
+    int? totalLessons,
+    int? completedLessons,
+    num? progressPercentage,
+    String? image_url,
+  }) {
+    return LastAccessedModuleEntity(
+      moduleId: moduleId ?? this.moduleId,
+      courseName: courseName ?? this.courseName,
+      moduleName: moduleName ?? this.moduleName,
+      moduleDescription: moduleDescription ?? this.moduleDescription,
+      totalLessons: totalLessons ?? this.totalLessons,
+      completedLessons: completedLessons ?? this.completedLessons,
+      progressPercentage: progressPercentage ?? this.progressPercentage,
+      image_url: image_url ?? this.image_url,
+    );
+  }
 
   @override
   List<Object?> get props => [
-    moduleId,
-    courseName,
-    moduleName,
-    moduleDescription,
-    totalLessons,
-    completedLessons,
-    progressPercentage,
-    image_url
-  ];
+        moduleId,
+        courseName,
+        moduleName,
+        moduleDescription,
+        totalLessons,
+        completedLessons,
+        progressPercentage,
+        image_url,
+      ];
 }

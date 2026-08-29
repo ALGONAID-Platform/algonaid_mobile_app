@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
 import 'package:equatable/equatable.dart';
 
 class LessonDetail extends Equatable {
@@ -10,6 +10,7 @@ class LessonDetail extends Equatable {
   final String? videoUrl;
   final String? pdfUrl;
   final Exam? exam;
+  final bool isReading;
 
   final int order;
 
@@ -23,6 +24,7 @@ class LessonDetail extends Equatable {
     this.videoUrl,
     this.pdfUrl,
     this.exam,
+    this.isReading = false,
   });
 
   @override
@@ -35,6 +37,7 @@ class LessonDetail extends Equatable {
         videoUrl,
         pdfUrl,
         exam,
+        isReading,
         order,
       ];
 }

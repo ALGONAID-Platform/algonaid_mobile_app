@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/network/api_service.dart';
-import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/network/api_service.dart';
+import 'package:algonaid/features/exams/data/models/exam_models.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class ExamLocalDataSource {

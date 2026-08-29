@@ -1,7 +1,7 @@
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
-import 'package:algonaid_mobail_app/features/onboard/data/models/onboarding_data.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/providers/onboarding_provider.dart';
-import 'package:algonaid_mobail_app/features/onboard/presentation/widgets/moveButtonWidget.dart';
+import 'package:algonaid/core/theme/styles.dart';
+import 'package:algonaid/features/onboard/data/models/onboarding_data.dart';
+import 'package:algonaid/features/onboard/presentation/providers/onboarding_provider.dart';
+import 'package:algonaid/features/onboard/presentation/widgets/moveButtonWidget.dart';
 import 'package:flutter/material.dart';
 
 class OnBoardingFooterAnimated extends StatelessWidget {
@@ -26,6 +26,12 @@ class OnBoardingFooterAnimated extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Row(
           children: [
+            MoveButtonWidgetAnimated(
+              isLastPage: isLastPage,
+              targetProgress: targetProgress,
+              onboardinValue: onboardinValue,
+            ),
+            const Spacer(),
             // AnimatedSwitcher للتبديل بين نص 'ابدأ من هنا!' وزر الرجوع
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
@@ -46,20 +52,15 @@ class OnBoardingFooterAnimated extends StatelessWidget {
                       key: const ValueKey('startText'), // مفتاح فريد للنص
                       style: Styles.textStyle24,
                     )
-                  : BackButton(
-                      key: const ValueKey(
-                        'backButton',
-                      ), // مفتاح فريد لزر الرجوع
-                      onPressed: () {
-                        onboardinValue.goToPrevousPage();
-                      },
+                  : Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: BackButton(
+                        key: const ValueKey('backButton'), // مفتاح فريد لزر الرجوع
+                        onPressed: () {
+                          onboardinValue.goToPrevousPage();
+                        },
+                      ),
                     ),
-            ),
-            const Spacer(),
-            MoveButtonWidgetAnimated(
-              isLastPage: isLastPage,
-              targetProgress: targetProgress,
-              onboardinValue: onboardinValue,
             ),
           ],
         ),

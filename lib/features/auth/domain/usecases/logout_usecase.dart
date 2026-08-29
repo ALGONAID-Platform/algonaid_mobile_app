@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/userCases/usecase.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/userCases/usecase.dart';
+import 'package:algonaid/features/auth/domain/repositories/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 
 class LogoutUsecase {

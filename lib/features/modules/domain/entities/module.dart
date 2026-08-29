@@ -1,6 +1,6 @@
-// algonaid_mobail_app/lib/features/modules/domain/entities/module.dart
+// algonaid/lib/features/modules/domain/entities/module.dart
 
-import 'package:algonaid_mobail_app/features/lessons/domain/entities/lesson.dart';
+import 'package:algonaid/features/lessons/domain/entities/lesson.dart';
 import 'package:equatable/equatable.dart';
 
 class Module extends Equatable {
@@ -12,6 +12,7 @@ class Module extends Equatable {
   final int completedLessons;
   final double progressPercentage;
   final int totalLessons;
+  final String? imageUrl;
 
   const Module({
     required this.id,
@@ -22,17 +23,43 @@ class Module extends Equatable {
     required this.completedLessons,
     required this.progressPercentage,
     required this.totalLessons,
+    this.imageUrl,
   });
+
+  Module copyWith({
+    int? id,
+    String? title,
+    String? description,
+    int? courseId,
+    List<Lesson>? lessons,
+    int? completedLessons,
+    double? progressPercentage,
+    int? totalLessons,
+    String? imageUrl,
+  }) {
+    return Module(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      courseId: courseId ?? this.courseId,
+      lessons: lessons ?? this.lessons,
+      completedLessons: completedLessons ?? this.completedLessons,
+      progressPercentage: progressPercentage ?? this.progressPercentage,
+      totalLessons: totalLessons ?? this.totalLessons,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
+  }
 
   @override
   List<Object?> get props => [
-    id,
-    title,
-    description,
-    courseId,
-    lessons,
-    completedLessons,
-    progressPercentage,
-    totalLessons,
-  ];
+        id,
+        title,
+        description,
+        courseId,
+        lessons,
+        completedLessons,
+        progressPercentage,
+        totalLessons,
+        imageUrl,
+      ];
 }

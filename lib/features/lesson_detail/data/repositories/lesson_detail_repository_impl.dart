@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/datasources/lesson_detail_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/data/models/lesson_detail_model.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/entities/lesson_detail.dart';
-import 'package:algonaid_mobail_app/features/lesson_detail/domain/repositories/lesson_detail_repository.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
+import 'package:algonaid/features/lesson_detail/data/datasources/lesson_detail_local_data_source.dart';
+import 'package:algonaid/features/lesson_detail/data/datasources/lesson_detail_remote_data_source.dart';
+import 'package:algonaid/features/lesson_detail/data/models/lesson_detail_model.dart';
+import 'package:algonaid/features/lesson_detail/domain/entities/lesson_detail.dart';
+import 'package:algonaid/features/lesson_detail/domain/repositories/lesson_detail_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -43,16 +43,16 @@ class LessonDetailRepositoryImpl implements LessonDetailRepository {
       final entity = model.toEntity();
 
       return Right(entity);
-    } on ServerException catch (e) {
+    } catch (e) {
       if (localModel != null) {
         return Right(localModel.toEntity());
       }
-      return Left(ServerFailure(e.message));
-    } on DioException catch (e) {
-      if (localModel != null) {
-        return Right(localModel.toEntity());
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
       }
-      return Left(DioErrorHandler.handle(e));
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحميل تفاصيل الدرس.'));
     }
   }
 
@@ -61,10 +61,13 @@ class LessonDetailRepositoryImpl implements LessonDetailRepository {
     try {
       await remoteDataSource.updateLessonProgress(lessonId, isCompleted);
       return const Right(null);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } on DioException catch (e) {
-      return Left(DioErrorHandler.handle(e));
+    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء تحديث تقدم الدرس.'));
     }
   }
 }

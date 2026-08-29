@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/common/enums/user_role.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/features/auth/domain/entities/user_entity.dart';
+import 'package:algonaid/core/common/enums/user_role.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/features/auth/domain/entities/user_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class AuthRepo {
@@ -14,5 +14,17 @@ abstract class AuthRepo {
     required String password,
     required UserRole role,
   });
+  Future<Either<Failure, UserEntity>> googleSignin({
+    required String idToken,
+  });
   Future<Either<Failure, void>> logout(); // Added
+  Future<Either<Failure, String>> forgotPassword({required String email});
+  Future<Either<Failure, String>> resetPassword({
+    required String token,
+    required String newPassword,
+  });
+  
+  // ==================== Email Verification ====================
+  Future<Either<Failure, String>> verifyEmail({required String token});
+  Future<Either<Failure, String>> resendVerificationEmail({required String email});
 }

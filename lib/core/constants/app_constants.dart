@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
 import 'package:flutter/material.dart';
 
 abstract class AppConstants {
@@ -74,9 +74,9 @@ abstract class AppConstants {
   static const int maxPageSize = 100;
 
   // api timeouts
-  static const Duration apiConnectTimeout = Duration(seconds: 15);
-  static const Duration apiReceiveTimeout = Duration(seconds: 5);
-  static const Duration apiSendTimeout = Duration(seconds: 5);
+  static const Duration apiConnectTimeout = Duration(seconds: 60);
+  static const Duration apiReceiveTimeout = Duration(seconds: 60);
+  static const Duration apiSendTimeout = Duration(seconds: 60);
 
   //responsive screens
   static const double mobileBreakpoint = 700;
@@ -100,15 +100,15 @@ abstract class AppConstants {
   static const drawBarPageFlex = 2;
 
   // user data
-  static int userIdValue = int.tryParse(
-    CacheHelper.getString(key: AppConstants.userId)!,
-  )!;
-  static String userNameValue = CacheHelper.getString(
-    key: AppConstants.userName,
-  )!;
-  static String userEmailValue = CacheHelper.getString(
-    key: AppConstants.userEmail,
-  )!;
+  static int? get userIdValue {
+    final val = CacheHelper.getString(key: AppConstants.userId);
+    return val != null ? int.tryParse(val) : null;
+  }
+
+  static String? get userNameValue =>
+      CacheHelper.getString(key: AppConstants.userName);
+  static String? get userEmailValue =>
+      CacheHelper.getString(key: AppConstants.userEmail);
 
   //color dark matrix for pdf viewer
   static const colorFilter = ColorFilter.matrix([

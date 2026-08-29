@@ -1,13 +1,14 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart';
-import 'package:algonaid_mobail_app/features/profile/presentation/providers/profile_provider.dart';
+import 'dart:io';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/app_constants.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/features/profile/presentation/providers/profile_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
 import 'edit_profile_dialog.dart';
 
 class ProfileHeader extends StatefulWidget {
@@ -21,12 +22,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<ProfileProvider>(context, listen: false);
-      provider.loadTotalPoints();
-      provider.loadUserProfile();
-      provider.loadUserBadges();
-    });
+    // تحميل البيانات يتم من ProfilePage لتفادي الطلبات المزدوجة
   }
 
   String _getInitials(String name) {
@@ -43,6 +39,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     return Consumer<ProfileProvider>(
       builder: (context, provider, child) {
         final profile = provider.userProfile;
+        final grade = profile?.grade;
+        final birthDate = profile?.birthDate;
+        final address = profile?.address;
 
         final userName = profile?.name != null && profile!.name.isNotEmpty
             ? profile.name
@@ -53,13 +52,17 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             "user@example.com";
         final initials = _getInitials(userName);
 
-        final hasBackground =
-            false;
-
+        String? userAvatar = profile?.avatar;
+        if (userAvatar == null || userAvatar.isEmpty) {
+          userAvatar = CacheHelper.getString(key: AppConstants.userAvatar);
+        }
+        if (userAvatar != null && userAvatar.isEmpty) {
+          userAvatar = null;
+        }
         // تحديد الألوان بذكاء بناءً على وجود خلفية مخصصة أو الاعتماد على ثيم التطبيق
         final textColor = context.textTheme.titleLarge?.color;
         final subTextColor = context.colorScheme.onSurface.withOpacity(0.6);
-        final cardColor =  context.colorScheme.surface;
+        final cardColor = context.colorScheme.surface;
 
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -70,8 +73,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               decoration: BoxDecoration(
                 color: cardColor,
                 borderRadius: BorderRadius.circular(24),
-                border: AppBorder.main_border
-              
+                border: AppBorder.main_border,
               ),
               child: Stack(
                 children: [
@@ -82,33 +84,36 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         // القسم الأول: الصورة الشخصية والاسم والنقاط
                         Row(
                           children: [
-                            _buildAvatar(profile, initials),
+                            _buildAvatar(profile, initials, userAvatar, provider.localAvatarPath),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    userName,
-                                    style: context.textTheme.titleLarge
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: textColor,
-                                        ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    userEmail,
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(color: subTextColor),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  _buildPointsBadge(provider),
-                                ],
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 36.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      userName,
+                                      style: context.textTheme.titleLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: textColor,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      userEmail,
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(color: subTextColor),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    _buildPointsBadge(provider),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -125,9 +130,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                 context,
                                 Icons.school_rounded,
                                 'الصف الدراسي',
-                                (profile?.grade != null &&
-                                        profile!.grade!.isNotEmpty)
-                                    ? profile.grade!
+                                (grade != null && grade.isNotEmpty)
+                                    ? grade
                                     : 'غير محدد',
                                 textColor,
                                 subTextColor,
@@ -139,9 +143,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                 context,
                                 Icons.cake_rounded,
                                 'تاريخ الميلاد',
-                                (profile?.birthDate != null &&
-                                        profile!.birthDate!.isNotEmpty)
-                                    ? _formatHeaderDate(profile!.birthDate!)
+                                (birthDate != null && birthDate.isNotEmpty)
+                                    ? _formatHeaderDate(birthDate)
                                     : 'غير محدد',
                                 textColor,
                                 subTextColor,
@@ -153,9 +156,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                 context,
                                 Icons.location_on_rounded,
                                 'العنوان',
-                                (profile?.address != null &&
-                                        profile!.address!.isNotEmpty)
-                                    ? profile.address!
+                                (address != null && address.isNotEmpty)
+                                    ? address
                                     : 'غير محدد',
                                 textColor,
                                 subTextColor,
@@ -196,55 +198,81 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   }
 
   // ويدجت بناء الصورة الشخصية بدقة عالية وظلال ناعمة
-  Widget _buildAvatar(dynamic profile, String initials) {
-    final hasAvatar = profile?.avatar != null && profile!.avatar!.isNotEmpty;
+  Widget _buildAvatar(dynamic profile, String initials, String? avatarUrl, String? localAvatarPath) {
+    final bool hasLocal = localAvatarPath != null && localAvatarPath.isNotEmpty;
+    final bool hasNetwork = avatarUrl != null && avatarUrl.isNotEmpty;
+    final bool hasAvatar = hasLocal || hasNetwork;
+
+    ImageProvider? imageProvider;
+    if (hasLocal) {
+      imageProvider = FileImage(File(localAvatarPath!));
+    } else if (hasNetwork) {
+      imageProvider = CachedNetworkImageProvider(avatarUrl!, errorListener: (err) {});
+    }
+
     return GestureDetector(
-      onTap: () => _showFullScreenImage(context, profile, initials),
+      onTap: () => _showFullScreenImage(context, profile, initials, avatarUrl, localAvatarPath),
       child: Hero(
         tag: 'user_profile_avatar',
-      child: Container(
-        width: 78,
-        height: 78,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-  
-          image: hasAvatar
-              ? DecorationImage(
-                  image: CachedNetworkImageProvider(profile.avatar!),
-                  fit: BoxFit.cover,
-                )
-              : null,
-          gradient: !hasAvatar
-              ? LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.primary.withOpacity(0.75),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        child: Container(
+          width: 78,
+          height: 78,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: hasAvatar
+                ? DecorationImage(
+                    image: imageProvider!,
+                    fit: BoxFit.cover,
+                    onError: (exception, stackTrace) {},
+                  )
+                : null,
+            gradient: !hasAvatar
+                ? LinearGradient(
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withOpacity(0.75),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+          ),
+          child: !hasAvatar
+              ? Center(
+                  child: Text(
+                    initials,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 )
               : null,
         ),
-        child: !hasAvatar
-            ? Center(
-                child: Text(
-                  initials,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-              )
-            : null,
-      ),
       ),
     );
   }
 
-  void _showFullScreenImage(BuildContext context, dynamic profile, String initials) {
-    final hasAvatar = profile?.avatar != null && profile!.avatar!.isNotEmpty;
+  void _showFullScreenImage(
+    BuildContext context,
+    dynamic profile,
+    String initials,
+    String? avatarUrl,
+    String? localAvatarPath,
+  ) {
+    final bool hasLocal = localAvatarPath != null && localAvatarPath.isNotEmpty;
+    final bool hasNetwork = avatarUrl != null && avatarUrl.isNotEmpty;
+    final bool hasAvatar = hasLocal || hasNetwork;
+
+    ImageProvider? imageProvider;
+    if (hasLocal) {
+      imageProvider = FileImage(File(localAvatarPath!));
+    } else if (hasNetwork) {
+      imageProvider = CachedNetworkImageProvider(avatarUrl!, errorListener: (err) {});
+    }
+
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
@@ -269,8 +297,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       shape: BoxShape.circle,
                       image: hasAvatar
                           ? DecorationImage(
-                              image: CachedNetworkImageProvider( profile.avatar!),
+                              image: imageProvider!,
                               fit: BoxFit.cover,
+                              onError: (exception, stackTrace) {},
                             )
                           : null,
                       gradient: !hasAvatar

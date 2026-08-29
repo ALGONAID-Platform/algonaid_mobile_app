@@ -1,16 +1,16 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
-import 'package:algonaid_mobail_app/features/modules/data/datasources/module_remote_datasource.dart';
-import 'package:algonaid_mobail_app/features/modules/data/models/module_grades_model.dart';
-import 'package:algonaid_mobail_app/features/modules/data/models/module_model.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/module.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/last_accessed_module_entity.dart';
-import 'package:algonaid_mobail_app/features/modules/data/datasources/module_local_datasource.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/entities/module_grades.dart';
-import 'package:algonaid_mobail_app/features/modules/domain/repositories/module_repository.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
+import 'package:algonaid/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid/features/modules/data/datasources/module_remote_datasource.dart';
+import 'package:algonaid/features/modules/data/models/module_grades_model.dart';
+import 'package:algonaid/features/modules/data/models/module_model.dart';
+import 'package:algonaid/features/modules/domain/entities/module.dart';
+import 'package:algonaid/features/modules/domain/entities/last_accessed_module_entity.dart';
+import 'package:algonaid/features/modules/data/datasources/module_local_datasource.dart';
+import 'package:algonaid/features/modules/domain/entities/module_grades.dart';
+import 'package:algonaid/features/modules/domain/repositories/module_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -55,8 +55,21 @@ class ModuleRepositoryImpl implements ModuleRepository {
         return Left(ServerFailure(e.message));
       }
       return Left(
-        ServerFailure('An unexpected error occurred: ${e.toString()}'),
+        const ServerFailure('حدث خطأ غير متوقع أثناء تحميل الوحدات'),
       );
+    }
+  }
+
+  @override
+  Either<Failure, List<Module>> getCachedModulesByCourse(int courseId) {
+    try {
+      final localModules = localDataSource.getModules(courseId);
+      if (localModules.isNotEmpty) {
+        return Right(localModules);
+      }
+      return const Right([]);
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة الوحدات المخزنة مؤقتاً"));
     }
   }
 
@@ -79,7 +92,7 @@ class ModuleRepositoryImpl implements ModuleRepository {
         final localModule = await localDataSource.getLastAccessedModule();
         if (localModule != null) return Right(localModule);
       } catch (_) {}
-      return Left(ServerFailure(e.toString()));
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء جلب آخر وحدة تم الوصول إليها'));
     }
   }
 
@@ -88,7 +101,7 @@ class ModuleRepositoryImpl implements ModuleRepository {
       final localModule = await localDataSource.getLastAccessedModule();
       return Right(localModule);
     } catch (e) {
-      return Left(CacheFailure("Failed to load from cache: $e"));
+      return Left(const CacheFailure("خطأ في تحميل البيانات من الكاش"));
     }
   }
 
@@ -123,7 +136,7 @@ class ModuleRepositoryImpl implements ModuleRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(const ServerFailure('حدث خطأ غير متوقع أثناء جلب درجات الوحدة'));
     }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum SnackBarType { success, error, info }
+enum SnackBarType { success, error, info, warning }
 
 class AppSnackBar {
   static void show({
@@ -28,10 +28,16 @@ class AppSnackBar {
         icon = Icons.error_outline;
         break;
       case SnackBarType.info:
-      default:
         backgroundColor = theme.colorScheme.primary;
         icon = Icons.info_outline;
         break;
+      case SnackBarType.warning:
+        backgroundColor = Colors.orange.shade700;
+        icon = Icons.warning_amber_outlined;
+        break;
+      default:
+        backgroundColor = theme.colorScheme.primary;
+        icon = Icons.info_outline;
     }
 
     final snackBar = SnackBar(

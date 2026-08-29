@@ -1,8 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart'; // استيراد ملف الألوان الخاص بك
+import 'package:confetti/confetti.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/app_shadows.dart';
+import 'package:algonaid/core/theme/colors.dart'; // استيراد ملف الألوان الخاص بك
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -14,6 +15,8 @@ class Badge3DDialog extends StatefulWidget {
   final String lottie;
   final List<Color> gradientColors;
   final Color borderColor;
+  final bool isUnlocked;
+  final VoidCallback? onShare;
 
   const Badge3DDialog({
     super.key,
@@ -23,6 +26,8 @@ class Badge3DDialog extends StatefulWidget {
     required this.gradientColors,
     required this.borderColor,
     required this.heroTag,
+    this.isUnlocked = false,
+    this.onShare,
   });
 
   @override
@@ -33,6 +38,7 @@ class Badge3DDialogState extends State<Badge3DDialog>
     with TickerProviderStateMixin {
   late AnimationController _springController;
   late AnimationController _starController;
+  late ConfettiController _confettiController;
 
   double rotationX = 0;
   double rotationY = 0;
@@ -43,6 +49,11 @@ class Badge3DDialogState extends State<Badge3DDialog>
   @override
   void initState() {
     super.initState();
+
+    _confettiController = ConfettiController(duration: const Duration(seconds: 4));
+    if (widget.isUnlocked) {
+      _confettiController.play();
+    }
 
     _springController =
         AnimationController(
@@ -65,6 +76,7 @@ class Badge3DDialogState extends State<Badge3DDialog>
   void dispose() {
     _springController.dispose();
     _starController.dispose();
+    _confettiController.dispose();
     super.dispose();
   }
 
@@ -77,8 +89,10 @@ class Badge3DDialogState extends State<Badge3DDialog>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+    return Stack(
+      children: [
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -164,6 +178,18 @@ class Badge3DDialogState extends State<Badge3DDialog>
                       ),
                     ),
                     const SizedBox(height: 16),
+                    
+                    if (widget.isUnlocked)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: Text(
+                          "تهانينا لك! 🎉",
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            color: AppColors.amber,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
 
                     // الوصف الديناميكي (استخدام ستايل النصوص من ملفك)
                     Padding(
@@ -180,30 +206,71 @@ class Badge3DDialogState extends State<Badge3DDialog>
 
                     const SizedBox(height: 40),
 
-                    // زر الإغلاق (استخدام ألوان البراند الخاص بك)
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: const BoxDecoration(
-                          color: AppColors
-                              .white, // أو AppColors.grey400 بopacity خفيف
-                          shape: BoxShape.circle,
+                    // زر الإغلاق والمشاركة
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (widget.isUnlocked && widget.onShare != null) ...[
+                          ElevatedButton.icon(
+                            onPressed: widget.onShare,
+                            icon: const Icon(Icons.share, color: AppColors.primary),
+                            label: const Text("مشاركة", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                        ],
+                        InkWell(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              color: AppColors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: AppColors.grey400,
+                              size: 28,
+                            ),
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.close,
-                          color: AppColors.grey400,
-                          size: 28,
-                        ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
           ),
-        ),
-      ),
+        ))),
+        if (widget.isUnlocked)
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirection: pi / 2, // fall downwards
+              maxBlastForce: 20, 
+              minBlastForce: 5,
+              emissionFrequency: 0.05, 
+              numberOfParticles: 20,
+              gravity: 0.1,
+              shouldLoop: false,
+              colors: const [
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+                Colors.orange,
+                Colors.purple,
+                AppColors.amber,
+              ],
+            ),
+          ),
+      ],
     );
   }
 

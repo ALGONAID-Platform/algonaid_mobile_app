@@ -1,5 +1,4 @@
-import 'package:algonaid_mobail_app/features/profile/domain/entities/user_badge_entity.dart';
-
+import 'package:algonaid/features/profile/domain/entities/user_badge_entity.dart';
 
 class UserBadgeModel extends UserBadgeEntity {
   UserBadgeModel({
@@ -9,6 +8,7 @@ class UserBadgeModel extends UserBadgeEntity {
     required super.progress,
     required super.target,
     required super.tier,
+    super.earnedAt,
   });
 
   factory UserBadgeModel.fromJson(Map<String, dynamic> json) {
@@ -19,6 +19,21 @@ class UserBadgeModel extends UserBadgeEntity {
       progress: json['progress'] as int,
       target: json['target'] as int,
       tier: json['tier'] as String? ?? 'STANDARD',
+      earnedAt: json['earnedAt'] != null
+          ? DateTime.tryParse(json['earnedAt'] as String)
+          : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'key': key,
+      'isUnlocked': isUnlocked,
+      'progress': progress,
+      'target': target,
+      'tier': tier,
+      'earnedAt': earnedAt?.toIso8601String(),
+    };
   }
 }

@@ -1,8 +1,8 @@
-import 'package:algonaid_mobail_app/core/routes/navigatorKey.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/utils/cache/shared_pref.dart'; // New Import
-import 'package:algonaid_mobail_app/core/constants/app_constants.dart'; // New Import
-import 'package:algonaid_mobail_app/features/onboard/data/models/onboarding_data.dart';
+import 'package:algonaid/core/routes/navigatorKey.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/utils/cache/shared_pref.dart'; // New Import
+import 'package:algonaid/core/constants/app_constants.dart'; // New Import
+import 'package:algonaid/features/onboard/data/models/onboarding_data.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,7 +24,7 @@ class OnboardingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void goToNextPage() async {
+  void goToNextPage(Offset offset) async {
     if (current_bage < OnboardingData.items.length - 1) {
       pageController.nextPage(
         duration: const Duration(milliseconds: 500),
@@ -40,8 +40,8 @@ class OnboardingProvider extends ChangeNotifier {
       final context = navigatorKey.currentContext;
       await Future.delayed(const Duration(milliseconds: 200));
 
-      // Navigate to auth page
-      GoRouter.of(context!).go(Routes.auth);
+      // Navigate to guest home page
+      GoRouter.of(context!).go(Routes.guestHome, extra: offset);
     }
     notifyListeners();
   }

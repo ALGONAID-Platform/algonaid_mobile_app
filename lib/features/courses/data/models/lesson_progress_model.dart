@@ -1,5 +1,7 @@
 import 'package:hive/hive.dart';
 
+part 'lesson_progress_model.g.dart';
+
 @HiveType(typeId: 5)
 class LessonModel {
   @HiveField(0)

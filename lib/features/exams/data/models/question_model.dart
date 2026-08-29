@@ -1,6 +1,6 @@
-// algonaid_mobail_app/lib/features/exams/data/models/question_model.dart
-import 'package:algonaid_mobail_app/features/exams/data/models/option_model.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/question.dart';
+// algonaid/lib/features/exams/data/models/question_model.dart
+import 'package:algonaid/features/exams/data/models/option_model.dart';
+import 'package:algonaid/features/exams/domain/entities/question.dart';
 
 class QuestionModel extends Question {
   const QuestionModel({
@@ -9,6 +9,7 @@ class QuestionModel extends Question {
     required super.type,
     required super.points,
     super.options,
+    super.image,
   });
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +24,7 @@ class QuestionModel extends Question {
               .map((o) => OptionModel.fromJson(o))
               .toList()
           : null,
+      image: json['image'] ?? json['imageUrl'],
     );
   }
 

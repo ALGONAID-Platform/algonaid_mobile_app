@@ -1,10 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/theme/styles.dart';
 
 // ignore: must_be_immutable
 class SwapAuthButtonCostum extends StatelessWidget {
@@ -39,8 +39,8 @@ class StackButtons extends StatelessWidget {
         AnimatedAlign(
           duration: Duration(milliseconds: 300),
           alignment: auth.isLogin
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
+              ? AlignmentDirectional.centerStart
+              : AlignmentDirectional.centerEnd,
           child: Container(
             height: 59,
             padding: EdgeInsets.all(5),
@@ -64,7 +64,7 @@ class StackButtons extends StatelessWidget {
                   child: Text(
                     "تسجيل دخول",
                     style: Styles.textStyle16.copyWith(
-                      color: auth.isLogin ? context.primary : Colors.white,
+                      color: auth.isLogin ? context.primary : context.onPrimary,
                     ),
                   ),
                 ),
@@ -75,9 +75,9 @@ class StackButtons extends StatelessWidget {
                     if (auth.isLogin) auth.toggleAuthMode();
                   },
                   child: Text(
-                    "أنشاء حساب",
+                    "إنشاء حساب",
                     style: Styles.textStyle16.copyWith(
-                      color: !auth.isLogin ? context.primary : Colors.white,
+                      color: !auth.isLogin ? context.primary : context.onPrimary,
                     ),
                   ),
                 ),

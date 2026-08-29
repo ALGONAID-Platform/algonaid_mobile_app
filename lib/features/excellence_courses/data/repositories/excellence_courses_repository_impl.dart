@@ -1,13 +1,13 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/data/models/excellence_course_model.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/entities/excellence_course_entity.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/entities/excellence_module_entity.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
+import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/features/excellence_courses/data/datasources/excellence_courses_local_data_source.dart';
+import 'package:algonaid/features/excellence_courses/data/datasources/excellence_courses_remote_data_source.dart';
+import 'package:algonaid/features/excellence_courses/data/models/excellence_course_model.dart';
+import 'package:algonaid/features/excellence_courses/domain/entities/excellence_course_entity.dart';
+import 'package:algonaid/features/excellence_courses/domain/entities/excellence_module_entity.dart';
+import 'package:algonaid/features/excellence_courses/domain/repositories/excellence_courses_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -48,7 +48,7 @@ class ExcellenceCoursesRepositoryImpl implements ExcellenceCoursesRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
     }
   }
 
@@ -69,7 +69,20 @@ class ExcellenceCoursesRepositoryImpl implements ExcellenceCoursesRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
+    }
+  }
+
+  @override
+  Either<Failure, List<ExcellenceCourseEntity>> getCachedExcellenceCourses() {
+    try {
+      final cached = local.getExcellenceCoursesSync();
+      if (cached != null) {
+        return Right(cached);
+      }
+      return const Right([]);
+    } catch (e) {
+      return Left(CacheFailure("حدث خطأ أثناء تحميل الكورسات المميزة المخزنة مؤقتاً"));
     }
   }
 }

@@ -1,15 +1,17 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/app_shadows.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/app_shadows.dart';
 import 'package:flutter/material.dart';
 
 class FancyFloatingNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemSelected;
+  final bool isGuest;
 
   const FancyFloatingNavBar({
     Key? key,
     required this.selectedIndex,
     required this.onItemSelected,
+    this.isGuest = false,
   }) : super(key: key);
 
   @override
@@ -18,18 +20,21 @@ class FancyFloatingNavBar extends StatefulWidget {
 
 class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
     with TickerProviderStateMixin {
-  late final List<IconData> icons = [
-    Icons.home_outlined,
-    Icons.emoji_events_rounded,
-    Icons.bookmark_rounded,
-    Icons.person_rounded,
-  ];
-  late final List<String> labels = [
-    'الرئيسية',
-    'المسابقات',
-    'المحفوظات',
-    'الحساب',
-  ];
+  late final List<IconData> icons = widget.isGuest
+      ? [
+          Icons.home_outlined,
+          Icons.emoji_events_rounded,
+          Icons.bookmark_rounded,
+        ]
+      : [
+          Icons.home_outlined,
+          Icons.emoji_events_rounded,
+          Icons.bookmark_rounded,
+          Icons.person_rounded,
+        ];
+  late final List<String> labels = widget.isGuest
+      ? ['الرئيسية', 'المسابقات', 'المحفوظات']
+      : ['الرئيسية', 'المسابقات', 'المحفوظات', 'الحساب'];
 
   late final List<AnimationController> _iconControllers;
 
@@ -77,9 +82,11 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
           borderRadius: BorderRadius.circular(30),
           boxShadow: AppShadows.cardShadow,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(icons.length, (i) {
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(icons.length, (i) {
             final bool isActive = i == widget.selectedIndex;
 
             return Expanded(
@@ -141,6 +148,7 @@ class _FancyFloatingNavBarState extends State<FancyFloatingNavBar>
               ),
             );
           }),
+        ),
         ),
       ),
     );

@@ -5,8 +5,10 @@ class ExcellenceCourseEntity extends Equatable {
   final String courseTitle;
   final String courseImage;
   final num averagePercentage;
-  final DateTime completedAt;
+  final DateTime? completedAt;
   final bool isCompleted;
+  final num? targetAverage;
+  final bool? allExamsAttempted;
 
   const ExcellenceCourseEntity({
     required this.courseId,
@@ -15,6 +17,8 @@ class ExcellenceCourseEntity extends Equatable {
     required this.averagePercentage,
     required this.completedAt,
     required this.isCompleted,
+    this.targetAverage,
+    this.allExamsAttempted,
   });
 
   @override
@@ -25,5 +29,7 @@ class ExcellenceCourseEntity extends Equatable {
         averagePercentage,
         completedAt,
         isCompleted,
+        targetAverage,
+        allExamsAttempted,
       ];
 }

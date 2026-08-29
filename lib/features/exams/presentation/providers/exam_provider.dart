@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/core/di/service_locator.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/usecases/exam_usecases.dart';
-import 'package:algonaid_mobail_app/core/utils/notification_service.dart';
+import 'package:algonaid/core/di/service_locator.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/exams/domain/usecases/exam_usecases.dart';
+import 'package:algonaid/core/utils/notification_service.dart';
+import 'package:hive/hive.dart';
 
 /// State for exam loading
 enum ExamState { initial, loading, loaded, error }
@@ -72,6 +73,31 @@ class ExamProvider extends ChangeNotifier {
   int get answeredQuestions => _answers.length;
   int get remainingQuestions => totalQuestions - answeredQuestions;
 
+  // New logic for attempts and duration
+  int get currentAttempts {
+    if (_exam == null) return 0;
+    if (!Hive.isBoxOpen('user_exam_attempts')) return 0;
+    final box = Hive.box<String>('user_exam_attempts');
+    final countStr = box.get(_exam!.id.toString());
+    return countStr != null ? (int.tryParse(countStr) ?? 0) : 0;
+  }
+
+  int get remainingAttempts {
+    final remaining = 3 - currentAttempts;
+    return remaining < 0 ? 0 : remaining;
+  }
+  
+  bool get hasExceededAttempts => currentAttempts >= 3;
+
+  int get examDurationMinutes {
+    final qCount = totalQuestions;
+    if (qCount == 0) return 15;
+    if (qCount == 1) return 15;
+    if (qCount == 2 || qCount == 3) return 20;
+    if (qCount >= 4 && qCount <= 6) return 30;
+    return 40;
+  }
+
   /// Load exam data
   Future<void> loadExam(int examId) async {
     // 1. Check if already loading or already loaded for same ID to prevent redundant calls
@@ -82,10 +108,14 @@ class ExamProvider extends ChangeNotifier {
       return;
     }
     if (_exam?.id == examId && _state == ExamState.loaded) {
-      debugPrint(
-        'ExamProvider: loadExam skipped because examId=$examId is already loaded',
-      );
-      return;
+      if (_isSubmitted) {
+        resetExam();
+      } else {
+        debugPrint(
+          'ExamProvider: loadExam skipped because examId=$examId is already loaded',
+        );
+        return;
+      }
     }
 
     debugPrint('ExamProvider: loadExam started for examId: $examId');
@@ -99,6 +129,19 @@ class ExamProvider extends ChangeNotifier {
     _isSubmitted = false;
     _result = null;
     _answers.clear();
+    
+    // Ensure the Hive boxes are open so we can read the correct attempt count and cached answers
+    try {
+      if (!Hive.isBoxOpen('user_exam_attempts')) {
+        await Hive.openBox<String>('user_exam_attempts');
+      }
+      if (!Hive.isBoxOpen('exam_correct_answers')) {
+        await Hive.openBox<Map>('exam_correct_answers');
+      }
+    } catch (e) {
+      debugPrint('Error opening Hive boxes: $e');
+    }
+
     if (hasListeners) {
       notifyListeners();
     }
@@ -258,6 +301,94 @@ class ExamProvider extends ChangeNotifier {
       notifyListeners();
     }
 
+    if (_attemptId! <= 0) {
+      // Evaluate locally
+      int correctCount = 0;
+      int wrongCount = 0;
+      Map<int, int> correctOptionsMap = {};
+
+      // Try to load cached correct answers
+      try {
+        if (Hive.isBoxOpen('exam_correct_answers')) {
+          final box = Hive.box<Map>('exam_correct_answers');
+          final cached = box.get(_exam!.id.toString());
+          if (cached != null) {
+             correctOptionsMap = cached.map((k, v) => MapEntry(int.parse(k.toString()), v as int));
+          }
+        }
+      } catch (e) {
+        debugPrint('Error loading cached correct answers: $e');
+      }
+
+      for (var question in _questions) {
+        final userAns = _answers[question.id];
+        bool isCorrectAns = false;
+        
+        // 1. If we have the cached correct answer, use it
+        if (correctOptionsMap.containsKey(question.id)) {
+          if (userAns == correctOptionsMap[question.id]) {
+            isCorrectAns = true;
+          }
+        } else {
+          // 2. Fallback to checking option.isCorrect if the cache doesn't have it
+          for (var option in question.options) {
+            if (option.isCorrect) {
+              correctOptionsMap[question.id] = option.id;
+              if (userAns == option.id) {
+                isCorrectAns = true;
+              }
+            }
+          }
+        }
+        
+        if (isCorrectAns) {
+          correctCount++;
+        } else {
+          wrongCount++;
+        }
+      }
+
+      int finalScore = 0;
+      if (totalQuestions > 0) {
+        finalScore = ((correctCount / totalQuestions) * 100).toInt();
+      }
+
+      _result = ExamResult(
+        attemptId: _attemptId!,
+        examId: _exam!.id,
+        studentId: 0,
+        score: finalScore,
+        status: 'COMPLETED_LOCALLY',
+        submittedAt: DateTime.now(),
+        totalQuestions: totalQuestions,
+        correctAnswers: correctCount,
+        wrongAnswers: wrongCount,
+        answers: _answers,
+        correctOptions: correctOptionsMap,
+      );
+      _isSubmitted = true;
+      _state = ExamState.loaded;
+      _error = null;
+      await _saveProgressUseCase.call(_exam!.id, <int, int>{});
+      
+      // Increment local attempt count even for bypassed/local submissions
+      try {
+        if (!Hive.isBoxOpen('user_exam_attempts')) {
+          await Hive.openBox<String>('user_exam_attempts');
+        }
+        final box = Hive.box<String>('user_exam_attempts');
+        final newAttempts = currentAttempts >= 3 ? 3 : currentAttempts + 1;
+        await box.put(_exam!.id.toString(), newAttempts.toString());
+      } catch (e) {
+        debugPrint('Error saving local attempt count: $e');
+      }
+
+      if (hasListeners) {
+        notifyListeners();
+      }
+      return;
+    }
+
     final result = await _submitExamUseCase.call(_attemptId!, _answers);
 
     await result.fold(
@@ -272,7 +403,22 @@ class ExamProvider extends ChangeNotifier {
         _error = null;
         try {
           final fetchedResult = await _getExamResultUseCase.call(_attemptId!);
-          fetchedResult.fold((_) {}, (latestResult) => _result = latestResult);
+          fetchedResult.fold((_) {}, (latestResult) async {
+            _result = latestResult;
+            
+            // Save correct answers to Hive for future local evaluations
+            try {
+              if (!Hive.isBoxOpen('exam_correct_answers')) {
+                await Hive.openBox<Map>('exam_correct_answers');
+              }
+              final correctAnswersBox = Hive.box<Map>('exam_correct_answers');
+              // Store as Map<dynamic, dynamic> which Hive supports for simple types
+              final storableMap = latestResult.correctOptions.map((k, v) => MapEntry(k.toString(), v));
+              await correctAnswersBox.put(_exam!.id.toString(), storableMap);
+            } catch (e) {
+              debugPrint('Error saving correct answers: $e');
+            }
+          });
         } catch (_) {}
         await _saveProgressUseCase.call(_exam!.id, <int, int>{});
 
@@ -285,6 +431,18 @@ class ExamProvider extends ChangeNotifier {
           );
         } catch (e) {
           debugPrint('Error triggering exam completion notification: $e');
+        }
+        
+        // Increment local attempt count
+        try {
+          if (!Hive.isBoxOpen('user_exam_attempts')) {
+            await Hive.openBox<String>('user_exam_attempts');
+          }
+          final box = Hive.box<String>('user_exam_attempts');
+          final newAttempts = currentAttempts + 1;
+          await box.put(_exam!.id.toString(), newAttempts.toString());
+        } catch (e) {
+          debugPrint('Error saving local attempt count: $e');
         }
       },
     );

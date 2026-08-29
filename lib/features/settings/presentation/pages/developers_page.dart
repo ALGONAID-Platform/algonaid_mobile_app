@@ -1,11 +1,12 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/settings/data/datasources/settings_static_datasource.dart';
-import 'package:algonaid_mobail_app/features/settings/domain/entities/developer_info.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/features/settings/data/datasources/settings_static_datasource.dart';
+import 'package:algonaid/features/settings/domain/entities/developer_info.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/shared_app_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:algonaid/core/widgets/shared/shared_app_bar.dart';
 
 class DevelopersPage extends StatefulWidget {
   const DevelopersPage({Key? key}) : super(key: key);
@@ -14,10 +15,12 @@ class DevelopersPage extends StatefulWidget {
   State<DevelopersPage> createState() => _DevelopersPageState();
 }
 
-class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProviderStateMixin {
+class _DevelopersPageState extends State<DevelopersPage>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _fadeController;
-  
-  final List<DeveloperInfo> _developers = const SettingsStaticDataSourceImpl().getDevelopers();
+
+  final List<DeveloperInfo> _developers = const SettingsStaticDataSourceImpl()
+      .getDevelopers();
 
   @override
   void initState() {
@@ -71,12 +74,12 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                 _buildTeamHeaderCard(context, isDark),
                 const SizedBox(height: 28),
                 ListView.builder(
-                  shrinkWrap: true,
+                  
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _developers.length,
                   itemBuilder: (context, index) {
                     final dev = _developers[index];
-                    
+
                     final delay = index * 0.15;
                     final start = delay;
                     final end = (delay + 0.4).clamp(0.0, 1.0);
@@ -135,7 +138,10 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 24.0,
+              horizontal: 20.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -155,7 +161,7 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                     ),
                     const SizedBox(width: 12),
                     const Text(
-                      'فريق كوديان (Codyan)',
+                      'فريق كوديان (Codian)',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -173,10 +179,55 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                     height: 1.6,
                   ),
                 ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    _buildSocialLink(
+                      context,
+                      icon: Icons.facebook_rounded,
+                      url: 'https://facebook.com/CodianTeam',
+                      color: Colors.blueAccent,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildSocialLink(
+                      context,
+                      icon: FontAwesomeIcons.instagram,
+                      url: 'https://www.instagram.com/CodianTeam',
+                      color: Colors.pinkAccent,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildSocialLink(
+                      context,
+                      icon: FontAwesomeIcons.whatsapp,
+                      url: 'https://whatsapp.com/channel/0029Vb6ysOvElah0xq7PhH0s',
+                      color: Colors.greenAccent,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSocialLink(
+    BuildContext context, {
+    required IconData icon,
+    required String url,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: () => _launchURL(url),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, size: 20, color: color),
       ),
     );
   }
@@ -210,11 +261,7 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                       end: Alignment.bottomRight,
                     ),
                   ),
-                  child: Icon(
-                    dev.avatarIcon,
-                    color: Colors.white,
-                    size: 28,
-                  ),
+                  child: Icon(dev.avatarIcon, color: Colors.white, size: 28),
                 );
               },
             ),
@@ -235,7 +282,9 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
                 context,
                 icon: Icons.code_rounded,
                 tooltip: 'GitHub',
-                color: context.isDarkMode ? Colors.white.withOpacity(0.9) : AppColors.indigo,
+                color: context.isDarkMode
+                    ? Colors.white.withOpacity(0.9)
+                    : AppColors.indigo,
                 onPressed: () => _launchURL(dev.githubUrl),
               ),
               const SizedBox(width: 8),
@@ -271,11 +320,7 @@ class _DevelopersPageState extends State<DevelopersPage> with SingleTickerProvid
             color: color.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: color,
-          ),
+          child: Icon(icon, size: 20, color: color),
         ),
       ),
     );

@@ -1,22 +1,23 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/borders.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/teacher_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/user_entity.dart';
-import 'package:algonaid_mobail_app/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/borders.dart';
+import 'package:algonaid/core/widgets/shared/section_header.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/teacher_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/user_entity.dart';
+import 'package:algonaid/features/excellence_courses/presentation/providers/excellence_courses_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
 import 'package:lottie/lottie.dart';
 
 class ExcellenceCoursesSection extends StatefulWidget {
   const ExcellenceCoursesSection({super.key});
 
   @override
-  State<ExcellenceCoursesSection> createState() => _ExcellenceCoursesSectionState();
+  State<ExcellenceCoursesSection> createState() =>
+      _ExcellenceCoursesSectionState();
 }
 
 class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
@@ -55,10 +56,12 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SectionHeader(text: '  الأنجازات'),
+                      SectionHeader(text: '  الإنجازات'),
                       TextButton(
                         onPressed: () {
-                          GoRouter.of(context).push(Routes.allExcellenceCourses);
+                          GoRouter.of(
+                            context,
+                          ).push(Routes.allExcellenceCourses);
                         },
                         child: Text(
                           'عرض الكل',
@@ -73,39 +76,47 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 195,
+                  height: 215,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    itemCount: provider.courses.length > 3 ? 3 : provider.courses.length,
+                    itemCount: provider.courses.length > 3
+                        ? 3
+                        : provider.courses.length,
                     itemBuilder: (context, index) {
                       final course = provider.courses[index];
                       return GestureDetector(
-                        onTap: course.isCompleted ? () {
-                          final dummyCourse = CourseEntity(
-                            id: course.courseId,
-                            title: course.courseTitle,
-                            description: '',
-                            thumbnail: course.courseImage,
-                            createdAt: DateTime.now(),
-                            updatedAt: DateTime.now(),
-                            instructorId: 0,
-                            teacher: TeacherEntity(
-                              id: 0,
-                              specialization: '',
-                              experience: 0,
-                              userId: 0,
-                              user: UserEntity(name: 'مدرس', email: ''),
-                            ),
-                            moduleTitles: [],
-                            modulesCount: 0,
-                            isEnrolled: true,
-                            totalLessons: 1,
-                            completedLessons: 1,
-                            progressPercentage: course.averagePercentage.toDouble(),
-                          );
-                          GoRouter.of(context).push('${Routes.modulesList}/${course.courseId}', extra: dummyCourse);
-                        } : null,
+                        onTap: course.isCompleted
+                            ? () {
+                                final dummyCourse = CourseEntity(
+                                  id: course.courseId,
+                                  title: course.courseTitle,
+                                  description: '',
+                                  thumbnail: course.courseImage,
+                                  createdAt: DateTime.now(),
+                                  updatedAt: DateTime.now(),
+                                  instructorId: 0,
+                                  teacher: TeacherEntity(
+                                    id: 0,
+                                    specialization: '',
+                                    experience: 0,
+                                    userId: 0,
+                                    user: UserEntity(name: 'مدرس', email: ''),
+                                  ),
+                                  moduleTitles: [],
+                                  modulesCount: 0,
+                                  isEnrolled: true,
+                                  totalLessons: 1,
+                                  completedLessons: 1,
+                                  progressPercentage: course.averagePercentage
+                                      .toDouble(),
+                                );
+                                GoRouter.of(context).push(
+                                  '${Routes.modulesList}/${course.courseId}',
+                                  extra: dummyCourse,
+                                );
+                              }
+                            : null,
                         child: Opacity(
                           opacity: course.isCompleted ? 1.0 : 0.6,
                           child: Container(
@@ -114,7 +125,7 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                             decoration: BoxDecoration(
                               color: context.surface,
                               borderRadius: BorderRadius.circular(16),
-                              border: AppBorder.main_border
+                              border: AppBorder.main_border,
                             ),
                             child: Stack(
                               children: [
@@ -130,9 +141,11 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                         width: double.infinity,
                                         color: !course.isCompleted
                                             ? Colors.grey.withOpacity(0.2)
-                                            : (context.isDarkMode 
-                                                ? Colors.amber.withOpacity(0.1) 
-                                                : Colors.amber.shade50),
+                                            : (context.isDarkMode
+                                                  ? Colors.amber.withOpacity(
+                                                      0.1,
+                                                    )
+                                                  : Colors.amber.shade50),
                                         child: Center(
                                           child: course.isCompleted
                                               ? Lottie.asset(
@@ -142,12 +155,31 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                                   fit: BoxFit.contain,
                                                 )
                                               : ColorFiltered(
-                                                  colorFilter: const ColorFilter.matrix(<double>[
-                                                    0.2126, 0.7152, 0.0722, 0, 0,
-                                                    0.2126, 0.7152, 0.0722, 0, 0,
-                                                    0.2126, 0.7152, 0.0722, 0, 0,
-                                                    0, 0, 0, 1, 0,
-                                                  ]),
+                                                  colorFilter:
+                                                      const ColorFilter.matrix(
+                                                        <double>[
+                                                          0.2126,
+                                                          0.7152,
+                                                          0.0722,
+                                                          0,
+                                                          0,
+                                                          0.2126,
+                                                          0.7152,
+                                                          0.0722,
+                                                          0,
+                                                          0,
+                                                          0.2126,
+                                                          0.7152,
+                                                          0.0722,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                          1,
+                                                          0,
+                                                        ],
+                                                      ),
                                                   child: Lottie.asset(
                                                     AppLottie.goldMedal,
                                                     width: 95,
@@ -161,19 +193,23 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                     Padding(
                                       padding: const EdgeInsets.all(12.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             course.courseTitle,
-                                            style: context.titleMedium?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: !course.isCompleted ? Colors.grey : null,
-                                            ),
+                                            style: context.titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: !course.isCompleted
+                                                      ? Colors.grey
+                                                      : null,
+                                                ),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           const SizedBox(height: 4),
-                                          if (course.isCompleted)
+                                          if (course.isCompleted) ...[
                                             Text(
                                               'المعدل: ${course.averagePercentage}%',
                                               style: context.bodyMedium?.copyWith(
@@ -181,14 +217,42 @@ class _ExcellenceCoursesSectionState extends State<ExcellenceCoursesSection> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
+                                            if (course.targetAverage != null && course.allExamsAttempted != null && 
+                                                (course.averagePercentage < course.targetAverage! || !course.allExamsAttempted!)) ...[
+                                              const SizedBox(height: 4),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.orange.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                                child: const Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.warning_amber_rounded, size: 10, color: Colors.orange),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                      'اختبارات جديدة',
+                                                      style: TextStyle(
+                                                        fontSize: 8,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.orange,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ]
                                         ],
                                       ),
                                     ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),)
+                        ),
                       );
                     },
                   ),

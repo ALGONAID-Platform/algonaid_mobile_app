@@ -1,4 +1,4 @@
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid/core/theme/styles.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -31,7 +31,7 @@ class CustomButton extends StatelessWidget {
           shape ??
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(60)),
       onPressed: onPressed,
-      child: Text(text, style: Styles.style16(context)),
+      child: Text(text, style: Styles.style16(context).copyWith(color: textColor)),
     );
   }
 }

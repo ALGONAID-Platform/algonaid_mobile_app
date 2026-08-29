@@ -5,6 +5,8 @@ class UserBadgeEntity {
   final int progress;
   final int target;
   final String tier;
+  /// تاريخ اكتساب الوسام — لا يكون null إلا إذا لم يُكتسب بعد
+  final DateTime? earnedAt;
 
   UserBadgeEntity({
     required this.id,
@@ -13,5 +15,6 @@ class UserBadgeEntity {
     required this.progress,
     required this.target,
     required this.tier,
+    this.earnedAt,
   });
 }

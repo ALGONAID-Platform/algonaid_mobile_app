@@ -1,12 +1,12 @@
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/section_header.dart';
-import 'package:algonaid_mobail_app/features/courses/presentation/widgets/buildCourseCard.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/widgets/shared/section_header.dart';
+import 'package:algonaid/features/courses/presentation/widgets/buildCourseCard.dart';
 import 'package:flutter/material.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/core/theme/styles.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/core/theme/styles.dart';
 import 'package:go_router/go_router.dart';
-import 'package:algonaid_mobail_app/core/routes/paths_routes.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
 
 class AllCoursesListSection extends StatelessWidget {
   final List<CourseEntity> allCourses;
@@ -25,22 +25,24 @@ class AllCoursesListSection extends StatelessWidget {
         children: [
           SectionHeader(
             text: 'كل الكورسات',
-            onViewAllPressed: reversedCourses.isEmpty ? null : () {
-              context.push(
-                Routes.coursesViewAllPage,
-                extra: {
-                  'title': 'كل الكورسات',
-                  'courses': reversedCourses,
-                },
-              );
-            },
+            onViewAllPressed: reversedCourses.isEmpty
+                ? null
+                : () {
+                    context.push(
+                      Routes.coursesViewAllPage,
+                      extra: {
+                        'title': 'كل الكورسات',
+                        'courses': reversedCourses,
+                      },
+                    );
+                  },
           ),
 
           if (allCourses.isEmpty)
             _buildAllEnrolledCard(context)
           else
             SizedBox(
-              height: 345,
+              height: 300,
               child: ListView.builder(
                 reverse: false,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -49,10 +51,10 @@ class AllCoursesListSection extends StatelessWidget {
                 itemCount: reversedCourses.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    width: 300,
+                    width: 240,
                     // تعديل المارجن ليكون متناسقاً مع الاتجاه العكسي
                     margin: const EdgeInsets.only(left: 16),
-                    child: CourseCard(course: reversedCourses[index]),
+                    child: CourseCard(course: reversedCourses[index], heroTagSuffix: '_all_courses'),
                   );
                 },
               ),

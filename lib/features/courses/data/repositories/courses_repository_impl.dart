@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/dio_error_handler.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/features/courses/data/datasources/course_local_stroage.dart';
-import 'package:algonaid_mobail_app/features/courses/data/datasources/courses_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/courses/data/models/course_grades_model.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/courseProgress_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_entity.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/entities/course_grades.dart';
-import 'package:algonaid_mobail_app/features/courses/domain/repositories/courses_repository.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
+import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/features/courses/data/datasources/course_local_stroage.dart';
+import 'package:algonaid/features/courses/data/datasources/courses_remote_data_source.dart';
+import 'package:algonaid/features/courses/data/models/course_grades_model.dart';
+import 'package:algonaid/features/courses/domain/entities/courseProgress_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/domain/entities/course_grades.dart';
+import 'package:algonaid/features/courses/domain/repositories/courses_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -31,15 +31,49 @@ class CoursesRepositoryImpl implements CoursesRepository {
   @override
   Future<Either<Failure, List<CourseEntity>>> getMyCourses() async {
     return _fetchData(
-      fetchRemote: () => remote.fetchMyCourses(),
+      fetchRemote: () async {
+        final courses = await remote.fetchMyCourses();
+        final uniqueCourses = <CourseEntity>[];
+        final seenIds = <int>{};
+        for (var c in courses) {
+          if (!seenIds.contains(c.id)) {
+            uniqueCourses.add(c);
+            seenIds.add(c.id);
+          }
+        }
+        return uniqueCourses;
+      },
       fetchLocal: () => local.getMyCourses(),
       cacheData: (courses) => local.saveMyCourses(courses),
     );
   }
+
   @override
-  Future<Either<Failure, CourseProgressEntity>> getCourseProgress(int courseId) async {
+  Either<Failure, List<CourseEntity>> getCachedAllCourses() {
+    try {
+      final cached = local.getAllCourses();
+      return Right(cached);
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة الكورسات المخزنة مؤقتاً"));
+    }
+  }
+
+  @override
+  Either<Failure, List<CourseEntity>> getCachedMyCourses() {
+    try {
+      final cached = local.getMyCourses();
+      return Right(cached);
+    } catch (e) {
+      return Left(CacheFailure("خطأ في قراءة كورساتي المخزنة مؤقتاً"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CourseProgressEntity>> getCourseProgress(
+    int courseId,
+  ) async {
     return _fetchCourseProgress(
-      fetchRemote: () => remote.fetchCourseProgress(courseId : courseId),
+      fetchRemote: () => remote.fetchCourseProgress(courseId: courseId),
       fetchLocal: () => local.getMyCourseProgress(courseId: courseId),
       cacheData: (progress) => local.saveCourseProgress(progress, courseId),
     );
@@ -54,7 +88,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
       final remoteCourses = await fetchRemote();
 
       await cacheData(remoteCourses);
-     
+
       return Right(remoteCourses);
     } catch (e) {
       try {
@@ -71,7 +105,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
         return Left(ServerFailure(e.message));
       }
 
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+      return Left(const ServerFailure("حدث خطأ غير متوقع، يرجى المحاولة لاحقاً"));
     }
   }
 
@@ -95,7 +129,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
     }
   }
 
- Future<Either<Failure, CourseProgressEntity>> _fetchCourseProgress({
+  Future<Either<Failure, CourseProgressEntity>> _fetchCourseProgress({
     required Future<CourseProgressEntity> Function() fetchRemote,
     required CourseProgressEntity Function() fetchLocal,
     required Future<void> Function(CourseProgressEntity) cacheData,
@@ -121,7 +155,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
         return Left(ServerFailure(e.message));
       }
 
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}"));
+      return Left(const ServerFailure("حدث خطأ غير متوقع أثناء تحميل تقدم الدورة"));
     }
   }
 
@@ -136,7 +170,11 @@ class CoursesRepositoryImpl implements CoursesRepository {
           return Right(localGrades);
         }
       } catch (_) {}
-      return Left(ServerFailure('لا يوجد اتصال بالإنترنت ولا توجد درجات محفوظة لهذا الكورس.'));
+      return Left(
+        ServerFailure(
+          'لا يوجد اتصال بالإنترنت ولا توجد درجات محفوظة لهذا الكورس.',
+        ),
+      );
     }
 
     try {
@@ -156,7 +194,7 @@ class CoursesRepositoryImpl implements CoursesRepository {
       } else if (e is ServerException) {
         return Left(ServerFailure(e.message));
       }
-      return Left(ServerFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(const ServerFailure("حدث خطأ غير متوقع أثناء تحميل درجات الدورة"));
     }
   }
 

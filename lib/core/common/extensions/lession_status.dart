@@ -1,6 +1,6 @@
-import 'package:algonaid_mobail_app/core/common/enums/lesson_status.dart';
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
+import 'package:algonaid/core/common/enums/lesson_status.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 extension LessonStatusHelper on LessonStatus {
@@ -66,7 +66,7 @@ extension LessonStatusHelper on LessonStatus {
       case LessonStatus.inProgress:
         return Icons.play_circle_filled;
       case LessonStatus.completed:
-        return Icons.check_circle;
+        return Icons.play_circle_filled;
     }
   }
 }

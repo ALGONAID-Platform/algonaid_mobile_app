@@ -1,12 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/widgets/label.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/features/auth/presentation/widgets/label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/features/auth/presentation/providers/auth_service_provider.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/theme/colors.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/widgets/shared/show_dialog.dart';
+import 'package:algonaid/core/utils/functions/user_friendly_error.dart';
+import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 
 // ignore: must_be_immutable
 class SignInWithGoogle extends StatelessWidget {
@@ -15,23 +19,37 @@ class SignInWithGoogle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      margin: EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: context.surfaceContainer,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: context.primary, width: 0.8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(SVG.googleSvg, width: 20, height: 20),
-          SizedBox(width: 10),
-          auth.isLogin
-              ? TextLabel(text: "سجل الدخول عن طريق جوجل")
-              : TextLabel(text: "انشاء حساب عن طريق جوجل"),
-        ],
+    return InkWell(
+      borderRadius: BorderRadius.circular(30),
+      onTap: auth.isLoading
+          ? null
+          : () async {
+              await auth.loginWithGoogle();
+
+              if (!context.mounted) {
+                return;
+              }
+              // Navigation and error handling is now managed internally by auth.loginWithGoogle()
+              // via the onAuthStateChange listener in AuthServiceProvider.
+            },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: context.surfaceContainer,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: context.primary, width: 0.8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(SVG.googleSvg, width: 20, height: 20),
+            const SizedBox(width: 10),
+            auth.isLogin
+                ? TextLabel(text: "سجل الدخول عن طريق جوجل")
+                : TextLabel(text: "إنشاء حساب عن طريق جوجل"),
+          ],
+        ),
       ),
     );
   }

@@ -1,42 +1,48 @@
 import 'dart:ui';
 
-import 'package:algonaid_mobail_app/core/common/extensions/theme_helper.dart';
-import 'package:algonaid_mobail_app/core/constants/assets_constants.dart';
-import 'package:algonaid_mobail_app/core/theme/colors.dart';
-import 'package:algonaid_mobail_app/core/widgets/shared/heroWidget.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/assets_constants.dart';
+import 'package:algonaid/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/core/widgets/shared/timeout_image_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:algonaid_mobail_app/core/constants/endpoints.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
+import 'package:algonaid/core/utils/share_helper.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/presentation/widgets/course_reminder_sheet.dart';
+import 'package:go_router/go_router.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
 
 class CourseHeaderSliver extends StatelessWidget {
-  final String title;
-  final int courseId;
-  final String? imageUrl;
+  final CourseEntity course;
 
   const CourseHeaderSliver({
     super.key,
-    required this.title,
-    this.imageUrl,
-    required this.courseId,
+    required this.course,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    String resolvedUrl = imageUrl ?? "";
-    if (resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+    final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
+    String resolvedUrl = course.thumbnail ?? "";
+    if (!hasNoImage && !resolvedUrl.startsWith('http')) {
       resolvedUrl = resolvedUrl.startsWith('/')
           ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
           : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
     }
+    final bool isResolvedInvalid = Images.isInvalidImage(resolvedUrl);
+    final bool isGuest = TokenStorage.getToken() == null;
 
     return SliverAppBar(
       expandedHeight: 220.0,
       pinned: false,
       stretch: true,
       backgroundColor: context.surfaceContainer,
-      iconTheme: IconThemeData(color: Colors.white),
+      iconTheme: const IconThemeData(color: Colors.white),
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ClipOval(
@@ -46,12 +52,89 @@ class CourseHeaderSliver extends StatelessWidget {
               color: Colors.black.withOpacity(0.2), // خلفية خفيفة جداً للزر
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    context.go(isGuest ? Routes.guestHome : Routes.homePage);
+                  }
+                },
               ),
             ),
           ),
         ),
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+                child: IconButton(
+                  icon: const Icon(Icons.share_rounded, size: 22, color: Colors.white),
+                  onPressed: () {
+                    if (isGuest) {
+                      AppSnackBar.show(
+                        context: context,
+                        message: 'عذراً، ميزة مشاركة الكورس غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! ',
+                        type: SnackBarType.warning,
+                      );
+                      return;
+                    }
+                    ShareHelper.shareCourse(course);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: ValueListenableBuilder<Box<String>>(
+                valueListenable: Hive.box<String>('course_reminders_box').listenable(),
+                builder: (context, box, _) {
+                  final hasReminder = box.containsKey(course.id.toString());
+                  return Container(
+                    color: Colors.black.withOpacity(0.2),
+                    child: IconButton(
+                      icon: Icon(
+                        hasReminder
+                            ? Icons.notifications_active_rounded
+                            : Icons.notifications_outlined,
+                        color: hasReminder ? Colors.greenAccent : Colors.white,
+                        size: 22,
+                      ),
+                      onPressed: () {
+                        if (isGuest) {
+                          AppSnackBar.show(
+                            context: context,
+                            message: 'عذراً، ميزة تفعيل التنبيهات غير متاحة في وضع الزائر. يرجى تسجيل الدخول للاستفادة منها! ',
+                            type: SnackBarType.warning,
+                          );
+                          return;
+                        }
+                        AppBottomSheet.show(
+                          context: context,
+                          title: 'منبه الكورس الدراسي',
+                          child: CourseReminderSheet(
+                            courseId: course.id,
+                            courseTitle: course.title,
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsetsDirectional.only(
           start: 48,
@@ -60,9 +143,9 @@ class CourseHeaderSliver extends StatelessWidget {
         ),
         centerTitle: false,
         title: AppHero(
-          tag: "course_name$courseId",
+          tag: "course_name${course.id}",
           child: Text(
-            title,
+            course.title,
             style: context.titleLarge!.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -81,13 +164,13 @@ class CourseHeaderSliver extends StatelessWidget {
           children: [
             // الصورة الأساسية
             AppHero(
-              tag: "course_image$courseId",
-              child: CachedNetworkImage(
-                imageUrl: resolvedUrl,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) =>
-                    Image.asset(Images.noImageFound, fit: BoxFit.cover),
-              ),
+              tag: "course_image${course.id}",
+              child: (hasNoImage || isResolvedInvalid)
+                  ? Image.asset(Images.noImageFound, fit: BoxFit.cover)
+                  : TimeoutImageWrapper(
+                      imageUrl: resolvedUrl,
+                      fit: BoxFit.cover,
+                    ),
             ),
             // تدرج لوني ذكي (Gradient Scrim)
             // في الوضع الفاتح نزيد التعتيم، وفي الداكن نتركه يندمج مع اللون الأصلي

@@ -1,12 +1,14 @@
-import 'package:algonaid_mobail_app/core/errors/exceptions.dart';
-import 'package:algonaid_mobail_app/core/errors/failure.dart';
-import 'package:algonaid_mobail_app/core/network/check_internet.dart';
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_local_data_source.dart';
-import 'package:algonaid_mobail_app/features/exams/data/datasources/exam_remote_data_source.dart';
-import 'package:algonaid_mobail_app/features/exams/data/models/exam_models.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/entities/exam_entities.dart';
-import 'package:algonaid_mobail_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:algonaid/core/errors/exceptions.dart';
+import 'package:algonaid/core/errors/failure.dart';
+import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/core/network/dio_error_handler.dart';
+import 'package:algonaid/features/exams/data/datasources/exam_local_data_source.dart';
+import 'package:algonaid/features/exams/data/datasources/exam_remote_data_source.dart';
+import 'package:algonaid/features/exams/data/models/exam_models.dart';
+import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
+import 'package:algonaid/features/exams/domain/repositories/exam_repository.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 class ExamRepositoryImpl implements ExamRepository {
@@ -44,21 +46,21 @@ class ExamRepositoryImpl implements ExamRepository {
         debugPrintStack(stackTrace: stackTrace);
       }
       return Right(remoteExam);
-    } on ServerException catch (e) {
-      if (localExam != null) {
-        return Right(localExam);
-      }
-      return Left(ServerFailure(e.message));
-    } on CacheException catch (e) {
-      if (localExam != null) {
-        return Right(localExam);
-      }
-      return Left(CacheFailure(e.message));
     } catch (e, stackTrace) {
       debugPrint(
-        'ExamRepositoryImpl: getExam unexpected error for examId=$examId: $e',
+        'ExamRepositoryImpl: getExam error for examId=$examId: $e',
       );
       debugPrintStack(stackTrace: stackTrace);
+      if (localExam != null) {
+        return Right(localExam);
+      }
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      } else if (e is CacheException) {
+        return Left(CacheFailure(e.message));
+      }
       return Left(ServerFailure('تعذر تحميل الاختبار حالياً. حاول مرة أخرى.'));
     }
   }
@@ -82,20 +84,19 @@ class ExamRepositoryImpl implements ExamRepository {
     try {
       final examAttempt = await remoteDataSource.startExam(examId);
       return Right(examAttempt);
-    } on ServerException catch (e) {
-      final localExam = await localDataSource.getCachedExam(examId);
-      if (localExam != null) {
-        return Right(_buildOfflineAttempt(localExam));
-      }
-      return Left(ServerFailure(e.message));
     } catch (e, stackTrace) {
       debugPrint(
-        'ExamRepositoryImpl: startExam unexpected error for examId=$examId: $e',
+        'ExamRepositoryImpl: startExam error for examId=$examId: $e',
       );
       debugPrintStack(stackTrace: stackTrace);
       final localExam = await localDataSource.getCachedExam(examId);
       if (localExam != null) {
         return Right(_buildOfflineAttempt(localExam));
+      }
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
       }
       return Left(ServerFailure('تعذر بدء الاختبار حالياً. حاول مرة أخرى.'));
     }
@@ -118,9 +119,16 @@ class ExamRepositoryImpl implements ExamRepository {
         debugPrintStack(stackTrace: stackTrace);
       }
       return Right(examResult);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint(
+        'ExamRepositoryImpl: submitExam error for attemptId=$attemptId: $e',
+      );
+      debugPrintStack(stackTrace: stackTrace);
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
       return Left(ServerFailure('تعذر تسليم الاختبار حالياً. حاول مرة أخرى.'));
     }
   }
@@ -138,13 +146,20 @@ class ExamRepositoryImpl implements ExamRepository {
         debugPrintStack(stackTrace: stackTrace);
       }
       return Right(examResult);
-    } on ServerException catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint(
+        'ExamRepositoryImpl: getExamResult error for attemptId=$attemptId: $e',
+      );
+      debugPrintStack(stackTrace: stackTrace);
       final cachedResult = await localDataSource.getCachedExamResult(attemptId);
       if (cachedResult != null) {
         return Right(cachedResult);
       }
-      return Left(ServerFailure(e.message));
-    } catch (e) {
+      if (e is DioException) {
+        return Left(DioErrorHandler.handle(e));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message));
+      }
       return Left(ServerFailure('تعذر تحميل نتيجة الاختبار حالياً.'));
     }
   }
