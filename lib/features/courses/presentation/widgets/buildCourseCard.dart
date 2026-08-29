@@ -8,7 +8,8 @@ import 'package:algonaid/features/courses/presentation/widgets/buildCourseImage.
 
 class CourseCard extends StatelessWidget {
   final CourseEntity course;
-  const CourseCard({super.key, required this.course});
+  final String heroTagSuffix;
+  const CourseCard({super.key, required this.course, this.heroTagSuffix = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +26,11 @@ class CourseCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            BuildCourseImage(course: course),
+            BuildCourseImage(course: course, heroTagSuffix: heroTagSuffix),
 
             Flexible(
               fit: FlexFit.tight,
-              child: BuildCourseDetails(course: course),
+              child: BuildCourseDetails(course: course, isCardMode: true),
             ),
           ],
         ),

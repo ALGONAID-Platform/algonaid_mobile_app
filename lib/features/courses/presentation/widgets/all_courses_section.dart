@@ -54,7 +54,7 @@ class AllCoursesListSection extends StatelessWidget {
                     width: 240,
                     // تعديل المارجن ليكون متناسقاً مع الاتجاه العكسي
                     margin: const EdgeInsets.only(left: 16),
-                    child: CourseCard(course: reversedCourses[index]),
+                    child: CourseCard(course: reversedCourses[index], heroTagSuffix: '_all_courses'),
                   );
                 },
               ),

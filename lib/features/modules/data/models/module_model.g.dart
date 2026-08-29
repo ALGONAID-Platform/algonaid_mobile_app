@@ -25,13 +25,14 @@ class ModuleModelAdapter extends TypeAdapter<ModuleModel> {
       completedLessons: fields[5] as int,
       progressPercentage: fields[6] as double,
       totalLessons: fields[7] as int,
+      imageUrl: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ModuleModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class ModuleModelAdapter extends TypeAdapter<ModuleModel> {
       ..writeByte(6)
       ..write(obj.progressPercentage)
       ..writeByte(7)
-      ..write(obj.totalLessons);
+      ..write(obj.totalLessons)
+      ..writeByte(8)
+      ..write(obj.imageUrl);
   }
 
   @override

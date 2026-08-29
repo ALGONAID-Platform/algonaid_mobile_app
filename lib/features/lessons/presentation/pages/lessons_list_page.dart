@@ -1,4 +1,5 @@
 import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:algonaid/core/constants/endpoints.dart';
 import 'package:algonaid/core/routes/paths_routes.dart';
 import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:algonaid/features/lessons/presentation/widgets/lessonHeader.dart';
@@ -17,6 +18,8 @@ import 'package:algonaid/core/widgets/shared/guest_login_dialog.dart';
 import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:algonaid/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
+import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class LessonsListPage extends StatefulWidget {
   final int moduleId;
@@ -27,6 +30,7 @@ class LessonsListPage extends StatefulWidget {
   final int? courseId;
   final String? previousRoute;
   final String? moduleDescription;
+  final String? imageUrl;
 
   const LessonsListPage({
     super.key,
@@ -38,6 +42,7 @@ class LessonsListPage extends StatefulWidget {
     this.courseId,
     this.previousRoute,
     this.moduleDescription,
+    this.imageUrl,
   });
 
   @override
@@ -95,6 +100,7 @@ class _LessonsListPageState extends State<LessonsListPage> {
       courseId: widget.courseId,
       previousRoute: widget.previousRoute,
       moduleDescription: widget.moduleDescription,
+      imageUrl: widget.imageUrl,
       isBackgroundRefreshing: _isBackgroundRefreshing,
       scrollController: _scrollController,
       onRefresh: () async {
@@ -117,6 +123,7 @@ class _LessonsListView extends StatelessWidget {
   final int? courseId;
   final String? previousRoute;
   final String? moduleDescription;
+  final String? imageUrl;
   final bool isBackgroundRefreshing;
   final Future<void> Function() onRefresh;
   final ScrollController scrollController;
@@ -130,6 +137,7 @@ class _LessonsListView extends StatelessWidget {
     this.courseId,
     this.previousRoute,
     this.moduleDescription,
+    this.imageUrl,
     required this.isBackgroundRefreshing,
     required this.onRefresh,
     required this.scrollController,
@@ -176,18 +184,23 @@ class _LessonsListView extends StatelessWidget {
                             // Fallback to widget properties if not found
                           }
 
-                          return Stack(
-                            children: [
-                              ModuleHeaderStats(
-                                completedLessons: currentCompleted,
-                                moduleId: moduleId,
-                                progressPercentage: currentProgress,
-                                moduleTitle: moduleTitle,
-                                moduleDescription: moduleDescription,
-                                totalLessons: currentTotal,
-                                onBack: () => _handleBackNavigation(context),
-                              ),
-                            ],
+                          String? resolvedUrl = imageUrl;
+                          if (resolvedUrl != null && resolvedUrl.isNotEmpty && !resolvedUrl.startsWith('http')) {
+                            resolvedUrl = resolvedUrl.startsWith('/')
+                                ? '${EndPoint.uploadsBaseUrl}$resolvedUrl'
+                                : '${EndPoint.uploadsBaseUrl}/$resolvedUrl';
+                          }
+
+                          return ModuleHeaderStats(
+                            completedLessons: currentCompleted,
+                            moduleId: moduleId,
+                            progressPercentage: currentProgress,
+                            moduleTitle: moduleTitle,
+                            moduleDescription: moduleDescription,
+                            totalLessons: currentTotal,
+                            imageUrl: resolvedUrl,
+                            onBack: () => _handleBackNavigation(context),
+                            scrollController: scrollController,
                           );
                         },
                       ),

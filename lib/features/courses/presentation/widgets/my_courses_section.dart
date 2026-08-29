@@ -58,7 +58,7 @@ class MyCoursesListSection extends StatelessWidget {
                         margin: const EdgeInsets.only(
                           left: 16,
                         ), // تنسيق الهوامش
-                        child: CourseCard(course: reversedCourses[index]),
+                        child: CourseCard(course: reversedCourses[index], heroTagSuffix: '_my_courses'),
                       );
                     },
                   ),

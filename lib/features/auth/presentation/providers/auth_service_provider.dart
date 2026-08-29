@@ -21,9 +21,13 @@ import 'package:algonaid/core/network/api_service.dart';
 import 'package:algonaid/core/constants/endpoints.dart';
 import 'package:algonaid/core/di/service_locator.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthResponse;
+import 'package:algonaid/core/routes/navigatorKey.dart';
+import 'package:algonaid/core/routes/paths_routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:algonaid/core/widgets/shared/show_dialog.dart' as import_dialog;
+import 'dart:async';
 
 class AuthServiceProvider extends ChangeNotifier {
   final SigninUsecase signInUseCase;
@@ -189,112 +193,101 @@ class AuthServiceProvider extends ChangeNotifier {
     }
   }
 
+  StreamSubscription<AuthState>? _authStateSubscription;
+
   Future<void> loginWithGoogle() async {
     _prepareForRequest();
     try {
-      final googleSignIn = GoogleSignIn(
-        clientId: Platform.isIOS
-            ? '384073856983-fshcgklqtg7fk3kuu7tonnbbfq0k6281.apps.googleusercontent.com'
-            : null,
-        serverClientId:
-            '384073856983-j4h4lvqbgurl07ecd3nhd1bf0btuq6js.apps.googleusercontent.com',
-        scopes: ['email', 'profile'],
+      try {
+        await Supabase.instance.client.auth.signOut();
+        debugPrint('✅ Google Sign-In: تم مسح جلسة Supabase السابقة.');
+      } catch (e) {
+        debugPrint('⚠️ Google Sign-In: لم يتم العثور على جلسة سابقة للحذف: $e');
+      }
+
+      _authStateSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+        final AuthChangeEvent event = data.event;
+        final Session? session = data.session;
+
+        if (event == AuthChangeEvent.signedIn && session != null) {
+          _authStateSubscription?.cancel();
+          _authStateSubscription = null;
+          
+          final token = session.accessToken; 
+          
+          final result = await googleSignInUseCase(
+            GoogleSigninParams(idToken: token),
+          );
+
+          result.fold(
+            (failure) {
+              _errorMessage = failure.message;
+              _isLoading = false;
+              notifyListeners();
+
+              if (navigatorKey.currentContext != null) {
+                import_dialog.AppDialog.showDynamicDialog(
+                  context: navigatorKey.currentContext!,
+                  title: "تعذر تسجيل الدخول",
+                  message: failure.message,
+                  isError: true,
+                  showCancelButton: false,
+                  confirmText: "حاول مرة أخرى",
+                );
+              }
+            },
+            (userEntity) async {
+              final avatarUrl = (userEntity.avatar != null && userEntity.avatar!.isNotEmpty) 
+                  ? userEntity.avatar 
+                  : session.user.userMetadata?['avatar_url'];
+                  
+              final updatedUserEntity = UserEntity(
+                id: userEntity.id,
+                username: userEntity.username,
+                email: userEntity.email,
+                role: userEntity.role,
+                message: userEntity.message,
+                token: userEntity.token,
+                avatar: avatarUrl?.toString(),
+                background: userEntity.background,
+                academicId: userEntity.academicId,
+                grade: userEntity.grade,
+                birthDate: userEntity.birthDate,
+                address: userEntity.address,
+                createdAt: userEntity.createdAt,
+                updatedAt: userEntity.updatedAt,
+              );
+              
+              _user = updatedUserEntity;
+              await cacheUserData(updatedUserEntity);
+              _errorMessage = null;
+              _isLoading = false;
+              notifyListeners();
+
+              if (navigatorKey.currentContext != null) {
+                GoRouter.of(navigatorKey.currentContext!).go(Routes.homePage);
+              }
+            },
+          );
+        }
+      });
+
+      final success = await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'algonaid://login-callback',
       );
 
-      // ── خطوة 1: مسح أي جلسة سابقة ──────────────────────────────────
-      // نتحقق من وجود جلسة Firebase سابقة أو جلسة Google ونحذفها
-      // لضمان ظهور نافذة اختيار الحسابات في كل مرة
-      try {
-        final currentFirebaseUser = FirebaseAuth.instance.currentUser;
-        if (currentFirebaseUser != null) {
-          debugPrint('🔄 Google Sign-In: جلسة Firebase سابقة موجودة، يتم حذفها...');
-          await FirebaseAuth.instance.signOut();
-        }
-        final isSignedInGoogle = await googleSignIn.isSignedIn();
-        if (isSignedInGoogle) {
-          debugPrint('🔄 Google Sign-In: جلسة Google سابقة موجودة، يتم حذفها...');
-          await googleSignIn.signOut();
-        }
-        debugPrint('✅ Google Sign-In: تم التأكد من عدم وجود جلسات سابقة.');
-      } catch (signOutError) {
-        // إذا فشل تسجيل الخروج، نستمر على أي حال
-        debugPrint('⚠️ Google Sign-In: خطأ أثناء مسح الجلسة السابقة: $signOutError');
-      }
-      // ─────────────────────────────────────────────────────────────────
-
-      final account = await googleSignIn.signIn();
-
-
-      if (account == null) {
+      if (!success) {
+        _authStateSubscription?.cancel();
+        _authStateSubscription = null;
+        _errorMessage = 'تعذر فتح متصفح تسجيل الدخول.';
         _isLoading = false;
         notifyListeners();
-        return;
       }
 
-      final auth = await account.authentication;
-      
-      final credential = GoogleAuthProvider.credential(
-        accessToken: auth.accessToken,
-        idToken: auth.idToken,
-      );
-
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      final firebaseUser = userCredential.user;
-
-      if (firebaseUser == null) {
-        throw Exception('Firebase authentication failed.');
-      }
-
-      final firebaseIdToken = await firebaseUser.getIdToken();
-
-      if (firebaseIdToken == null || firebaseIdToken.trim().isEmpty) {
-        throw Exception('Firebase ID token is missing.');
-      }
-
-      final result = await googleSignInUseCase(
-        GoogleSigninParams(idToken: firebaseIdToken),
-      );
-
-      result.fold(
-        (failure) {
-          _errorMessage = failure.message;
-          _isLoading = false;
-          notifyListeners();
-        },
-        (userEntity) async {
-          final avatarUrl = (userEntity.avatar != null && userEntity.avatar!.isNotEmpty) 
-              ? userEntity.avatar 
-              : account.photoUrl;
-              
-          final updatedUserEntity = UserEntity(
-            id: userEntity.id,
-            username: userEntity.username,
-            email: userEntity.email,
-            role: userEntity.role,
-            message: userEntity.message,
-            token: userEntity.token,
-            avatar: avatarUrl,
-            background: userEntity.background,
-            academicId: userEntity.academicId,
-            grade: userEntity.grade,
-            birthDate: userEntity.birthDate,
-            address: userEntity.address,
-            createdAt: userEntity.createdAt,
-            updatedAt: userEntity.updatedAt,
-          );
-          
-          _user = updatedUserEntity;
-          await cacheUserData(updatedUserEntity);
-          _errorMessage = null;
-          _isLoading = false;
-          notifyListeners();
-        },
-      );
     } catch (e, stackTrace) {
       String errorDetails = 'Error Type: ${e.runtimeType}\nError: $e';
-      if (e is FirebaseAuthException) {
-        errorDetails += '\nFirebaseAuthException Code: ${e.code}\nMessage: ${e.message}';
-      } else if (e is PlatformException) {
+      if (e is PlatformException) {
         errorDetails += '\nPlatformException Code: ${e.code}\nMessage: ${e.message}\nDetails: ${e.details}';
       }
       
@@ -527,7 +520,7 @@ class AuthServiceProvider extends ChangeNotifier {
       },
       (_) async {
         try {
-          await GoogleSignIn().signOut();
+          await Supabase.instance.client.auth.signOut();
         } catch (_) {}
         await _clearCachedSession();
         _errorMessage = null;

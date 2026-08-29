@@ -8,13 +8,15 @@ import 'package:algonaid/core/widgets/shared/show_dialog.dart';
 import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class BuildCourseDetails extends StatelessWidget {
-  const BuildCourseDetails({super.key, required this.course});
+  const BuildCourseDetails({super.key, required this.course, this.isCardMode = false});
   final CourseEntity course;
+  final bool isCardMode;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class BuildCourseDetails extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -52,44 +54,47 @@ class BuildCourseDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
 
         // قسم عرض الوصف
-        if (course.isEnrolled == false)
-          SizedBox(
-            height: 35, // ارتفاع ثابت لمنع القفز في التصميم
-            child: _buildDescriptionText(context), // دالة عرض الوصف دائماً
-          ),
+        if (course.isEnrolled == false) ...[
+          Divider(color: Theme.of(context).primaryColor.withOpacity(0.1), thickness: 1, height: 8),
+          _buildDescriptionText(context),
+        ],
       ],
     );
   }
 
   // دالة عرض الوصف بأسلوب مميز
   Widget _buildDescriptionText(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.info_outline,
-            size: 16,
-            color: context.primary.withOpacity(0.7),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              course.description,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.bodySmall!.copyWith(
-                fontStyle: FontStyle.italic,
+    if (isCardMode) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.info_outline,
+              size: 16,
+              color: Theme.of(context).primaryColor.withOpacity(0.7),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                course.description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.5,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
+    return ExpandableMarkdownDescription(description: course.description);
   }
 
   // --- ودجت فرعي للبروجريس ---
@@ -197,16 +202,30 @@ class BuildCourseDetails extends StatelessWidget {
                               constraints: const BoxConstraints(maxHeight: 150),
                               child: SingleChildScrollView(
                                 child: ClipRect(
-                                  child: MarkdownBody(
+                                  child: MarkdownBlock(
                                     data: course.description,
-                                    styleSheet: MarkdownStyleSheet(
-                                      p: context.textTheme.bodySmall?.copyWith(
-                                        height: 1.5,
-                                        color: context.isDarkMode
-                                            ? Colors.grey[300]
-                                            : Colors.grey[800],
-                                      ),
+                                    
+                                    generator: MarkdownGenerator(
+                                      inlineSyntaxList: [LatexSyntax()],
+                                      generators: [
+                                        SpanNodeGeneratorWithTag(
+                                          tag: 'latex',
+                                          generator: (e, config, visitor) =>
+                                              LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                                        ),
+                                      ],
                                     ),
+                                    config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                                      PConfig(
+                                        textStyle: context.textTheme.bodySmall?.copyWith(
+                                          height: 1.5,
+                                          color: context.isDarkMode
+                                              ? Colors.grey[300]
+                                              : Colors.grey[800],
+                                        ) ?? const TextStyle(),
+                                      ),
+                                    ]),
                                   ),
                                 ),
                               ),
@@ -269,6 +288,127 @@ class BuildCourseDetails extends StatelessWidget {
               },
               child: const Text("سجل الآن"),
             ),
+    );
+  }
+}
+
+class ExpandableMarkdownDescription extends StatefulWidget {
+  final String description;
+  const ExpandableMarkdownDescription({Key? key, required this.description}) : super(key: key);
+
+  @override
+  State<ExpandableMarkdownDescription> createState() => _ExpandableMarkdownDescriptionState();
+}
+
+class _ExpandableMarkdownDescriptionState extends State<ExpandableMarkdownDescription> {
+  bool _isExpanded = false;
+  List<Widget>? _cachedWidgets;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_cachedWidgets == null && widget.description.isNotEmpty) {
+      final config = MarkdownConfig(configs: [
+        TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+        PConfig(textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.5, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+        H1Config(style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+        H2Config(style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+        H3Config(style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+        ListConfig(marker: (isOrdered, depth, index) => Text('• ', style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.5, color: Theme.of(context).colorScheme.onSurface))),
+      ]);
+      final generator = MarkdownGenerator(
+        inlineSyntaxList: [LatexSyntax()],
+        generators: [
+          SpanNodeGeneratorWithTag(
+            tag: 'latex',
+            generator: (e, conf, visitor) => LatexNode(e.attributes, e.textContent, conf, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+          ),
+        ],
+      );
+      _cachedWidgets = generator.buildWidgets(widget.description, config: config);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.description.isEmpty) return const SizedBox.shrink();
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.info_outline,
+                size: 16,
+                color: Theme.of(context).primaryColor.withOpacity(0.7),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxHeight: _isExpanded ? double.infinity : 60.0,
+                    ),
+                    child: ClipRect(
+                      child: Stack(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: _cachedWidgets ?? [],
+                          ),
+                          if (!_isExpanded)
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              height: 30,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 22.0, top: 4.0),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Text(
+                _isExpanded ? 'عرض أقل' : 'عرض المزيد',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

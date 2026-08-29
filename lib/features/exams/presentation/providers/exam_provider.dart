@@ -129,6 +129,19 @@ class ExamProvider extends ChangeNotifier {
     _isSubmitted = false;
     _result = null;
     _answers.clear();
+    
+    // Ensure the Hive boxes are open so we can read the correct attempt count and cached answers
+    try {
+      if (!Hive.isBoxOpen('user_exam_attempts')) {
+        await Hive.openBox<String>('user_exam_attempts');
+      }
+      if (!Hive.isBoxOpen('exam_correct_answers')) {
+        await Hive.openBox<Map>('exam_correct_answers');
+      }
+    } catch (e) {
+      debugPrint('Error opening Hive boxes: $e');
+    }
+
     if (hasListeners) {
       notifyListeners();
     }
@@ -288,20 +301,70 @@ class ExamProvider extends ChangeNotifier {
       notifyListeners();
     }
 
-    if (hasExceededAttempts || _attemptId! <= 0) {
-      // Bypass backend submission if attempts exceeded or if it's a local/offline attempt
+    if (_attemptId! <= 0) {
+      // Evaluate locally
+      int correctCount = 0;
+      int wrongCount = 0;
+      Map<int, int> correctOptionsMap = {};
+
+      // Try to load cached correct answers
+      try {
+        if (Hive.isBoxOpen('exam_correct_answers')) {
+          final box = Hive.box<Map>('exam_correct_answers');
+          final cached = box.get(_exam!.id.toString());
+          if (cached != null) {
+             correctOptionsMap = cached.map((k, v) => MapEntry(int.parse(k.toString()), v as int));
+          }
+        }
+      } catch (e) {
+        debugPrint('Error loading cached correct answers: $e');
+      }
+
+      for (var question in _questions) {
+        final userAns = _answers[question.id];
+        bool isCorrectAns = false;
+        
+        // 1. If we have the cached correct answer, use it
+        if (correctOptionsMap.containsKey(question.id)) {
+          if (userAns == correctOptionsMap[question.id]) {
+            isCorrectAns = true;
+          }
+        } else {
+          // 2. Fallback to checking option.isCorrect if the cache doesn't have it
+          for (var option in question.options) {
+            if (option.isCorrect) {
+              correctOptionsMap[question.id] = option.id;
+              if (userAns == option.id) {
+                isCorrectAns = true;
+              }
+            }
+          }
+        }
+        
+        if (isCorrectAns) {
+          correctCount++;
+        } else {
+          wrongCount++;
+        }
+      }
+
+      int finalScore = 0;
+      if (totalQuestions > 0) {
+        finalScore = ((correctCount / totalQuestions) * 100).toInt();
+      }
+
       _result = ExamResult(
         attemptId: _attemptId!,
         examId: _exam!.id,
         studentId: 0,
-        score: 0,
+        score: finalScore,
         status: 'COMPLETED_LOCALLY',
         submittedAt: DateTime.now(),
         totalQuestions: totalQuestions,
-        correctAnswers: 0,
-        wrongAnswers: totalQuestions,
+        correctAnswers: correctCount,
+        wrongAnswers: wrongCount,
         answers: _answers,
-        correctOptions: {},
+        correctOptions: correctOptionsMap,
       );
       _isSubmitted = true;
       _state = ExamState.loaded;
@@ -340,7 +403,22 @@ class ExamProvider extends ChangeNotifier {
         _error = null;
         try {
           final fetchedResult = await _getExamResultUseCase.call(_attemptId!);
-          fetchedResult.fold((_) {}, (latestResult) => _result = latestResult);
+          fetchedResult.fold((_) {}, (latestResult) async {
+            _result = latestResult;
+            
+            // Save correct answers to Hive for future local evaluations
+            try {
+              if (!Hive.isBoxOpen('exam_correct_answers')) {
+                await Hive.openBox<Map>('exam_correct_answers');
+              }
+              final correctAnswersBox = Hive.box<Map>('exam_correct_answers');
+              // Store as Map<dynamic, dynamic> which Hive supports for simple types
+              final storableMap = latestResult.correctOptions.map((k, v) => MapEntry(k.toString(), v));
+              await correctAnswersBox.put(_exam!.id.toString(), storableMap);
+            } catch (e) {
+              debugPrint('Error saving correct answers: $e');
+            }
+          });
         } catch (_) {}
         await _saveProgressUseCase.call(_exam!.id, <int, int>{});
 

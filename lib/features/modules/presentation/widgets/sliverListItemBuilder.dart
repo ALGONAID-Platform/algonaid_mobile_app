@@ -59,17 +59,18 @@ class sliverListItemsBuilder extends StatelessWidget {
 
                 await CacheHelper.saveData(key: 'last_module_course_${module.courseId}', value: module.id);
                 if (!context.mounted) return;
-                GoRouter.of(context).push(
-                  '${Routes.lessonsList}/${module.id}',
-                  extra: {
-                    'moduleTitle': module.title,
-                    'completedLessons': module.completedLessons,
-                    'progressPercentage': module.progressPercentage,
-                    'totalLessons': module.totalLessons,
-                    'courseId': module.courseId,
-                    'moduleDescription': module.description,
-                  },
-                );
+                  GoRouter.of(context).push(
+                    '${Routes.lessonsList}/${module.id}',
+                    extra: {
+                      'moduleTitle': module.title,
+                      'completedLessons': module.completedLessons,
+                      'progressPercentage': module.progressPercentage,
+                      'totalLessons': module.totalLessons,
+                      'courseId': module.courseId,
+                      'moduleDescription': module.description,
+                      'imageUrl': module.imageUrl,
+                    },
+                  );
               },
             ),
           ),

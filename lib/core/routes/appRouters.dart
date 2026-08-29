@@ -281,17 +281,18 @@ abstract class AppRouters {
           final moduleId = int.parse(state.pathParameters['moduleId']!);
           final data = state.extra as Map<String, dynamic>?;
 
-          return LessonsListPage(
-            moduleId: moduleId,
-            moduleTitle: data?['moduleTitle'] as String? ?? 'تفاصيل الوحدة',
-            completedLessons: (data?['completedLessons'] as num?)?.toInt() ?? 0,
-            progressPercentage:
-                (data?['progressPercentage'] as num?)?.toDouble() ?? 0.0,
-            totalLessons: (data?['totalLessons'] as num?)?.toInt() ?? 0,
-            courseId: (data?['courseId'] as num?)?.toInt(),
-            moduleDescription: data?['moduleDescription'] as String?,
-          );
-        },
+            return LessonsListPage(
+              moduleId: moduleId,
+              moduleTitle: data?['moduleTitle'] as String? ?? 'تفاصيل الوحدة',
+              completedLessons: (data?['completedLessons'] as num?)?.toInt() ?? 0,
+              progressPercentage:
+                  (data?['progressPercentage'] as num?)?.toDouble() ?? 0.0,
+              totalLessons: (data?['totalLessons'] as num?)?.toInt() ?? 0,
+              courseId: (data?['courseId'] as num?)?.toInt(),
+              moduleDescription: data?['moduleDescription'] as String?,
+              imageUrl: data?['imageUrl'] as String?,
+            );
+          },
       ),
 
       /// Displays the details and content of a specific lesson (e.g., Video, PDF).

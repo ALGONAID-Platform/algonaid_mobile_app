@@ -3,8 +3,11 @@ import 'package:algonaid/core/constants/assets_constants.dart';
 import 'package:algonaid/core/theme/borders.dart';
 import 'package:algonaid/core/theme/colors.dart';
 import 'package:algonaid/core/utils/cache/shared_pref.dart';
+import 'package:algonaid/core/utils/share_helper.dart';
 import 'package:algonaid/core/widgets/shared/expertBadge3D.dart';
 import 'package:algonaid/core/widgets/shared/heroWidget.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
+import 'package:algonaid/features/courses/presentation/providers/get_courses_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -30,8 +33,12 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
   void initState() {
     super.initState();
     _gradesProvider = getIt<CourseGradesProvider>();
-    // Do NOT fetch here — fetching happens inside CourseGradesWidget
-    // when the user presses the button to view grade details.
+    
+    // Fetch grades silently in the background so the badge unlocks automatically
+    // without requiring the user to press "Show Grade Details".
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _gradesProvider.fetchGrades(widget.courseId);
+    });
   }
 
   @override
@@ -53,6 +60,26 @@ class _BuildExpertBadgeState extends State<BuildExpertBadge> {
           context: context,
           barrierColor: Colors.black.withOpacity(0.5),
           builder: (context) => Badge3DDialog(
+            isUnlocked: isUnlocked,
+            onShare: () {
+              // Retrieve course name from provider
+              String? courseName;
+              try {
+                final coursesProvider = context.read<GetCoursesProvider>();
+                CourseEntity? matchedCourse;
+                try {
+                  matchedCourse = coursesProvider.allCourses.firstWhere((c) => c.id == widget.courseId);
+                } catch (_) {}
+                if (matchedCourse == null) {
+                  try {
+                    matchedCourse = coursesProvider.myCourses.firstWhere((c) => c.id == widget.courseId);
+                  } catch (_) {}
+                }
+                courseName = matchedCourse?.title;
+              } catch (_) {}
+              
+              ShareHelper.shareBadge("وسام التفوق الذهبي", courseName: courseName, courseId: widget.courseId);
+            },
             heroTag: "expert_badge_",
             title: "وسام التفوق الذهبي",
             description: showWarning 

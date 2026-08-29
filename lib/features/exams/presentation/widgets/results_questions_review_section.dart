@@ -1,7 +1,8 @@
 import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
 
 class ResultsQuestionsReviewSection extends StatelessWidget {
   final List<Question> questions;
@@ -171,16 +172,26 @@ class _QuestionReviewCardState extends State<QuestionReviewCard> {
                 children: [
                   Directionality(
                     textDirection: TextDirection.rtl,
-                    child: MarkdownBody(
+                    child: MarkdownBlock(
                       data: widget.question.text,
-                      styleSheet: MarkdownStyleSheet(
-                        p: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      
+                      generator: MarkdownGenerator(
+                        inlineSyntaxList: [LatexSyntax()],
+                        generators: [
+                          SpanNodeGeneratorWithTag(
+                            tag: 'latex',
+                            generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                          ),
+                        ],
+                      ),
+                      config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                        PConfig(textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.onBackground,
                           height: 1.5,
-                        ),
-                        textAlign: WrapAlignment.start,
-                      ),
+                        ) ?? const TextStyle()),
+                      ]),
                     ),
                   ),
                   if (widget.question.imageUrl != null) ...[
@@ -275,17 +286,25 @@ class _QuestionReviewCardState extends State<QuestionReviewCard> {
                         const SizedBox(height: 6),
                         Directionality(
                           textDirection: TextDirection.rtl,
-                          child: MarkdownBody(
+                          child: MarkdownBlock(
                             data: widget.question.explanation ?? 'لا يوجد شرح متاح',
-                            styleSheet: MarkdownStyleSheet(
-                              p: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onBackground.withOpacity(0.8),
-                                height: 1.5,
-                              ),
-                              textAlign: WrapAlignment.start,
+                            
+                            generator: MarkdownGenerator(
+                              inlineSyntaxList: [LatexSyntax()],
+                              generators: [
+                                SpanNodeGeneratorWithTag(
+                                  tag: 'latex',
+                                  generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                                ),
+                              ],
                             ),
+                            config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                              PConfig(textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                                height: 1.5,
+                              ) ?? const TextStyle()),
+                            ]),
                           ),
                         ),
                       ],
@@ -333,12 +352,27 @@ class _AnswerBox extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            answer,
-            textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground,
-              height: 1.4,
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: MarkdownBlock(
+              data: answer,
+              
+              generator: MarkdownGenerator(
+                inlineSyntaxList: [LatexSyntax()],
+                generators: [
+                  SpanNodeGeneratorWithTag(
+                    tag: 'latex',
+                    generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                  ),
+                ],
+              ),
+              config: MarkdownConfig(configs: [
+                TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                PConfig(textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  height: 1.4,
+                ) ?? const TextStyle()),
+              ]),
             ),
           ),
         ],

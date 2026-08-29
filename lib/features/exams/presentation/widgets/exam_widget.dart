@@ -2,7 +2,8 @@ import 'package:algonaid/core/common/extensions/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:algonaid/features/exams/domain/entities/exam_entities.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
 
 
 /// Header widget showing student info and timer
@@ -146,12 +147,22 @@ class QuestionCard extends StatelessWidget {
           // Question title
           Directionality(
             textDirection: TextDirection.rtl,
-            child: MarkdownBody(
+            child: MarkdownBlock(
               data: question.text,
-              styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                textAlign: WrapAlignment.start,
+              
+              generator: MarkdownGenerator(
+                inlineSyntaxList: [LatexSyntax()],
+                generators: [
+                  SpanNodeGeneratorWithTag(
+                    tag: 'latex',
+                    generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                  ),
+                ],
               ),
+              config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                PConfig(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              ]),
             ),
           ),
           if (question.description != null &&
@@ -159,16 +170,26 @@ class QuestionCard extends StatelessWidget {
             const SizedBox(height: 12),
             Directionality(
               textDirection: TextDirection.rtl,
-              child: MarkdownBody(
+              child: MarkdownBlock(
                 data: question.description!,
-                styleSheet: MarkdownStyleSheet(
-                  p: const TextStyle(
+                
+                generator: MarkdownGenerator(
+                  inlineSyntaxList: [LatexSyntax()],
+                  generators: [
+                    SpanNodeGeneratorWithTag(
+                      tag: 'latex',
+                      generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                    ),
+                  ],
+                ),
+                config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                  PConfig(textStyle: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
                     height: 1.5,
-                  ),
-                  textAlign: WrapAlignment.start,
-                ),
+                  )),
+                ]),
               ),
             ),
             const SizedBox(height: 16),
@@ -290,15 +311,30 @@ class AnswerOption extends StatelessWidget {
             const SizedBox(width: 12),
             // Option text
             Expanded(
-              child: Text(
-                option.text,
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: MarkdownBlock(
+                  data: option.text,
+                  
+                  generator: MarkdownGenerator(
+                    inlineSyntaxList: [LatexSyntax()],
+                    generators: [
+                      SpanNodeGeneratorWithTag(
+                        tag: 'latex',
+                        generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                      ),
+                    ],
+                  ),
+                  config: MarkdownConfig(configs: [
+                    TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                    PConfig(textStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
+                    )),
+                  ]),
                 ),
               ),
             ),

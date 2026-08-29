@@ -1,5 +1,7 @@
 import 'package:algonaid/core/common/extensions/theme_helper.dart';
 import 'package:flutter/services.dart';
+import 'package:upgrader/upgrader.dart';
+import 'package:algonaid/main.dart';
 import 'package:algonaid/core/constants/app_constants.dart';
 import 'package:algonaid/core/routes/paths_routes.dart';
 import 'package:algonaid/core/utils/cache/shared_pref.dart';
@@ -227,8 +229,12 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
           );
         }
       },
-      child: Scaffold(
-      backgroundColor: context.background,
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: UpgradeAlert(
+          upgrader: sharedUpgrader,
+          child: Scaffold(
+            backgroundColor: context.background,
       appBar: ReactiveAppBar(
         appBarTitle: _getAppBarTitle(_currentIndex),
         isGuest: false,
@@ -266,7 +272,10 @@ class _CoursesHomePageState extends State<CoursesHomePage> {
           ),
         ],
       ),
+      ),
+        ),
       ),  // end Scaffold
+
     );  // end PopScope
   }
 }

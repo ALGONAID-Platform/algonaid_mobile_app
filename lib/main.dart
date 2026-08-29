@@ -27,8 +27,11 @@ import 'package:algonaid/core/routes/paths_routes.dart';
 import 'package:algonaid/features/auth/presentation/providers/auth_service_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:algonaid/core/routes/navigatorKey.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final sharedUpgrader = Upgrader(
+  messages: UpgraderMessages(code: 'ar'),
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,8 +46,9 @@ void main() async {
     await FlutterDownloader.initialize(debug: kDebugMode, ignoreSsl: true);
   }
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await Supabase.initialize(
+    url: 'https://jfafdkjgdllbbufetkwi.supabase.co',
+    anonKey: 'sb_publishable_aU_VcNHqZ0EYgIN-NcsKNw_BdIMWzG4',
   );
 
   await Hive.initFlutter();
@@ -278,16 +282,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     ],
                   );
                 },
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: UpgradeAlert(
-                    upgrader: Upgrader(
-                      messages: UpgraderMessages(code: 'ar'),
-                    ),
-                    navigatorKey: navigatorKey,
-                    child: child!,
-                  ),
-                ),
+                child: child!,
               ),
             );
           },

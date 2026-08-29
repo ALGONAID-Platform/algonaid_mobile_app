@@ -7,13 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class BuildCourseImage extends StatelessWidget {
-  const BuildCourseImage({super.key, required this.course});
-
   final CourseEntity course;
+  final String heroTagSuffix;
+
+  const BuildCourseImage({super.key, required this.course, this.heroTagSuffix = ''});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    
     final bool hasNoImage = Images.isInvalidImage(course.thumbnail);
     String resolvedUrl = course.thumbnail;
     if (!hasNoImage && !resolvedUrl.startsWith('http')) {
@@ -63,7 +65,7 @@ class BuildCourseImage extends StatelessWidget {
         children: [
           ClipRRect(
             child: AppHero(
-              tag: "course_image${course.id}",
+              tag: "course_image${course.id}$heroTagSuffix",
               child: (hasNoImage || isResolvedInvalid)
                   ? Image.asset(
                       Images.noImageFound,
@@ -99,7 +101,7 @@ class BuildCourseImage extends StatelessWidget {
             right: 16,
             child: IgnorePointer(
               child: AppHero(
-                tag: "course_name${course.id}",
+                tag: "course_name${course.id}$heroTagSuffix",
                 child: Text(
                   course.title,
                   style: theme.textTheme.titleLarge?.copyWith(

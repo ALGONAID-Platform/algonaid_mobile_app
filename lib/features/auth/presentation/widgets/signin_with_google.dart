@@ -29,19 +29,8 @@ class SignInWithGoogle extends StatelessWidget {
               if (!context.mounted) {
                 return;
               }
-
-              if (auth.user != null) {
-                GoRouter.of(context).go(Routes.homePage);
-              } else if (auth.errorMessage != null) {
-                AppDialog.showDynamicDialog(
-                  context: context,
-                  title: "تعذر تسجيل الدخول",
-                  message: toUserFriendlyErrorMessage(auth.errorMessage),
-                  isError: true,
-                  showCancelButton: false,
-                  confirmText: "حاول مرة أخرى",
-                );
-              }
+              // Navigation and error handling is now managed internally by auth.loginWithGoogle()
+              // via the onAuthStateChange listener in AuthServiceProvider.
             },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),

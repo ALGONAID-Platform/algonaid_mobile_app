@@ -26,8 +26,10 @@ import 'package:algonaid/features/practice_exams/presentation/widgets/practice_e
 
 import 'package:algonaid/features/courses/presentation/widgets/sync_status_indicator.dart';
 import 'package:algonaid/core/widgets/shared/custom_threshold_refresh_indicator.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
 import 'package:algonaid/core/utils/hive/token_storage.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 class ModulesListPage extends StatefulWidget {
   const ModulesListPage({super.key, required this.course});
@@ -353,26 +355,40 @@ class _CourseDetailsSectionState extends State<_CourseDetailsSection> {
                 child: ClipRect(
                   child: SingleChildScrollView(
                     physics: const NeverScrollableScrollPhysics(),
-                    child: MarkdownBody(
-                      data: widget.course.description,
-                      selectable: true,
-                      styleSheet: MarkdownStyleSheet(
-                        p: context.textTheme.bodyMedium?.copyWith(
-                          height: 1.6,
-                          color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: MarkdownBlock(
+                        data: widget.course.description,
+                        
+                        
+                        generator: MarkdownGenerator(
+                          inlineSyntaxList: [LatexSyntax()],
+                          generators: [
+                            SpanNodeGeneratorWithTag(
+                              tag: 'latex',
+                              generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+                            ),
+                          ],
                         ),
-                        h1: context.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: context.isDarkMode ? Colors.white : Colors.black,
-                        ),
-                        h2: context.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: context.isDarkMode ? Colors.white : Colors.black,
-                        ),
-                        h3: context.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: context.isDarkMode ? Colors.white : Colors.black,
-                        ),
+                        config: MarkdownConfig(configs: [
+TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+                          PConfig(textStyle: context.textTheme.bodyMedium?.copyWith(
+                            height: 1.6,
+                            color: context.isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                          ) ?? const TextStyle()),
+                          H1Config(style: context.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: context.isDarkMode ? Colors.white : Colors.black,
+                          ) ?? const TextStyle()),
+                          H2Config(style: context.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: context.isDarkMode ? Colors.white : Colors.black,
+                          ) ?? const TextStyle()),
+                          H3Config(style: context.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: context.isDarkMode ? Colors.white : Colors.black,
+                          ) ?? const TextStyle()),
+                        ]),
                       ),
                     ),
                   ),
@@ -389,12 +405,27 @@ class _CourseDetailsSectionState extends State<_CourseDetailsSection> {
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                  child: Text(
-                    _isExpanded ? 'عرض أقل' : 'قراءة المزيد',
-                    style: context.textTheme.labelMedium?.copyWith(
-                      color: context.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _isExpanded ? 'عرض أقل' : 'قراءة المزيد',
+                        style: context.textTheme.labelMedium?.copyWith(
+                          color: context.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      AnimatedRotation(
+                        turns: _isExpanded ? 0.5 : 0.0, // Rotate 180 degrees
+                        duration: const Duration(milliseconds: 300),
+                        child: Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: context.primary,
+                          size: 20,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -468,6 +499,40 @@ class _CourseDetailsSectionState extends State<_CourseDetailsSection> {
                           ),
                         ),
                       ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: context.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.calendar_today_rounded, size: 20, color: context.primary),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'تاريخ الإنشاء',
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      DateFormat('yyyy/MM/dd').format(widget.course.createdAt),
+                      style: context.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),

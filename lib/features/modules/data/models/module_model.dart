@@ -31,6 +31,9 @@ class ModuleModel extends Module {
   @override
   @HiveField(7)
   final int totalLessons;
+  @override
+  @HiveField(8)
+  final String? imageUrl;
 
   const ModuleModel({
     required this.id,
@@ -41,6 +44,7 @@ class ModuleModel extends Module {
     required this.completedLessons,
     required this.progressPercentage,
     required this.totalLessons,
+    this.imageUrl,
   }) : super(
          id: id,
          title: title,
@@ -50,6 +54,7 @@ class ModuleModel extends Module {
          completedLessons: completedLessons,
          progressPercentage: progressPercentage,
          totalLessons: totalLessons,
+         imageUrl: imageUrl,
        );
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {
@@ -66,6 +71,7 @@ class ModuleModel extends Module {
       completedLessons: int.tryParse(json['completedLessons']?.toString() ?? json['completed_lessons']?.toString() ?? '0') ?? 0,
       progressPercentage: double.tryParse(json['progressPercentage']?.toString() ?? json['progress_percentage']?.toString() ?? '0.0') ?? 0.0,
       totalLessons: int.tryParse(json['totalLessons']?.toString() ?? json['total_lessons']?.toString() ?? '0') ?? 0,
+      imageUrl: json['imageUrl']?.toString() ?? json['image_url']?.toString() ?? json['image']?.toString() ?? json['thumbnail']?.toString(),
     );
   }
 
@@ -79,6 +85,7 @@ class ModuleModel extends Module {
       'completedLessons': completedLessons,
       'progressPercentage': progressPercentage,
       'totalLessons': totalLessons,
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 }

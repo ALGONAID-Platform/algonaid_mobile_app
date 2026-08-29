@@ -1,5 +1,8 @@
 import 'package:algonaid/core/common/extensions/theme_helper.dart';
+import 'package:upgrader/upgrader.dart';
+import 'package:algonaid/main.dart';
 import 'package:algonaid/features/profile/presentation/widgets/badges_section.dart';
+import 'package:algonaid/features/profile/presentation/widgets/custom_upgrade_card.dart';
 import 'package:algonaid/features/excellence_courses/presentation/widgets/excellence_courses_section.dart';
 import 'package:algonaid/features/profile/presentation/widgets/profile_header.dart';
 import 'package:algonaid/features/settings/presentation/widgets/settings_section.dart';
@@ -72,6 +75,12 @@ class ProfilePageState extends State<ProfilePage> {
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
+                        Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: CustomUpgradeCard(
+                            upgrader: sharedUpgrader,
+                          ),
+                        ),
                         const ProfileHeader(),
                         const Divider(
                           height: 1,

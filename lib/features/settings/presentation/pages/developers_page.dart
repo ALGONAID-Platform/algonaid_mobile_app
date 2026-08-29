@@ -74,7 +74,7 @@ class _DevelopersPageState extends State<DevelopersPage>
                 _buildTeamHeaderCard(context, isDark),
                 const SizedBox(height: 28),
                 ListView.builder(
-                  shrinkWrap: true,
+                  
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _developers.length,
                   itemBuilder: (context, index) {

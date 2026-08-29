@@ -9,6 +9,7 @@ import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
 import 'package:algonaid/core/widgets/shared/app_snackbar.dart';
 import 'package:algonaid/core/utils/share_helper.dart';
 import 'package:algonaid/core/network/check_internet.dart';
+import 'package:algonaid/features/courses/domain/entities/course_entity.dart';
 import 'package:algonaid/features/lesson_detail/domain/entities/lesson_detail.dart';
 import 'package:algonaid/features/downloads/presentation/providers/active_downloads_provider.dart';
 import 'package:algonaid/features/lesson_detail/presentation/pages/lesson_pdf_viewer_page.dart';
@@ -27,7 +28,8 @@ import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_tabs
 import 'package:algonaid/features/lesson_detail/presentation/widgets/lesson_video_player.dart';
 import 'package:algonaid/features/lesson_detail/presentation/controllers/global_video_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
@@ -48,6 +50,7 @@ class LessonDetailPage extends StatefulWidget {
 }
 
 class _LessonDetailPageState extends State<LessonDetailPage> {
+
   @override
   void initState() {
     super.initState();
@@ -81,6 +84,11 @@ class _LessonDetailView extends StatefulWidget {
 }
 
 class _LessonDetailViewState extends State<_LessonDetailView> {
+  List<Widget>? _cachedDescriptionWidgets;
+  List<Widget>? _cachedContentWidgets;
+  String? _lastDescription;
+  String? _lastContent;
+
   late final ActiveDownloadsProvider _downloadController;
   Timer? _fabTimer;
   double _fabOpacity = 1.0; // 🌟 تبدأ بـ 1.0 لتجنب الوميض
@@ -333,7 +341,42 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
                 title: lesson.title,
                 onBack: () => _handleBackNavigation(lesson),
                 onShare: () {
-                  ShareHelper.shareLesson(lesson);
+                  String? courseName;
+                  String? moduleName;
+                  String? instructorName;
+                  
+                  try {
+                    final modulesProvider = context.read<ModulesListProvider>();
+                    final coursesProvider = context.read<GetCoursesProvider>();
+                    
+                    final matchedModule = modulesProvider.state.modules.firstWhere((m) => m.id == lesson.moduleId);
+                    moduleName = matchedModule.title;
+                    
+                    CourseEntity? matchedCourse;
+                    try {
+                      matchedCourse = coursesProvider.allCourses.firstWhere((c) => c.id == matchedModule.courseId);
+                    } catch (_) {}
+                    
+                    if (matchedCourse == null) {
+                      try {
+                        matchedCourse = coursesProvider.myCourses.firstWhere((c) => c.id == matchedModule.courseId);
+                      } catch (_) {}
+                    }
+                    
+                    if (matchedCourse != null) {
+                      courseName = matchedCourse.title;
+                      instructorName = matchedCourse.teacher.user.name;
+                    }
+                  } catch (e) {
+                    debugPrint('Error extracting course info for share: $e');
+                  }
+                  
+                  ShareHelper.shareLesson(
+                    lesson, 
+                    courseName: courseName, 
+                    moduleName: moduleName,
+                    instructorName: instructorName,
+                  );
                 },
               ),
               bottomNavigationBar: LessonDetailBottomBar(
@@ -510,154 +553,142 @@ class _LessonDetailViewState extends State<_LessonDetailView> {
     );
   }
 
-  Widget _buildReadingContent(BuildContext context, LessonDetail lesson) {
-    return SingleChildScrollView(
+  Widget _buildReadingContent(BuildContext context, LessonDetail lesson) {    MarkdownConfig config = MarkdownConfig(configs: [
+      TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+      PConfig(textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.8, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+      H1Config(style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+      H2Config(style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+      H3Config(style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface) ?? const TextStyle()),
+      ListConfig(marker: (isOrdered, depth, index) => Text('• ', style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.8, color: Theme.of(context).colorScheme.onSurface))),
+      LinkConfig(onTap: (href) async {
+        final url = Uri.parse(href);
+        if (await canLaunchUrl(url)) await launchUrl(url);
+      }),
+      ImgConfig(builder: (url, attributes) => CachedNetworkImage(
+        imageUrl: url,
+        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Icon(Icons.broken_image_rounded, color: Colors.grey),
+        fit: BoxFit.contain,
+      )),
+    ]);
+
+    if (_lastDescription != lesson.description) {
+      _lastDescription = lesson.description;
+      if (lesson.description != null && lesson.description!.isNotEmpty) {
+        final generator = MarkdownGenerator(
+          inlineSyntaxList: [LatexSyntax()],
+          generators: [
+            SpanNodeGeneratorWithTag(
+              tag: 'latex',
+              generator: (e, conf, visitor) => LatexNode(e.attributes, e.textContent, conf, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+            ),
+          ],
+        );
+        _cachedDescriptionWidgets = generator.buildWidgets(lesson.description!, config: config);
+      } else {
+        _cachedDescriptionWidgets = [];
+      }
+    }
+
+    if (_lastContent != lesson.content) {
+      _lastContent = lesson.content;
+      if (lesson.content != null && lesson.content!.isNotEmpty) {
+        final generator = MarkdownGenerator(
+          inlineSyntaxList: [LatexSyntax()],
+          generators: [
+            SpanNodeGeneratorWithTag(
+              tag: 'latex',
+              generator: (e, conf, visitor) => LatexNode(e.attributes, e.textContent, conf, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+            ),
+          ],
+        );
+        _cachedContentWidgets = generator.buildWidgets(lesson.content!, config: config);
+      } else {
+        _cachedContentWidgets = [];
+      }
+    }
+
+    final descriptionWidgets = _cachedDescriptionWidgets ?? [];
+    final contentWidgets = _cachedContentWidgets ?? [];
+
+    return CustomScrollView(
       controller: _readingScrollController,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Reading content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (lesson.description != null && lesson.description!.isNotEmpty) ...[
-                  MarkdownBody(
-                    data: lesson.description!,
-                    selectable: true,
-                    imageBuilder: (uri, title, alt) {
-                      return CachedNetworkImage(
-                        imageUrl: uri.toString(),
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Icon(Icons.broken_image_rounded, color: Colors.grey),
-                        fit: BoxFit.contain,
-                      );
-                    },
-                    onTapLink: (text, href, title) async {
-                      if (href != null) {
-                        final url = Uri.parse(href);
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url);
-                        }
-                      }
-                    },
-                    styleSheet: MarkdownStyleSheet(
-                      p: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        height: 1.8,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      h1: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      h2: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      h3: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      listBullet: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        height: 1.8,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ] else if (lesson.content != null && lesson.content!.isNotEmpty) ...[
-                  MarkdownBody(
-                    data: lesson.content!,
-                    selectable: true,
-                    imageBuilder: (uri, title, alt) {
-                      return CachedNetworkImage(
-                        imageUrl: uri.toString(),
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Icon(Icons.broken_image_rounded, color: Colors.grey),
-                        fit: BoxFit.contain,
-                      );
-                    },
-                    onTapLink: (text, href, title) async {
-                      if (href != null) {
-                        final url = Uri.parse(href);
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url);
-                        }
-                      }
-                    },
-                    styleSheet: MarkdownStyleSheet(
-                      p: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        height: 1.8,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      h1: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      h2: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      h3: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      listBullet: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        height: 1.8,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-                // PDF section if available
-                if (lesson.pdfUrl != null && lesson.pdfUrl!.isNotEmpty) ...[
-                  const Divider(),
-                  const SizedBox(height: 12),
-                  AnimatedScale(
-                    scale: _pulsePdf ? 1.05 : 1.0,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    child: LessonPdfCard(
-                      pdfUrl: _downloadController.resolveAttachmentUrl(lesson.pdfUrl) ?? lesson.pdfUrl,
-                      downloadStatus: _downloadController.getPdfStatus(lesson.id),
-                      downloadProgress: _downloadController.getPdfProgress(lesson.id),
-                      onDownload: () => _downloadController.downloadPdf(lesson, onMessage: (msg, isError) {
-                                  if (mounted) {
-                                    AppSnackBar.show(context: context, message: msg, type: isError ? SnackBarType.error : SnackBarType.success);
-                                  }
-                                }),
-                      onOpen: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => LessonPdfViewerPage(
-                              pdfUrl: lesson.pdfUrl,
-                              localPdfPath: _downloadController.getLocalPdfFilePath(lesson.id),
-                              title: lesson.title,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                AnimatedScale(
-                  scale: _pulseExam ? 1.05 : 1.0,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  child: LessonQuizCard(
-                    examId: lesson.exam?.id,
-                    previousRoute: '${Routes.lessonsList}/${lesson.moduleId}',
-                  ),
+      slivers: [
+        if (descriptionWidgets.isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(12, 20, 12, 24),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: descriptionWidgets[index],
                 ),
-                const SizedBox(height: 30),
-              ],
+                childCount: descriptionWidgets.length,
+              ),
             ),
           ),
-        ],
-      ),
+        if (contentWidgets.isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: contentWidgets[index],
+                ),
+                childCount: contentWidgets.length,
+              ),
+            ),
+          ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              if (lesson.pdfUrl != null && lesson.pdfUrl!.isNotEmpty) ...[
+                const Divider(),
+                const SizedBox(height: 12),
+                AnimatedScale(
+                  scale: _pulsePdf ? 1.05 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  child: LessonPdfCard(
+                    pdfUrl: _downloadController.resolveAttachmentUrl(lesson.pdfUrl) ?? lesson.pdfUrl,
+                    downloadStatus: _downloadController.getPdfStatus(lesson.id),
+                    downloadProgress: _downloadController.getPdfProgress(lesson.id),
+                    onDownload: () => _downloadController.downloadPdf(lesson, onMessage: (msg, isError) {
+                      if (mounted) {
+                        AppSnackBar.show(context: context, message: msg, type: isError ? SnackBarType.error : SnackBarType.success);
+                      }
+                    }),
+                    onOpen: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => LessonPdfViewerPage(
+                            pdfUrl: lesson.pdfUrl,
+                            localPdfPath: _downloadController.getLocalPdfFilePath(lesson.id),
+                            title: lesson.title,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              AnimatedScale(
+                scale: _pulseExam ? 1.05 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                child: LessonQuizCard(
+                  examId: lesson.exam?.id,
+                  previousRoute: '${Routes.lessonsList}/${lesson.moduleId}',
+                ),
+              ),
+              const SizedBox(height: 30),
+            ]),
+          ),
+        ),
+      ],
     );
   }
 

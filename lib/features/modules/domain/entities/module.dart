@@ -12,6 +12,7 @@ class Module extends Equatable {
   final int completedLessons;
   final double progressPercentage;
   final int totalLessons;
+  final String? imageUrl;
 
   const Module({
     required this.id,
@@ -22,6 +23,7 @@ class Module extends Equatable {
     required this.completedLessons,
     required this.progressPercentage,
     required this.totalLessons,
+    this.imageUrl,
   });
 
   Module copyWith({
@@ -33,6 +35,7 @@ class Module extends Equatable {
     int? completedLessons,
     double? progressPercentage,
     int? totalLessons,
+    String? imageUrl,
   }) {
     return Module(
       id: id ?? this.id,
@@ -43,6 +46,7 @@ class Module extends Equatable {
       completedLessons: completedLessons ?? this.completedLessons,
       progressPercentage: progressPercentage ?? this.progressPercentage,
       totalLessons: totalLessons ?? this.totalLessons,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -56,5 +60,6 @@ class Module extends Equatable {
         completedLessons,
         progressPercentage,
         totalLessons,
+        imageUrl,
       ];
 }

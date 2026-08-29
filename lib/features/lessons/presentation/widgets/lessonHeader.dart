@@ -5,6 +5,7 @@ import 'package:algonaid/core/theme/colors.dart';
 import 'package:algonaid/core/widgets/shared/expertBadge3D.dart';
 import 'package:algonaid/core/widgets/shared/heroWidget.dart';
 import 'package:algonaid/core/widgets/shared/linearProgress.dart';
+import 'package:algonaid/features/modules/presentation/providers/modules_list_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -15,6 +16,9 @@ import 'package:provider/provider.dart';
 import 'package:algonaid/core/di/service_locator.dart';
 import 'package:algonaid/core/widgets/shared/app_bottom_sheet.dart';
 import 'package:marquee/marquee.dart' as marquee;
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:algonaid/core/utils/share_helper.dart';
+import 'dart:ui';
 
 class ModuleHeaderStats extends StatefulWidget {
   final int moduleId;
@@ -23,7 +27,9 @@ class ModuleHeaderStats extends StatefulWidget {
   final double progressPercentage;
   final int totalLessons;
   final String? moduleDescription;
+  final String? imageUrl;
   final VoidCallback? onBack;
+  final ScrollController? scrollController;
   const ModuleHeaderStats({
     super.key,
     required this.moduleId,
@@ -32,7 +38,9 @@ class ModuleHeaderStats extends StatefulWidget {
     required this.progressPercentage,
     required this.totalLessons,
     this.moduleDescription,
+    this.imageUrl,
     this.onBack,
+    this.scrollController,
   });
 
   @override
@@ -48,9 +56,14 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> with SingleTicker
   @override
   void initState() {
     super.initState();
-    // We obtain the provider but do NOT fetch here.
-    // Fetching happens inside ModuleGradesWidget when the user presses the button.
     _gradesProvider = getIt<ModuleGradesProvider>();
+    
+    // Fetch grades silently in the background so the badge unlocks automatically
+    // without requiring the user to press "Show Grade Details".
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _gradesProvider.fetchGrades(widget.moduleId);
+    });
+    
     _arrowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -163,6 +176,16 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> with SingleTicker
                         context: context,
                         barrierColor: Colors.black.withOpacity(0.5),
                         builder: (context) => Badge3DDialog(
+                          isUnlocked: isUnlocked,
+                          onShare: () {
+                            int? courseId;
+                            try {
+                              final modulesProvider = context.read<ModulesListProvider>();
+                              final module = modulesProvider.state.modules.firstWhere((m) => m.id == widget.moduleId);
+                              courseId = module.courseId;
+                            } catch (_) {}
+                            ShareHelper.shareBadge("وسام البراعة الفضي", moduleName: widget.moduleTitle, courseId: courseId);
+                          },
                           heroTag: "expert_badge_",
                           title: "وسام البراعة الفضي",
                           description: isUnlocked
@@ -179,24 +202,78 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> with SingleTicker
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
+                        color: theme.colorScheme.surface.withOpacity(0.85),
                         borderRadius: BorderRadius.circular(25),
                         border: AppBorder.main_border,
                       ),
                       child: Column(
                         children: [
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20.0),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? AppColors.primary.withOpacity(0.05)
-                                  : const Color(0xFFF1FDF9),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(25),
-                                topRight: Radius.circular(25),
-                              ),
-                            ),
+                          Stack(
+                            children: [
+                              // The Background Image
+                              if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
+                                Positioned.fill(
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(25),
+                                      topRight: Radius.circular(25),
+                                    ),
+                                    child: widget.scrollController != null ? AnimatedBuilder(
+                                      animation: widget.scrollController!,
+                                      builder: (context, child) {
+                                        double offset = 0.0;
+                                        if (widget.scrollController!.hasClients) {
+                                          offset = widget.scrollController!.offset;
+                                        }
+                                        // Parallax translation and scale
+                                        // Increase multiplier so even slight scroll is visible
+                                        final double translationY = offset * 0.6;
+                                        // Start at 1.2 scale so it has room to translate up and down without exposing the edges
+                                        final double scale = 1.2 + (offset < 0 ? -offset / 100 : 0.0);
+
+                                        return Transform.translate(
+                                          offset: Offset(0, translationY),
+                                          child: Transform.scale(
+                                            scale: scale,
+                                            child: child,
+                                          ),
+                                        );
+                                      },
+                                      child: Hero(
+                                        tag: 'module_image_${widget.moduleId}',
+                                        child: CachedNetworkImage(
+                                          imageUrl: widget.imageUrl!,
+                                          fit: BoxFit.cover,
+                                          color: Colors.black.withOpacity(0.65), // Strong black overlay
+                                          colorBlendMode: BlendMode.darken,
+                                        ),
+                                      ),
+                                    ) : Hero(
+                                      tag: 'module_image_${widget.moduleId}',
+                                      child: CachedNetworkImage(
+                                        imageUrl: widget.imageUrl!,
+                                        fit: BoxFit.cover,
+                                        color: Colors.black.withOpacity(0.65), // Strong black overlay
+                                        colorBlendMode: BlendMode.darken,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              // The Semi-transparent Foreground Container
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20.0),
+                                decoration: BoxDecoration(
+                                  color: (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
+                                      ? Colors.transparent
+                                      : (isDark
+                                          ? AppColors.primary.withOpacity(0.2)
+                                          : const Color(0xFFF1FDF9).withOpacity(0.85)),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(25),
+                                    topRight: Radius.circular(25),
+                                  ),
+                                ),
                             child: Column(
                               children: [
                                 Stack(
@@ -243,22 +320,28 @@ class _ModuleHeaderStatsState extends State<ModuleHeaderStats> with SingleTicker
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  "وسام البراعة الفضي",
-                                  style: theme.textTheme.headlineSmall,
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'يتطلب الحصول على درجة 85% أو أعلى في اختبارات الوحدة.',
-                                  style: theme.textTheme.bodySmall,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                                  Text(
+                                    "وسام البراعة الفضي",
+                                    style: theme.textTheme.headlineSmall?.copyWith(
+                                      color: (widget.imageUrl != null && widget.imageUrl!.isNotEmpty) ? Colors.white : null,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'يتطلب الحصول على درجة 85% أو أعلى في اختبارات الوحدة.',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: (widget.imageUrl != null && widget.imageUrl!.isNotEmpty) ? Colors.white70 : null,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                          ],
+                        ),
 
-                          // الخط المنقط
+                        // الخط المنقط
                           const _DashedDivider(),
 
                           Padding(

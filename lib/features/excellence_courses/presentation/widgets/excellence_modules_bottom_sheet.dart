@@ -68,7 +68,7 @@ class _ExcellenceModulesBottomSheetState extends State<ExcellenceModulesBottomSh
             children: [
               Expanded(
                 child: ListView.builder(
-                  shrinkWrap: true,
+                  
                   padding: const EdgeInsets.only(bottom: 16),
                   itemCount: modules.length + 1,
                   itemBuilder: (context, index) {

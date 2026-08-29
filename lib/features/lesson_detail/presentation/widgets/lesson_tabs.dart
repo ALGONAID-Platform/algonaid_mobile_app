@@ -3,8 +3,8 @@ import 'package:algonaid/core/theme/app_shadows.dart';
 import 'package:algonaid/core/theme/borders.dart';
 import 'package:algonaid/core/theme/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:algonaid/core/widgets/shared/latex_custom_node.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,6 +21,9 @@ class LessonTabs extends StatefulWidget {
 class _LessonTabsState extends State<LessonTabs> {
   bool _isExpanded = false;
   final GlobalKey _containerKey = GlobalKey();
+
+  List<Widget>? _cachedWidgets;
+  String? _lastText;
 
   void _toggleExpand() {
     setState(() {
@@ -49,6 +52,55 @@ class _LessonTabsState extends State<LessonTabs> {
         : (widget.content?.isNotEmpty == true
             ? widget.content!
             : 'لا يوجد وصف متوفر لهذا الدرس حالياً.');
+
+    if (_lastText != text || _cachedWidgets == null) {
+      _lastText = text;
+      final generator = MarkdownGenerator(
+        inlineSyntaxList: [LatexSyntax()],
+        generators: [
+          SpanNodeGeneratorWithTag(
+            tag: 'latex',
+            generator: (e, config, visitor) => LatexNode(e.attributes, e.textContent, config, maxWidth: MediaQuery.sizeOf(context).width * 0.85),
+          ),
+        ],
+      );
+      final config = MarkdownConfig(configs: [
+        TableConfig(wrapper: (w) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: w)),
+        PConfig(textStyle: context.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurface.withOpacity(0.78),
+          height: 1.6,
+        ) ?? const TextStyle()),
+        H1Config(style: context.textTheme.headlineMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ) ?? const TextStyle()),
+        H2Config(style: context.textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ) ?? const TextStyle()),
+        H3Config(style: context.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ) ?? const TextStyle()),
+        LinkConfig(
+          onTap: (href) async {
+            final url = Uri.parse(href);
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url);
+            }
+          },
+        ),
+        ImgConfig(builder: (url, attributes) {
+          return CachedNetworkImage(
+            imageUrl: url,
+            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+            errorWidget: (context, url, error) => const Icon(Icons.broken_image_rounded, color: Colors.grey),
+            fit: BoxFit.contain,
+          );
+        }),
+      ]);
+      _cachedWidgets = generator.buildWidgets(text, config: config);
+    }
 
     return Container(
       key: _containerKey,
@@ -96,84 +148,50 @@ class _LessonTabsState extends State<LessonTabs> {
                 physics: _isExpanded ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: MarkdownBody(
-                    data: text,
-                    selectable: true,
-                    extensionSet: md.ExtensionSet.gitHubFlavored,
-                    imageBuilder: (uri, title, alt) {
-                      return CachedNetworkImage(
-                        imageUrl: uri.toString(),
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Icon(Icons.broken_image_rounded, color: Colors.grey),
-                        fit: BoxFit.contain,
-                      );
-                    },
-                    onTapLink: (text, href, title) async {
-                      if (href != null) {
-                        final url = Uri.parse(href);
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url);
-                        }
-                      }
-                    },
-                    styleSheet: MarkdownStyleSheet(
-                      p: context.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.78),
-                        height: 1.6,
-                      ),
-                      h1: context.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                      h2: context.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                      h3: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _cachedWidgets ?? [],
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          if (_isExpanded) ...[
-            const SizedBox(height: 12),
-            Center(
-              child: InkWell(
-                onTap: _toggleExpand,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: context.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'تصغير الوصف',
-                        style: TextStyle(
-                          color: context.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        Icons.expand_less_rounded,
+          const SizedBox(height: 12),
+          Center(
+            child: InkWell(
+              onTap: _toggleExpand,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: context.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _isExpanded ? 'تصغير الوصف' : 'اقرأ المزيد',
+                      style: TextStyle(
                         color: context.primary,
-                        size: 20,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(
+                      _isExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                      color: context.primary,
+                      size: 20,
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
         ],
       ),
     );
